@@ -40,7 +40,7 @@ D.coaches=[
 ];
 
 /* ---------- Chevaux ---------- */
-var HN=['Ulysse de la Roche','Quiétude','Vanille','Tornado','Sirius du Moulin','Opale','Diablo','Câline','Hermès','Jazz','Kalinka','Lune d’Or','Macaron','Nuage','Orphée','Pistache','Quartz','Réglisse','Saphir','Tango','Uranus','Volga','Xanthos','Whisky','Yuma','Zéphyr','Bijou','Caramel','Domino','Étoile','Filou','Gribouille','Hirondelle','Iris','Joker','Kiwi','Lord Vitesse','Mistral','Noisette','Oural'];
+var HN=['Ulysse de la Roche','Quiétude','Vanille','Tornado','Sirius du Moulin','Opale','Diablo','Câline','Hermès','Jazz','Kalinka','Lune d’Or','Macaron','Nuage','Orphée','Pistache','Quartz','Réglisse','Saphir','Tango','Uranus','Volga','Xanthos','Whisky','Yuma','Zéphyr','Bijou','Caramel','Domino','Étoile','Filou','Gribouille','Hirondelle','Iris','Joker','Kiwi','Lord Vitesse','Mistral','Noisette','Oural','Prélude','Rubis','Scala','Talisman'];
 var BR=['Selle Français','Selle Français','Poney Français de Selle','KWPN','Connemara','Pur-sang','Anglo-arabe','Welsh','Shetland','Haflinger','Lusitanien','Frison','Trotteur Français','Holsteiner'];
 var RO=['Bai','Bai brun','Alezan','Gris','Noir','Pie alezan','Palomino','Isabelle','Rouan','Alezan brûlé'];
 D.horses=HN.map(function(n,i){
@@ -48,7 +48,7 @@ D.horses=HN.map(function(n,i){
   var age=int(4,21),h={id:id('h',i+1),name:n,breed:br,pony:pony,sex:pick(['Hongre','Hongre','Jument','Étalon']),age:age,born:2026-age,coat:pick(RO),
     height:pony?int(118,148):int(158,176),kind:kind,box:'B'+String(i+1).padStart(2,'0'),sire:'250259'+(600000+int(1000,99999))+String.fromCharCode(65+int(0,25)),
     chip:'250259'+(800000000+int(1000000,99999999)),level:pick(['Débutant','Galop 2-4','Galop 4-6','Galop 6-7','Confirmé']),
-    work:int(4,16),workMax:pony?12:16,weight:pony?int(280,450):int(480,640),bcs:int(4,7),
+    work:int(4,16),workMax:pony?12:16,weight:pony?int(280,450):int(480,640),bcs:[2.5,3,3,3.5,3.5,4][int(0,5)],
     mood:pick(['Calme','Volontaire','Sensible','Joueur','Froid','Généreux']),
     ration:{hay:pony?int(5,8):int(8,12),grain:pony?int(0,1)+.5:int(1,3)+.5,supp:pick(['Huile de lin','Électrolytes','Ail','Aucun','Levures','Biotine'])},
     paddock:pick(D.club.paddocks),costMonth:int(310,520),
@@ -56,9 +56,9 @@ D.horses=HN.map(function(n,i){
     status:'ok',alerts:[],color:pick(['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)'])};
   return h});
 /* propriétaires */
-var OWN=['m001','m014','m023','m031','m047','m052','m066','m078','m083','m091','m102','m117'];
+var OWN=['m120','m014','m023','m031','m047','m052','m066','m078','m083','m091','m102','m117'];
 D.horses.forEach(function(h,i){if(h.kind==='proprietaire'||h.kind==='demi'){h.owner=OWN[i%OWN.length]}});
-D.horses[0].owner='m001';D.horses[0].kind='proprietaire';D.horses[0].breed='Selle Français';D.horses[0].pony=false;D.horses[0].height=168;D.horses[0].age=11;D.horses[0].sex='Hongre';D.horses[0].coat='Bai brun';
+D.horses[0].owner='m001';D.horses[0].kind='proprietaire';D.horses[0].breed='Selle Français';D.horses[0].pony=false;D.horses[0].height=168;D.horses[0].age=11;D.horses[0].sex='Hongre';D.horses[0].coat='Bai brun';D.horses[0].born=2015;D.horses[0].bcs=3;
 /* alertes réalistes */
 function al(i,st,txt){D.horses[i].status=st;D.horses[i].alerts.push(txt)}
 al(3,'bad','Boiterie antérieur gauche, véto à 14 h');al(7,'warn','Vaccin grippe dans 6 jours');al(11,'warn','Maréchal en retard de 9 jours');al(15,'warn','Perte de 12 kg en 3 semaines');al(22,'bad','Colique légère cette nuit, surveillance');al(26,'warn','Vermifuge à faire');al(5,'warn','Repos 3 jours prescrit');al(0,'warn','Ferrure prévue jeudi');
@@ -80,6 +80,13 @@ for(var i=1;i<=148;i++){var age=i<=40?int(6,14):(i<=95?int(15,24):int(25,62)),ln
 /* l'adhérente de la démo : Léa Martin, propriétaire d'Ulysse */
 Object.assign(D.members[0],{first:'Léa',last:'Martin',age:27,minor:false,galop:7,forfait:'f5',balance:-410,licence:'2027',since:2019,email:'lea.martin@exemple.fr'});
 OWN.forEach(function(o){var m=D.members.find(function(x){return x.id===o});if(m){m.forfait='f5';m.minor=false;if(m.age<18)m.age=int(22,55)}});
+/* personnes nommées dans les textes : identiques quel que soit le tirage */
+function pinM(id,o){var m=D.members.find(function(x){return x.id===id});if(m)Object.assign(m,o)}
+pinM('m019',{first:'Emma',last:'Moreau',age:24,minor:false,galop:6,since:2021,licence:'2027',cert:true,forfait:'f6',fam:'F19',email:'emma.moreau@exemple.fr'});
+pinM('m078',{first:'Hélène',last:'Girard',age:50,minor:false,galop:7,email:'helene.girard@exemple.fr'});
+pinM('m044',{first:'Alice',last:'Vincent',age:15,minor:true,galop:5,email:'alice.vincent@exemple.fr'});
+/* pas d'homonyme de la demi-pensionnaire */
+D.members.forEach(function(m){if(m.id!=='m019'&&m.first==='Emma'&&m.last==='Moreau'){m.first='Chloé';m.email=m.email.replace('emma','chloe')}});
 /* demi-pensionnaires */
 D.halfboard=[
  {id:'dp1',horse:'h01',rider:'m019',days:['Mar','Sam'],price:180,status:'Actif',since:'2026-09-01'},
@@ -138,13 +145,17 @@ D.competitions=[
  {id:'k2',name:'Dressage Amateur',place:'Saint-Germain-en-Laye',km:46,date:iso(day(12)),disc:'Dressage',level:'Amateur 3 à 1',entries:3,closes:iso(day(6)),vans:1,status:'Engagements ouverts'},
  {id:'k3',name:'Hunter Club',place:'Écurie des Tilleuls (à domicile)',km:0,date:iso(day(19)),disc:'Hunter',level:'Club 4 à Club 1',entries:22,closes:iso(day(14)),vans:0,status:'Organisation'},
  {id:'k4',name:'CCE Poney',place:'Lamotte-Beuvron, Parc fédéral',km:162,date:iso(day(26)),disc:'CCE',level:'Poney 2 à Poney Élite',entries:5,closes:iso(day(16)),vans:2,status:'Préparation'},
- {id:'k5',name:'CSO Amateur',place:'Chantilly, Grand Parquet',km:88,date:iso(day(-4)),disc:'CSO',level:'Amateur 2',entries:6,closes:iso(day(-10)),vans:1,status:'Terminé',results:'2 sans-faute, 1 classement (3e)'}];
+ {id:'k5',name:'CSO Amateur',place:'Chantilly, Grand Parquet',km:88,date:iso(day(-4)),disc:'CSO',level:'Club Élite et Amateur 3',entries:6,closes:iso(day(-10)),vans:1,status:'Terminé',results:'2 sans-faute, 1 classement (3e)'}];
 D.entries=[
  {comp:'k1',rider:'m003',horse:'h12',class:'Club 2 · 95 cm',fee:22,transport:'v1',coach:'c06'},{comp:'k1',rider:'m008',horse:'h05',class:'Club 1 · 105 cm',fee:24,transport:'v1',coach:'c06'},
  {comp:'k1',rider:'m011',horse:'h18',class:'Poney 2 · 85 cm',fee:18,transport:'v1',coach:'c06'},{comp:'k1',rider:'m016',horse:'h09',class:'Club 3 · 85 cm',fee:22,transport:'v1',coach:'c06'},
  {comp:'k1',rider:'m001',horse:'h01',class:'Club Élite · 115 cm',fee:26,transport:'v2',coach:'c01'},{comp:'k1',rider:'m022',horse:'h14',class:'Club 2 · 95 cm',fee:22,transport:'v2',coach:'c06'},
  {comp:'k1',rider:'m029',horse:'h20',class:'Poney 1 · 95 cm',fee:18,transport:'v2',coach:'c06'},{comp:'k1',rider:'m034',horse:'h07',class:'Club 3 · 85 cm',fee:22,transport:'car',coach:'c06'},
  {comp:'k1',rider:'m040',horse:'h16',class:'Club 2 · 95 cm',fee:22,transport:'proprio',coach:'c06'}];
+/* engagés : âge et galop cohérents avec l'épreuve (Club 1 ≥ Galop 5, Club 2 / Poney 1 ≥ Galop 4, Club 3 / Poney 2 ≥ Galop 3) */
+(function(){var need={'Club Élite':7,'Club 1':5,'Club 2':4,'Club 3':3,'Poney 1':4,'Poney 2':3};
+ D.entries.forEach(function(e){var m=D.members.find(function(x){return x.id===e.rider});if(!m)return;var k=e.class.split(' · ')[0],g=need[k]||3,pony=/^Poney/.test(k);
+  if(m.galop<g)m.galop=g;if(pony){if(m.age<10||m.age>16)m.age=10+(parseInt(m.id.slice(1),10)%5)}else if(m.age<12)m.age=12+(parseInt(m.id.slice(1),10)%6);m.minor=m.age<18;if(m.galop>0&&m.forfait==='f4')m.forfait='f1'})})();
 D.vans=[{id:'v1',name:'Camion 6 places',plate:'GH-512-KT',driver:'s04',seats:6,horses:4,leave:'06:45',from:'Cour principale'},{id:'v2',name:'Van 2 places',plate:'FN-208-LB',driver:'m001',seats:3,horses:2,leave:'07:15',from:'Cour principale'}];
 D.carpool=[{driver:'m052',seats:3,from:'Rambouillet centre',taken:['m011','m016']},{driver:'m014',seats:2,from:'Les Essarts-le-Roi',taken:['m029']}];
 
@@ -228,6 +239,22 @@ D.notifs=[
  {i:'members',c:'ok',t:'3 nouvelles inscriptions en ligne cette semaine',w:'lun.'}];
 
 /* ---------- Outils ---------- */
+/* ---------- Données partagées entre lots (manches 2) ---------- */
+/* chevaux déclarés par des adhérents ou des coachs, en attente de validation par la gérante. Un ajout côté adhérent fait push ici. */
+D.declarations=[
+ {id:'dc1',by:'m083',link:'Propriétaire',name:'Quartz du Moulin',sire:'25041873K',breed:'Selle Français',coat:'Alezan',born:2019,chip:'250259600418731',stay:'pension',box:'B41',when:'Hier, 21:12',status:'en attente'},
+ {id:'dc2',by:'c01',link:'Propriétaire (coach)',name:'Vigo des Bruyères',sire:'21008342T',breed:'KWPN',coat:'Bai',born:2017,chip:'528210004183427',stay:'passage',box:null,when:'Lundi, 08:30',status:'en attente'}];
+/* réservations de pistes par les propriétaires (onglet Installations côté adhérent, Jour par piste côté planning) */
+D.trackBookings=[
+ {id:'tb1',who:'m014',horse:'h03',arena:'a3',date:iso(day(0)),from:'12:30',to:'13:30'},
+ {id:'tb2',who:'m052',horse:'h06',arena:'a2',date:iso(day(0)),from:'15:00',to:'16:00'},
+ {id:'tb3',who:'m001',horse:'h01',arena:'a2',date:iso(day(1)),from:'09:00',to:'10:00'}];
+/* faits de référence partagés : un seul chiffre partout */
+D.facts={leaRambouillet:{passage:'11:42',order:'14e sur 32',bib:214,recon:'11:10',warmup:'11:20',paddock:'B',classe:'Club Élite · 115 cm'},
+ leaBalance:410,leaInvoice:{id:'F-2026-1173',total:520,left:410},
+ paulineToday:[{at:'11:15',what:'Cours particulier Léa Martin et Ulysse',arena:'a2'},{at:'12:15',what:'Cours collectif CSO',arena:'a2'},{at:'14:00',what:'Créneau libre'}],
+ hersage:{at:'13:30',arena:'a2'},staff:'8 salariés et la gérante',bcsScale:'sur 5',ulysseBcs:3,
+ emmaContract:'Avenant de renouvellement de la demi-pension (en place depuis le 1er septembre)'};
 D.find=function(col,idv){return (D[col]||[]).find(function(x){return x.id===idv})};
 D.member=function(i){return D.find('members',i)};D.horse=function(i){return D.find('horses',i)};D.staffer=function(i){return D.find('staff',i)};D.coach=function(i){return D.find('coaches',i)};
 D.person=function(i){return D.member(i)||D.staffer(i)||D.coach(i)};

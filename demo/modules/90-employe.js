@@ -22,9 +22,9 @@ D.empTasks=D.empTasks||[
  {id:'e10',t:'18:20',title:'Tournée du soir',zone:'Eau, couvertures, lumières',icon:'moon'}];
 D.empHugo=D.empHugo||[
  {id:'g1',t:'10:00',title:'Travailler Jazz à la longe',zone:'Rond de longe · 30 min',icon:'horse'},
- {id:'g2',t:'11:00',title:'Cours particulier',zone:'Petite carrière · 45 min',icon:'whistle',priv:true,rider:'m019',horse:'h01'},
  {id:'g3',t:'14:00',title:'Point pédagogique avec Claire',zone:'Bureau · 30 min',icon:'chat'},
  {id:'g4',t:'15:30',title:'Monter le parcours de la reprise CSO',zone:'Carrière d’honneur · avec Thomas',icon:'jump'},
+ {id:'g2',t:'17:00',title:'Cours particulier',zone:'Petite carrière · 45 min',icon:'whistle',priv:true,rider:'m019',horse:'h01'},
  {id:'g5',t:'19:00',title:'Adultes Galop 4',zone:'Grand manège · 60 min',icon:'whistle',lesson:'l07'}];
 D.empNotes=D.empNotes||{
  h01:'Sensible des postérieurs : curer le pied gauche en premier. Ferrure jeudi à 9 h.',
@@ -331,7 +331,7 @@ P.mod({id:'emp-jour',role:'employe',group:'Ma journée',title:'Aujourd’hui',ic
    else if(missing()){h+='<div class="em-urg warn"><div class="hrow" style="--g:12px;align-items:flex-start">'+ico('alert','lg','var(--warn)')+'<div class="grow"><div class="eyebrow">À régler avant 19 h</div><div class="ti">'+missing()+' cavaliers sans cheval</div><div class="s" style="color:var(--ink-2);margin-top:3px">Tornado et Opale sont arrêtés. La reprise Adultes Galop 4 doit être réattribuée.</div></div></div><button class="btn em-b dark" data-les="g5">'+ICON('swap')+'Attribuer les chevaux</button></div>'}
    /* maintenant */
    if(now){var tp=E.tour?E.tour.boxes.filter(function(b){return b.st}).length:5,isL=now.priv||now.lesson,rd=isL&&lessonItems(now);
-    h+='<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+now.id+'"><div class="hrow sp"><span class="eyebrow">'+(isL?'Prochaine reprise · '+hm(now.t):now.t<='09:41'?'Maintenant · depuis '+hm(now.t):'À suivre · à '+hm(now.t))+'</span>'+(isL?'<span class="em-pill">dans '+(now.t==='11:00'?'1 h 19':'9 h 19')+'</span>':now.t<='09:41'?'<span class="em-pill">41 min</span>':'')+'</div>'+
+    h+='<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+now.id+'"><div class="hrow sp"><span class="eyebrow">'+(isL?'Prochaine reprise · '+hm(now.t):now.t<='09:41'?'Maintenant · depuis '+hm(now.t):'À suivre · à '+hm(now.t))+'</span>'+(isL?'<span class="em-pill">dans '+(function(t){var d=(+t.slice(0,2))*60+(+t.slice(3))-581;return Math.floor(d/60)+' h '+String(d%60).padStart(2,'0')})(now.t)+'</span>':now.t<='09:41'?'<span class="em-pill">41 min</span>':'')+'</div>'+
      '<div class="hrow" style="--g:14px;align-items:flex-start">'+(isL?'':ck(now.id,false,'xl'))+'<div class="grow"><h2>'+(now.priv?'Cours particulier de '+D.member(now.rider).first:now.title)+'</h2><div class="sb2">'+(now.priv?'Sur Ulysse de la Roche · '+now.zone:isL?now.zone+' · '+rd.riders.length+' cavaliers':now.zone)+'</div></div></div>'+
      (now.tour?'<div class="stack" style="--g:8px">'+U.bar(tp/16*100)+'<div class="hrow sp s" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent)"><span>Tournée en cours</span><b class="num" style="color:var(--navy-ink)">'+tp+' boxes sur 16</b></div></div>':'')+
      '<div class="hrow" style="--g:8px">'+(now.tour?'<button class="btn em-b pri grow" data-go="emp-tournee">Continuer la tournée'+ICON('arrow')+'</button>':isL?'<button class="btn em-b pri grow" data-les="'+now.id+'">'+ICON('check')+'Faire l’appel</button>'+(now.priv?'<button class="btn em-b em-nb" data-go="emp-cheval" data-id="h01">'+ICON('horse')+'Ulysse</button>':''):now.go?'<button class="btn em-b pri grow" data-go="'+now.go+'">Ouvrir les soins'+ICON('arrow')+'</button>':'<button class="btn em-b pri grow" data-fin="'+now.id+'">'+ICON('check')+'C’est fait</button>')+'</div></div>'}
@@ -1026,4 +1026,17 @@ P.brain.push({role:'employe',re:/maintenant|quoi faire|que faire|je fais|t[aâ]c
    actions:mon()?[{label:'Ouvrir ma journée',run:function(){P.go('emp-jour');return 'Journée ouverte'}}]:[{label:'Continuer la tournée',run:function(){P.go('emp-tournee');return 'Tournée ouverte'}},{label:'Fiche de Xanthos',run:function(){P.go('emp-cheval',{id:'h23'});return 'Fiche ouverte'}}]}}});
 P.brain.push({role:'employe',re:/soin|vermifuge|traitement|pansement/i,reply:function(){var L=D.empCare.filter(function(c){return !c.done&&!E.care[c.id]});return {text:L.length?'Il reste <b>'+L.length+' soins</b> à donner aujourd’hui :':'Tous les soins du jour sont donnés et inscrits au registre sanitaire.',card:L.map(function(c){return '<div class="hrow sp"><span class="s"><b>'+D.horse(c.horse).name.split(' ')[0]+'</b> · '+c.prod+'</span><span class="xs '+(c.late?'badc':'mut')+'">'+(c.late?'En retard':hm(c.t))+'</span></div>'}).join('')||null,actions:[{label:'Ouvrir les soins',run:function(){P.go('emp-soins');return 'Soins ouverts'}}]}}});
 P.tourSteps.push({route:'emp-tournee',title:'La tournée des boxes, un geste par cheval',text:'Le soigneur fait défiler une carte par box : ration, couverture, consignes. Un glissement à droite si tout va bien, à gauche pour signaler avec photo. Sans réseau, tout part chez la gérante dès que la connexion revient.'});
+/* Téléphone, avec des gants : toutes les cibles de la vue employé font au moins 40 px de haut. */
+P.css(`
+@container main (max-width:520px){
+.app[data-role="employe"] .view .btn:not(.lg){min-height:44px}
+.app[data-role="employe"] .view .btn.sm{min-height:40px;padding-inline:14px;font-size:13.5px}
+.app[data-role="employe"] .view .btn.sm.icon{min-width:40px;padding-inline:0}
+.app[data-role="employe"] .view .seg button{height:40px;padding:0 14px;font-size:13.5px}
+.app[data-role="employe"] .view .tag{min-height:42px}
+.app[data-role="employe"] .view .em-ck{width:44px;height:44px}
+.app[data-role="employe"] .view .btn.sm.em-tlist{min-height:34px}
+.app[data-role="employe"] .view .em-gt{padding-block:10px}
+}
+`);
 })();

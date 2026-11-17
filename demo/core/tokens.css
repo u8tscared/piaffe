@@ -8,7 +8,7 @@
   --line:#e3e6ef; --line-2:#d3d8e6;
   --ink:#0a1636; --ink-2:#2c3757; --mut:#69728f; --mut-2:#9aa1b8;
   --acc:#3d63f2; --acc-2:#2f50d6; --acc-pale:#e8edff; --acc-ink:#ffffff; --acc-line:#c4d0ff;
-  --navy:#0a1636; --navy-ink:#ffffff; --strass:#a9bcff;
+  --navy:#0a1636; --navy-ink:#ffffff; --strass:#a9bcff; --hero:#0a1636; --hero-ink:#ffffff;
   --ok:#0f9d6b; --ok-pale:#e2f6ee; --warn:#c77c02; --warn-pale:#fdf1db; --bad:#d93a42; --bad-pale:#fde7e8; --info:#3d63f2; --info-pale:#e8edff;
   --c1:#3d63f2; --c2:#0a1636; --c3:#18b4c9; --c4:#f2a33d; --c5:#9a6bff; --c6:#ef5d8c; --c7:#13a36e;
   --shadow-1:0 1px 2px rgba(10,22,54,.06),0 1px 1px rgba(10,22,54,.04);
@@ -31,7 +31,7 @@
   --acc:#6f8cff; --acc-2:#8aa1ff; --acc-pale:#18234d; --acc-ink:#ffffff; --acc-line:#2c3d84;
   --navy:#eef1fb; --navy-ink:#0a1636; --strass:#c9d5ff;
   --ok:#3ccf95; --ok-pale:#0f2e27; --warn:#f0b549; --warn-pale:#33270f; --bad:#ff6b72; --bad-pale:#3a1720; --info:#6f8cff; --info-pale:#18234d;
-  --c2:#c9d5ff;
+  --c2:#5f72c4; --hero:#18275a; --hero-ink:#ffffff;
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 10px 30px -10px rgba(0,0,0,.6); --shadow-3:0 30px 80px -20px rgba(0,0,0,.75);
   color-scheme:dark}}
 :root[data-theme="dark"]{
@@ -41,7 +41,7 @@
   --acc:#6f8cff; --acc-2:#8aa1ff; --acc-pale:#18234d; --acc-ink:#ffffff; --acc-line:#2c3d84;
   --navy:#eef1fb; --navy-ink:#0a1636; --strass:#c9d5ff;
   --ok:#3ccf95; --ok-pale:#0f2e27; --warn:#f0b549; --warn-pale:#33270f; --bad:#ff6b72; --bad-pale:#3a1720; --info:#6f8cff; --info-pale:#18234d;
-  --c2:#c9d5ff;
+  --c2:#5f72c4; --hero:#18275a; --hero-ink:#ffffff;
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 10px 30px -10px rgba(0,0,0,.6); --shadow-3:0 30px 80px -20px rgba(0,0,0,.75);
   color-scheme:dark}
 
@@ -127,7 +127,7 @@ svg.i.lg{width:22px;height:22px}
 .card.pad{padding:18px}
 .card.flat{box-shadow:inset 0 0 0 1px var(--line)}
 .card.soft{background:var(--surface-2);box-shadow:none}
-.card.navy{background:var(--navy);color:var(--navy-ink);box-shadow:var(--shadow-2)}
+.card.navy{--navy:var(--hero);--navy-ink:var(--hero-ink);--strass:#c9d5ff;background:var(--navy);color:var(--navy-ink);box-shadow:var(--shadow-2)}
 .card.navy .mut{color:color-mix(in srgb,var(--navy-ink) 62%,transparent)}
 .card.hover{transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2);cursor:pointer}
 .card.hover:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
@@ -251,3 +251,13 @@ svg.chart rect.cbar{transform-box:fill-box;transform-origin:bottom;animation:gro
 @keyframes grow{from{transform:scaleY(0)}}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut)}
 .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;background:var(--c)}
+
+/* téléphone : cibles tactiles de 40 px minimum */
+.app.mobile .btn.sm{height:38px;padding:0 12px;font-size:13px}
+.app.mobile .btn.icon.sm{width:38px}
+.app.mobile .seg button{height:36px}
+.app.mobile .tabs button,.app.mobile .tabs a{min-height:40px}
+.app.mobile .chk{width:24px;height:24px}
+.app.mobile .chk{position:relative}.app.mobile .chk::after{content:"";position:absolute;inset:-10px}
+.app.mobile .tabs button,.app.mobile .tag{min-height:38px}
+.app.mobile .sheet .sf{flex-wrap:wrap}.app.mobile .sheet .sf .btn{min-width:0}.app.mobile .sheet .sf .btn.pri{flex:1 1 auto}

@@ -65,6 +65,13 @@ D.reviews=D.reviews||[['s02','2025-12-04','2026-12-03','planifié'],['s03','2025
    Styles
    ===================================================================== */
 P.css(`
+/* téléphone : cibles tactiles de 44 px dans les écrans de ce lot */
+.app.mobile .ar-pg .btn{position:relative}.app.mobile .ar-pg .btn::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+.app.mobile .ar-pg .btn.sm{height:36px;padding:0 12px;font-size:13px}.app.mobile .ar-pg .btn.sm.icon{width:36px;padding:0}
+.app.mobile .ar-pg .seg button{height:38px;padding:0 13px}.app.mobile .ar-pg .tabs button{padding-top:12px;padding-bottom:12px}
+.app.mobile .ar-pg .tog::before{content:"";position:absolute;inset:-11px -4px}.app.mobile .ar-pg .chk{position:relative}.app.mobile .ar-pg .chk::before{content:"";position:absolute;inset:-12px}
+
+@container main (max-width:520px){svg.ar-ch text{font-size:19px}}
 /* ---- partagé par les trois écrans ---- */
 .ar-k4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .ar-c{opacity:.55;font-size:.86em}
@@ -478,7 +485,7 @@ function faRelances(){var lt=late(),by=[0,0,0,0],wait=0;lt.forEach(function(i){v
     REL.map(function(r,k){return '<button class="fa-step" data-a="step" data-k="'+k+'"><span class="hrow sp"><span class="j">J+'+r.j+'</span>'+(by[k]?'<span class="chip '+(k>1?'bad':'warn')+'">'+by[k]+' en cours</span>':'<span class="chip line">aucune</span>')+'</span><span class="t">'+r.t+'</span><p>'+r.d+'</p><span class="hrow xs mut" style="--g:6px;margin-top:auto">'+ICON(r.i,'sm')+r.c+'</span></button>'}).join('')+'</div></div></div>'+
    '<div class="ar-cols"><div class="card"><div class="ch"><div><h3>Factures en retard</h3><div class="xs mut">'+lt.length+' factures, '+F.eur(sum(lt,function(i){return i.amount}))+'</div></div>'+(todo.length?'<button class="btn sm pri" data-a="relall">'+ICON('send','sm')+'Envoyer les '+todo.length+' relances<span class="hide-s">&nbsp;du jour</span></button>':'<span class="chip ok dot">Relances du jour envoyées</span>')+'</div><div class="list" style="padding:6px 0">'+
     lt.slice().sort(function(a,b){return lateDays(b)-lateDays(a)}).map(function(i){var s=stage(i),m=D.member(i.member);return '<div class="li click" data-a="inv" data-id="'+i.id+'">'+U.av(m)+'<div class="grow"><div class="t">'+m.first+' '+m.last+' <span class="mut" style="font-weight:500">· '+F.eur(i.amount)+'</span></div><div class="s ellip">'+(s<0?'Relance 1 programmée demain à 9 h':lateDays(i)+' j de retard · '+REL[s].t)+'</div></div><div class="r">'+(SF.rel[i.id]?U.chip('relancée aujourd’hui','ok',true):s<0?U.chip('J+'+lateDays(i),'',false):'<button class="btn sm" data-a="rel1" data-id="'+i.id+'">'+(s===2?'Appeler':'Relancer')+'</button>')+'</div></div>'}).join('')+'</div></div>'+
-   '<div class="stack" style="--g:14px"><div class="card pad stack" style="--g:14px"><h3 style="font-size:15px">Ce que les relances rapportent</h3><div class="ar-g2">'+head('payées après le premier rappel','71 %')+head('délai moyen de paiement','6,2 jours')+'</div>'+C.bars([2,5,9,6,3,1],['J+3','J+6','J+10','J+15','J+20','J+30'],{h:120,hi:2})+'<div class="xs mut">Factures réglées selon le nombre de jours après l’échéance, sur les trois derniers mois.</div></div>'+
+   '<div class="stack" style="--g:14px"><div class="card pad stack" style="--g:14px"><h3 style="font-size:15px">Ce que les relances rapportent</h3><div class="ar-g2">'+head('payées après le premier rappel','71 %')+head('délai moyen de paiement','6,2 jours')+'</div>'+C.bars([2,5,9,6,3,1],['J+3','J+6','J+10','J+15','J+20','J+30'],{h:120,hi:2}).replace('class="chart"','class="chart ar-ch"')+'<div class="xs mut">Factures réglées selon le nombre de jours après l’échéance, sur les trois derniers mois.</div></div>'+
    '<div class="card"><div class="list" style="padding:6px 0"><div class="li"><div class="grow"><div class="t">Épargner les plans d’apurement</div><div class="s">1 famille suit un échéancier, elle n’est pas relancée</div></div>'+U.tog(true)+'</div><div class="li"><div class="grow"><div class="t">Prévenir le propriétaire avant la mise en demeure</div><div class="s">Un appel de la gérante trois jours avant</div></div>'+U.tog(true)+'</div></div></div></div></div>'}
 function faCartes(){return '<div class="ar-g2"><div class="card"><div class="ch"><div><h3>Échéanciers</h3><div class="xs mut">Paiement en 3, 4 ou 10 fois sans frais</div></div><button class="btn sm" data-a="sched">'+ICON('plus','sm')+'Créer</button></div><div class="list" style="padding:6px 0">'+
     D.schedules.map(function(s){var m=D.member(s.member),pips='';for(var i=0;i<s.n;i++)pips+='<i class="'+(i<s.paid?'on':i===s.paid&&s.state==='rejet'?'bad':'')+'"></i>';
@@ -502,7 +509,7 @@ function faTva(){var key=P.prefs.get('fa:cle',30),R=[['Enseignement et pratique 
 
 P.mod({id:'facturation',role:'gerant',group:'Argent',title:'Facturation',icon:'invoice',n:10,phoneTitle:'Facturation',
  badge:function(){var n=late().length;return n?{v:n,hot:true}:null},
- render:function(el,ctx){syncB();
+ render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SF.tab=ctx.params.tab;ctx.params.tab=null}
   var S=batchStats(),lt=late(),ltS=sum(lt,function(i){return i.amount}),due=allInv().filter(function(i){return i.status==='envoyée'||i.status==='à venir'}),dueS=sum(due,function(i){return i.amount}),cash=31846+SF.cash;
   var hero=SF.batch?'<div class="card fa-hero ok"><div><div class="hrow"><span class="strass"></span><span class="eyebrow">Facturation de décembre</span></div><h2>Décembre est facturé : '+S.n+' factures envoyées pour '+F.eur(S.ttc)+'.</h2><p class="s mut">Envoyées aujourd’hui à '+SF.batch.at+'. '+S.sepa.length+' prélèvements partiront le 5 décembre.</p><div class="hrow wrap" style="margin-top:14px"><button class="btn" data-a="batch">Voir le récapitulatif</button><button class="btn ghost" data-a="tab" data-k="lot">Réglages du lot'+ICON('arrow','sm')+'</button></div></div>':
@@ -715,7 +722,7 @@ function cpTva(){var L=[['TVA collectée à 5,5 %','base '+F.eur(31240),1718],[
     L.map(function(l){return '<div class="cp-tv"><span><b>'+l[0]+'</b><span class="xs mut" style="display:block">'+l[1]+'</span></span><b class="num">'+(l[2]<0?'−':'')+F.eur(Math.abs(l[2]))+'</b></div>'}).join('')+
     '<div class="cp-tv tot"><span>TVA à payer</span><span class="disp num" style="font-size:22px">'+F.eur(2890)+'</span></div>'+
     '<div class="hrow wrap" style="margin-top:14px"><button class="btn pri" data-a="tvasend"'+(SC.tvaSent?' disabled':'')+'>'+ICON('send','sm')+'Transmettre à l’expert-comptable</button><button class="btn" data-a="tvadet">Voir le détail des écritures</button></div></div></div>'+
-   '<div class="stack" style="--g:14px"><div class="card"><div class="ch"><div><h3>TVA nette, six derniers mois</h3><div class="xs mut">Novembre est une estimation au 17</div></div></div><div class="cb">'+C.bars([2410,3120,3350,1280,3040,2890,2610],['Mai','Juin','Juil','Août','Sept','Oct','Nov'],{h:150,hi:5,fmt:function(v){return (v/1000).toFixed(1).replace('.',',')+' k'}})+'</div></div>'+
+   '<div class="stack" style="--g:14px"><div class="card"><div class="ch"><div><h3>TVA nette, six derniers mois</h3><div class="xs mut">Novembre est une estimation au 17</div></div></div><div class="cb">'+C.bars([2410,3120,3350,1280,3040,2890,2610],['Mai','Juin','Juil','Août','Sept','Oct','Nov'],{h:150,hi:5,fmt:function(v){return (v/1000).toFixed(1).replace('.',',')+' k'}}).replace('class="chart"','class="chart ar-ch"')+'</div></div>'+
    '<div class="note ar-nb" style="align-items:center">'+ICON('bulb','sm')+'<span class="grow">Si de l’enseignement a été facturé à 20 % depuis 2024, la régularisation reste possible jusqu’au 31 décembre 2026. Piaffe peut lister les factures concernées pour votre expert-comptable.</span><button class="btn sm" data-a="regul">Lister</button></div>'+
    '<div class="card"><div class="list" style="padding:6px 0"><div class="li">'+sq('percent','acc')+'<div class="grow"><div class="t">Taux par prestation</div><div class="s">5,5 % pour l’enseignement, pension ventilée</div></div><div class="r"><button class="btn sm ghost" data-go="facturation" data-p-tab="tva">Régler'+ICON('arrow','sm')+'</button></div></div></div></div></div></div>'}
 function cpEcr(){var gl=SC.jr==='GL',R=gl?[]:journal(SC.jr),td=sum(R,function(r){return r.db}),tc=sum(R,function(r){return r.cr});
@@ -759,7 +766,7 @@ function openAcc(c){var all=['VT','AC','BQ','CA'].reduce(function(a,j){return a.
 
 P.mod({id:'compta',role:'gerant',group:'Argent',title:'Comptabilité',icon:'accounting',n:20,phoneTitle:'Comptabilité',
  badge:function(){var n=unmatched().length;return n?{v:n}:null},
- render:function(el,ctx){syncB();
+ render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SC.tab=ctx.params.tab;ctx.params.tab=null}
   var CT=[['banque','Banque'],['treso','Trésorerie'],['resultat','Résultat et bilan'],['tva','TVA'],['ecritures','Écritures'],['justifs','Justificatifs'],['exports','Exports et expert-comptable']];
   function kpis(anim){var n=unmatched().length,tot=BANK.length;return K({label:'Solde du compte courant',count:anim?48320:null,fmt:'eur',value:F.eur(48320),delta:'+4 210 €',dsub:' ce matin',spark:tseries('prevu').slice(0,31).map(function(s){return s.v}),icon:'bank'})+
@@ -1000,7 +1007,7 @@ function eqDroits(){var r=ROLES.find(function(x){return x[0]===SE.role}),lv=SE.p
 
 P.mod({id:'equipe',role:'gerant',group:'Équipe',title:'Équipe',icon:'team',n:10,phoneTitle:'Équipe',
  badge:function(){var n=D.leaves.filter(function(l){return l.state==='attente'&&!SE.leave[l.id]}).length;return n?{v:n}:null},
- render:function(el,ctx){syncB();
+ render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SE.tab=ctx.params.tab;ctx.params.tab=null}
   var ET=[['salaries','Salariés'],['planning','Planning'],['heures','Heures et pointage'],['conges','Congés et absences'],['paie','Paie'],['docs','Documents et entretiens'],['droits','Droits d’accès']];
   var pres=Object.keys(PUNCH).length,pend=D.leaves.filter(function(l){return l.state==='attente'&&!SE.leave[l.id]}).length,tot=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return planned(s.id)}),ctr=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return s.hours}),ot=sum(D.staff,function(s){return D.hr[s.id].ot}),due=D.staff.filter(function(s){return worst(s.id)}).length+(SE.dip.cdd?0:1);

@@ -1,6 +1,6 @@
 /* =====================================================================
-   PIAFFE · Lot C · Vue gérant : plan 3D de l'écurie, caméras et capteurs,
-   entretien et stocks. Écrans : ecurie3d, cameras, entretien.
+   PIAFFE · Lot C · Vue gérant : plan 3D de l'écurie, caméras et capteurs,
+   entretien et stocks. Écrans : ecurie3d, cameras, entretien.
    ===================================================================== */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc;
@@ -19,8 +19,7 @@ var IC={
 };
 
 /* ---------- Cohérence des données ---------- */
-/* Tous les textes de la démo (caméra, tâches, notifications) appellent Xanthos le cheval du box B23. */
-(function(){var a=D.horses[22],b=D.horses[23];if(a&&b&&a.name==='Whisky'&&b.name==='Xanthos'){a.name='Xanthos';b.name='Whisky'}})();
+/* Le cheval du box B23 (h23) s’appelle Xanthos dans les données de base : aucun échange de noms ici. */
 
 /* ---------- Données propres au lot ---------- */
 D.boxGuests=D.boxGuests||[
@@ -33,7 +32,7 @@ D.boxRequests=D.boxRequests||[
  {id:'r2',name:'Indigo de Brière',breed:'Selle Français, jument de 7 ans',owner:'Camille Tessier',kind:'Pension complète',from:D.iso(D.day(4)),price:520},
  {id:'r3',name:'Jolie Môme',breed:'Connemara, jument de 12 ans',owner:'Famille Aubert',kind:'Pension pré et box',from:D.iso(D.day(14)),price:390}];
 
-/* Caméras : scène simulée, type de zone (RGPD), partage */
+/* Caméras : scène simulée, type de zone (RGPD), partage */
 var CAMX={
  cam1:{sc:'aisle',zone:'Écurie principale',kind:'Lieu de travail',mask:'Poste de pansage masqué',pos:[-10,0],dir:0,rng:21,fov:.5,hy:4.7},
  cam2:{sc:'box',horse:'h23',lying:true,zone:'Écurie principale',kind:'Box',yaw:1.95,pos:[6,4],dir:2.4,rng:5,fov:1.6,share:['Propriétaire prévenu par SMS']},
@@ -67,7 +66,7 @@ D.alertRules=D.alertRules||[
  {id:'a8',name:'Clôture électrique faible',src:'Électrificateur connecté',icon:'bolt',val:4,unit:'kV',min:2,max:6,step:.5,who:['s07','s06'],ch:['Notification','SMS'],on:true,last:'Déclenchée le 2 novembre (branche tombée)'},
  {id:'a9',name:'Présence sur le parking la nuit',src:'Caméra du portail',icon:'car',val:22,unit:'h, jusqu’à 6 h',min:20,max:24,step:1,who:['s01'],ch:['SMS'],on:false,last:'En attente de l’autorisation préfectorale'}];
 
-/* Capteurs : courbes sur 24 h (une mesure par heure, déterministe) */
+/* Capteurs : courbes sur 24 h (une mesure par heure, déterministe) */
 function rng(seed){return function(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
 function serie(fn,seed,nz,last){var r=rng(seed),a=[];for(var i=0;i<25;i++)a.push(+(fn(i/24)+(r()-.5)*nz).toFixed(2));if(last!=null)a[24]=last;return a}
 var SENSX={
@@ -286,7 +285,7 @@ function scene3d(host,o){
   function mix(a,b,k){return col(a).lerp(col(b),k)}
   function chk(){var c=new T.Color(tok('bg'));dark=(c.r+c.g+c.b)/3<.4}chk();
 
-  /* matières : toutes les couleurs viennent des jetons et suivent le thème */
+  /* matières : toutes les couleurs viennent des jetons et suivent le thème */
   var mats=[];
   function M(fn,p,Cl){var m=new (Cl||T.MeshLambertMaterial)(p||{});m.userData.fn=fn;m.color.copy(fn());mats.push(m);return m}
   var mGround=M(function(){return mix('bg-2','surface',dark?.3:.6)}),
@@ -324,19 +323,19 @@ function scene3d(host,o){
   (function(){var s=new T.Shape(),bw=70,bd=52,r=7;s.moveTo(-bw+r,-bd);s.lineTo(bw-r,-bd);s.quadraticCurveTo(bw,-bd,bw,-bd+r);s.lineTo(bw,bd-r);s.quadraticCurveTo(bw,bd,bw-r,bd);s.lineTo(-bw+r,bd);s.quadraticCurveTo(-bw,bd,-bw,bd-r);s.lineTo(-bw,-bd+r);s.quadraticCurveTo(-bw,-bd,-bw+r,-bd);
     var g=new T.ExtrudeGeometry(s,{depth:2.6,bevelEnabled:false,curveSegments:10});g.rotateX(Math.PI/2);var me=new T.Mesh(g,mGround);me.receiveShadow=true;root.add(me)})();
 
-  /* zones : paddocks, carrières, allées, parking */
+  /* zones : paddocks, carrières, allées, parking */
   var Z={manege:[-22,-44,20,-22],honneur:[26,-44,64,-16],petite:[32,-8,60,8],haut:[-64,-46,-28,-24],poneys:[-64,-18,-42,2],hiver:[-64,6,-42,24],bas:[-64,32,-8,46],soins:[2,32,13,44],parking:[34,32,64,46]};
   ['haut','poneys','hiver','bas','soins'].forEach(function(k){slab(mGrass,Z[k]);fence(Z[k])});
   slab(mSand,Z.manege,.12);slab(mSand,Z.honneur,.12);fence(Z.honneur);slab(mSand,Z.petite,.12);fence(Z.petite);slab(mPath,Z.parking,.06);
   [[-41,-17,25,-12],[21,-46,25,-17],[26,-12,30,50],[-41,9,26,14],[-41,-12,-38,30],[-38,-6,-36,6]].forEach(function(r){slab(mPath,r,.05)});
-  /* écurie principale, petite écurie, boxes de cour : allées et charpentes */
+  /* écurie principale, petite écurie, boxes de cour : allées et charpentes */
   slab(mConc,[-36,-2,12,2],.09);gable(-36,12,0,6.15,2.7,5,4,1.9);
   slab(mConc,[-36,20,-4,24],.09);gable(-36,-4,22,6.15,2.7,4.8,4,1.9);
   (function(){for(var x=2;x<=26.01;x+=4){ln(x,3.1,28.1,x,2.5,21.6);ln(x,0,21.6,x,2.5,21.6)}ln(2,3.1,28.1,26,3.1,28.1);ln(2,2.5,21.6,26,2.5,21.6);quad([2,3.1,28.1],[26,3.1,28.1],[26,2.5,21.6],[2,2.5,21.6]);slab(mConc,[2,21.4,26,24],.07)})();
   /* sellerie et club-house */
   blk(mWall,18,0,-3,12,3.7,6);blk(mAlt,18,3.7,-3,12.7,.26,6.7);blk(mWall,18,0,3,12,3,6);blk(mAlt,18,3,3.3,12.7,.26,7.2);
   blk(mWin,18,1.1,6.03,5.4,1.5,.08,0,true);blk(mWin,24.03,1.4,-3,.08,1.2,3.4,0,true);blk(mWin,21.6,0,6.03,1.2,2.2,.08,0,true);blk(mWin,24.03,1.2,3,.08,1.4,2.6,0,true);
-  /* grand manège : pare-bottes, poteaux, charpente, toit coupé */
+  /* grand manège : pare-bottes, poteaux, charpente, toit coupé */
   (function(){var r=Z.manege,x;blk(mWall,-1,0,r[1],42,1.5,.28);blk(mWall,-1,0,r[3],42,1.5,.28);blk(mWall,r[0],0,-33,.28,1.5,22);blk(mWall,r[2],0,-33,.28,1.5,22);
     for(x=r[0];x<=r[2]+.01;x+=7){blk(mWall,x,0,r[1],.42,5,.42);blk(mWall,x,0,r[3],.42,5,.42)}
     gable(r[0],r[2],-33,11,5,8.2,7,5);var a=Math.atan(3.2/11),len=Math.sqrt(121+3.2*3.2);
@@ -359,7 +358,7 @@ function scene3d(host,o){
   /* tilleuls */
   var trees=[[-30,11.5],[-18,11.5],[-6,11.5],[6,11.5],[18,11.5],[36,49.3],[42,49.3],[48,49.3],[54,49.3],[60,49.3],[-67,-40],[-67,-28],[-67,-12],[-67,2],[-67,16],[-67,30],[-67,44],[57,24],[61,16],[-3,39],[-25,-48.6],[-12,-48.6],[2,-48.6],[16,-48.6],[66,-8],[66,4]];
   (function(){var g=new T.IcosahedronGeometry(1,0),im=new T.InstancedMesh(g,mTree,trees.length),r=rng(77);trees.forEach(function(t,i){var s=.85+r()*.4;blk(mTrunk,t[0],0,t[1],.36,2.4,.36);dm.position.set(t[0],2.2+2.3*s,t[1]);dm.scale.set(2.2*s,2.7*s,2.2*s);dm.rotation.set(0,r()*6,0);dm.updateMatrix();im.setMatrixAt(i,dm.matrix)});im.castShadow=true;im.receiveShadow=true;root.add(im)})();
-  /* caméras : boîtier, champ de vision, pastille cliquable */
+  /* caméras : boîtier, champ de vision, pastille cliquable */
   var cones=new T.Group();cones.visible=false;root.add(cones);var labs=[];
   function lab(cls,html,x,y,z,tag){var e=document.createElement(tag||'span');e.className=cls;e.innerHTML=html;ov.appendChild(e);var L={e:e,v:new T.Vector3(x,y,z)};labs.push(L);return L}
   D.cameras.forEach(function(c0){var c=camOf(c0.id),x=c.pos[0],z=c.pos[1],full=c.sc==='box';
@@ -373,7 +372,7 @@ function scene3d(host,o){
   var grid=(function(){var p=[],i;for(i=-68;i<=68;i+=2)p.push(i,.16,-50,i,.16,50);for(i=-50;i<=50;i+=2)p.push(-68,.16,i,68,.16,i);var g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));var l=new T.LineSegments(g,mGrid);l.visible=false;root.add(l);return l})();
   [['Grand manège',-1,9,-33],['Carrière d’honneur',45,2.5,-41],['Petite carrière',46,2.5,-5],['Rond de longe',46,6.3,20,2],['Écurie principale',-12,6,0,1],['Petite écurie',-20,5.8,22,1],['Boxes de cour',14,4,26,3],['Sellerie',17,4.4,3,2],['Prairie du haut',-46,2.2,-42],['Paddock des poneys',-53,2.2,-14],['Paddock d’hiver',-53,2.2,10],['Prairie du bas',-36,2.2,42],['Paddock de soins',7.5,2.2,41,2],['Hangar à foin',20,5.2,40,2],['Parking',52,1.5,44.5]].forEach(function(z){lab('e3-zl'+(z[4]&1?' bd':'')+(z[4]&2?' s2':''),z[0],z[1],z[2],z[3])});
 
-  /* boxes : coque partagée, sol coloré selon l'état */
+  /* boxes : coque partagée, sol coloré selon l'état */
   function merge(parts){var pos=[],nor=[],idx=[],base=0;parts.forEach(function(p){var g=new T.BoxGeometry(p[0],p[1],p[2]);g.translate(p[3],p[4],p[5]);var a=g.attributes.position.array,n=g.attributes.normal.array,ix=g.index.array,i;for(i=0;i<a.length;i++){pos.push(a[i]);nor.push(n[i])}for(i=0;i<ix.length;i++)idx.push(ix[i]+base);base+=a.length/3;g.dispose()});
     var G=new T.BufferGeometry();G.setAttribute('position',new T.Float32BufferAttribute(pos,3));G.setAttribute('normal',new T.Float32BufferAttribute(nor,3));G.setIndex(idx);return G}
   var shellGeo=merge([[4,1.9,.16,0,.95,-1.92],[.16,1.35,3.84,-1.92,.675,0],[.16,1.35,3.84,1.92,.675,0],[1.3,1.15,.16,-1.35,.575,1.92],[1.3,1.15,.16,1.35,.575,1.92],[1.42,1,.09,0,.5,1.85],[.2,1.9,.2,-.72,.95,1.92],[.2,1.9,.2,.72,.95,1.92]]);
@@ -390,7 +389,7 @@ function scene3d(host,o){
       if(dim)c.lerp(neutral(),.86);ob.to.copy(c);ob.em.copy(c).multiplyScalar(tk==='line-2'||dim?0:(dark?.32:.06))});anim=1;dirty=true}
   boxes().forEach(function(b){addObj(b)});
 
-  /* chevaux : un seul maillage instancié, quatre chevaux au travail animés */
+  /* chevaux : un seul maillage instancié, quatre chevaux au travail animés */
   var hMesh=null,wMesh=null,wGeo=null,wV=null,HS=1.75,workers=[],PADK=['bas','poneys','hiver','haut','soins','haut'];
   if(window.HORSE){(function(){var V=new Float32Array(HORSE.n*3);HORSE.lerp(.15,V);var g0=new T.BufferGeometry();g0.setAttribute('position',new T.BufferAttribute(V,3));g0.setIndex(Array.prototype.slice.call(HORSE.idx));
     var hg=g0.toNonIndexed();hg.computeVertexNormals();hMesh=new T.InstancedMesh(hg,mHorse,72);hMesh.castShadow=true;hMesh.frustumCulled=false;root.add(hMesh);
@@ -527,7 +526,8 @@ P.css(`
 .e3-bl{transform:translate(-50%,-50%);font:600 10px var(--f-mono);color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);padding:1px 4px;border-radius:4px;opacity:0;transition:opacity var(--t-2);white-space:nowrap}
 .e3-ov.near .e3-bl{opacity:1}
 .e3-zl.bd,.e3-zl.s2{transition:opacity var(--t-2)}.e3-ov.near .e3-zl.bd,.e3-ov.far .e3-zl.s2{opacity:0}
-.e3-ov.far .e3-camb{scale:.82}.e3-ov.far:not(.cams) .e3-camb:not(.al){opacity:0;pointer-events:none}.e3-camb{transition:opacity var(--t-2),scale var(--t-1)}
+/* les pastilles de caméra appartiennent au calque Caméras : ailleurs, seule la caméra en alerte reste visible, pour ne pas masquer les noms des bâtiments */
+.e3-ov.far .e3-camb{scale:.82}.e3-ov:not(.cams) .e3-camb:not(.al){opacity:0;pointer-events:none}.e3-ov.cams .e3-zl.bd{margin-top:-44px}.e3-zl{transition:margin var(--t-3) var(--e-out),opacity var(--t-2)}.e3-camb{transition:opacity var(--t-2),scale var(--t-1)}
 .e3-camb{z-index:2;margin:-13px 0 0 -13px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;pointer-events:auto;box-shadow:0 0 0 3px color-mix(in srgb,var(--surface) 82%,transparent),var(--shadow-2);transition:scale var(--t-2) var(--e-spring),background var(--t-2)}
 .e3-camb svg.i{width:14px;height:14px}
 .e3-camb:hover{scale:1.14}
@@ -625,7 +625,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
   var all=boxes();
   function counts(){var c={};all.forEach(function(b){var k=catOf(b,S3.mode);c[k]=(c[k]||0)+1});return c}
   function subTxt(){var o=all.filter(occ).length,bad=all.filter(function(b){var x=occ(b);return x&&x.status==='bad'});
-    return o+' boxes occupés sur '+all.length+'. '+(bad.length?(bad.length>1?bad.length+' chevaux demandent':'Un cheval demande')+' votre attention : '+bad.map(function(b){return occ(b).name+' ('+b.name+')'}).join(' et ')+'.':'Aucune alerte santé ce matin.')}
+    return o+' boxes occupés sur '+all.length+'. '+(bad.length?(bad.length>1?bad.length+' chevaux demandent':'Un cheval demande')+' votre attention : '+bad.map(function(b){return occ(b).name+' ('+b.name+')'}).join(' et ')+'.':'Aucune alerte santé ce matin.')}
   var top='<div class="e3-top"><div class="e3-glass">'+U.seg(Object.keys(MODES).map(function(k){return [k,MODES[k][0]]}),S3.mode,'data-mode')+'</div>'+
     '<div class="e3-glass">'+U.seg([['persp',IC.persp('sm')+'<span>Perspective</span>'],['top',IC.top('sm')+'<span>Dessus</span>']],'persp','data-view')+'<span class="sep"></span>'+
     '<button class="btn icon sm" data-zoom="1.3" title="Dézoomer">'+ICON('minus','sm')+'</button><button class="btn icon sm" data-zoom=".72" title="Zoomer">'+ICON('plus','sm')+'</button><button class="btn icon sm" data-center title="Recentrer la vue">'+IC.target('sm')+'</button></div></div>';
@@ -637,7 +637,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
     '<div class="e3-wrap">'+stage+'<aside class="card e3-list"><div class="e3-lh"><div class="search">'+ICON('search','sm')+'<input class="in" data-q placeholder="Box, cheval, propriétaire" autocomplete="off"></div></div><div class="e3-lb"></div></aside></div>';
   var $=function(s){return el.querySelector(s)},stageEl=$('.e3-stage'),gl=$('.e3-gl'),cardEl=$('.e3-card'),tipEl=$('.e3-tip'),legEl=$('.e3-leg'),pipEl=$('.e3-pip'),banEl=$('.e3-banner'),listEl=$('.e3-list .e3-lb'),view=el.closest('.view');
 
-  /* hauteur : la maquette occupe tout l'écran disponible */
+  /* hauteur : la maquette occupe tout l'écran disponible */
   function size(){if(!view||!el.isConnected)return;var vh=view.clientHeight;
     if(mobile){stageEl.style.margin='-6px -16px -28px';stageEl.style.height=Math.max(360,vh)+'px'}
     else{var h=Math.max(440,vh-$('.e3-wrap').offsetTop-24);stageEl.style.height=h+'px';$('.e3-list').style.height=h+'px';el.style.marginBottom='-36px'}}
@@ -649,7 +649,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
       if(!rows.length)return;n+=rows.length;h+='<div class="e3-gh"><span>'+(BLD[bl]||'Nouveaux boxes')+'</span><span class="num">'+rows.length+'</span></div>'+rows.map(rowHtml).join('')});
     return h||U.empty('search','Aucun box ne correspond','Essayez un nom de cheval ou un numéro de box.')}
   function drawList(){listEl.innerHTML=listHtml();var sl=P.$('.sheet .e3-lb',P.app());if(sl)sl.innerHTML=listHtml()}
-  function drawLegend(){var c=counts();legEl.innerHTML=MODES[S3.mode][1].map(function(d){return '<button class="e3-lg" data-iso="'+d[0]+'" aria-pressed="'+(S3.iso===d[0])+'" title="Afficher seulement : '+d[1]+'"><i style="--c:var(--'+d[2]+')"></i>'+d[1]+'<b>'+(c[d[0]]||0)+'</b></button>'}).join('')+(S3.mode==='cam'?'<span class="e3-lg" style="pointer-events:none">'+ICON('camera','sm')+D.cameras.length+' caméras en ligne</span>':'')}
+  function drawLegend(){var c=counts();legEl.innerHTML=MODES[S3.mode][1].map(function(d){return '<button class="e3-lg" data-iso="'+d[0]+'" aria-pressed="'+(S3.iso===d[0])+'" title="Afficher seulement : '+d[1]+'"><i style="--c:var(--'+d[2]+')"></i>'+d[1]+'<b>'+(c[d[0]]||0)+'</b></button>'}).join('')+(S3.mode==='cam'?'<span class="e3-lg" style="pointer-events:none">'+ICON('camera','sm')+D.cameras.length+' caméras en ligne</span>':'')}
   function refresh(){if(api)api.refresh();drawList();drawLegend();var s=$('[data-sub]');if(s)s.textContent=subTxt()}
 
   /* carte du box sélectionné */
@@ -673,7 +673,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
     updBuild()}
   function updBuild(){var b=S3.sel&&boxById(S3.sel);P.$$('.e3-build [data-b]',el).forEach(function(x){var k=x.getAttribute('data-b');if(k==='rot'||k==='ren'||k==='ass'||k==='del')x.disabled=!b})}
 
-  /* déplacer un cheval : on choisit le box d'arrivée dans la maquette */
+  /* déplacer un cheval : on choisit le box d'arrivée dans la maquette */
   function startMove(id){var o=occ(boxById(id));if(!o)return;pick=id;api.setPick(id);cardEl.classList.remove('on');banEl.innerHTML='<span>Choisissez le box d’arrivée de '+E(o.name)+'</span><button class="btn sm" data-cancel>Annuler</button>';banEl.classList.add('on');banEl.querySelector('[data-cancel]').onclick=endMove}
   function endMove(){pick=null;if(api)api.setPick(null);banEl.classList.remove('on')}
   function swap(a,b){var k=['horse','guest','where'];k.forEach(function(p){var t=a[p];a[p]=b[p];b[p]=t});[a,b].forEach(function(x){if(!x.horse&&!x.guest)delete x.where})}
@@ -704,7 +704,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
   /* mode constructeur */
   function setBuilder(on){S3.builder=on;stageEl.classList.toggle('e3-building',on);if(api)api.setBuilder(on);endMove();cardEl.classList.remove('on');if(!on&&S3.sel)select(S3.sel,true);updBuild();
     P.$$('[data-build]',el).forEach(function(b){b.setAttribute('aria-pressed',on)});
-    if(on)P.toast('Mode constructeur : glissez un box pour le déplacer sur la grille',{icon:'wrench',ms:3600})}
+    if(on)P.toast('Mode constructeur : glissez un box pour le déplacer sur la grille',{icon:'wrench',ms:3600})}
   function nextName(){var n=all.length+1;while(all.some(function(b){return b.name==='B'+pad(n)}))n++;return 'B'+pad(n)}
   function freeSpot(){for(var z=26;z>=18;z-=4)for(var x=28;x<=36;x+=4){var t={x:x,z:z};if(!all.some(function(q){return Math.abs(q.x-t.x)<3.95&&Math.abs(q.z-t.z)<3.95}))return t}return {x:0,z:-9}}
   function build(k){var b=S3.sel&&boxById(S3.sel);
@@ -716,11 +716,11 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
     else if(k==='ass'&&b){if(occ(b)){P.toast(E(b.name)+' est déjà occupé par '+E(occ(b).name),{icon:'info'})}else assign(b.id)}
     else if(k==='del'&&b){if(occ(b)){P.toast('Déplacez d’abord '+E(occ(b).name)+' avant de supprimer ce box',{icon:'alert'});return}var i=all.indexOf(b);all.splice(i,1);api.removeBox(b.id);select(null);refresh();
       P.toast('Box '+E(b.name)+' supprimé du plan',{icon:'trash',undo:function(){all.splice(i,0,b);api.addBox(b);refresh()}})}
-    else if(k==='done'){setBuilder(false);P.toast('Plan enregistré : '+all.length+' boxes, tournées et étiquettes mises à jour')}}
+    else if(k==='done'){setBuilder(false);P.toast('Plan enregistré : '+all.length+' boxes, tournées et étiquettes mises à jour')}}
 
   /* caméra en incrustation, ouverte depuis sa position dans la maquette */
   function openCam(id,from){var c=camOf(id),r=stageEl.getBoundingClientRect();pipEl.classList.remove('on');
-    pipEl.innerHTML='<div class="ph2"><div class="grow" style="min-width:0"><b class="s ellip" style="display:block">'+E(c.name)+'</b><span class="xs mut">'+(c.alert?E(c.alert):'Rien à signaler')+'</span></div><button class="btn sm" data-go="cameras" data-p-cam="'+c.id+'">'+ICON('expand','sm')+'Agrandir</button><button class="btn ghost icon sm" data-px title="Fermer">'+ICON('x','sm')+'</button></div><div class="vid">'+feedHtml(c.id)+'<span class="live">LIVE</span></div>';
+    pipEl.innerHTML='<div class="ph2"><div class="grow" style="min-width:0"><b class="s ellip" style="display:block">'+E(c.name)+'</b><span class="xs mut">'+(c.alert?E(c.alert):'Rien à signaler')+'</span></div><button class="btn sm" data-go="cameras" data-p-cam="'+c.id+'">'+ICON('expand','sm')+'Agrandir</button><button class="btn ghost icon sm" data-px title="Fermer">'+ICON('x','sm')+'</button></div><div class="vid">'+feedHtml(c.id)+'<span class="live">DIRECT</span></div>';
     void pipEl.offsetWidth;pipEl.classList.add('on');var pr=pipEl.getBoundingClientRect();
     if(from){var fr=from.getBoundingClientRect();pipEl.style.setProperty('--ox',(fr.left+14-(pr.left+pr.width/2)).toFixed(0)+'px');pipEl.style.setProperty('--oy',(fr.top+14-(pr.top+pr.height/2)).toFixed(0)+'px')}else{pipEl.style.setProperty('--ox','0px');pipEl.style.setProperty('--oy','40px')}
     pipEl.classList.remove('on');void pipEl.offsetWidth;pipEl.classList.add('on');
@@ -762,7 +762,7 @@ P.mod({id:'ecurie3d',role:'gerant',group:'Écurie',title:'Plan 3D',icon:'cube',n
   el.addEventListener('mouseover',function(e){var r=e.target.closest('.e3-list .e3-row');if(r&&api)api.hover(r.getAttribute('data-box'))});
   $('.e3-list').addEventListener('mouseleave',function(){if(api)api.hover(null)});
   $('.e3-list [data-q]').oninput=function(e){S3.q=e.target.value;drawList()};
-  /* ouverture ciblée depuis un autre écran : data-go="ecurie3d" data-p-box="B23" ou data-id="h23" */
+  /* ouverture ciblée depuis un autre écran : data-go="ecurie3d" data-p-box="B23" ou data-id="h23" */
   var want=ctx.params.box||(ctx.params.id&&(all.find(function(b){return b.horse===ctx.params.id})||{}).id);
   if(want&&boxById(want))setTimeout(function(){if(el.isConnected)select(want)},P.RM?0:1500);
  }});
@@ -781,7 +781,7 @@ P.css(`
 .cm-tile .live,.cm-player .live{position:absolute;left:8px;top:8px}
 .cm-tile .cm-al{position:absolute;right:8px;bottom:26px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#fff;background:rgba(10,12,18,.72);padding:3px 8px 3px 6px;border-radius:6px;backdrop-filter:blur(6px)}
 .cm-tile .cm-al svg.i{width:13px;height:13px;color:#ff8088}
-.cm-name{position:absolute;left:0;right:0;top:0;padding:8px 10px 20px 64px;background:linear-gradient(to bottom,rgba(6,8,12,.62),rgba(6,8,12,0));color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.cm-name{position:absolute;left:0;right:0;top:0;padding:10px 10px 20px 82px;background:linear-gradient(to bottom,rgba(6,8,12,.62),rgba(6,8,12,0));color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .cm-ev{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:11px 16px;align-items:start;cursor:pointer;transition:background var(--t-1);width:100%;text-align:left}
 .cm-ev:hover{background:var(--surface-2)}
 .cm-ev+.cm-ev{border-top:1px solid var(--line)}
@@ -836,16 +836,16 @@ P.css(`
 var SC={tab:'direct',f:'all',lay:'grid',focus:'cam2',evf:'all'};
 var ACT={cam2:[52,34,14,'Couché 3 h 10 sur 24 h, contre 1 h 40 d’habitude'],cam3:[68,12,20,'Couché 1 h 52, dans ses habitudes'],cam4:[70,8,22,'Couché 1 h 05, dans ses habitudes']};
 var ACCESS=[['m001','a regardé le box B01 pendant 3 minutes','Hier, 21:14'],['s05','a ouvert le box B23 depuis une alerte SMS','Aujourd’hui, 08:53'],['s01','a exporté un extrait de 1 min 12 (box B23)','Aujourd’hui, 09:02'],['vet','Dr Leclerc a consulté le box B23 avec un lien valable 24 heures','Aujourd’hui, 09:20'],['m001','a regardé le box B01 pendant 6 minutes','Dim. 15 nov., 13:40']];
-var RGPD=[['ok','Panneaux d’information affichés','Aux trois entrées, avec la durée de conservation et le contact.','Télécharger le modèle'],['ok','Équipe informée par écrit','Note signée par les 9 salariés le 3 septembre 2026.','Voir la note'],['ok','Aucun poste de travail filmé en continu','Masques actifs sur l’allée et la sellerie. Les boxes ne sont pas des postes.','Régler les masques'],['ok','Vestiaire, salle de pause et sanitaires non filmés','Aucune caméra dans ces zones.',''],['warn','Parking ouvert au public','Demande d’autorisation préfectorale déposée le 4 novembre. Alertes de nuit désactivées en attendant.','Suivre la demande'],['ok','Registre des traitements à jour','Finalité : sécurité des chevaux et des biens. Dernière revue le 2 novembre.','Ouvrir le registre']];
+var RGPD=[['ok','Panneaux d’information affichés','Aux trois entrées, avec la durée de conservation et le contact.','Télécharger le modèle'],['ok','Équipe informée par écrit','Note signée par les 9 salariés le 3 septembre 2026.','Voir la note'],['ok','Aucun poste de travail filmé en continu','Masques actifs sur l’allée et la sellerie. Les boxes ne sont pas des postes.','Régler les masques'],['ok','Vestiaire, salle de pause et sanitaires non filmés','Aucune caméra dans ces zones.',''],['warn','Parking ouvert au public','Demande d’autorisation préfectorale déposée le 4 novembre. Alertes de nuit désactivées en attendant.','Suivre la demande'],['ok','Registre des traitements à jour','Finalité : sécurité des chevaux et des biens. Dernière revue le 2 novembre.','Ouvrir le registre']];
 
 function stillFeed(cv,camId,o,t){var f={cv:cv,g:cv.getContext('2d'),cam:camOf(camId),o:o||{},bg:null};try{drawFeed(f,t||3)}catch(e){}}
 function evIcon(e){return '<span class="ec-ico '+(e.sev==='ok'?'':e.sev)+'">'+ICON(EVK[e.kind][1],'sm')+'</span>'}
 function ruleTxt(r){return (r.id==='a6'?'En dessous de ':r.id==='a7'||r.id==='a8'?'Sous ':r.id==='a9'?'À partir de ':'Dès ')+String(r.val).replace('.',',')+' '+r.unit}
 
-/* fiche d'une caméra : direct, relecture, événements, partage */
+/* fiche d'une caméra : direct, relecture, événements, partage */
 function camSheet(id,ev){var c=camOf(id),h=c.horse&&D.horse(c.horse),evs=D.camEvents.filter(function(e){return e.cam===id}),feed=null,act=ACT[id],own=h&&h.owner&&D.member(h.owner);
   var sh=P.sheet({title:c.name,icon:'camera',wide:true,body:function(b){
-    b.innerHTML='<div class="cm-player">'+feedHtml(id)+'<span class="live" data-lv>LIVE</span><span class="cm-rp" data-rp hidden></span><span class="fl"></span></div>'+
+    b.innerHTML='<div class="cm-player">'+feedHtml(id)+'<span class="live" data-lv>DIRECT</span><span class="cm-rp" data-rp hidden></span><span class="fl"></span></div>'+
      '<div class="cm-ctl"><button class="btn sm" data-k="pause">'+ICON('pause','sm')+'<span>Mettre en pause</span></button><button class="btn sm" data-k="ir" aria-pressed="false">'+IC.night('sm')+'Vision de nuit</button><button class="btn sm" data-k="ai" aria-pressed="true">'+ICON('scan','sm')+'Détection IA</button><button class="btn sm" data-k="snap">'+ICON('image','sm')+'Capturer une image</button><button class="btn sm pri" data-k="live" hidden>'+ICON('play','sm')+'Revenir au direct</button></div>'+
      '<div class="ec-sec">Dernières 24 heures<span class="xs mut" style="font-weight:500">'+evs.length+' événement'+(evs.length>1?'s':'')+' détecté'+(evs.length>1?'s':'')+'</span></div>'+
      '<div class="cm-tl">'+(act?[[.52,.6],[.64,.72],[.9,.93],[.96,.985]].slice(id==='cam2'?0:1,id==='cam2'?4:2).map(function(s){return '<span class="seg2" style="--c:var(--'+(id==='cam2'?'bad':'c5')+');left:'+s[0]*100+'%;width:'+(s[1]-s[0])*100+'%" title="Couché"></span>'}).join(''):'')+
@@ -879,18 +879,18 @@ function sensSheet(id){var s=sensOf(id),v=s.v,mn=Math.min.apply(null,v),mx=Math.
   var sh=P.sheet({title:s.name,icon:s.icon,body:function(b){
     b.innerHTML='<div class="hrow sp" style="align-items:flex-end;margin-bottom:8px"><div><div class="eyebrow">'+E(s.lab)+(s.labels?'':' · 24 heures')+'</div><div class="disp num" style="font-size:34px;font-weight:700;line-height:1.1">'+E(s.val)+'</div></div>'+U.chip(s.state==='ok'?'Normal':'À surveiller',s.state==='ok'?'ok':'warn',true)+'</div>'+
      C.line([{v:v,c:s.state==='ok'?'var(--acc)':'var(--warn)',area:true}].concat(s.thr!=null?[{v:v.map(function(){return s.thr}),c:'var(--mut-2)',dash:true}]:[]),labels,{h:200,min:Math.floor(Math.min(mn,s.thr!=null?s.thr:mn)*.9),fmt:function(x){return fx(x)}})+
-     (s.thr!=null?'<div class="xs mut" style="margin-top:4px">Ligne pointillée : '+E(s.thrL.toLowerCase())+', '+fx(s.thr)+' '+s.unit+'</div>':'')+
+     (s.thr!=null?'<div class="xs mut" style="margin-top:4px">Ligne pointillée : '+E(s.thrL.toLowerCase())+', '+fx(s.thr)+' '+s.unit+'</div>':'')+
      '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px">'+[['Minimum',fx(mn)],['Moyenne',fx(av)],['Maximum',fx(mx)]].map(function(x){return '<div class="card soft" style="padding:10px 12px"><div class="xs mut">'+x[0]+'</div><div class="b num">'+x[1]+' <span class="xs mut">'+s.unit+'</span></div></div>'}).join('')+'</div>'+
-     '<div class="note '+(s.state==='ok'?'':'warn')+'" style="margin-top:14px">'+ICON(s.state==='ok'?'info':'alert','sm')+'<span>'+E(s.note)+'.'+(s.id==='z1'?' Une baisse de la boisson précède souvent une colique : la caméra du box confirme un comportement inhabituel.':'')+'</span></div>'+
+     '<div class="note '+(s.state==='ok'?'':'warn')+'" style="margin-top:14px">'+ICON(s.state==='ok'?'info':'alert','sm')+'<span>'+E(s.note)+'.'+(s.id==='z1'?' Une baisse de la boisson précède souvent une colique : la caméra du box confirme un comportement inhabituel.':'')+'</span></div>'+
      (rule?'<div class="ec-sec">Règle d’alerte liée</div><div class="card flat" style="padding:14px"><div class="hrow sp"><div><div class="b s">'+E(rule.name)+'</div><div class="xs mut">'+ruleTxt(rule)+' · '+rule.ch.join(', ')+'</div></div>'+U.tog(rule.on)+'</div><div style="margin-top:12px"><div class="hrow sp xs mut"><span>Seuil</span><b class="num" style="color:var(--ink)"><span data-out="rg-s">'+rule.val+'</span> '+E(rule.unit)+'</b></div><input type="range" class="ec-range" id="rg-s" min="'+rule.min+'" max="'+rule.max+'" step="'+rule.step+'" value="'+rule.val+'"></div></div>':'')+
      '<div class="ec-sec">Appareil</div><dl class="ec-kv"><dt>Emplacement</dt><dd>'+E(s.where)+'</dd><dt>Batterie</dt><dd>'+s.bat+' %</dd><dt>Dernière mesure</dt><dd>il y a 2 minutes</dd><dt>Liaison</dt><dd>LoRa, signal fort</dd></dl>';
-    bindRange(b);var rg=b.querySelector('#rg-s');if(rg)rg.onchange=function(){rule.val=+rg.value;P.toast('Seuil de la règle mis à jour : '+ruleTxt(rule).toLowerCase())}},
+    bindRange(b);var rg=b.querySelector('#rg-s');if(rg)rg.onchange=function(){rule.val=+rg.value;P.toast('Seuil de la règle mis à jour : '+ruleTxt(rule).toLowerCase())}},
    foot:(s.horse?'<button class="btn ghost" data-go="cheval" data-id="'+s.horse+'">Ouvrir la fiche de '+E(D.horse(s.horse).name.split(' ')[0])+'</button>':'')+'<button class="btn" data-exp>'+ICON('download','sm')+'Exporter les mesures</button>'});
   sh.querySelector('[data-exp]').onclick=function(){P.toast('Mesures des 30 derniers jours exportées en CSV',{icon:'download'})}}
 
 function ruleSheet(r,done){var nw=!r;r=r||{id:'n'+Date.now(),name:'',src:'Caméras de box',icon:'bell',val:30,unit:'min',min:5,max:120,step:5,who:['s01'],ch:['Notification'],on:true,last:'Jamais déclenchée'};var who=r.who.slice(),ch=r.ch.slice(),CH=['Notification','SMS','SMS la nuit','Appel','Résumé du matin'];
   var sh=P.sheet({title:nw?'Nouvelle règle d’alerte':r.name,icon:r.icon,body:function(b){
-    b.innerHTML=(nw?'<label class="field" style="margin-bottom:14px"><span>Nom de la règle</span><input class="in" data-n placeholder="Exemple : cheval immobile trop longtemps"></label><label class="field" style="margin-bottom:14px"><span>Source</span><select class="in" data-s><option>Caméras de box</option><option>Abreuvoirs connectés</option><option>Sondes de température</option><option>Clôture électrique</option><option>Capteur de selle</option></select></label>':'<p class="s mut" style="margin-bottom:14px">Source : '+E(r.src)+'. '+E(r.last)+'.</p>')+
+    b.innerHTML=(nw?'<label class="field" style="margin-bottom:14px"><span>Nom de la règle</span><input class="in" data-n placeholder="Exemple : cheval immobile trop longtemps"></label><label class="field" style="margin-bottom:14px"><span>Source</span><select class="in" data-s><option>Caméras de box</option><option>Abreuvoirs connectés</option><option>Sondes de température</option><option>Clôture électrique</option><option>Capteur de selle</option></select></label>':'<p class="s mut" style="margin-bottom:14px">Source : '+E(r.src)+'. '+E(r.last)+'.</p>')+
      '<div class="card flat" style="padding:14px"><div class="hrow sp"><span class="b s">Seuil de déclenchement</span><b class="num"><span data-out="rg-r">'+r.val+'</span> '+E(r.unit)+'</b></div><input type="range" class="ec-range" id="rg-r" min="'+r.min+'" max="'+r.max+'" step="'+r.step+'" value="'+r.val+'" style="margin-top:8px"><div class="hrow sp xs mut"><span>'+r.min+'</span><span>'+r.max+'</span></div></div>'+
      '<div class="ec-sec">Qui est prévenu</div><div class="card flat list">'+['s01','s05','s06','s07'].map(function(i){var p=D.staffer(i);return '<div class="li">'+U.av(p)+'<div class="grow"><div class="t">'+p.first+' '+p.last+'</div><div class="s">'+p.role+(i==='s05'?' · d’astreinte cette nuit':'')+'</div></div>'+U.chk(who.indexOf(i)>=0,i)+'</div>'}).join('')+'</div>'+
      '<div class="ec-sec">Par quel canal</div><div class="hrow wrap" style="--g:6px">'+CH.map(function(x){return '<button class="tag" data-ch="'+x+'" aria-pressed="'+(ch.indexOf(x)>=0)+'">'+ICON(x==='Appel'?'phone':x.indexOf('SMS')===0?'sms':x==='Notification'?'bell':'mail','sm')+x+'</button>'}).join('')+'</div>'+
@@ -902,7 +902,7 @@ function ruleSheet(r,done){var nw=!r;r=r||{id:'n'+Date.now(),name:'',src:'Camér
     if(nw){r.name=(sh.querySelector('[data-n]').value.trim()||'Nouvelle règle');r.src=sh.querySelector('[data-s]').value;D.alertRules.unshift(r)}sh.close();P.toast(nw?'Règle créée et active':'Règle enregistrée');done&&done()}}
 
 function addDevice(){var sh=P.sheet({title:'Ajouter un appareil',icon:'plus',body:'<p class="s mut" style="margin-bottom:14px">Piaffe lit toute caméra IP compatible ONVIF ou RTSP et les capteurs LoRa, sans ouvrir de port sur votre réseau.</p><div class="stack rise" style="--g:8px">'+[['camera','Caméra de box','Détection du coucher, des roulades et de l’agitation','Box'],['video','Caméra d’installation','Manège, carrière, allée, portail','Lieu de travail ou ouvert au public'],['drop','Abreuvoir connecté','Consommation d’eau par cheval','Capteur'],['thermo','Sonde de température et d’humidité','Écurie, sellerie, réserve','Capteur'],['bolt','Électrificateur de clôture','Tension et fuites','Capteur'],['saddle','Capteur de selle','Durée, allures, fréquence cardiaque','Capteur']].map(function(x,i){return '<button class="e3-opt" role="radio" data-d="'+i+'" aria-checked="'+(i===0)+'"><span class="rd"></span><span class="ec-ico">'+ICON(x[0],'sm')+'</span><span class="grow" style="min-width:0"><b class="s" style="display:block">'+x[1]+'</b><span class="xs mut" style="display:block">'+x[2]+'</span></span></button>'}).join('')+'</div>'+
-    '<div class="note" style="margin-top:16px">'+ICON('shield','sm')+'<span>Pour une caméra, Piaffe demande le type de zone filmée et vérifie les règles : pas de salarié filmé en continu, panneau d’information, conservation de 30 jours au plus.</span></div>',foot:'<button class="btn pri" data-ok>'+ICON('qr','sm')+'Scanner le code de l’appareil</button>'});
+    '<div class="note" style="margin-top:16px">'+ICON('shield','sm')+'<span>Pour une caméra, Piaffe demande le type de zone filmée et vérifie les règles : pas de salarié filmé en continu, panneau d’information, conservation de 30 jours au plus.</span></div>',foot:'<button class="btn pri" data-ok>'+ICON('qr','sm')+'Scanner le code de l’appareil</button>'});
   P.$$('[data-d]',sh).forEach(function(x){x.onclick=function(){P.$$('[data-d]',sh).forEach(function(y){y.setAttribute('aria-checked',y===x)})}});
   sh.querySelector('[data-ok]').onclick=function(){sh.close();P.toast('Recherche de l’appareil sur le réseau de l’écurie. Vous recevrez une notification dès qu’il répond.',{icon:'wifi',ms:4200})}}
 
@@ -912,11 +912,11 @@ P.mod({id:'cameras',role:'gerant',group:'Écurie',title:'Caméras et capteurs',i
   if(ctx.params.cam){SC.tab='direct';SC.focus=ctx.params.cam}
   var cams=D.cameras.map(function(c){return camOf(c.id)}),todo=function(){return D.camEvents.filter(function(e){return e.st==='à voir'}).length};
   function evRow(e){var c=camOf(e.cam);return '<button class="cm-ev" data-ev="'+e.id+'">'+evIcon(e)+'<span><span class="t" style="display:block">'+E(e.title)+'</span><span class="xs mut" style="display:block">'+E(e.t)+' · '+E(c.name)+'</span></span></button>'}
-  function tile(c){var f=SC.lay==='focus'&&c.id===SC.focus;return '<button class="cm-tile'+(c.alert?' al':'')+(f?' f':'')+'" data-cam="'+c.id+'" title="'+E(c.name)+'">'+feedHtml(c.id)+'<span class="cm-name">'+E(c.name)+'</span><span class="live">LIVE</span>'+(c.alert?'<span class="cm-al">'+ICON('alert')+'<span>'+E(c.alert)+'</span></span>':'')+'</button>'}
+  function tile(c){var f=SC.lay==='focus'&&c.id===SC.focus;return '<button class="cm-tile'+(c.alert?' al':'')+(f?' f':'')+'" data-cam="'+c.id+'" title="'+E(c.name)+'">'+feedHtml(c.id)+'<span class="cm-name">'+E(c.name)+'</span><span class="live">DIRECT</span>'+(c.alert?'<span class="cm-al">'+ICON('alert')+'<span>'+E(c.alert)+'</span></span>':'')+'</button>'}
   function direct(){var list=cams.filter(function(c){return SC.f==='all'||(SC.f==='box'?c.box:SC.f==='inst'?!c.box:c.alert)});
     if(SC.lay==='focus'&&!list.some(function(c){return c.id===SC.focus}))SC.focus=(list[0]||{}).id;
     if(SC.lay==='focus')list=list.slice().sort(function(a,b){return (b.id===SC.focus)-(a.id===SC.focus)});
-    return '<div class="card cm-hero"><span class="ec-ico bad" style="width:42px;height:42px">'+ICON('alert')+'</span><div class="tx"><div class="b" style="font-size:15px;letter-spacing:-.01em">Xanthos (B23) s’est couché 4 fois depuis 6 h et boit 40 % de moins.</div><div class="s mut">La caméra et l’abreuvoir donnent le même signal : risque de colique. Mamadou passe toutes les deux heures.</div></div><div class="hrow" style="--g:8px"><button class="btn" data-cam="cam2">'+ICON('camera','sm')+'Voir le box</button><button class="btn pri" data-vet>'+ICON('phone','sm')+'Appeler le Dr Leclerc</button></div></div>'+
+    return '<div class="card cm-hero"><span class="ec-ico bad" style="width:42px;height:42px">'+ICON('alert')+'</span><div class="tx"><div class="b" style="font-size:15px;letter-spacing:-.01em">Xanthos (B23) s’est couché 4 fois depuis 6 h et boit 40 % de moins.</div><div class="s mut">La caméra et l’abreuvoir donnent le même signal : risque de colique. Mamadou passe toutes les deux heures.</div></div><div class="hrow" style="--g:8px"><button class="btn" data-cam="cam2">'+ICON('camera','sm')+'Voir le box</button><button class="btn pri" data-vet>'+ICON('phone','sm')+'Appeler le Dr Leclerc</button></div></div>'+
      '<div class="cm-lay"><div class="stack" style="--g:12px"><div class="hrow sp wrap">'+U.seg([['all','Toutes · '+cams.length],['box','Boxes · 3'],['inst','Installations · 5'],['al','Alertes · 1']],SC.f,'data-f')+U.seg([['grid',ICON('grid','sm')+'Mosaïque'],['focus',ICON('expand','sm')+'Focus']],SC.lay,'data-lay')+'</div>'+
       '<div class="cm-wall'+(SC.lay==='focus'?' focus':'')+'">'+list.map(tile).join('')+'</div>'+
       '<div class="xs mut hrow" style="--g:6px">'+ICON('shield','sm')+'<span>Images conservées 30 jours au plus. Aucun poste de travail n’est filmé en continu.</span></div></div>'+
@@ -927,7 +927,7 @@ P.mod({id:'cameras',role:'gerant',group:'Écurie',title:'Caméras et capteurs',i
      '<div class="card" style="padding:0 16px">'+(list.length?list.map(function(e){var c=camOf(e.cam);return '<div class="cm-evc" data-evc="'+e.id+'"><button class="cm-th" data-ev="'+e.id+'" title="Voir l’extrait"><canvas width="240" height="135" data-still="'+e.id+'" class="ec-feed"></canvas><span class="pl">'+ICON('play','lg')+'</span><span class="d">'+E(e.clip)+'</span></button><div style="min-width:0"><div class="hrow wrap" style="--g:6px;margin-bottom:4px">'+U.chip(EVK[e.kind][0],e.sev==='ok'?'':e.sev)+'<span class="xs mut num">'+E(e.t)+' · '+E(c.name)+'</span></div><div class="b">'+E(e.title)+'</div><div class="s mut">'+E(e.sub)+'</div></div><div class="acts hrow" style="--g:6px">'+(e.st==='à voir'?'<button class="btn sm" data-done="'+e.id+'">'+ICON('check','sm')+'Marquer comme vu</button>':e.st==='traité'?U.chip('Traité','ok',true):'')+'<button class="btn sm ghost" data-ev="'+e.id+'">Voir l’extrait</button></div></div>'}).join(''):U.empty('camera','Aucun événement de ce type','Les détections des 30 derniers jours restent consultables.'))+'</div>'}
   function sensors(){return '<div class="g3 rise">'+D.sensors.map(function(s0){var s=sensOf(s0.id),c=s.state==='ok'?'var(--acc)':'var(--warn)';return '<button class="card cm-sens" data-sens="'+s.id+'"><div class="hrow sp"><div class="hrow" style="--g:10px;min-width:0"><span class="ec-ico '+(s.state==='ok'?'':'warn')+'">'+ICON(s.icon,'sm')+'</span><div style="min-width:0"><div class="b s ellip">'+E(s.name)+'</div><div class="xs mut ellip">'+E(s.where)+'</div></div></div>'+U.chip(s.state==='ok'?'Normal':'À surveiller',s.state==='ok'?'ok':'warn',true)+'</div><div class="hrow sp" style="align-items:flex-end"><span class="v">'+E(s.val)+'</span><span class="xs mut">'+(s.labels?'séance d’hier':'sur 24 h')+'</span></div>'+mini(s.v,{c:c,thr:s.thr})+'<div class="hrow sp xs mut"><span class="ellip">'+E(s.note)+'</span><span class="hrow" style="--g:4px;flex:none">'+ICON('battery','sm')+s.bat+' %</span></div></button>'}).join('')+'</div>'+
      '<div class="note" style="margin-top:14px">'+ICON('plug','sm')+'<span>Les mesures arrivent dans la fiche de chaque cheval et alimentent les règles d’alerte. Seaver, Equisense et les abreuvoirs connectés se branchent depuis l’écran Connecteurs.</span></div>'}
-  function rules(){var on=D.alertRules.filter(function(r){return r.on}).length;return '<div class="hrow sp wrap" style="margin-bottom:12px"><span class="s mut">'+on+' règles actives sur '+D.alertRules.length+'. Astreinte de cette nuit : <b style="color:var(--ink)">Mamadou Diallo</b>, SMS de 22 h à 6 h.</span><button class="btn" data-newrule>'+ICON('plus','sm')+'Créer une règle</button></div>'+
+  function rules(){var on=D.alertRules.filter(function(r){return r.on}).length;return '<div class="hrow sp wrap" style="margin-bottom:12px"><span class="s mut">'+on+' règles actives sur '+D.alertRules.length+'. Astreinte de cette nuit : <b style="color:var(--ink)">Mamadou Diallo</b>, SMS de 22 h à 6 h.</span><button class="btn" data-newrule>'+ICON('plus','sm')+'Créer une règle</button></div>'+
      '<div class="card">'+D.alertRules.map(function(r){return '<div class="cm-rule'+(r.on?'':' off')+'" data-rule="'+r.id+'"><span class="ec-ico">'+ICON(r.icon,'sm')+'</span><div class="cm-rn" style="min-width:0"><div class="b s ellip">'+E(r.name)+'</div><div class="xs mut ellip">'+ruleTxt(r)+' · '+E(r.src)+'</div></div><div class="hrow wrap hide-t" style="--g:5px">'+r.ch.map(function(x){return U.chip(x,x==='Appel'?'acc':'')}).join('')+'</div><span class="hide-t">'+U.avs(r.who,3)+'</span><button class="tog" role="switch" data-manual data-rt="'+r.id+'" aria-checked="'+r.on+'" title="Activer ou désactiver la règle"></button></div>'}).join('')+'</div>'+
      '<p class="xs mut" style="margin-top:10px">Une alerte signale un comportement inhabituel. Elle ne remplace pas l’avis du vétérinaire.</p>'}
   function privacy(){var ret=P.prefs.get('cam:ret',30);return '<div class="g2">'+
@@ -955,12 +955,12 @@ P.mod({id:'cameras',role:'gerant',group:'Écurie',title:'Caméras et capteurs',i
     if((x=t.closest('[data-ev]'))){var e2=D.camEvents.find(function(q){return q.id===x.getAttribute('data-ev')});camSheet(e2.cam,e2);return}
     if((x=t.closest('[data-cam]'))){var id=x.getAttribute('data-cam');if(SC.lay==='focus'&&SC.tab==='direct'&&x.classList.contains('cm-tile')&&!x.classList.contains('f')){SC.focus=id;draw()}else camSheet(id);return}
     if((x=t.closest('[data-sens]'))){sensSheet(x.getAttribute('data-sens'));return}
-    if((x=t.closest('[data-rt]'))){var r=D.alertRules.find(function(q){return q.id===x.getAttribute('data-rt')});r.on=!r.on;x.setAttribute('aria-checked',r.on);x.closest('.cm-rule').classList.toggle('off',!r.on);P.toast(r.on?'Règle activée : '+E(r.name.toLowerCase()):'Règle désactivée : '+E(r.name.toLowerCase()),{icon:r.on?'bell':'eye_off'});return}
+    if((x=t.closest('[data-rt]'))){var r=D.alertRules.find(function(q){return q.id===x.getAttribute('data-rt')});r.on=!r.on;x.setAttribute('aria-checked',r.on);x.closest('.cm-rule').classList.toggle('off',!r.on);P.toast(r.on?'Règle activée : '+E(r.name.toLowerCase()):'Règle désactivée : '+E(r.name.toLowerCase()),{icon:r.on?'bell':'eye_off'});return}
     if((x=t.closest('[data-rule]'))){ruleSheet(D.alertRules.find(function(q){return q.id===x.getAttribute('data-rule')}),draw);return}
     if(t.closest('[data-newrule]')){ruleSheet(null,draw);return}
     if(t.closest('[data-add]')){addDevice();return}
     if((x=t.closest('[data-vet]'))){x.innerHTML=ICON('check','sm')+'Appel lancé';x.disabled=true;P.toast('Appel du Dr Leclerc au 06 12 48 30 17. La fiche de Xanthos lui est envoyée par SMS.',{icon:'phone',ms:4200});return}
-    if((x=t.closest('[data-vlink]'))){x.innerHTML=ICON('check','sm')+'Lien copié';P.toast('Lien copié : box B23, valable jusqu’à demain 9 h 41',{icon:'link'});return}
+    if((x=t.closest('[data-vlink]'))){x.innerHTML=ICON('check','sm')+'Lien copié';P.toast('Lien copié : box B23, valable jusqu’à demain 9 h 41',{icon:'link'});return}
     if(t.closest('[data-log]')){P.toast('Journal des accès exporté en PDF',{icon:'download'});return}
     if((x=t.closest('[data-rg]'))){var g=RGPD[+x.getAttribute('data-rg')];P.toast(g[3]==='Télécharger le modèle'?'Modèle de panneau téléchargé, prêt à imprimer en A4':g[3]==='Voir la note'?'Note d’information ouverte dans Contrats':g[3]==='Régler les masques'?'Ouvrez une caméra pour dessiner la zone masquée':g[3]==='Suivre la demande'?'Demande n° 78-2026-1104 en cours d’instruction en préfecture':'Registre des traitements ouvert',{icon:'doc'});return}};
   if(ctx.params.cam&&D.cameras.some(function(c){return c.id===ctx.params.cam}))setTimeout(function(){if(el.isConnected)camSheet(ctx.params.cam)},350);
@@ -979,6 +979,8 @@ function tasks(){if(TK)return TK;var rec={t1:1,t2:1,t3:1,t9:1,t10:1,t6:2};
   TK.push({id:'t11',title:'Changer deux lampes du solarium',zone:'Solarium',who:'s07',time:'15:00',kind:'entretien',st:'todo',from:'Signalé par Inès Garnier lundi',photos:1,rec:''},
           {id:'t12',title:'Arroser le grand manège',zone:'Grand manège',who:'s07',time:'12:30',kind:'entretien',st:'todo',rec:RECS[1]},
           {id:'t13',title:'Nettoyer les abreuvoirs de la prairie du bas',zone:'Prairie du bas',who:null,time:'Cette semaine',kind:'entretien',st:'todo',rec:RECS[3]});
+  /* ordre chronologique dans chaque colonne ; les tâches sans heure précise passent à la fin */
+  var tk=function(t){return /^\d\d:\d\d$/.test(t.time)?t.time:'99'};TK.sort(function(a,b){return tk(a)<tk(b)?-1:tk(a)>tk(b)?1:0});
   return TK}
 function addTask(o){var t=Object.assign({id:'n'+Date.now(),st:'todo',kind:'entretien',rec:'',time:'Aujourd’hui',who:null,zone:''},o);tasks().push(t);return t}
 D.recurring=D.recurring||[
@@ -1072,11 +1074,12 @@ P.css(`
  .en-wk{grid-template-columns:minmax(86px,1.1fr) repeat(7,minmax(0,1fr));font-size:11.5px}
  .en-wk .c{height:30px}.en-wk .c svg.i{width:13px;height:13px}
  .en-pp{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+ .en-pp .tag{white-space:nowrap;flex:none;min-height:36px}
 }
 `);
 var SE={tab:'tasks',view:null,who:'all'};
 function kp(label,icon,val,sub,cls){return '<div class="card kpi"><div class="lab">'+ICON(icon,'sm')+label+'</div><div class="val num">'+val+'</div><div class="del '+cls+'" style="font-weight:500"><span class="ellip">'+sub+'</span></div></div>'}
-/* photo simulée d'un signalement : petite scène dessinée, couleurs internes à l'image */
+/* photo simulée d'un signalement : petite scène dessinée, couleurs internes à l'image */
 function photo(cv,kind,after){var g=cv.getContext('2d'),W=cv.width,H=cv.height,r=rng(kind.length*31+(after?7:3)),i;
   g.fillStyle=lg(g,0,0,0,H*.5,['#b9c3cc','#dfe3e6']);g.fillRect(0,0,W,H*.5);g.fillStyle=lg(g,0,H*.45,0,H,['#6f8459','#4b5f3f']);g.fillRect(0,H*.45,W,H*.55);
   for(i=0;i<260;i++){g.strokeStyle='rgba('+(r()<.5?'34,48,26':'160,182,118')+','+(.06+r()*.12)+')';var x=r()*W,y=H*.46+r()*H*.54;g.beginPath();g.moveTo(x,y);g.lineTo(x+2,y-4-r()*4);g.stroke()}
@@ -1087,10 +1090,10 @@ function photoTile(cap,after){return '<div class="en-photo"><canvas width="240" 
 
 function taskSheet(t,redraw){var nw=!t;t=t||{id:'n'+Date.now(),title:'',zone:'',who:'s07',time:'14:00',kind:'entretien',st:'todo',rec:RECS[0]};var p=t.who&&D.staffer(t.who),after=!!t.after;
   var sh=P.sheet({title:nw?'Nouvelle tâche':t.title,icon:'upkeep',body:function(b){
-    function draw(){b.innerHTML=(nw?'<label class="field" style="margin-bottom:14px"><span>Que faut-il faire ?</span><input class="in" data-f="title" placeholder="Exemple : réparer la porte du box B12" value="'+E(t.title)+'"></label>':
+    function draw(){b.innerHTML=(nw?'<label class="field" style="margin-bottom:14px"><span>Que faut-il faire ?</span><input class="in" data-f="title" placeholder="Exemple : réparer la porte du box B12" value="'+E(t.title)+'"></label>':
        '<div class="hrow wrap" style="--g:6px;margin-bottom:14px">'+U.chip(KIND[t.kind][0],KIND[t.kind][1])+(t.urgent?U.chip('Urgent','bad',true):'')+(t.rec&&t.rec!==RECS[0]?'<span class="chip">'+ICON('repeat','sm')+t.rec+'</span>':'')+'</div>'+(t.from?'<div class="note" style="margin-bottom:14px">'+ICON('flag','sm')+'<span>'+E(t.from)+'.</span></div>':'')+
        '<div class="field" style="margin-bottom:14px"><span>Avancement</span>'+U.seg(COLS,t.st,'data-st')+'</div>')+
-      '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Affectée à</span><select class="in" data-f="who"><option value="">Personne pour l’instant</option>'+D.staff.filter(function(s){return /Pale|entretien|Appren/.test(s.role)||s.id===t.who}).map(function(s){return '<option value="'+s.id+'"'+(s.id===t.who?' selected':'')+'>'+s.first+' '+s.last+' · '+s.role+'</option>'}).join('')+'</select></label>'+
+      '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Affectée à</span><select class="in" data-f="who"><option value="">Personne pour l’instant</option>'+D.staff.filter(function(s){return /Pale|entretien|Appren/.test(s.role)||s.id===t.who}).map(function(s){return '<option value="'+s.id+'"'+(s.id===t.who?' selected':'')+'>'+s.first+' '+s.last+'</option>'}).join('')+'</select></label>'+
       '<label class="field"><span>Quand</span><input class="in" data-f="time" value="'+E(t.time)+'"></label>'+
       '<label class="field"><span>Lieu</span><input class="in" data-f="zone" placeholder="Box, paddock, carrière…" value="'+E(t.zone)+'"></label>'+
       '<label class="field"><span>Répétition</span><select class="in" data-f="rec">'+RECS.map(function(r){return '<option'+(r===(t.rec||RECS[0])?' selected':'')+'>'+r+'</option>'}).join('')+'</select></label></div>'+
@@ -1121,9 +1124,9 @@ function equipSheet(e,redraw){var sum=e.log.reduce(function(a,l){return a+l[3]},
     '<div class="ec-sec">Carnet d’entretien</div><div class="tl">'+e.log.map(function(l){return '<div class="ev" style="--c:var(--'+(l[3]?'acc':'mut-2')+')"><div class="hrow sp"><span class="s b">'+E(l[1])+'</span><span class="s num '+(l[3]?'':'mut')+'">'+(l[3]?F.eur(l[3]):'En interne')+'</span></div><div class="xs mut">'+F.dateY(l[0])+' · '+E(l[2])+'</div></div>'}).join('')+'</div>'+
     '<div class="ec-sec">Documents</div><div class="card flat list">'+e.docs.map(function(d){return '<div class="li click" data-doc>'+ICON('doc')+'<div class="grow t">'+E(d)+'</div>'+ICON('download','sm')+'</div>'}).join('')+'</div>',
    foot:'<button class="btn" data-log>'+ICON('plus','sm')+'Noter une intervention</button><button class="btn pri" data-plan>'+ICON('calendar_add','sm')+'Planifier l’échéance</button>'});
-  sh.querySelector('[data-plan]').onclick=function(){addTask({title:e.dueT+' : '+e.name,zone:'Atelier',who:'s07',time:'Cette semaine',from:'Créée depuis le carnet d’entretien'});sh.close();redraw();P.toast('Tâche créée pour Kévin : '+E(e.dueT.toLowerCase()))};
+  sh.querySelector('[data-plan]').onclick=function(){addTask({title:e.dueT+' : '+e.name,zone:'Atelier',who:'s07',time:'Cette semaine',from:'Créée depuis le carnet d’entretien'});sh.close();redraw();P.toast('Tâche créée pour Kévin : '+E(e.dueT.toLowerCase()))};
   sh.querySelector('[data-log]').onclick=function(){e.log.unshift([D.iso(D.today),'Contrôle visuel, rien à signaler','Claire Morel',0]);(EQX[e.i]||{}).log=e.log;equipSheet(e,redraw);P.toast('Intervention ajoutée au carnet')};
-  P.$$('[data-doc]',sh).forEach(function(d){d.onclick=function(){P.toast('Document ouvert : '+d.querySelector('.t').textContent,{icon:'doc'})}})}
+  P.$$('[data-doc]',sh).forEach(function(d){d.onclick=function(){P.toast('Document ouvert : '+d.querySelector('.t').textContent,{icon:'doc'})}})}
 
 function orderTxt(s){return 'Commander '+s.x.pack+' '+s.unit.split(' ')[0]}
 function order(s,redraw){s.x.order={qty:s.x.pack,eta:s.x.lead<=2?'jeudi':'vendredi'};redraw();
@@ -1134,7 +1137,7 @@ function stockSheet(s,redraw){var x=s.x,n=22,proj=[],lab=[],q=s.qty,rupt=null;
   var sh=P.sheet({title:s.name,icon:'stock',body:function(b){b.innerHTML='<div class="hrow sp" style="align-items:flex-end"><div><div class="eyebrow">En stock</div><div class="disp num" style="font-size:34px;font-weight:700;line-height:1.1">'+F.num(s.qty)+' <span class="l mut" style="font-weight:600">'+E(s.unit)+'</span></div></div>'+(s.low?U.chip('Sous le seuil de '+s.min,'warn',true):U.chip('Stock suffisant','ok',true))+'</div>'+
      (x.order?'<div class="note ok" style="margin-top:12px">'+ICON('truck','sm')+'<span>Commande de '+x.order.qty+' '+E(s.unit)+' en cours chez '+E(s.supplier)+'. Livraison '+x.order.eta+'.</span></div>':'')+
      '<div class="ec-sec">Prévision sur trois semaines<span class="xs mut" style="font-weight:500">'+(s.daily?String(s.daily).replace('.',',')+' par jour':E(x.need||''))+'</span></div>'+
-     (s.daily?C.line([{v:proj,c:s.low&&!x.order?'var(--warn)':'var(--acc)',area:true},{v:proj.map(function(){return s.min}),c:'var(--mut-2)',dash:true}],lab,{h:180,min:0})+'<p class="s '+(rupt!=null?'badc':'mut')+'" style="margin-top:6px">'+(rupt!=null?'Rupture prévue '+F.dateL(D.day(rupt))+' sans nouvelle commande.':'Le stock reste au-dessus de zéro sur toute la période. La ligne pointillée marque le seuil d’alerte.')+'</p>':'<div class="note warn">'+ICON('syringe','sm')+'<span>Consommation par campagne : '+E(x.need)+'. Il en reste '+s.qty+'.</span></div>')+
+     (s.daily?C.line([{v:proj,c:s.low&&!x.order?'var(--warn)':'var(--acc)',area:true},{v:proj.map(function(){return s.min}),c:'var(--mut-2)',dash:true}],lab,{h:180,min:0})+'<p class="s '+(rupt!=null?'badc':'mut')+'" style="margin-top:6px">'+(rupt!=null?'Rupture prévue '+F.dateL(D.day(rupt))+' sans nouvelle commande.':'Le stock reste au-dessus de zéro sur toute la période. La ligne pointillée marque le seuil d’alerte.')+'</p>':'<div class="note warn">'+ICON('syringe','sm')+'<span>Consommation par campagne : '+E(x.need)+'. Il en reste '+s.qty+'.</span></div>')+
      '<div class="ec-sec">Prix unitaire sur 12 mois<span class="xs '+(dp>0?'warnc':'okc')+'" style="font-weight:600">'+(dp>0?'+':'')+dp.toFixed(1).replace('.',',')+' % en un an</span></div>'+C.line([{v:x.hist,c:'var(--c2)'}],D.months,{h:130,min:Math.floor(x.hist[0]*.9),fmt:function(v){return v.toFixed(0)+' €'}})+
      '<div class="ec-sec">Réapprovisionnement</div><div class="card flat list"><div class="li"><div class="grow"><div class="t">Seuil d’alerte</div><div class="s">Alerte quand le stock passe dessous</div></div><span class="ec-step"><button data-th="-1" title="Baisser le seuil">'+ICON('minus','sm')+'</button><b data-thv>'+s.min+'</b><button data-th="1" title="Monter le seuil">'+ICON('plus','sm')+'</button></span></div>'+
       '<div class="li"><div class="grow"><div class="t">Commande automatique</div><div class="s">'+x.pack+' '+E(s.unit)+' chez '+E(s.supplier)+', livrés en '+x.lead+' jours</div></div>'+U.tog(x.auto,'st-auto')+'</div></div>'+
@@ -1145,7 +1148,7 @@ function stockSheet(s,redraw){var x=s.x,n=22,proj=[],lab=[],q=s.qty,rupt=null;
 function invSheet(redraw){var L=stock(),q={};L.forEach(function(s){q[s.id]=s.qty});
   var sh=P.sheet({title:'Inventaire',icon:'stock',body:'<p class="s mut" style="margin-bottom:14px">Comptez ce qu’il reste et corrigez. Piaffe recalcule les jours restants et les commandes à passer.</p><div class="card flat list">'+L.map(function(s){return '<div class="li"><div class="grow"><div class="t">'+E(s.name)+'</div><div class="s">'+E(s.unit)+'</div></div><span class="ec-step"><button data-q="'+s.id+'" data-d="-1" title="Retirer une unité">'+ICON('minus','sm')+'</button><b data-qv="'+s.id+'">'+s.qty+'</b><button data-q="'+s.id+'" data-d="1" title="Ajouter une unité">'+ICON('plus','sm')+'</button></span></div>'}).join('')+'</div>',foot:'<button class="btn pri" data-ok>Enregistrer l’inventaire</button>'});
   sh.onclick=function(e){var t=e.target.closest('[data-q]');if(!t)return;var id=t.getAttribute('data-q');q[id]=Math.max(0,q[id]+(+t.getAttribute('data-d')));sh.querySelector('[data-qv="'+id+'"]').textContent=q[id]};
-  sh.querySelector('[data-ok]').onclick=function(){var n=0;L.forEach(function(s){if(s.qty!==q[s.id]){s.qty=q[s.id];n++}});sh.close();redraw();P.toast(n?'Inventaire enregistré : '+n+' article'+(n>1?'s corrigés':' corrigé'):'Inventaire enregistré, aucun écart')}}
+  sh.querySelector('[data-ok]').onclick=function(){var n=0;L.forEach(function(s){if(s.qty!==q[s.id]){s.qty=q[s.id];n++}});sh.close();redraw();P.toast(n?'Inventaire enregistré : '+n+' article'+(n>1?'s corrigés':' corrigé'):'Inventaire enregistré, aucun écart')}}
 
 P.mod({id:'entretien',role:'gerant',group:'Écurie',title:'Entretien et stocks',icon:'upkeep',n:60,phoneTitle:'Entretien',
  badge:function(){return {v:stock().filter(function(s){return s.low&&!s.x.order}).length}},
@@ -1168,20 +1171,20 @@ P.mod({id:'entretien',role:'gerant',group:'Écurie',title:'Entretien et stocks',
      '<div class="card"><div class="en-sk en-skh"><span>Article</span><span>En stock</span><span>Jours restants</span><span class="hide-t">Prix unitaire</span><span class="act"></span></div>'+L.map(function(s){var d=s.days,pc=d==null?(s.qty/s.min*50):Math.min(100,d/30*100),col=s.low||(d!=null&&d<7)?'var(--warn)':'var(--ok)',dp=s.x.hist[11]-s.x.hist[8];
        return '<div class="en-sk" data-sk="'+s.id+'"><div style="min-width:0"><div class="b s ellip">'+E(s.name)+'</div><div class="xs mut ellip">'+E(s.supplier)+'</div></div><div class="q"><b class="num">'+F.num(s.qty)+'</b> <span class="xs mut">'+E(s.unit)+'</span><div class="xs '+(s.low?'warnc':'mut')+'">seuil '+s.min+'</div></div><div class="dl"><div class="hrow sp xs" style="margin-bottom:5px"><b class="num '+(s.low||(d!=null&&d<7)?'warnc':'')+'">'+(d==null?'Par campagne':Math.floor(d)+' jours')+'</b><span class="mut num">'+(d==null?s.qty+' sur '+s.min:F.num(s.qty)+' '+E(s.unit.split(' ')[0])+' · '+String(s.daily).replace('.',',')+' par jour')+'</span></div>'+U.bar(pc,col)+'</div><div class="hide-t"><b class="num s">'+F.eur(s.price,true)+'</b><div class="xs '+(dp>0?'warnc':'mut')+'">'+(dp>0?'+'+F.eur(dp,true)+' en 3 mois':'stable')+'</div></div><div class="act">'+(s.x.order?'<span class="chip ok dot">Livraison '+s.x.order.eta+'</span>':'<button class="btn sm'+(s.low?' pri':'')+'" data-ord="'+s.id+'">'+ICON('truck','sm')+orderTxt(s)+'</button>')+'</div></div>'}).join('')+'</div>'+
      '<div class="note" style="margin-top:14px">'+ICON('assistant','sm')+'<span>La prévision tient compte des 44 chevaux présents, des rations et de la météo. Les sorties de stock viennent des distributions cochées par l’équipe.</span></div>'}
-  function tabArena(){var day=['Mar','Mer','Jeu','Ven','Sam','Dim','Lun'];return '<div class="note warn" style="margin-bottom:14px">'+ICON('rain','sm')+'<span>Pluie annoncée jeudi et vendredi : l’arrosage est suspendu ces deux jours et la carrière d’honneur sera hersée samedi matin avant le stage.</span></div>'+
+  function tabArena(){var day=['Mar','Mer','Jeu','Ven','Sam','Dim','Lun'];return '<div class="note warn" style="margin-bottom:14px">'+ICON('rain','sm')+'<span>Pluie annoncée jeudi et vendredi : l’arrosage est suspendu ces deux jours et la carrière d’honneur sera hersée samedi matin avant le stage.</span></div>'+
      '<div class="g2">'+D.club.arenas.map(function(a){var x=ARX[a.id],on=spr[a.id];return '<div class="card en-ar"><div class="hrow sp"><div class="hrow" style="--g:10px;min-width:0"><span class="ec-ico '+(x.st==='ok'?'':'warn')+'">'+ICON('arena','sm')+'</span><div style="min-width:0"><div class="b ellip">'+E(a.name)+'</div><div class="xs mut ellip">'+E(a.kind)+' · '+E(a.size)+'</div></div></div>'+U.chip(x.sol,x.st==='ok'?'ok':'warn',true)+'</div>'+
        '<div class="en-met"><div><span class="xs mut">'+(ctx.mobile?'Humidité':'Humidité du sol')+'</span><b class="num">'+x.hum+' %</b></div><div><span class="xs mut">'+(ctx.mobile?'Hersage':'Dernier hersage')+'</span><b>'+x.herse+'</b></div><div><span class="xs mut">'+(ctx.mobile?'Arrosage':'Dernier arrosage')+'</span><b>'+x.eau+'</b></div></div>'+
        '<div><div class="hrow sp xs" style="margin-bottom:5px"><span class="mut">Utilisation aujourd’hui</span><b class="num">'+String(x.use).replace('.',',')+' h de reprises</b></div>'+U.bar(x.use/8*100,'var(--c2)')+'</div>'+
-       '<div class="en-act">'+(on?'<div class="en-spr">'+IC.sprinkler('sm')+'<span class="grow">Arrosage en cours, 12 minutes</span><button class="btn sm ghost" data-stop="'+a.id+'">Arrêter</button></div>':(x.spr?'<button class="btn sm" data-spr="'+a.id+'">'+IC.sprinkler('sm')+'Lancer l’arrosage</button>':'')+'<button class="btn sm" data-hrs="'+a.id+'">'+IC.harrow('sm')+'Planifier un hersage</button><span class="xs mut nx">'+(ctx.mobile?'Prochain : ':'')+E(x.next)+'</span>')+'</div></div>'}).join('')+'</div>'+
+       '<div class="en-act">'+(on?'<div class="en-spr">'+IC.sprinkler('sm')+'<span class="grow">Arrosage en cours, 12 minutes</span><button class="btn sm ghost" data-stop="'+a.id+'">Arrêter</button></div>':(x.spr?'<button class="btn sm" data-spr="'+a.id+'">'+IC.sprinkler('sm')+'Lancer l’arrosage</button>':'')+'<button class="btn sm" data-hrs="'+a.id+'">'+IC.harrow('sm')+'Planifier un hersage</button><span class="xs mut nx">'+(ctx.mobile?'Prochain : ':'')+E(x.next)+'</span>')+'</div></div>'}).join('')+'</div>'+
      '<div class="card" style="margin-top:14px"><div class="ch"><h3>Programme de la semaine</h3>'+C.legend([['Hersage','var(--ink-2)'],['Arrosage','var(--acc)'],['Pluie annoncée','var(--line-2)']])+'</div><div class="cb"><div class="en-wk"><span></span>'+day.map(function(d,i){return '<span class="h'+(i?'':' t')+'">'+d+'</span>'}).join('')+
-       D.club.arenas.map(function(a){return '<span class="b ellip">'+E(a.name)+'</span>'+WEEK[a.id].map(function(c,i){var rain=(i===2||i===3)&&a.kind.indexOf('Couvert')<0;return '<span class="c'+(i?'':' t')+(rain?' rain':'')+'" title="'+(rain?'Pluie : pas d’arrosage':'')+'">'+(c.indexOf('H')>=0?IC.harrow():'')+(c.indexOf('A')>=0&&!rain?IC.sprinkler('w'):'')+'</span>'}).join('')}).join('')+'</div></div></div>'}
+       D.club.arenas.map(function(a){return '<span class="b ellip">'+E(a.name)+'</span>'+WEEK[a.id].map(function(c,i){var rain=(i===2||i===3)&&a.kind.indexOf('Couvert')<0;return '<span class="c'+(i?'':' t')+(rain?' rain':'')+'" title="'+(rain?'Pluie : pas d’arrosage':'')+'">'+(c.indexOf('H')>=0?IC.harrow():'')+(c.indexOf('A')>=0&&!rain?IC.sprinkler('w'):'')+'</span>'}).join('')}).join('')+'</div></div></div>'}
   var TABS=[['tasks','Tâches'],['equip','Matériel et véhicules'],['stock','Stocks'],['arena','Carrières et sols']];
   function draw(){var L=stock(),low=L.filter(function(s){return s.low&&!s.x.order}),done=T.filter(function(t){return t.st==='fait'}).length;
     var sec={tasks:'<button class="btn" data-rec>'+ICON('repeat','sm')+'Tâches récurrentes</button>',equip:'<button class="btn" data-neweq>'+ICON('plus','sm')+'Ajouter un matériel</button>',stock:'<button class="btn" data-inv>'+ICON('scan','sm')+'Faire l’inventaire</button>',arena:''}[SE.tab];
     var mob=ctx.mobile;el.innerHTML=U.ph('Entretien et stocks',mob?done+' faites sur '+T.length+' · '+low.length+' stocks bas':done+' tâches faites sur '+T.length+' aujourd’hui · '+(low.length?low.map(function(s){return s.name.split(' ')[0].toLowerCase()}).join(' et ')+' sous le seuil':'stocks suffisants')+' · herse et solarium à réviser',(mob?'':sec)+'<button class="btn pri" data-new>'+ICON('plus','sm')+'Nouvelle tâche</button>')+
       '<div class="ec-tabs">'+U.tabs(TABS.map(function(t){return [t[0],t[1]+(t[0]==='stock'&&low.length?' <span class="chip warn" style="margin-left:4px">'+low.length+'</span>':'')]}),SE.tab,'data-tab')+'</div><div class="fade">'+(mob&&sec&&SE.tab!=='tasks'?'<div class="en-msec">'+sec+'</div>':'')+{tasks:tabTasks,equip:tabEquip,stock:tabStock,arena:tabArena}[SE.tab]()+'</div>';
     P.animate(el);dnd()}
-  function move(t,st){var old=t.st;if(old===st)return;t.st=st;draw();P.toast('« '+E(t.title)+' » : '+COLS.find(function(c){return c[0]===st})[1].toLowerCase(),{undo:function(){t.st=old;draw()}})}
+  function move(t,st){var old=t.st;if(old===st)return;t.st=st;draw();P.toast('« '+E(t.title)+' » : '+COLS.find(function(c){return c[0]===st})[1].toLowerCase(),{undo:function(){t.st=old;draw()}})}
   function dnd(){P.$$('.en-card',el).forEach(function(c){c.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',c.getAttribute('data-task'));e.dataTransfer.effectAllowed='move';setTimeout(function(){c.classList.add('drag')},0)});c.addEventListener('dragend',function(){c.classList.remove('drag');P.$$('.en-col',el).forEach(function(x){x.classList.remove('over')})})});
     P.$$('.en-col',el).forEach(function(col){col.addEventListener('dragover',function(e){e.preventDefault();col.classList.add('over')});col.addEventListener('dragleave',function(e){if(!col.contains(e.relatedTarget))col.classList.remove('over')});
       col.addEventListener('drop',function(e){e.preventDefault();var t=T.find(function(q){return q.id===e.dataTransfer.getData('text/plain')});if(t)move(t,col.getAttribute('data-col'))})})}
@@ -1195,8 +1198,8 @@ P.mod({id:'entretien',role:'gerant',group:'Écurie',title:'Entretien et stocks',
     if(t.closest('[data-new]')){taskSheet(null,function(){SE.tab='tasks';draw()});return}
     if(t.closest('[data-rec]')){recSheet();return}
     if(t.closest('[data-inv]')){invSheet(draw);return}
-    if(t.closest('[data-neweq]')){P.sheet({title:'Ajouter un matériel',icon:'wrench',body:'<div class="stack" style="--g:12px"><label class="field"><span>Nom</span><input class="in" placeholder="Exemple : quad Yamaha, épandeur, van 2 places"></label><label class="field"><span>Type</span><select class="in"><option>Véhicule</option><option>Outil attelé</option><option>Installation</option><option>Petit matériel</option></select></label><label class="field"><span>Prochaine échéance</span><input class="in" placeholder="Exemple : contrôle technique le 12 mars"></label><div class="note">'+ICON('scan','sm')+'<span>Photographiez la carte grise ou la facture : Piaffe remplit la fiche et crée les rappels.</span></div></div>',foot:'<button class="btn pri" data-ok>Ajouter au parc</button>'}).querySelector('[data-ok]').onclick=function(){P.closeSheets();P.toast('Matériel ajouté, carnet d’entretien créé')};return}
-    if((x=t.closest('[data-plan]'))){var eq=equip()[+x.getAttribute('data-plan')];addTask({title:eq.dueT+' : '+eq.name,zone:'Atelier',who:'s07',time:'Cette semaine',from:'Créée depuis le carnet d’entretien'});x.innerHTML=ICON('check','sm')+'Tâche créée';x.disabled=true;P.toast('Tâche créée pour Kévin : '+E(eq.dueT.toLowerCase()));return}
+    if(t.closest('[data-neweq]')){P.sheet({title:'Ajouter un matériel',icon:'wrench',body:'<div class="stack" style="--g:12px"><label class="field"><span>Nom</span><input class="in" placeholder="Exemple : quad Yamaha, épandeur, van 2 places"></label><label class="field"><span>Type</span><select class="in"><option>Véhicule</option><option>Outil attelé</option><option>Installation</option><option>Petit matériel</option></select></label><label class="field"><span>Prochaine échéance</span><input class="in" placeholder="Exemple : contrôle technique le 12 mars"></label><div class="note">'+ICON('scan','sm')+'<span>Photographiez la carte grise ou la facture : Piaffe remplit la fiche et crée les rappels.</span></div></div>',foot:'<button class="btn pri" data-ok>Ajouter au parc</button>'}).querySelector('[data-ok]').onclick=function(){P.closeSheets();P.toast('Matériel ajouté, carnet d’entretien créé')};return}
+    if((x=t.closest('[data-plan]'))){var eq=equip()[+x.getAttribute('data-plan')];addTask({title:eq.dueT+' : '+eq.name,zone:'Atelier',who:'s07',time:'Cette semaine',from:'Créée depuis le carnet d’entretien'});x.innerHTML=ICON('check','sm')+'Tâche créée';x.disabled=true;P.toast('Tâche créée pour Kévin : '+E(eq.dueT.toLowerCase()));return}
     if((x=t.closest('[data-book]'))||(x=t.closest('[data-eq]'))){equipSheet(equip()[+(x.getAttribute('data-book')||x.getAttribute('data-eq'))],draw);return}
     if((x=t.closest('[data-due]'))){var d=DUES[+x.getAttribute('data-due')];x.innerHTML=ICON('check','sm')+'Planifié';x.disabled=true;addTask({title:d[1]+' : '+d[0],zone:'Atelier',who:'s07',time:F.date(D.day(d[2]-7)),from:'Échéance réglementaire'});P.toast('Rendez-vous à prendre ajouté aux tâches de Kévin pour le '+F.date(D.day(d[2]-7)));return}
     if((x=t.closest('[data-ord]'))){order(stock().find(function(s){return s.id===x.getAttribute('data-ord')}),draw);return}
@@ -1220,11 +1223,11 @@ P.actions.push(
 
 P.brain.push(
  {role:'gerant',re:/box(es)?\s.*libre|libre.*box|place.*(pension|box)|occupation|combien de box/i,reply:function(){var all=boxes(),free=all.filter(function(b){return !occ(b)}),rq=requests();
-   return {text:free.length?free.length+' box'+(free.length>1?'es sont libres':' est libre')+' sur '+all.length+' : '+free.map(function(b){return b.name}).join(' et ')+' ('+(BLD[free[0].bld]||'nouveaux boxes')+'). '+rq.length+' demandes de pension attendent une place :':'Les '+all.length+' boxes sont occupés. '+rq.length+' demandes de pension sont en attente.',
+   return {text:free.length?free.length+' box'+(free.length>1?'es sont libres':' est libre')+' sur '+all.length+' : '+free.map(function(b){return b.name}).join(' et ')+' ('+(BLD[free[0].bld]||'nouveaux boxes')+'). '+rq.length+' demandes de pension attendent une place :':'Les '+all.length+' boxes sont occupés. '+rq.length+' demandes de pension sont en attente.',
      card:rq.map(function(r){return '<div class="hrow sp"><span class="s"><b>'+E(r.name)+'</b> · '+E(r.owner)+'</span><span class="s num mut">'+F.eur(r.price)+' / mois</span></div>'}).join(''),
      actions:[{label:'Ouvrir le plan 3D',run:function(){P.go('ecurie3d',free[0]?{box:free[0].id}:{});return 'Plan ouvert'}}].concat(free.length&&rq.length?[{label:'Installer '+rq[0].name.split(' ')[0]+' en '+free[0].name,run:function(){var b=free[0],r=rq[0];b.guest={name:r.name,breed:r.breed,owner:r.owner,kind:'proprietaire',note:r.kind+', '+F.eur(r.price)+' par mois'};b.where='box';r.done=true;P.toast(E(r.name)+' est installé en '+b.name+'. Contrat prêt à signer.');return r.name+' installé en '+b.name}}]:[])}}},
  {role:'gerant',re:/capteur|cam[ée]ra|abreuvoir|xanthos|colique|alerte|surveill/i,reply:function(){var w=D.sensors.filter(function(s){return s.state!=='ok'}),ev=D.camEvents.filter(function(e){return e.st==='à voir'});
-   return {text:w.length+' capteur sur '+D.sensors.length+' sort de la normale et '+ev.length+' détections vidéo restent à voir. Le point sensible est Xanthos (B23) : il boit 40 % de moins et s’est couché 4 fois depuis 6 h.',
+   return {text:w.length+' capteur sur '+D.sensors.length+' sort de la normale et '+ev.length+' détections vidéo restent à voir. Le point sensible est Xanthos (B23) : il boit 40 % de moins et s’est couché 4 fois depuis 6 h.',
      card:w.map(function(s){return '<div class="hrow sp"><span class="s">'+E(s.name)+'</span><b class="s num warnc">'+E(s.val)+'</b></div>'}).concat(ev.slice(0,2).map(function(e){return '<div class="hrow sp"><span class="s ellip">'+E(e.title)+'</span><span class="xs mut num" style="flex:none">'+E(e.t)+'</span></div>'})).join(''),
      actions:[{label:'Voir la caméra du B23',run:function(){P.go('cameras',{cam:'cam2'});return 'Caméra ouverte'}},{label:'Prévenir Mamadou',run:function(){P.toast('SMS envoyé à Mamadou avec le lien de la caméra');return 'Mamadou prévenu par SMS'}}]}}},
  {role:'gerant',re:/stock|copeaux|foin|paille|granul|commande|rupture|vermifuge/i,reply:function(){var L=stock(),low=L.filter(function(s){return s.low}),k2=L.find(function(s){return s.id==='k2'});
