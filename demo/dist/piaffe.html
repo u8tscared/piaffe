@@ -1036,6 +1036,8 @@ function effDev(){if(realPhone())return 'phone';if(S.dev==='desktop'&&window.inn
 /* ---------- Coque ---------- */
 var demo,stage,frame,app,view;
 function buildDemo(){
+  /* la page publiée place styles et polices dans <body> : on les met à l'abri dans <head> avant de redessiner */
+  Array.prototype.slice.call(document.body.querySelectorAll('style,link,meta,title')).forEach(function(n){document.head.appendChild(n)});
   document.body.innerHTML='<div id="demo"><header class="dbar"><div class="brand">'+LOGO(26,'var(--ink)','var(--acc)',true)+'<span>Piaffe</span><small>Démo</small></div>'+
    '<div class="roles">'+P.ui.seg(Object.keys(P.roles).map(function(k){return [k,ICON(P.roles[k].icon)+'<span class="lbl">'+P.roles[k].label+'</span>']}),S.role,'data-role')+'</div>'+
    '<div class="right"><div class="dev">'+P.ui.seg([['desktop',ICON('grid')],['tablet',ICON('layers')],['phone',ICON('phone')]],S.dev,'data-dev')+'</div>'+
