@@ -42,7 +42,7 @@ P.ui={
   chip:function(txt,k,dot){return '<span class="chip '+(k||'')+(dot?' dot':'')+'">'+txt+'</span>'},
   status:function(s){var m={'payée':'ok','signé':'ok','fait':'ok','ok':'ok','Actif':'ok','actif':'ok','en retard':'bad','bad':'bad','à signer':'acc','envoyée':'acc','planifié':'acc','à faire':'warn','warn':'warn','en cours':'warn','brouillon':'','à venir':'','Essai':'warn'};return P.ui.chip(s,m[s]||'',true)},
   kpi:function(o){/* {label, value, unit, delta, up, spark:[...], icon, count} */
-    var dl=o.delta!=null?'<div class="del '+(o.up===false?'down':'up')+'">'+ICON(o.up===false?'down':'up','sm')+o.delta+(o.dsub?'<span class="mut" style="font-weight:500">'+o.dsub+'</span>':'')+'</div>':'';
+    var dl=o.delta!=null?'<div class="del '+(o.up===false?'down':'up')+'">'+(o.up===null?'':ICON(o.up===false?'down':'up','sm'))+o.delta+(o.dsub?'<span class="mut" style="font-weight:500">'+o.dsub+'</span>':'')+'</div>':'';
     var val=o.count!=null?'<span data-count="'+o.count+'" data-fmt="'+(o.fmt||'')+'">'+(o.value!=null?o.value:o.count)+'</span>':o.value;
     return '<div class="card kpi">'+'<div class="lab">'+(o.icon?ICON(o.icon,'sm'):'')+o.label+'</div><div class="val num">'+val+(o.unit?'<small>'+o.unit+'</small>':'')+'</div>'+dl+(o.spark?P.chart.spark(o.spark,o.color):'')+'</div>'},
   bar:function(v,c){return '<div class="bar"><i style="--v:'+Math.max(0,Math.min(100,v))+'%;'+(c?'--c:'+c:'')+'"></i></div>'},

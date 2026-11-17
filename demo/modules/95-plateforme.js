@@ -119,6 +119,8 @@ P.css(`
 .pfa-legal{font-size:11.5px;color:var(--mut);text-align:center}
 .pfa-hbtn{display:none}
 .app.mobile .pfa-head h1{display:none}
+.app.mobile .pfa-root .btn.icon.sm,.app.mobile .pfa-head .btn.icon.sm,.app.mobile .pfc-demo .btn.icon.sm,.app.mobile .btn.icon.sm[data-cap]{width:44px;height:44px}
+.app.mobile .pfc-df .sc button{min-width:36px;min-height:36px}
 .pfa-auto{display:flex;flex-direction:column;gap:12px;padding:16px}
 .pfa-auto .hd{display:flex;gap:12px;align-items:flex-start}
 .pfa-jr{display:grid;grid-template-columns:58px 30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 16px}
@@ -408,7 +410,7 @@ function renderChat(el,ctx,seg){
     var used=m.filter(function(x){return x.u}).map(function(x){return x.u});
     fu.innerHTML=INT.filter(function(i){return i.q&&used.indexOf(i.q)<0}).slice(1,6).map(function(i){return '<button data-sq="'+esc(i.q)+'">'+i.q+'</button>'}).join('');
     P.animate(th);if(scroll!==false)th.scrollTop=scroll==='top'?0:1e6}
-  function send(t,file){if(busy||!t)return;var c=conv(),m=msgs(c);if(!c.title){c.title=t.length>42?t.slice(0,40)+'…':t;c.when='à l’instant';$('.pfa-hl',el).innerHTML=histHTML()}
+  function send(t,file){if(busy)return;if(!t){var ti=$('.pfa-comp textarea,.pfa-comp input',el);if(ti)ti.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'assistant'});return}var c=conv(),m=msgs(c);if(!c.title){c.title=t.length>42?t.slice(0,40)+'…':t;c.when='à l’instant';$('.pfa-hl',el).innerHTML=histHTML()}
     m.push({u:t,file:file});var ph={think:true};m.push(ph);busy=true;draw();
     var st=$('[data-step]',th),steps=['Je cherche dans Piaffe','Je lis les données de l’écurie','Je prépare la réponse'],k=0,iv=setInterval(function(){k++;if(st&&st.isConnected&&steps[k])st.textContent=steps[k]},420);
     setTimeout(function(){clearInterval(iv);var i=m.indexOf(ph);if(i>=0)m.splice(i,1,{a:answer(t)});busy=false;if(el.isConnected&&AS.tab==='chat'){draw(false);var a=th.querySelectorAll('.pfa-a');a=a[a.length-1];if(a){var u=a.previousElementSibling||a;th.scrollTo({top:u.offsetTop-14,behavior:P.RM?'auto':'smooth'})}}},P.RM?60:1150)}
@@ -426,7 +428,7 @@ function renderChat(el,ctx,seg){
     if(t.closest('.chk')&&box.querySelector('[data-ok]')){setTimeout(function(){var ck=box.querySelector('.chk');box.querySelector('[data-ok]').disabled=ck.getAttribute('aria-checked')!=='true'},0)}
   });
   fu.addEventListener('click',function(e){var b=e.target.closest('[data-sq]');if(b)send(b.getAttribute('data-sq'))});
-  comp.addEventListener('submit',function(e){e.preventDefault();if(comp.classList.contains('rec'))return;var v=inp.value.trim();if(v){inp.value='';send(v,comp._file);comp._file=null;inp.placeholder=ctx.mobile?'Votre demande':'Posez une question ou demandez une action'}});
+  comp.addEventListener('submit',function(e){e.preventDefault();if(comp.classList.contains('rec'))return;var v=inp.value.trim();if(v){inp.value='';send(v,comp._file);comp._file=null;inp.placeholder=ctx.mobile?'Votre demande':'Posez une question ou demandez une action'}else{inp.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'assistant'})}});
   /* mode vocal simulé */
   function stopVoice(sendIt){clearInterval(vt);vt=null;comp.classList.remove('rec');var tr=$('[data-tr]',comp).textContent;$('[data-mic]',comp).innerHTML=ICON('mic');$('[data-mic]',comp).title='Dicter la demande';if(sendIt&&tr&&tr!=='Je vous écoute')send(tr)}
   $('[data-mic]',el).onclick=function(){if(vt){stopVoice(true);return}if(busy)return;

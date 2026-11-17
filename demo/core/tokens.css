@@ -46,6 +46,7 @@
   color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--f-text);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
 button,input,select,textarea{font:inherit;color:inherit}
