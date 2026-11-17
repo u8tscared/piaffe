@@ -18,6 +18,7 @@ function isOn(root,id){var t=root.querySelector('#'+id);return !!t&&t.getAttribu
 function val(root,k){var i=root.querySelector('[data-k="'+k+'"]');return i?i.value:''}
 function on(root,sel_,fn,evt){$$(sel_,root).forEach(function(b){b.addEventListener(evt||'click',function(e){fn(b,e)})})}
 function plural(n,s,p){return n+' '+(n>1?(p||s+'s'):s)}
+function ageTxt(l){return l.amin&&l.amax?'De '+l.amin+' à '+l.amax+' ans':l.amin?'À partir de '+l.amin+' ans':'Jusqu’à '+l.amax+' ans'}
 
 P.css(`
 .lx-opt{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
@@ -188,10 +189,13 @@ P.css(`
 
 /* ---------- Données propres au planning ---------- */
 var COL={s02:'var(--c1)',s03:'var(--c6)',s04:'var(--c3)',s08:'var(--c5)',c01:'var(--c4)',c02:'var(--c2)',c03:'var(--c7)'};
-function col(id){return COL[id]||'var(--mut-2)'}
+function col(id){return COL[id]||(/^m/.test(id)?'var(--c7)':'var(--mut-2)')}
+var FX=(function(f){f=f||{};var pt=f.paulineToday||[{at:'11:15',arena:'a2'},{at:'12:15',arena:'a2'}];return {pauline:pt,hersage:f.hersage||{at:'13:30',arena:'a2'}}})(D.facts);
 D.planExtras=D.planExtras||[
- {id:'x01',dow:2,start:'14:00',dur:60,title:'Cours particulier CSO',coach:'c01',arena:'a2',cap:1,riders:['m001'],horses:{m001:'h01'},wait:0,kind:'particulier'},
- {id:'x02',dow:2,start:'11:30',dur:45,title:'Hersage de la carrière',coach:'s07',arena:'a2',cap:0,riders:[],horses:{},wait:0,kind:'entretien'},
+ /* journée de Pauline et hersage : faits de référence partagés (D.facts) */
+ {id:'x01',dow:2,start:FX.pauline[0].at,dur:60,title:'Cours particulier CSO',coach:'c01',arena:FX.pauline[0].arena,cap:1,riders:['m001'],horses:{m001:'h01'},wait:0,kind:'particulier'},
+ {id:'x08',dow:2,start:FX.pauline[1].at,dur:60,title:'Cours collectif CSO',coach:'c01',arena:FX.pauline[1].arena,cap:6,riders:['m066','m078','m083','m091'],horses:{},wait:0,kind:'particulier'},
+ {id:'x02',dow:2,start:FX.hersage.at,dur:45,title:'Hersage de la carrière',coach:'s07',arena:FX.hersage.arena,cap:0,riders:[],horses:{},wait:0,kind:'entretien'},
  {id:'x03',dow:4,start:'18:00',dur:60,title:'Cours particulier dressage',coach:'c02',arena:'a2',cap:1,riders:['m014'],horses:{},wait:0,kind:'particulier'},
  {id:'x04',dow:3,start:'09:00',dur:45,title:'Longe, Opale reprend le travail',coach:'s06',arena:'a4',cap:0,riders:[],horses:{},wait:0,kind:'travail'},
  {id:'x05',dow:2,start:'15:30',dur:30,title:'Longe, Hermès',coach:'s06',arena:'a4',cap:0,riders:[],horses:{},wait:0,kind:'travail'},
@@ -211,20 +215,27 @@ var LV=[['','Tous niveaux'],['poney','Baby et poney'],['g12','Galops 1 et 2'],['
 function lvName(l){var k=lv(l);return (LV.find(function(x){return x[0]===k})||LV[6])[1]}
 
 var ST={view:'week',off:0,day:TDI,coach:'',arena:'',lvl:'',moves:{},cx:{},att:{},closed:{},created:[],auto:{},notes:{},tab:'montoir',landed:null,prop:{},alert:{}};
-function ALL(){return D.lessons.concat(D.planExtras,ST.created)}
+function ALL(off){return (ST.gen&&off!=null&&ST.gen.off===off?ST.gen.list:D.lessons).concat(D.planExtras,ST.created)}
+/* réservations de pistes des propriétaires (D.trackBookings), affichées comme des créneaux du planning */
+function tbLesson(b){var h=D.horse(b.horse),s=mn(b.from),e=mn(b.to);return {id:b.id,dow:0,start:b.from,dur:Math.max(30,e-s),title:'Piste réservée'+(h?', '+h.name.split(' ')[0]:''),coach:b.who,arena:b.arena,cap:0,riders:[],horses:{},wait:0,kind:'resa',tb:b}}
 function holiday(iso){return D.planHolidays.find(function(h){return h.d===iso&&!h.keep})}
 function vacation(iso){return D.planVacations.find(function(v){return iso>=v.from&&iso<=v.to})}
 function dateOf(d,off){return D.day(-1+d+7*off)}
 function weekEvents(off){var out=[];
  for(var d=0;d<7;d++){(function(d){var date=dateOf(d,off),iso=D.iso(date),hol=holiday(iso),vac=vacation(iso);if(hol)return;
-  ALL().forEach(function(l){var mv=ST.moves[l.id]||{},ld=mv.d!=null?mv.d:di(l),k=kindOf(l);if(ld!==d)return;if(vac&&k==='reprise')return;if(l.once!=null&&l.once!==off)return;
+  ALL(off).forEach(function(l){var mv=ST.moves[l.id]||{},ld=mv.d!=null?mv.d:di(l),k=kindOf(l);if(ld!==d)return;if(vac&&k==='reprise')return;if(l.once!=null&&l.once!==off)return;
    out.push({l:l,d:d,date:date,s:mv.s!=null?mv.s:mn(l.start),dur:l.dur,arena:mv.a||l.arena,coach:l.coach,k:k,cx:!!ST.cx[l.id+'@'+off]})});
+  (D.trackBookings||[]).forEach(function(b){if(b.date!==iso)return;var l=tbLesson(b);out.push({l:l,d:d,date:date,s:mn(b.from),dur:l.dur,arena:b.arena,coach:b.who,k:'resa',cx:false})});
   if(vac&&d<4)D.planStages.forEach(function(l){out.push({l:l,d:d,date:date,s:mn(l.start),dur:l.dur,arena:l.arena,coach:l.coach,k:'stage',cx:!!ST.cx[l.id+'@'+off]})})})(d)}
  return out.sort(function(a,b){return a.d-b.d||a.s-b.s})}
-function conflicts(list){var r=[];list.forEach(function(a,i){for(var j=i+1;j<list.length;j++){var b=list[j];if(a.d!==b.d||a.cx||b.cx||!(a.s<b.s+b.dur&&b.s<a.s+a.dur))continue;
+function conflicts(list){var r=[];list.forEach(function(a,i){for(var j=i+1;j<list.length;j++){var b=list[j];if(a.d!==b.d||a.cx||b.cx||!(a.s<b.s+b.dur&&b.s<a.s+a.dur))continue;if(a.k==='resa'&&b.k==='resa')continue;
   if(a.arena===b.arena&&a.k!=='balade'&&b.k!=='balade')r.push({a:a,b:b,t:'piste'});else if(a.coach===b.coach)r.push({a:a,b:b,t:'moniteur'})}});return r}
 function busy(d,s,dur,coach,ar,skip){var r=[];weekEvents(ST.off).forEach(function(e){if(e.d!==d||e.cx||e.l.id===skip||!(e.s<s+dur&&s<e.s+e.dur))return;
   if(ar&&e.arena===ar&&e.k!=='balade')r.push(arena(ar).name+' déjà prise par « '+e.l.title+' »');else if(coach&&e.coach===coach)r.push(D.person(coach).first+' encadre déjà « '+e.l.title+' »')});return r}
+/* règle de comptage commune (comme l'accueil) : les reprises du club d'un côté, les cours de coach, stages et balades de l'autre */
+function dayCnt(list){var r={rep:0,riders:0,other:0,resa:0};list.forEach(function(e){if(e.cx)return;if(e.k==='reprise'){r.rep++;r.riders+=e.l.riders.length}else if(e.k==='resa')r.resa++;else if(e.l.cap>0)r.other++});return r}
+function cntTxt(c,short){if(short)return c.rep?plural(c.rep,'reprise'):c.other?plural(c.other,'séance'):'Libre';
+ var t=c.rep?plural(c.rep,'reprise')+', '+plural(c.riders,'cavalier'):'';if(c.other)t+=(t?' · ':'')+plural(c.other,'autre séance','autres séances');if(c.resa)t+=(t?' · ':'')+plural(c.resa,'piste réservée','pistes réservées');return t||'Aucun créneau'}
 function place(e){return e.k==='balade'?'Extérieur, forêt de Rambouillet':arena(e.arena).name}
 function loads(d){var m={};weekEvents(0).forEach(function(e){if(e.d!==d||e.cx)return;Object.keys(e.l.horses||{}).forEach(function(r){var h=e.l.horses[r];if(h)m[h]=(m[h]||0)+1})});return m}
 function pickHorse(r,ld,used){var m=D.member(r),small=!!m&&m.age<13,best=null,bs=1e9;
@@ -234,7 +245,7 @@ function autoAssign(l){var ld=loads(di(l)),used={},res={};l.riders.forEach(funct
   var h=pickHorse(r,ld,used);if(h){used[h.id]=1;ld[h.id]=(ld[h.id]||0)+1;res[r]=h.id}});return res}
 /* cavalerie équilibrée au départ, avec quelques anomalies réalistes sur les reprises du jour */
 if(!D.planInit){D.planInit=true;
- var own=D.lessons.find(function(l){return l.id==='l04'});if(own){own.riders=D.horses.filter(function(h){return h.owner&&h.kind==='proprietaire'}).map(function(h){return h.owner}).filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,own.cap-1);own.wait=0;own.horses={};own.riders.forEach(function(r){own.horses[r]=D.horses.find(function(h){return h.owner===r}).id})}
+ var own=D.lessons.find(function(l){return l.id==='l04'});if(own){own.riders=D.horses.filter(function(h){return h.owner&&h.kind==='proprietaire'&&h.status!=='bad'&&!/repos/i.test(h.alerts.join(' '))}).map(function(h){return h.owner}).filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,own.cap-1);own.wait=0;own.horses={};own.riders.forEach(function(r){own.horses[r]=D.horses.find(function(h){return h.owner===r}).id})}
  var pool=D.members.filter(function(m){return m.forfait!=='f5'}),WEAK={l18:5,l16:5,l08:5,l03:6};
  D.lessons.forEach(function(l,i){if(l.id==='l04')return;var tgt=WEAK[l.id]||l.cap-(i%5===0?2:i%2===0?1:0),k=(i*11)%pool.length;if(l.riders.length>tgt)l.riders=l.riders.slice(0,tgt);
   while(l.riders.length<tgt){var m=pool[k%pool.length];k+=7;if(l.riders.indexOf(m.id)<0)l.riders.push(m.id)}l.wait=l.riders.length>=l.cap?(l.wait||1+i%3):0;l.horses={}});
@@ -246,7 +257,7 @@ if(!D.planInit){D.planInit=true;
 }
 function waitOf(l){if(!l.wait)return [];if(!l._w){var i0=(parseInt(l.id.slice(1),10)*7)%90;l._w=D.members.filter(function(m){return m.forfait!=='f5'&&l.riders.indexOf(m.id)<0}).slice(i0,i0+l.wait).map(function(m){return m.id})}return l._w}
 function hstate(l,r,ld){var hid=l.horses[r];if(!hid)return {none:true,lvl:'none'};var h=D.horse(hid),n=ld[hid]||1,u=unav(h);
- if(h.owner===r)return {h:h,lvl:'',txt:'Son cheval'};
+ if(h.owner===r)return h.status==='bad'?{h:h,lvl:'bad',txt:'Son cheval, à laisser au box'}:{h:h,lvl:'',txt:'Son cheval'};
  if(u)return {h:h,lvl:'bad',txt:u};
  if(n>=4)return {h:h,lvl:'bad',txt:n+' reprises ce jour, surchargé'};
  if(n===3)return {h:h,lvl:'warn',txt:'3 reprises ce jour, limite atteinte'};
@@ -265,10 +276,10 @@ function lanes(list){var cur=null;list.sort(function(a,b){return a.s-b.s||b.dur-
  list.forEach(function(e){e.lanes=e.grp.cols.length})}
 function fm(e){return (!ST.coach||e.coach===ST.coach||(ST.coach==='ext'&&/^c/.test(e.coach)))&&(!ST.arena||e.arena===ST.arena)&&(!ST.lvl||lv(e.l)===ST.lvl)}
 function isPast(e){return ST.off<0||(ST.off===0&&(e.d<TDI||(e.d===TDI&&e.s+e.dur<=NOW)))}
-function evHTML(e,mode){var l=e.l,c=D.person(l.coach),n=(l.riders||[]).length,full=l.cap>0&&n>=l.cap,svc=e.k==='entretien'||e.k==='travail';
+function evHTML(e,mode){var l=e.l,c=D.person(l.coach),n=(l.riders||[]).length,full=l.cap>0&&n>=l.cap,svc=e.k==='entretien'||e.k==='travail'||e.k==='resa';
  var cls='pl-ev'+(e.dur<50?' sh':'')+(e.dur<=30?' xs1':'')+(isPast(e)?' past':'')+(e.cx?' cx':'')+(e.conf?' conf':'')+(fm(e)?'':' dim')+(svc?' svc':'')+(ST.landed===l.id?' landed':'')+(e.lanes>1?' nar':'');
  var sub=e.cx?'Annulée, cavaliers prévenus':mode==='day'?c.first+' '+c.last+(n?' · '+lvName(l):''):place(e);
- return '<button class="'+cls+'" data-ev="'+l.id+'" data-d="'+e.d+'" style="--c:'+col(l.coach)+';--l:'+(e.lane/e.lanes)+';--w:'+(1/e.lanes)+';top:'+((e.s-H0*60)/60*HP+1)+'px;height:'+(e.dur/60*HP-2)+'px" title="'+F.esc(l.title+' · '+hm(e.s)+' · '+c.first+' '+c.last+' · '+place(e))+'">'+
+ return '<button class="'+cls+(e.k==='resa'?' pz-resa':'')+'" data-ev="'+l.id+'" data-d="'+e.d+'" style="--c:'+col(l.coach)+';--l:'+(e.lane/e.lanes)+';--w:'+(1/e.lanes)+';top:'+((e.s-H0*60)/60*HP+1)+'px;height:'+(e.dur/60*HP-2)+'px" title="'+F.esc(l.title+' · '+hm(e.s)+' · '+c.first+' '+c.last+' · '+place(e))+'">'+
   '<span class="t"><b>'+l.title+'</b>'+(e.conf?ICON('alert'):'')+(ST.closed[l.id+'@'+ST.off]?ICON('check'):'')+(l.cap>0?'<em class="'+(full?'full':'')+'">'+n+'/'+l.cap+'</em>':'')+'</span><span class="s">'+sub+'</span></button>'}
 function gridHTML(cols,mode){/* cols:[{head, cls, evs, off}] */
  var g='<div class="scroll-x"><div class="pl-in"><div class="pl-grid pl-hd" style="--n:'+cols.length+'"><div></div>'+cols.map(function(c){return c.head}).join('')+'</div><div class="pl-grid pl-body" data-mode="'+mode+'" style="--n:'+cols.length+';--hp:'+HP+'px"><div class="pl-gut">';
@@ -279,7 +290,7 @@ function gridHTML(cols,mode){/* cols:[{head, cls, evs, off}] */
 function rowHTML(e){var l=e.l,c=D.person(l.coach),n=(l.riders||[]).length,full=l.cap>0&&n>=l.cap;
  return '<div class="pl-row'+(e.cx?' cx':'')+(isPast(e)?' past':'')+'" role="button" tabindex="0" data-ev="'+l.id+'" data-d="'+e.d+'"><span class="tm">'+hc(e.s)+'<small>'+e.dur+' min</small></span><span class="st" style="--c:'+col(l.coach)+'"></span>'+
   '<span class="bd"><b class="ellip">'+l.title+'</b><span class="s mut ellip">'+(e.cx?'Annulée · ':'')+c.first+' '+c.last+' · '+place(e)+'</span></span>'+
-  '<span class="hide-s">'+(l.cap>0?U.chip(lvName(l),'line'):U.chip(e.k==='entretien'?'Entretien':'Travail du cheval','line'))+'</span><span class="hide-s">'+(n?U.avs(l.riders,4):'')+'</span>'+
+  '<span class="hide-s">'+(l.cap>0?U.chip(lvName(l),'line'):U.chip(e.k==='entretien'?'Entretien':e.k==='resa'?'Réservation de piste':'Travail du cheval','line'))+'</span><span class="hide-s">'+(n?U.avs(l.riders,4):'')+'</span>'+
   '<span class="fl hide-s">'+(l.cap>0?'<span class="s"><b class="num">'+n+'/'+l.cap+'</b> <span class="mut">'+(full?'complet':plural(l.cap-n,'place'))+'</span></span>'+U.bar(n/l.cap*100,full?'var(--ok)':n/l.cap<.6?'var(--warn)':'var(--acc)'):'')+'</span>'+
   '<span class="wt">'+(e.conf?U.chip('Conflit','bad',true):l.wait?U.chip(l.wait+' en attente','warn'):l.cap>0?'<span class="chip only-s '+(full?'ok':'')+'">'+n+'/'+l.cap+'</span>':'')+'</span>'+ICON('right','sm')+'</div>'}
 function tlHTML(evs,d,weekH){/* frise d'occupation des pistes pour un jour */
@@ -297,16 +308,16 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
    var pct=places?Math.round(ins/places*100):0,dDate=dateOf(ST.day,ST.off),vacW=vacation(D.iso(dateOf(2,ST.off)));
    var h;
    if(mob){var dayE=evs.filter(function(e){return e.d===ST.day&&fm(e)}),hol=holiday(D.iso(dDate)),nxt=ST.off===0&&ST.day===TDI?dayE.find(function(e){return e.s+e.dur>NOW&&e.l.riders.length&&!e.cx}):null,nowDone=false;
-    h='<div class="pl-m"><div class="hrow sp"><div class="pl-nav"><button class="btn icon" data-nav="-1" title="Semaine précédente">'+ICON('left')+'</button><button class="btn icon" data-nav="1" title="Semaine suivante">'+ICON('right')+'</button></div><div class="pl-per">'+perLabel(ST.off,true)+'</div><div class="pl-nav"><button class="btn icon" data-filt title="Filtrer le planning">'+ICON('filter')+'</button><button class="btn icon" data-hol title="Vacances et jours fériés">'+ICON('holiday')+'</button></div></div>'+
+    h='<div class="pl-m"><div class="hrow sp"><div class="pl-nav"><button class="btn icon" data-nav="-1" title="Semaine précédente">'+ICON('left')+'</button><button class="btn icon" data-nav="1" title="Semaine suivante">'+ICON('right')+'</button></div><div class="pl-per">'+perLabel(ST.off,true)+'</div><div class="pl-nav"><button class="btn icon" data-kiosk title="Écran de la sellerie">'+ICON('expand')+'</button><button class="btn icon" data-filt title="Filtrer le planning">'+ICON('filter')+'</button><button class="btn icon" data-hol title="Vacances et jours fériés">'+ICON('holiday')+'</button></div></div>'+
      '<div class="pl-strip">'+DN.map(function(n,i){var dt=dateOf(i,ST.off),k=evs.filter(function(e){return e.d===i}).length;return '<button data-day="'+i+'" aria-pressed="'+(i===ST.day)+'" class="'+(k?'has':'')+(ST.off===0&&i===TDI?' today':'')+'"><span>'+n+'</span><b>'+dt.getDate()+'</b><i></i></button>'}).join('')+'</div>';
     if(ST.coach||ST.arena||ST.lvl)h+='<div class="hrow wrap" style="--g:6px">'+U.chip('Filtres actifs','acc',true)+'<button class="btn ghost sm" data-clear>Tout afficher</button></div>';
     if(nxt)h+='<div class="card navy pl-next"><div class="eyebrow" style="color:var(--strass)">Prochaine reprise · dans '+(nxt.s-NOW)+' min</div><h3>'+nxt.l.title+'</h3><div class="s mut">'+hm(nxt.s)+' · '+D.name(nxt.l.coach)+' · '+place(nxt)+' · '+plural(nxt.l.riders.length,'cavalier')+'</div><div class="hrow"><button class="btn" style="background:var(--acc);color:var(--acc-ink)" data-ev="'+nxt.l.id+'" data-d="'+nxt.d+'">'+ICON('check','sm')+'Faire l’appel</button><button class="btn" style="background:color-mix(in srgb,var(--navy-ink) 12%,transparent);color:var(--navy-ink)" data-ev="'+nxt.l.id+'" data-d="'+nxt.d+'">'+ICON('horse','sm')+'Chevaux</button></div></div>';
-    h+='<div class="card"><div class="pl-day"><b>'+cap1(F.dateL(dDate))+'</b><span class="xs mut">'+(hol?'Jour férié':plural(dayE.length,'créneau','créneaux'))+'</span></div>'+(hol?U.empty('holiday',hol.n,'Reprises suspendues, un rattrapage est crédité à chaque cavalier.'):dayE.length?dayE.map(function(e){var pre='';if(ST.off===0&&ST.day===TDI&&!nowDone&&e.s>NOW){nowDone=true;pre='<div class="pl-nowl"><span>9 h 41</span><i></i></div>'}return pre+rowHTML(e)}).join(''):U.empty('planning','Aucun créneau ce jour-là','Touchez Créer pour ajouter une reprise ou un stage.'))+'</div>'+
+    h+='<div class="card"><div class="pl-day"><b>'+cap1(F.dateL(dDate))+'</b><span class="xs mut">'+(hol?'Jour férié':cntTxt(dayCnt(evs.filter(function(e){return e.d===ST.day}))))+'</span></div>'+(hol?U.empty('holiday',hol.n,'Reprises suspendues, un rattrapage est crédité à chaque cavalier.'):dayE.length?dayE.map(function(e){var pre='';if(ST.off===0&&ST.day===TDI&&!nowDone&&e.s>NOW){nowDone=true;pre='<div class="pl-nowl"><span>9 h 41</span><i></i></div>'}return pre+rowHTML(e)}).join(''):U.empty('planning','Aucun créneau ce jour-là','Touchez Créer pour ajouter une reprise ou un stage.'))+'</div>'+
      '<div class="card"><div class="ch"><h3>Occupation des pistes</h3><span class="xs mut">'+DNL[ST.day]+'</span></div><div class="cb">'+tlHTML(evs,ST.day)+'</div></div>'+
      '<button class="btn pri pl-fab" data-new>'+ICON('plus')+'Créer</button></div>';
    }else{
-    h=U.ph('Planning',(vacW?vacW.n+' · ':'')+'Semaine du '+perLabel(ST.off)+' · '+plural(teach.length,'séance')+', '+ins+' cavaliers inscrits, remplissage de '+pct+' %',
-     '<button class="btn" data-hol>'+ICON('holiday','sm')+'Vacances et fériés</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Créer</button>');
+    h=U.ph('Planning',(vacW?vacW.n+' · ':'')+'Semaine du '+perLabel(ST.off)+' · '+(function(c){return plural(c.rep,'reprise')+(c.other?' et '+plural(c.other,'autre séance','autres séances'):'')})(dayCnt(evs))+', '+ins+' cavaliers inscrits, remplissage de '+pct+' %'+(ST.gen&&ST.gen.off===ST.off?' · semaine type générée':''),
+     '<button class="btn" data-kiosk title="Afficher le planning du jour en plein écran dans la sellerie">'+ICON('expand','sm')+'Écran de la sellerie</button><button class="btn" data-hol>'+ICON('holiday','sm')+'Vacances et fériés</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Créer</button>');
     h+='<div class="pl-bar">'+U.seg([['week','Semaine'],['day','Jour par piste'],['list','Liste']],ST.view,'data-view')+
      '<div class="pl-nav"><button class="btn icon sm" data-nav="-1" title="'+(ST.view==='day'?'Jour précédent':'Semaine précédente')+'">'+ICON('left','sm')+'</button><button class="btn sm" data-nav="0">Aujourd’hui</button><button class="btn icon sm" data-nav="1" title="'+(ST.view==='day'?'Jour suivant':'Semaine suivante')+'">'+ICON('right','sm')+'</button></div>'+
      '<div class="pl-per">'+(ST.view==='day'?cap1(F.dateL(dDate)):cap1(perLabel(ST.off)))+'<span class="chip line">Semaine '+weekNo(ST.off)+'</span></div>'+
@@ -317,13 +328,13 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
     h+='<div class="card pl-cal"><div class="pl-leg'+(ST.coach?' has':'')+'">'+leg.map(function(x){var p=x[0]==='ext'?null:D.person(x[0]);return '<button class="pl-fc" data-coach="'+x[0]+'" aria-pressed="'+(ST.coach===x[0])+'" style="--c:'+(p?col(x[0]):'var(--c4)')+'" title="Afficher seulement '+(p?p.first+' '+p.last:'les coachs extérieurs')+'"><i></i>'+(p?p.first:'Coachs extérieurs')+'<small>'+dh(hrs[x[0]])+'</small></button>'}).join('')+
      '<div class="pl-st">'+U.chip('Remplissage '+pct+' %','acc')+U.chip(plural(places-ins,'place libre','places libres'))+U.chip(wait+' en attente',wait?'warn':'')+(cf.length?'<button class="chip bad dot" data-conf>'+plural(cf.length,'conflit')+' à résoudre</button>':U.chip('Aucun conflit','ok',true))+'</div></div>';
     if(ST.view==='week'){h+=gridHTML(DN.map(function(n,i){var dt=dateOf(i,ST.off),iso=D.iso(dt),hol=holiday(iso),vac=vacation(iso),list=evs.filter(function(e){return e.d===i}),today=ST.off===0&&i===TDI,k=list.filter(function(e){return e.l.cap>0}).length;
-       return {head:'<button class="pl-dh'+(today?' today':'')+'" data-day="'+i+'" title="Ouvrir le '+F.dateL(dt)+' par piste"><span class="dn">'+n+'</span><span class="dd">'+dt.getDate()+'</span><span class="dm">'+(hol?'Férié':vac&&!k?'Vacances':plural(k,'séance'))+'</span></button>',cls:(today?'today':'')+(hol||(vac&&!list.length)?' off':''),evs:list,now:today,off:hol?[hol.n,'Reprises suspendues, rattrapages crédités']:(vac&&!list.length?[vac.n,'Pas de reprise']:null)}}),'week')}
+       return {head:'<button class="pl-dh'+(today?' today':'')+'" data-day="'+i+'" title="Ouvrir le '+F.dateL(dt)+' par piste · '+cntTxt(dayCnt(list))+'"><span class="dn">'+n+'</span><span class="dd">'+dt.getDate()+'</span><span class="dm">'+(hol?'Férié':vac&&!k?'Vacances':cntTxt(dayCnt(list),true))+'</span></button>',cls:(today?'today':'')+(hol||(vac&&!list.length)?' off':''),evs:list,now:today,off:hol?[hol.n,'Reprises suspendues, rattrapages crédités']:(vac&&!list.length?[vac.n,'Pas de reprise']:null)}}),'week')}
     else if(ST.view==='day'){var out=evs.filter(function(e){return e.d===ST.day&&e.k==='balade'}),holD=holiday(D.iso(dDate));
       h+=gridHTML(AR.map(function(a){var list=evs.filter(function(e){return e.d===ST.day&&e.arena===a.id&&e.k!=='balade'}),mins=list.reduce(function(s,e){return s+(e.cx?0:e.dur)},0);
        return {head:'<div class="pl-dh ar"><div class="hrow sp" style="--g:6px"><b class="s ellip">'+a.name+'</b><span class="xs mut num" style="white-space:nowrap">'+(mins?dh(mins/60):'0 h')+' réservées</span></div>'+U.bar(mins/300*100,'var(--acc)')+'<div class="xs mut ellip">'+a.kind+' · '+a.size+'</div></div>',cls:holD?'off':'',evs:list,now:ST.off===0&&ST.day===TDI,off:holD?[holD.n,'Reprises suspendues']:null}}),'day');
       if(out.length)h+='<div class="pl-hint">'+ICON('route','sm')+'<span>Hors des pistes ce jour-là :</span>'+out.map(function(e){return '<button class="chip acc" data-ev="'+e.l.id+'" data-d="'+e.d+'">'+e.l.title+' · '+hm(e.s)+'</button>'}).join('')+'</div>'}
     else{var any=false;DN.forEach(function(n,i){var list=evs.filter(function(e){return e.d===i&&fm(e)}),dt=dateOf(i,ST.off),hol=holiday(D.iso(dt));if(!list.length&&!hol)return;any=true;
-       h+='<div class="pl-day"'+(i?' style="border-top:1px solid var(--line)"':'')+'><b>'+cap1(F.dateL(dt))+'</b><span class="xs mut">'+(hol?hol.n+', reprises suspendues':plural(list.length,'créneau','créneaux')+' · '+list.reduce(function(s,e){return s+e.l.riders.length},0)+' cavaliers')+'</span>'+(ST.off===0&&i===TDI?U.chip('Aujourd’hui','acc',true):'')+'</div>'+list.map(rowHTML).join('')});
+       h+='<div class="pl-day"'+(i?' style="border-top:1px solid var(--line)"':'')+'><b>'+cap1(F.dateL(dt))+'</b><span class="xs mut">'+(hol?hol.n+', reprises suspendues':cntTxt(dayCnt(list)))+'</span>'+(ST.off===0&&i===TDI?U.chip('Aujourd’hui','acc',true):'')+'</div>'+list.map(rowHTML).join('')});
       if(!any)h+=U.empty('filter','Aucune reprise ne correspond aux filtres','Élargissez la recherche pour retrouver vos créneaux.','<button class="btn sm" data-clear>Tout afficher</button>')}
     if(ST.view!=='list')h+='<div class="pl-hint">'+ICON('swap','sm')+'<span>Glissez une reprise pour la déplacer : Piaffe vérifie le moniteur et la piste avant le lâcher. Cliquez dans un créneau vide pour créer.</span></div>';
     h+='</div>';
@@ -342,7 +353,7 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
    on(el,'[data-coach]',function(b){var v=b.getAttribute('data-coach');ST.coach=ST.coach===v?'':v;draw()});
    on(el,'[data-clear]',function(){ST.coach=ST.arena=ST.lvl='';draw()});
    on(el,'[data-day]',function(b){ST.day=+b.getAttribute('data-day');if(!P.isMobile())ST.view='day';draw()});
-   on(el,'[data-hol]',openHolidays);on(el,'[data-new]',function(){openCreate({})});on(el,'[data-conf]',function(){openConflicts(cf)});
+   on(el,'[data-hol]',openHolidays);on(el,'[data-new]',function(){openCreateMenu({})});on(el,'[data-kiosk]',function(){P.sellerie({focus:'reprises'})});on(el,'[data-conf]',function(){openConflicts(cf)});
    on(el,'[data-filt]',openFilters);
    on(el,'[data-prop]',function(b){var id=b.getAttribute('data-prop'),m=D.member(id);ST.prop[id]=1;b.outerHTML=U.chip('Proposé','ok',true);P.toast('Créneau proposé à '+m.first+' '+m.last+' par notification'+(m.minor?', ses parents sont en copie':''))});
    on(el,'[data-propall]',function(){D.planCatch.forEach(function(c){ST.prop[c.m]=1});draw();P.toast(D.planCatch.length+' propositions de rattrapage envoyées')});
@@ -352,7 +363,7 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
    /* clic dans un créneau vide : création préremplie */
    on(el,'.pl-col',function(c,e){if(drag||e.target!==c||c.classList.contains('off'))return;var r=c.getBoundingClientRect(),s=H0*60+Math.floor((e.clientY-r.top)/HP*2)*30,i=+c.getAttribute('data-col');openCreate(ST.view==='day'?{d:ST.day,s:s,arena:AR[i].id}:{d:i,s:s})});
    /* glisser-déposer avec détection des conflits */
-   on(el,'.pl-ev',function(b,e0){if(e0.button||e0.pointerType==='touch')return;var id=b.getAttribute('data-ev'),inst=evs.find(function(x){return x.l.id===id&&x.d===+b.getAttribute('data-d')});if(!inst||inst.k==='stage'&&/^v/.test(id))return;
+   on(el,'.pl-ev',function(b,e0){if(e0.button||e0.pointerType==='touch')return;var id=b.getAttribute('data-ev'),inst=evs.find(function(x){return x.l.id===id&&x.d===+b.getAttribute('data-d')});if(!inst||inst.k==='stage'&&/^v/.test(id)||inst.k==='resa')return;
      var cols=$$('.pl-col',el),r0=b.getBoundingClientRect(),gy=e0.clientY-r0.top,sx=e0.clientX,sy=e0.clientY,ghost=null,tgt=null,moved=false;
      function mv(e){var dx=e.clientX-sx,dy=e.clientY-sy;if(!moved){if(Math.abs(dx)+Math.abs(dy)<6)return;moved=drag=true;b.classList.add('drag');ghost=document.createElement('div');ghost.className='pl-drop'}
       b.style.transform='translate('+dx+'px,'+dy+'px)';
@@ -371,7 +382,7 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
  }});
 
 /* ---------- Feuille d'une reprise ---------- */
-function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.id===id&&(isNaN(d)||d==null||x.d===d)});if(!e)return;
+function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.id===id&&(isNaN(d)||d==null||x.d===d)});if(!e)return;if(e.k==='resa'){openResa(e);return}
  var l=e.l,c=D.person(l.coach),key=l.id+'@'+ST.off,svc=e.k==='entretien'||e.k==='travail',picking=null;
  if(!ST.att[key])ST.att[key]={};var att=ST.att[key];
  var tab=svc?'slot':(ST.tab==='slot'?'montoir':ST.tab);
@@ -383,13 +394,15 @@ function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.i
  function hbHTML(r,ld,fresh){var s=hstate(l,r,ld);if(s.none)return '<button class="pl-hb none" data-hb="'+r+'">'+ICON('plus','sm')+'Choisir un cheval</button>';
   return '<button class="pl-hb '+s.lvl+(fresh?' pop':'')+'" data-hb="'+r+'" title="Changer de cheval">'+U.hav(s.h)+'<span class="tx"><b class="ellip">'+s.h.name+'</b><span class="ellip">'+s.txt+'</span></span>'+(fresh?'<span class="strass"></span>':s.lvl?ICON('alert','sm'):ICON('down','sm'))+'</button>'}
  function slotForm(){var mv=ST.moves[l.id]||{};return '<div class="lx-form">'+fld('Jour',sel('d',DNL.map(function(n,i){return [i,cap1(n)]}),e.d))+fld('Heure de début',sel('s',times(),e.s))+fld('Piste',sel('a',AR.map(function(a){return [a.id,a.name]}),e.arena))+fld('Encadrant',sel('c',D.staff.concat(D.coaches.filter(function(x){return x.ext})).map(function(p){return [p.id,p.first+' '+p.last]}),l.coach))+(l.cap>0?fld('Capacité',sel('cap',[4,6,8,10,12],l.cap))+fld('Récurrence',sel('rec',['Chaque semaine, hors vacances scolaires','Toutes les deux semaines','Cette semaine seulement'],'')):'')+'</div><div data-chk style="margin-top:12px"></div>'+
-   (l.cap>0?'<div style="margin-top:6px">'+opt('Réservable en ligne','Les adhérents s’inscrivent depuis leur application.',true,'ls-on')+opt('Ouverte aux rattrapages','Les crédits de rattrapage donnent accès aux places libres.',true,'ls-ra')+opt('Liste d’attente automatique','La première personne en attente est inscrite dès qu’une place se libère.',true,'ls-wa')+'</div><div class="hrow" style="margin-top:12px"><button class="btn pri" data-apply>Appliquer les changements</button><button class="btn" data-dup>'+ICON('copy','sm')+'Dupliquer</button></div>':'')}
+   (l.cap>0?'<div style="margin-top:6px">'+opt('Réservable en ligne','Les adhérents s’inscrivent depuis leur application.',true,'ls-on')+opt('Ouverte aux rattrapages','Les crédits de rattrapage donnent accès aux places libres.',true,'ls-ra')+opt('Liste d’attente automatique','La première personne en attente est inscrite dès qu’une place se libère.',true,'ls-wa')+
+   opt('Prix réduit si moins de 50\u00a0% de remplissage à J-2','Les places restantes passent au prix plancher deux jours avant. Aujourd’hui '+l.riders.length+'/'+l.cap+' ('+Math.round(l.riders.length/l.cap*100)+'\u00a0%)'+(l.riders.length/l.cap<.5?' : la réduction s’appliquerait.':' : la réduction ne s’appliquerait pas.'),!!(ST.promo&&ST.promo[l.id]),'ls-pr')+
+   '<div class="lx-form" style="margin-top:8px">'+fld('Prix plancher',sel('floor',['12 € la séance','15 € la séance','18 € la séance'],ST.promo&&ST.promo[l.id]?ST.promo[l.id]:'15 € la séance'))+fld('Prix habituel','<input class="in" value="22 € la séance à l’unité" disabled>')+'</div></div><div class="hrow" style="margin-top:12px"><button class="btn pri" data-apply>Appliquer les changements</button><button class="btn" data-dup>'+ICON('copy','sm')+'Dupliquer</button></div>':'')}
  function paint(b){b=b||body;var ld=loads(e.d),n=l.riders.length,k=cnt(),w=waitOf(l),iss=issues(l),au=ST.auto[key],free=l.cap-n+k.a+k.e;
-  var h='<div class="pl-sum"><div class="w">'+cap1(F.dateL(e.date))+' <span>· '+hm(e.s)+' à '+hm(e.s+e.dur)+'</span></div><div class="hrow wrap" style="--g:6px"><span class="chip lg">'+U.av(c,'sm')+'&nbsp;'+c.first+' '+c.last+'</span><span class="chip lg">'+ICON('arena','sm')+place(e)+'</span>'+(l.cap>0?'<span class="chip lg">'+lvName(l)+'</span><span class="chip lg '+(n>=l.cap?'ok':'acc')+'">'+n+'/'+l.cap+' inscrits</span>':'')+(l.wait?'<span class="chip lg warn">'+l.wait+' en attente</span>':'')+(e.cx?'<span class="chip lg bad">Annulée</span>':'')+(e.conf?'<span class="chip lg bad dot">Conflit de piste</span>':'')+'</div></div>';
+  var h='<div class="pl-sum"><div class="w">'+cap1(F.dateL(e.date))+' <span>· '+hm(e.s)+' à '+hm(e.s+e.dur)+'</span></div><div class="hrow wrap" style="--g:6px"><span class="chip lg">'+U.av(c,'sm')+'&nbsp;'+c.first+' '+c.last+'</span><span class="chip lg">'+ICON('arena','sm')+place(e)+'</span>'+(l.cap>0?'<span class="chip lg">'+lvName(l)+'</span><span class="chip lg '+(n>=l.cap?'ok':'acc')+'">'+n+'/'+l.cap+' inscrits</span>':'')+(l.wait?'<span class="chip lg warn">'+l.wait+' en attente</span>':'')+(ST.promo&&ST.promo[l.id]?'<span class="chip lg acc">'+ICON('percent','sm')+'Prix réduit à J-2</span>':'')+(l.amin||l.amax?'<span class="chip lg">'+ageTxt(l)+'</span>':'')+(l.members?'<span class="chip lg">Adhérents seulement</span>':'')+(e.cx?'<span class="chip lg bad">Annulée</span>':'')+(e.conf?'<span class="chip lg bad dot">Conflit de piste</span>':'')+'</div></div>';
   if(svc){b.innerHTML=h+'<p class="s mut" style="margin-bottom:14px">'+(e.k==='entretien'?'La piste est bloquée pendant l’entretien : aucune reprise ne peut y être placée.':'Séance de travail suivie dans le carnet du cheval. Le rond de longe est réservé.')+'</p>'+slotForm();wire(b);return}
   h+=U.tabs([['montoir','Montoir et appel'],['attente','Attente et rattrapages'+(w.length?' · '+w.length:'')],['seance','Séance'],['slot','Créneau']],tab,'data-lt');
   if(tab==='montoir'){
-   h+='<div class="pl-tools"><button class="btn dark" data-auto>'+ICON('assistant','sm')+'Attribuer les chevaux automatiquement</button><button class="btn" data-print>'+ICON('doc','sm')+'Feuille de monte</button><span class="pl-cnt">'+(iss?'<b class="warnc">'+plural(iss,'point')+' à régler</b>':'<b class="okc">Montoir complet</b>')+'</span></div>';
+   h+='<div class="pl-tools"><button class="btn dark" data-auto>'+ICON('assistant','sm')+'Attribuer les chevaux automatiquement</button><button class="btn" data-print>'+ICON('doc','sm')+'Feuille de monte</button><button class="btn" data-kl title="Afficher cette reprise sur l’écran de la sellerie">'+ICON('expand','sm')+'Sellerie</button><span class="pl-cnt">'+(iss?'<b class="warnc">'+plural(iss,'point')+' à régler</b>':'<b class="okc">Montoir complet</b>')+'</span></div>';
    if(au)h+='<div class="lx-ai fade" style="margin:10px 0 4px"><span class="strass"></span><div class="grow"><b style="color:var(--ink)">'+plural(au.n,'cheval attribué','chevaux attribués')+' en '+au.ms+' s.</b> Niveau, gabarit et charge respectés : aucun cheval ne dépasse '+plural(au.max,'reprise')+' ce '+DNL[e.d]+'.'+(au.left.length?' '+au.left.join(' et ')+' '+(au.left.length>1?'restent':'reste')+' au box.':'')+'</div><button class="btn ghost sm" data-undo>Annuler</button></div>';
    h+='<div style="margin-top:8px">'+(n?l.riders.map(function(r){var m=D.member(r),v=att[r];return '<div class="pl-r" data-r="'+r+'">'+U.av(m)+'<div style="min-width:0"><div class="b s ellip">'+m.first+' '+m.last+'</div><div class="xs mut ellip">'+(m.minor?m.age+' ans · ':'')+'Galop '+m.galop+(m.balance<0?' · <span class="badc">solde '+F.eur(m.balance)+'</span>':'')+'</div></div>'+hbHTML(r,ld)+
      '<div class="pl-att" role="group" aria-label="Appel">'+[['p','Présent',ICON('check','sm')],['a','Absent',ICON('x','sm')],['e','Excusé','Exc.']].map(function(x){return '<button data-att="'+x[0]+'" aria-pressed="'+(v===x[0])+'" title="'+x[1]+'">'+x[2]+'</button>'}).join('')+'</div>'+(picking===r?pickHTML(r,ld):'')+'</div>'}).join(''):U.empty('members','Aucun inscrit pour l’instant','Ouvrez la réservation en ligne ou inscrivez un cavalier depuis la liste d’attente.'))+'</div>';
@@ -399,6 +412,7 @@ function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.i
     '<div class="lx-h">Rattrapages proposés par l’assistant <span class="mut">niveau compatible, crédit valide</span></div>'+cat.map(function(x){var m=D.member(x.m);return '<div class="pl-p">'+U.av(m)+'<div class="grow"><div class="b s ellip">'+m.first+' '+m.last+' <span class="mut" style="font-weight:500">· Galop '+m.galop+'</span></div><div class="xs mut ellip">'+x.from+' · crédit valable encore '+x.exp+' jours</div></div>'+(ST.prop[x.m]?U.chip('Proposé','ok',true):'<button class="btn sm" data-prop="'+x.m+'">Proposer ce créneau</button>')+'</div>'}).join('')+
     '<div style="margin-top:12px">'+opt('Ouvrir cette reprise aux rattrapages en ligne','Les cavaliers avec un crédit voient les places libres dans leur application.',true,'lr-on')+'</div>';
   }else if(tab==='seance'){var nt=ST.notes[l.id]||{th:/CSO|cross|concours/i.test(l.title)?'Enchaînement de quatre obstacles, contrat de foulées':'Transitions trot et galop, équilibre sur le cercle',tx:'Groupe homogène. Reprendre la mise en selle sans étriers dix minutes. Surveiller la position des mains au galop.'};
+   var pg=progOf(l);h+='<div class="pz-prog"><span class="av sq" style="--c:var(--surface);color:var(--acc)">'+ICON('list','sm')+'</span><div class="grow" style="min-width:0"><b class="s">Programmation du trimestre</b><div class="xs mut ellip">'+(pg.saved?'Séance 1 sur 12 cette semaine · '+F.esc(pg.th[0]):'12 séances, un thème par semaine, envoyées aux cavaliers')+'</div></div><button class="btn sm '+(pg.saved?'':'pri')+'" data-prog>'+(pg.saved?ICON('edit','sm')+'Modifier':'Préparer')+'</button></div>';
    h+='<div class="stack" style="--g:12px;margin-top:16px">'+fld('Thème de la séance','<input class="in" data-k="th" value="'+F.esc(nt.th)+'">')+fld('Notes du moniteur','<textarea class="in" data-k="tx" rows="4">'+F.esc(nt.tx)+'</textarea>')+'<div class="hrow"><button class="btn pri" data-save>Enregistrer les notes</button><button class="btn" data-share>'+ICON('send','sm')+'Partager le compte rendu aux cavaliers</button></div></div>'+
     '<div class="lx-h">Séances précédentes</div><div class="tl"><div class="ev"><div class="b s">'+F.date(D.day(e.d-TDI-7))+' · Travail sur des barres au sol</div><div class="s mut">'+c.first+' : bon rythme, deux cavaliers à revoir sur le regard dans les courbes.</div></div><div class="ev"><div class="b s">'+F.date(D.day(e.d-TDI-14))+' · Mise en selle et voltes</div><div class="s mut">'+c.first+' : séance calme, validation du trot enlevé sur le bon diagonal pour tout le groupe.</div></div></div>';
   }else h+='<div style="margin-top:16px">'+slotForm()+'</div>';
@@ -410,7 +424,9 @@ function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.i
  function check(b){var box=$('[data-chk]',b);if(!box)return [];var d=+val(b,'d'),s=+val(b,'s'),bz=busy(d,s,e.dur,val(b,'c'),e.k==='balade'?'':val(b,'a'),l.id);
   box.innerHTML=bz.length?'<div class="note bad">'+ICON('alert','sm')+'<span><b>Conflit détecté.</b> '+bz.join('. ')+'.</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Aucun conflit : la piste et l’encadrant sont libres le '+DNL[d]+' à '+hm(s)+'.</span></div>';return bz}
  function apply(b){var bz=check(b);if(bz.length){P.toast('Ce créneau est en conflit, choisissez une autre heure ou une autre piste',{icon:'alert'});return}
-  var d=+val(b,'d'),s=+val(b,'s'),a=val(b,'a'),ch=d!==e.d||s!==e.s||a!==e.arena;ST.moves[l.id]={d:d,s:s,a:a};l.coach=val(b,'c');if(val(b,'cap'))l.cap=+val(b,'cap');ST.landed=l.id;sh.close();redraw();
+  var d=+val(b,'d'),s=+val(b,'s'),a=val(b,'a'),ch=d!==e.d||s!==e.s||a!==e.arena;ST.moves[l.id]={d:d,s:s,a:a};l.coach=val(b,'c');if(val(b,'cap'))l.cap=+val(b,'cap');ST.landed=l.id;
+  if(!ST.promo)ST.promo={};var hadP=!!ST.promo[l.id],pr=l.cap>0&&isOn(b,'ls-pr');if(pr)ST.promo[l.id]=val(b,'floor')||'15 € la séance';else delete ST.promo[l.id];sh.close();redraw();
+  if(pr!==hadP||pr){P.toast(pr?'Prix réduit activé : '+ST.promo[l.id].replace(' la séance','')+' la séance si « '+l.title+' » est remplie à moins de 50\u00a0% à J-2':'Prix réduit désactivé pour « '+l.title+' »',{icon:'percent'});return}
   P.toast(ch?'« '+l.title+' » déplacée au '+DNL[d]+' à '+hm(s)+(l.riders.length?'. '+plural(l.riders.length,'cavalier')+' prévenus':''):'Créneau mis à jour')}
  function wire(b){
   on(b,'[data-lt]',function(x){tab=x.getAttribute('data-lt');ST.tab=tab;picking=null;paint()});
@@ -419,7 +435,9 @@ function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.i
   on(b,'[data-allp]',function(){l.riders.forEach(function(r){if(!att[r])att[r]='p'});paint()});
   on(b,'[data-hb]',function(x){var r=x.getAttribute('data-hb');picking=picking===r?null:r;paint();var pk=$('.pl-pick',body);if(pk)pk.scrollIntoView({block:'nearest',behavior:'smooth'})});
   on(b,'[data-pick]',function(x){var h=D.horse(x.getAttribute('data-pick'));l.horses[picking]=h.id;var m=D.member(picking);picking=null;paint();redraw();P.toast(h.name+' attribué à '+m.first+' '+m.last)});
-  on(b,'[data-print]',function(){P.toast('Feuille de monte envoyée à l’impression et affichée sur l’écran de la sellerie',{icon:'doc'})});
+  on(b,'[data-print]',function(){P.toast('Feuille de monte envoyée à l’imprimante du bureau',{icon:'doc'})});
+  on(b,'[data-kl]',function(){sh.close();P.sellerie({focus:'reprises',lesson:ST.off===0&&e.d===TDI?l.id:null})});
+  on(b,'[data-prog]',function(){openProg(l,function(){ST.tab='seance';setTimeout(function(){openLesson(l.id,e.d)},P.RM?0:240)})});
   on(b,'[data-undo]',function(){l.horses=ST.auto[key].before;delete ST.auto[key];paint();redraw();P.toast('Attribution précédente rétablie',{icon:'refresh'})});
   on(b,'[data-auto]',function(btn){var before=JSON.parse(JSON.stringify(l.horses)),res=autoAssign(l),rows=$$('.pl-r',b),t0=performance.now(),step=P.RM?0:95;btn.disabled=true;picking=null;
    var left=[];l.riders.forEach(function(r){var h=before[r]&&D.horse(before[r]);if(h&&unav(h)&&h.owner!==r&&res[r]!==h.id)left.push(h.name+' ('+unav(h).split(',')[0].toLowerCase()+')')});
@@ -483,17 +501,21 @@ function openCreate(pre){var type=pre.type||'reprise',TY=[['reprise','Reprise'],
    fld('Piste',sel('a',AR.map(function(a){return [a.id,a.name]}),keep.a||pre.arena||'a3'))+
    fld('Récurrence',sel('rec',st?[['once','Du lundi au vendredi, 5 jours'],['once','Un seul jour']]:[['week','Chaque semaine, hors vacances scolaires'],['two','Toutes les deux semaines'],['once','Une seule fois']],keep.rec||(pa?'once':'week')))+
    fld('Capacité',sel('cap',pa?[1,2,3]:[4,6,8,10,12],keep.cap||pre.cap||(pa?1:8)))+
-   fld('Tarif',sel('price',st?['45 € la journée','160 € les 5 jours','Inclus dans le forfait']:pa?['38 € la séance','55 € la séance','1 séance de carte']:['Inclus dans le forfait, 1 séance de carte','22 € la séance à l’unité','Gratuit'],''),'full')+'</div>'+
-   '<div data-chk style="margin-top:12px"></div><div style="margin-top:6px">'+opt('Réservable en ligne','Visible dans l’application des adhérents et sur le site du club.',true,'nc-on')+opt('Ouverte aux rattrapages','Les crédits de rattrapage donnent accès aux places libres.',!st&&!pa,'nc-ra')+opt('Liste d’attente automatique','Inscription automatique dès qu’une place se libère.',true,'nc-wa')+(st?opt('Acompte de 30 % à la réservation','Paiement en ligne par carte, solde le premier jour.',true,'nc-ac'):'')+'</div>';
+   fld('Tarif',sel('price',st?['45 € la journée','160 € les 5 jours','Inclus dans le forfait']:pa?['38 € la séance','55 € la séance','1 séance de carte']:['Inclus dans le forfait, 1 séance de carte','22 € la séance à l’unité','Gratuit'],''),'full')+
+   fld('Âge minimum',sel('amin',[['','Aucun']].concat([4,6,8,10,12,14,16,18].map(function(a){return [a,a+' ans']})),keep.amin||''))+fld('Âge maximum',sel('amax',[['','Aucun']].concat([8,10,12,14,16,18].map(function(a){return [a,a+' ans']})),keep.amax||''))+'</div>'+
+   '<div data-age class="xs mut" style="margin-top:6px"></div>'+
+   '<div data-chk style="margin-top:12px"></div><div style="margin-top:6px">'+opt('Réservable en ligne','Visible dans l’application des adhérents et sur le site du club.',true,'nc-on')+opt('Ouverte aux rattrapages','Les crédits de rattrapage donnent accès aux places libres.',!st&&!pa,'nc-ra')+opt('Liste d’attente automatique','Inscription automatique dès qu’une place se libère.',true,'nc-wa')+(st?opt('Acompte de 30 % à la réservation','Paiement en ligne par carte, solde le premier jour.',true,'nc-ac'):'')+opt('Réservé aux adhérents','Les cavaliers sans licence au club ne voient pas ce créneau dans la réservation en ligne.',!!keep.mem,'nc-ad')+'</div>';
   okb.innerHTML=ICON('plus','sm')+(st?'Créer le stage':pa?'Créer le cours':type==='balade'?'Créer la balade':'Créer la reprise');
-  on(b,'[data-ty]',function(x){['title','lvl','c','d','s','a'].forEach(function(k){keep[k]=val(b,k)});keep.title=null;type=x.getAttribute('data-ty');paint(b)});
+  on(b,'[data-ty]',function(x){['title','lvl','c','d','s','a','amin','amax'].forEach(function(k){keep[k]=val(b,k)});keep.mem=isOn(b,'nc-ad');keep.title=null;type=x.getAttribute('data-ty');paint(b)});
   on(b,'[data-k]',function(){check()},'change');check()}
  function check(){var d=+val(body,'d'),s=+val(body,'s'),bz=busy(d,s,+val(body,'dur'),val(body,'c'),type==='balade'?'':val(body,'a'));
-  $('[data-chk]',body).innerHTML=bz.length?'<div class="note bad">'+ICON('alert','sm')+'<span><b>Conflit détecté.</b> '+bz.join('. ')+'.</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Aucun conflit : '+D.person(val(body,'c')).first+' et la piste sont libres le '+DNL[d]+' à '+hm(s)+'.</span></div>';okb.disabled=!!bz.length;return bz}
+  $('[data-chk]',body).innerHTML=bz.length?'<div class="note bad">'+ICON('alert','sm')+'<span><b>Conflit détecté.</b> '+bz.join('. ')+'.</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Aucun conflit : '+D.person(val(body,'c')).first+' et la piste sont libres le '+DNL[d]+' à '+hm(s)+'.</span></div>';okb.disabled=!!bz.length;
+  var a0=+val(body,'amin')||0,a1=+val(body,'amax')||0,ag=$('[data-age]',body);if(ag){if(a0&&a1&&a1<a0){ag.innerHTML='<b class="badc">L’âge maximum est inférieur à l’âge minimum.</b>';okb.disabled=true}else{var nm=D.members.filter(function(m){return (!a0||m.age>=a0)&&(!a1||m.age<=a1)&&m.forfait!=='f5'}).length;ag.textContent=a0||a1?ageTxt({amin:a0,amax:a1})+'\u00a0: '+plural(nm,'adhérent concerné','adhérents concernés')+' au club.':'Ouverte à tous les âges.'}}
+  return bz}
  on(sh,'[data-x2]',function(){sh.close()});
  okb.onclick=function(){if(check().length)return;var d=+val(body,'d'),s=+val(body,'s'),nid='n'+(ST.created.length+1),t=val(body,'title')||'Nouvelle reprise';
-  ST.created.push({id:nid,dow:(d+1)%7,start:hc(s),dur:+val(body,'dur'),title:t,coach:val(body,'c'),arena:val(body,'a'),cap:+val(body,'cap'),riders:[],horses:{},wait:0,kind:type,once:val(body,'rec')==='once'?ST.off:null});
-  ST.landed=nid;if(P.isMobile())ST.day=d;sh.close();redraw();P.toast('« '+t+' » créée le '+DNL[d]+' à '+hm(s)+(isOn(sh,'nc-on')?', réservation en ligne ouverte':''),{undo:function(){ST.created=ST.created.filter(function(x){return x.id!==nid});redraw()}})}}
+  var nl={id:nid,dow:(d+1)%7,start:hc(s),dur:+val(body,'dur'),title:t,coach:val(body,'c'),arena:val(body,'a'),cap:+val(body,'cap'),riders:[],horses:{},wait:0,kind:type,once:val(body,'rec')==='once'?ST.off:null,amin:+val(body,'amin')||0,amax:+val(body,'amax')||0,members:isOn(sh,'nc-ad')};
+  ST.created.push(nl);ST.landed=nid;if(P.isMobile())ST.day=d;sh.close();redraw();P.toast('« '+t+' » créée le '+DNL[d]+' à '+hm(s)+(nl.amin||nl.amax?', '+ageTxt(nl).toLowerCase():'')+(nl.members?', réservée aux adhérents':'')+(isOn(sh,'nc-on')?', réservation en ligne ouverte':''),{undo:function(){ST.created=ST.created.filter(function(x){return x.id!==nid});redraw()}})}}
 
 /* ---------- Conflits ---------- */
 function openConflicts(cf){var sh=P.sheet({title:plural(cf.length,'conflit')+' à résoudre',icon:'alert',body:cf.map(function(c,i){var mv=/^x|^n/.test(c.b.l.id)?c.b:c.a,st=mv===c.a?c.b:c.a,freeA=AR.find(function(a){return a.id!==mv.arena&&a.id!=='a4'&&!busy(mv.d,mv.s,mv.dur,'',a.id,mv.l.id).length});
@@ -523,16 +545,231 @@ function openFilters(){var sh=P.sheet({title:'Filtrer le planning',icon:'filter'
  on(sh,'[data-rz]',function(){ST.coach=ST.arena=ST.lvl='';sh.close();redraw()});
  on(sh,'[data-ok]',function(){ST.coach=val(sh,'coach');ST.arena=val(sh,'arena');ST.lvl=val(sh,'lvl');sh.close();redraw()})}
 
+/* =====================================================================
+   Manche 2 : réservations de pistes, menu Créer, semaine type,
+   programmation du trimestre et écran de la sellerie
+   ===================================================================== */
+P.css(`
+.pl-ev.pz-resa{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c) 10%,var(--surface)) 0 6px,var(--surface) 6px 12px)}
+.pz-menu{display:flex;flex-direction:column;gap:8px}
+.pz-mi{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);background:var(--surface);text-align:left;transition:background var(--t-1),box-shadow var(--t-1)}
+.pz-mi:hover{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.pz-mi .av{flex:none}
+.pz-mi.gen{box-shadow:inset 0 0 0 1px var(--acc-line);background:var(--acc-pale)}
+.pz-steps{display:flex;gap:6px;margin-bottom:16px}
+.pz-steps span{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--mut);font-weight:600}
+.pz-steps span i{height:4px;border-radius:2px;background:var(--bg-2);transition:background var(--t-2)}
+.pz-steps span.on{color:var(--ink)}.pz-steps span.on i,.pz-steps span.done i{background:var(--acc)}
+.pz-steps span b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.pz-av{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.pz-av:first-of-type{border-top:0}
+.pz-days{display:flex;gap:4px}
+.pz-days .tag{min-width:38px;justify-content:center;padding:0 6px}
+.pz-days .tag[aria-pressed="true"]{background:var(--acc-pale);color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc-line)}
+.pz-days .tag[aria-pressed="false"]{background:var(--surface);color:var(--mut-2);text-decoration:line-through;box-shadow:inset 0 0 0 1px var(--line)}
+.pz-stp{display:inline-flex;align-items:center;border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface)}
+.pz-stp button{width:34px;height:34px;display:grid;place-items:center;color:var(--ink-2)}
+.pz-stp b{min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+.pz-gr{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.pz-gr .tm{font-weight:650;font-variant-numeric:tabular-nums}
+.pz-gr.chg{background:linear-gradient(90deg,var(--acc-pale),transparent 70%);margin:0 -8px;padding:8px}
+.pz-gr.bad{background:linear-gradient(90deg,var(--bad-pale),transparent 70%);margin:0 -8px;padding:8px}
+.pz-gr.off{opacity:.55}.pz-gr.off b{text-decoration:line-through}
+.pz-dh{font:650 12px var(--f-text);color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 4px}
+.pz-sumg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pz-sumg div{padding:10px 12px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.pz-sumg b{display:block;font:700 20px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.pz-sumg span{font-size:11.5px;color:var(--mut)}
+.pz-pg{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.pz-pg:first-child{border-top:0}
+.pz-pg .wk{font-size:12px;color:var(--mut);line-height:1.3}.pz-pg .wk b{display:block;color:var(--ink);font-size:13px}
+.pz-pg.cur .wk b{color:var(--acc)}
+.pz-prog{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--acc-pale);box-shadow:inset 0 0 0 1px var(--acc-line);margin-top:16px}
+@container main (max-width:520px){.pz-sumg{grid-template-columns:repeat(2,minmax(0,1fr))}.pz-av{grid-template-columns:minmax(0,1fr)}.pz-days{flex-wrap:wrap}.pz-days .tag{min-width:0;flex:1 0 calc(25% - 4px)}.pz-pg{grid-template-columns:64px minmax(0,1fr)}}
+
+/* écran de la sellerie (plein écran, sombre dans les deux thèmes) */
+.sl-k{position:absolute;inset:0;z-index:70;background:var(--hero);color:var(--hero-ink);container:main/inline-size;overflow-y:auto;overflow-x:hidden;padding:22px 26px 30px;animation:fade var(--t-3) var(--e-out) both}
+.sl-k.out{opacity:0;transition:opacity var(--t-2)}
+.sl-k .sl-m{color:color-mix(in srgb,var(--hero-ink) 64%,transparent)}
+.sl-hd{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap}
+.sl-hd .grow{min-width:0}
+.sl-hd h2{font:700 22px/1.15 var(--f-display);letter-spacing:-.02em;color:var(--hero-ink)}
+.sl-clock{font:700 54px/1 var(--f-display);letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.sl-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;padding:4px 9px;border-radius:99px;background:color-mix(in srgb,var(--hero-ink) 12%,transparent)}
+.sl-live i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:slpulse 2s ease-in-out infinite}
+@keyframes slpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sl-q{background:var(--hero-ink);color:var(--hero);box-shadow:none}
+.sl-q:hover{background:color-mix(in srgb,var(--hero-ink) 88%,var(--hero))}
+.sl-upd{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:12.5px}
+.sl-upd .bar{flex:1;max-width:220px;height:4px;background:color-mix(in srgb,var(--hero-ink) 14%,transparent);border-radius:2px;overflow:hidden}
+.sl-upd .bar i{display:block;height:100%;width:100%;background:var(--strass);transform-origin:left;animation:slbar 20s linear both}
+@keyframes slbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sl-news{display:flex;align-items:center;gap:8px;min-width:0;animation:rise var(--t-4) var(--e-out) both}
+.sl-news span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sl-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:18px;align-items:start}
+.sl-col{background:color-mix(in srgb,var(--hero-ink) 6%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hero-ink) 12%,transparent);border-radius:var(--r-lg);padding:16px;min-width:0}
+.sl-col.hi{box-shadow:inset 0 0 0 1.5px var(--strass)}
+.sl-col>h3{display:flex;align-items:center;gap:8px;font:650 15px var(--f-display);color:var(--hero-ink);margin-bottom:10px}
+.sl-col>h3 small{margin-left:auto;font:500 12px var(--f-text);color:color-mix(in srgb,var(--hero-ink) 64%,transparent)}
+.sl-ls{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:9px 0;border-top:1px solid color-mix(in srgb,var(--hero-ink) 10%,transparent);font-size:13.5px}
+.sl-ls:first-of-type{border-top:0}
+.sl-ls .tm{font-weight:700;font-variant-numeric:tabular-nums}
+.sl-ls.past{opacity:.45}
+.sl-next{border-radius:var(--r-md);background:color-mix(in srgb,var(--hero-ink) 9%,transparent);padding:12px;margin:4px 0 8px}
+.sl-next .ey{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--strass)}
+.sl-next h4{font:700 19px/1.2 var(--f-display);margin:4px 0 2px;color:var(--hero-ink)}
+.sl-pairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.sl-pair{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:9px;background:color-mix(in srgb,var(--hero-ink) 8%,transparent);font-size:13px;min-width:0}
+.sl-pair span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sl-pair b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;text-align:right}
+.sl-pair.none b{color:var(--warn)}
+.sl-c{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid color-mix(in srgb,var(--hero-ink) 10%,transparent);font-size:13.5px;line-height:1.4}
+.sl-c:first-of-type{border-top:0}
+.sl-c svg.i{flex:none;margin-top:1px;color:var(--strass)}
+.sl-c.bad svg.i{color:var(--bad)}.sl-c.warn svg.i{color:var(--warn)}
+.sl-c b{color:var(--hero-ink)}
+@container main (max-width:1000px){.sl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sl-grid>.sl-col:first-child{grid-column:1/-1}}
+.sl-upd{flex-wrap:wrap}.sl-upd>span:first-child{white-space:nowrap}
+@container main (max-width:620px){.sl-k{padding:16px 16px 28px}.sl-grid{grid-template-columns:minmax(0,1fr)}.sl-clock{font-size:36px}.sl-hd{gap:10px 12px}.sl-hd>svg{display:none}.sl-hd .grow{flex:1 1 100%}.sl-hd h2{font-size:18px}.sl-q{margin-left:auto}.sl-pairs{grid-template-columns:minmax(0,1fr)}.sl-upd .bar{flex:1 1 80px}.sl-upd>span:last-child{flex:1 1 100%}}
+`);
+
+/* ---------- Réservation de piste d'un propriétaire ---------- */
+function openResa(e){var b=e.l.tb,m=D.person(b.who),h=D.horse(b.horse),a=arena(b.arena),s0=mn(b.from),s1=mn(b.to);
+ var same=(D.trackBookings||[]).filter(function(x){return x.date===b.date&&x.arena===b.arena&&mn(x.from)<s1&&s0<mn(x.to)}).length;
+ var mine=(D.trackBookings||[]).filter(function(x){return x.date===b.date&&x.who===b.who}).reduce(function(t,x){return t+mn(x.to)-mn(x.from)},0);
+ var sh=P.sheet({title:'Réservation de piste',icon:'arena',body:'<div class="pl-sum"><div class="w">'+cap1(F.dateL(e.date))+' <span>· '+hm(s0)+' à '+hm(s1)+'</span></div><div class="hrow wrap" style="--g:6px"><span class="chip lg">'+U.av(m,'sm')+'&nbsp;'+m.first+' '+m.last+'</span><span class="chip lg">'+ICON('arena','sm')+a.name+'</span>'+(h?'<span class="chip lg">'+ICON('horse','sm')+h.name+'</span>':'')+'</div></div>'+
+   '<div class="lx-h">Règles des installations</div>'+
+   '<div class="pl-p"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON('members','sm')+'</span><div class="grow"><div class="b s">Piste partagée</div><div class="xs mut">'+same+' cavalier'+(same>1?'s':'')+' sur 4 places à cette heure</div></div>'+U.chip(same<4?'Places libres':'Complet',same<4?'ok':'warn',true)+'</div>'+
+   '<div class="pl-p"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON('clock','sm')+'</span><div class="grow"><div class="b s">Une heure par jour et par cheval</div><div class="xs mut">'+dh(mine/60)+' réservées par '+m.first+' ce jour-là</div></div>'+U.chip(mine<=60?'Règle respectée':'Au-delà de la règle',mine<=60?'ok':'warn',true)+'</div>'+
+   '<div class="pl-p"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON('phone','sm')+'</span><div class="grow"><div class="b s">Réservée depuis l’application</div><div class="xs mut">Espace adhérent, onglet Installations. Les créneaux des reprises y sont grisés.</div></div></div>',
+  foot:'<button class="btn danger" data-del>'+ICON('trash','sm')+'Annuler la réservation</button><button class="btn pri" data-msg>'+ICON('send','sm')+'Écrire à '+m.first+'</button>'});
+ on(sh,'[data-del]',function(){var i=D.trackBookings.indexOf(b);if(i<0)return;D.trackBookings.splice(i,1);sh.close();redraw();
+  P.toast('Réservation annulée, notification envoyée à '+m.first+' '+m.last,{icon:'xc',undo:function(){D.trackBookings.splice(i,0,b);redraw()}})});
+ on(sh,'[data-msg]',function(){sh.close();P.toast('Message envoyé à '+m.first+' '+m.last,{icon:'send'})})}
+
+/* ---------- Menu Créer ---------- */
+function openCreateMenu(pre){pre=pre||{};var IT=[['reprise','calendar_add','Une reprise','Cours collectif chaque semaine, réservable en ligne'],['stage','flag','Un stage','Une ou plusieurs journées, acompte en ligne'],['particulier','coach','Un cours particulier','Avec un moniteur du club ou un coach extérieur'],['balade','route','Une balade','Sortie encadrée en extérieur'],['gen','assistant','Générer la semaine type','Disponibilités, pistes et niveaux demandés, puis une grille proposée']];
+ var sh=P.sheet({title:'Créer',icon:'plus',body:'<div class="pz-menu">'+IT.map(function(x){return '<button class="pz-mi'+(x[0]==='gen'?' gen':'')+'" data-mk="'+x[0]+'"><span class="av sq" style="--c:'+(x[0]==='gen'?'var(--surface)':'var(--acc-pale)')+';color:var(--acc)">'+ICON(x[1])+'</span><span class="grow"><b class="s" style="display:block">'+x[2]+'</b><span class="xs mut">'+x[3]+'</span></span>'+(x[0]==='gen'?'<span class="strass"></span>':ICON('right','sm'))+'</button>'}).join('')+'</div>'});
+ on(sh,'[data-mk]',function(b){var k=b.getAttribute('data-mk');if(k==='gen')openGenerate();else openCreate(Object.assign({},pre,{type:k}))})}
+
+/* ---------- Générer la semaine type ---------- */
+var GCO=['s02','s03','s04','s08'],GPREF={poney:['s03','s08','s02'],g12:['s03','s02','s04'],g34:['s02','s03','s04'],g57:['s04','s03','s02'],adultes:['s02','s03','s04'],perf:['s04','s02','s03']};
+var GTITLE={poney:'Poney Galop 1',g12:'Galop 1-2',g34:'Galop 3-4',g57:'Galop 5-6',adultes:'Adultes Galop 3',perf:'Perfectionnement CSO'};
+function genWeek(cfg){var out=[],res=[],base=D.lessons.slice().sort(function(a,b){return di(a)-di(b)||mn(a.start)-mn(b.start)}),have={},drop={};
+ var ext=D.planExtras.map(function(l){return {d:di(l),s:mn(l.start),dur:l.dur,arena:l.arena,coach:l.coach,k:kindOf(l),l:l}});
+ function opn(a,d){return cfg.ar[a][d]}
+ function free(d,s,dur,coach,ar){return !res.concat(ext).some(function(x){return x.d===d&&x.s<s+dur&&s<x.s+x.dur&&((ar&&x.arena===ar&&x.k!=='balade')||(coach&&x.coach===coach))})}
+ base.forEach(function(l){var k=lv(l);have[k]=(have[k]||0)+1});
+ Object.keys(have).forEach(function(k){var ex=have[k]-(cfg.lvl[k]!=null?cfg.lvl[k]:have[k]);if(ex>0)base.filter(function(l){return lv(l)===k}).sort(function(a,b){return a.riders.length/a.cap-b.riders.length/b.cap}).slice(0,ex).forEach(function(l){drop[l.id]=1})});
+ base.forEach(function(l){var d=di(l),s=mn(l.start),k=kindOf(l),c=l.coach,a=l.arena,st='same',nt=[];
+  if(drop[l.id]){out.push({l:l,d:d,s:s,st:'removed',note:'Retirée de la grille : '+plural(l.riders.length,'cavalier')+' à replacer'});return}
+  if(k!=='balade'&&!opn(a,d)){var alt=AR.find(function(x){return x.id!==a&&x.id!=='a4'&&opn(x.id,d)&&free(d,s,l.dur,'',x.id)});if(alt){a=alt.id;st='chg';nt.push('Passe en '+alt.name.toLowerCase()+', '+arena(l.arena).name.toLowerCase()+' fermée')}else{st='bad';nt.push('Aucune piste ouverte et libre à cette heure')}}
+  if(cfg.av[c]&&!cfg.av[c][d]){var pr=(GPREF[lv(l)]||GCO).concat(GCO),alt2=pr.find(function(x){return x!==c&&cfg.av[x][d]&&free(d,s,l.dur,x,'')});if(alt2){nt.push(D.person(alt2).first+' remplace '+D.person(c).first);c=alt2;if(st==='same')st='chg'}else{st='bad';nt.push('Aucun moniteur disponible le '+DNL[d])}}
+  if(st!=='bad'&&!free(d,s,l.dur,c,k==='balade'?'':a)){st='bad';nt.push('Piste ou moniteur déjà pris à cette heure')}
+  var nl=Object.assign({},l,{id:'g'+l.id.slice(1),coach:c,arena:a,riders:l.riders.slice(),horses:Object.assign({},l.horses)});delete nl._w;
+  res.push({d:d,s:s,dur:l.dur,arena:a,coach:c,k:k});out.push({l:nl,d:d,s:s,st:st,note:nt.join('. ')})});
+ /* reprises en plus : premier créneau libre, piste ouverte, moniteur disponible ; on y inscrit la liste d'attente du niveau */
+ var gi=0;Object.keys(cfg.lvl).forEach(function(k){var ex=cfg.lvl[k]-(have[k]||0);while(ex-->0){var done=false;
+   var slots=[];[0,1,3,4].forEach(function(d){[17,18,19].forEach(function(h){slots.push([d,h*60])})});[2].forEach(function(d){[14,15,16,17].forEach(function(h){slots.push([d,h*60])})});[5].forEach(function(d){[9,10,11,14,15,16].forEach(function(h){slots.push([d,h*60])})});
+   var ars=k==='poney'?['a3','a1']:['a1','a3','a2'];
+   for(var i=0;i<slots.length&&!done;i++){var d=slots[i][0],s=slots[i][1];for(var j=0;j<ars.length&&!done;j++){var a=ars[j];if(!opn(a,d)||!free(d,s,60,'',a))continue;var c=(GPREF[k]||GCO).find(function(x){return cfg.av[x][d]&&free(d,s,60,x,'')});if(!c)continue;
+     var wl=[];D.lessons.filter(function(l){return lv(l)===k}).forEach(function(l){waitOf(l).forEach(function(r){if(wl.indexOf(r)<0)wl.push(r)})});wl=wl.slice(0,6);
+     var nl={id:'gn'+(++gi),dow:(d+1)%7,start:hc(s),dur:60,title:GTITLE[k]||'Nouvelle reprise',coach:c,arena:a,cap:k==='poney'?8:10,riders:wl,horses:{},wait:0,status:'prévue'};
+     res.push({d:d,s:s,dur:60,arena:a,coach:c,k:'reprise'});out.push({l:nl,d:d,s:s,st:'new',note:'Nouvelle reprise'+(wl.length?', '+plural(wl.length,'cavalier')+' de la liste d’attente inscrits':'')});done=true}}
+   if(!done)out.push({l:{id:'gx'+(++gi),title:GTITLE[k],coach:'',arena:'',riders:[],cap:0,dur:60},d:5,s:20*60,st:'bad',note:'Aucun créneau libre pour une reprise « '+GTITLE[k]+' » de plus'})}});
+ /* cours et entretiens fixes posés sur une piste fermée */
+ ext.forEach(function(x){if(x.k==='balade'||opn(x.arena,x.d))return;var alt=AR.find(function(a){return a.id!==x.arena&&a.id!=='a4'&&opn(a.id,x.d)&&free(x.d,x.s,x.dur,'',a.id)});
+  out.push({l:x.l,d:x.d,s:x.s,st:'bad',fixed:true,alt:alt?alt.id:null,note:arena(x.arena).name+' fermée ce jour-là'+(alt?' : la '+alt.name.toLowerCase()+' est libre':'')})});
+ return out.sort(function(a,b){return a.d-b.d||a.s-b.s})}
+function openGenerate(){var step=0,STEPS=['Moniteurs','Pistes','Niveaux','Proposition'],res=null,fixes={};
+ var cfg={av:{},ar:{},lvl:{}},wait={};GCO.forEach(function(c){cfg.av[c]=[1,1,1,1,1,1,1].map(Boolean)});cfg.av.s08[2]=false;
+ AR.forEach(function(a){cfg.ar[a.id]=[1,1,1,1,1,1,1].map(Boolean)});cfg.ar.a2[3]=cfg.ar.a2[4]=false;
+ D.lessons.forEach(function(l){var k=lv(l);cfg.lvl[k]=(cfg.lvl[k]||0)+1;wait[k]=(wait[k]||0)+(l.wait||0)});var cur=Object.assign({},cfg.lvl);
+ var top=Object.keys(wait).sort(function(a,b){return wait[b]-wait[a]})[0];if(top&&wait[top])cfg.lvl[top]++;else cfg.lvl.g12=(cfg.lvl.g12||0)+1;
+ var NOTE={s08:'Au CFA le mercredi (apprentissage BPJEPS)',a2:'Pluie annoncée jeudi et vendredi : carrière fermée'};
+ var sh=P.sheet({title:'Générer la semaine type',icon:'assistant',wide:true,body:'',foot:'<button class="btn" data-bk>Retour</button><button class="btn pri" data-nx>Continuer</button>'});
+ var body=$('.sb',sh),bk=$('[data-bk]',sh),nx=$('[data-nx]',sh);setTimeout(function(){paint(body)},0);
+ function days(arr,key){return '<div class="pz-days">'+DN.map(function(n,d){return '<button class="tag" data-manual data-dk="'+key+'" data-dd="'+d+'" aria-pressed="'+!!arr[d]+'" title="'+cap1(DNL[d])+'">'+n+'</button>'}).join('')+'</div>'}
+ function paint(b){b=b||body;var h='<div class="pz-steps">'+STEPS.map(function(t,i){return '<span class="'+(i===step?'on':i<step?'done':'')+'"><i></i><b>'+(i+1)+'. '+t+'</b></span>'}).join('')+'</div>';
+  if(step===0){h+='<p class="s mut" style="margin-bottom:8px">Touchez un jour pour indiquer qu’un moniteur n’est pas disponible. Piaffe garde les cavaliers et les chevaux de chaque reprise.</p>'+GCO.map(function(c){var p=D.staffer(c),n=cfg.av[c].filter(Boolean).length;return '<div class="pz-av"><div class="hrow" style="--g:10px;min-width:0">'+U.av(p)+'<div style="min-width:0"><div class="b s ellip">'+p.first+' '+p.last+'</div><div class="xs mut ellip">'+(NOTE[c]&&!cfg.av[c][2]?NOTE[c]:p.role+' · '+p.contract)+' · '+plural(n,'jour')+'</div></div></div>'+days(cfg.av[c],c)+'</div>'}).join('')}
+  else if(step===1){h+='<p class="s mut" style="margin-bottom:8px">Jours d’ouverture de chaque piste pour la semaine type.</p>'+AR.map(function(a){var n=cfg.ar[a.id].filter(Boolean).length;return '<div class="pz-av"><div style="min-width:0"><div class="b s ellip">'+a.name+'</div><div class="xs mut ellip">'+(NOTE[a.id]&&!cfg.ar[a.id][3]?NOTE[a.id]:a.kind+' · '+a.size)+' · '+(n===7?'ouverte tous les jours':plural(n,'jour'))+'</div></div>'+days(cfg.ar[a.id],a.id)+'</div>'}).join('')}
+  else if(step===2){h+='<p class="s mut" style="margin-bottom:8px">Nombre de reprises par semaine et par niveau. La liste d’attente indique où ajouter une reprise.</p>'+LV.slice(1).map(function(x){var k=x[0],n=cfg.lvl[k]||0;return '<div class="pz-av"><div style="min-width:0"><div class="b s">'+x[1]+'</div><div class="xs mut">Aujourd’hui '+plural(cur[k]||0,'reprise')+(wait[k]?' · <b class="warnc">'+wait[k]+' en attente</b>':'')+(n!==(cur[k]||0)?' · <b class="acc">'+(n>(cur[k]||0)?'+':'')+(n-(cur[k]||0))+'</b>':'')+'</div></div><span class="pz-stp"><button data-lv="'+k+'" data-v="-1" title="Une reprise de moins">'+ICON('minus','sm')+'</button><b>'+n+'</b><button data-lv="'+k+'" data-v="1" title="Une reprise de plus">'+ICON('plus','sm')+'</button></span></div>'}).join('')}
+  else{res=res||genWeek(cfg);var reps=res.filter(function(o){return o.st!=='removed'&&!o.fixed&&o.l.cap>0}),chg=res.filter(function(o){return o.st==='chg'}).length,nw=res.filter(function(o){return o.st==='new'}).length,bad=res.filter(function(o){return o.st==='bad'&&!fixes[o.l.id]}).length,rm=res.filter(function(o){return o.st==='removed'}).length;
+   h+='<div class="pz-sumg"><div><b>'+reps.length+'</b><span>reprises proposées</span></div><div><b>'+chg+'</b><span>ajustements</span></div><div><b>'+(nw+rm)+'</b><span>'+(rm?'ajouts et retraits':'reprises ajoutées')+'</span></div><div><b class="'+(bad?'badc':'okc')+'">'+bad+'</b><span>conflit'+(bad>1?'s':'')+' à régler</span></div></div>';
+   h+=bad?'<div class="note bad" style="margin-top:12px">'+ICON('alert','sm')+'<span><b>'+plural(bad,'conflit')+' signalé'+(bad>1?'s':'')+'.</b> Réglez-'+(bad>1?'les':'le')+' ici ou appliquez la grille : '+(bad>1?'ils resteront':'il restera')+' visible'+(bad>1?'s':'')+' dans le planning.</span></div>':'<div class="lx-ai" style="margin-top:12px"><span class="strass"></span><span>Grille sans conflit : chaque moniteur reste dans ses jours, chaque piste ouverte, aucun cheval n’est déplacé.</span></div>';
+   DN.forEach(function(n,d){var l=res.filter(function(o){return o.d===d});if(!l.length)return;h+='<div class="pz-dh">'+cap1(DNL[d])+' '+dateOf(d,1).getDate()+'</div>'+l.map(function(o){var x=o.l,fx=fixes[x.id],p=x.coach?D.person(x.coach):null;
+     var chip=o.st==='new'?U.chip('Nouvelle','acc',true):o.st==='removed'?U.chip('Retirée','line'):o.st==='chg'?U.chip('Ajustée','acc'):o.st==='bad'?(fx?U.chip('Réglé','ok',true):(o.alt?'<button class="btn sm" data-fix="'+x.id+'">Déplacer en '+arena(o.alt).name.toLowerCase()+'</button>':U.chip('Conflit','bad',true))):'';
+     return '<div class="pz-gr'+(o.st==='bad'&&!fx?' bad':o.st==='chg'||o.st==='new'?' chg':o.st==='removed'?' off':'')+'"><span class="tm">'+(o.s<20*60?hc(o.s):'')+'</span><div style="min-width:0"><b class="ellip" style="display:block">'+x.title+'</b><span class="xs mut ellip" style="display:block">'+(p?p.first+' '+p.last+' · ':'')+(x.arena?arena(fx?o.alt:x.arena).name:'')+(o.note?' · '+(fx?'déplacé en '+arena(o.alt).name.toLowerCase():o.note):'')+'</span></div>'+chip+'</div>'}).join('')});
+   h+='<div class="note" style="margin-top:14px">'+ICON('info','sm')+'<span>La grille s’applique à la semaine du '+perLabel(1)+'. Les cavaliers dont le moniteur change sont prévenus au moment de l’application.</span></div>'}
+  b.innerHTML=h;bk.textContent=step?'Retour':'Annuler';nx.innerHTML=step<3?'Continuer'+ICON('arrow','sm'):ICON('check','sm')+'Appliquer la grille';
+  on(b,'[data-dk]',function(x){var k=x.getAttribute('data-dk'),d=+x.getAttribute('data-dd'),arr=cfg.av[k]||cfg.ar[k];arr[d]=!arr[d];res=null;paint()});
+  on(b,'[data-lv]',function(x){var k=x.getAttribute('data-lv');cfg.lvl[k]=Math.max(0,Math.min(12,(cfg.lvl[k]||0)+ +x.getAttribute('data-v')));res=null;paint()});
+  on(b,'[data-fix]',function(x){var id=x.getAttribute('data-fix');fixes[id]=1;paint();P.toast('Déplacement noté : il sera appliqué avec la grille',{icon:'swap'})})}
+ bk.onclick=function(){if(!step){sh.close();return}step--;paint()};
+ nx.onclick=function(){if(step<3){step++;if(step===3)res=null;paint();body.scrollTop=0;return}
+  var list=res.filter(function(o){return o.st!=='removed'&&!o.fixed&&o.l.dow!=null}).map(function(o){return o.l}),prevGen=ST.gen,prevMv={},moved=[];
+  res.filter(function(o){return o.fixed&&fixes[o.l.id]&&o.alt}).forEach(function(o){prevMv[o.l.id]=ST.moves[o.l.id];ST.moves[o.l.id]={d:o.d,s:o.s,a:o.alt};moved.push(o.l.id)});
+  var chg=res.filter(function(o){return o.st==='chg'||o.st==='new'}).length;
+  ST.gen={off:1,list:list};ST.off=1;ST.view='week';sh.close();redraw();
+  P.toast('Semaine type appliquée au '+perLabel(1,true)+' : '+plural(list.filter(function(l){return l.cap>0}).length,'reprise')+', '+plural(chg,'changement')+(moved.length?', '+plural(moved.length,'cours déplacé','cours déplacés'):''),{icon:'checkc',ms:6000,undo:function(){ST.gen=prevGen;moved.forEach(function(id){if(prevMv[id])ST.moves[id]=prevMv[id];else delete ST.moves[id]});redraw();P.toast('Grille précédente rétablie',{icon:'refresh'})}})}}
+
+/* ---------- Programmation du trimestre (12 séances, un thème par semaine) ---------- */
+var PROG={cso:['Galop de travail et équilibre','Barres au sol et cadence','Cavalettis et rythme','Gymnastique : croix puis vertical','Contrat de foulées en ligne droite','Tournants et courbes','Enchaînement de quatre obstacles','Oxers et largeur','Parcours de huit obstacles','Combinaisons double et triple','Parcours chronométré','Séance bilan : parcours type'],
+ plat:['Mise en selle et assiette','Transitions au pas et au trot','Cercles et voltes','Trot enlevé et diagonal','Départs au galop','Cession à la jambe','Épaule en dedans','Travail sans étriers','Figures de manège','Allongements','Reprise de dressage imposée','Séance bilan : reprise notée'],
+ poney:['Pansage et sécurité','Équilibre au pas','Trot assis et enlevé','Jeux d’adresse','Slalom entre les plots','Premiers galops','Barres au sol','Petit parcours de jeux','Voltige au pas','Maniabilité en carrière','Parcours de maniabilité','Fête des poneys, bilan du trimestre']};
+function progOf(l){if(!ST.prog)ST.prog={};if(!ST.prog[l.id]){var k=lv(l)==='poney'?'poney':/CSO|cross|concours|Horse|Équipe/i.test(l.title)?'cso':'plat';ST.prog[l.id]={k:k,th:PROG[k].slice(),saved:false}}return ST.prog[l.id]}
+function openProg(l,after){var pg=progOf(l),th=pg.th.slice(),d0=dateOf(di(l),0);
+ var sh=P.sheet({title:'Programmation du trimestre',icon:'list',wide:true,body:function(b){b.innerHTML='<div class="pl-sum"><div class="w">'+l.title+' <span>· '+DNL[di(l)]+' '+hm(mn(l.start))+', '+D.name(l.coach)+'</span></div></div>'+
+   '<div class="hrow wrap sp" style="margin:4px 0 10px"><span class="s mut">12 séances du '+F.date(d0)+' au '+F.date(D.day(F.days(D.iso(d0))+77))+', un thème par semaine.</span><span class="hrow" style="--g:6px">'+U.seg([['cso','Obstacle'],['plat','Plat'],['poney','Poney']],pg.k,'data-pk')+'</span></div>'+
+   '<div data-rows>'+rows()+'</div>'},
+  foot:'<button class="btn" data-share>'+ICON('send','sm')+'Envoyer aux cavaliers</button><button class="btn pri" data-ok>'+ICON('check','sm')+'Enregistrer la programmation</button>'});
+ function rows(){return th.map(function(t,i){var d=D.day(F.days(D.iso(d0))+7*i),hol=holiday(D.iso(d)),vac=vacation(D.iso(d));return '<div class="pz-pg'+(i===0?' cur':'')+'"><div class="wk"><b>Séance '+(i+1)+'</b>'+F.date(d)+(i===0?' · cette semaine':hol?' · férié':vac?' · vacances':'')+'</div><input class="in" data-pi="'+i+'" value="'+F.esc(t)+'"'+(hol||vac?' title="Pas de reprise ce jour-là : le thème glisse à la séance suivante"':'')+'></div>'}).join('')}
+ function read(){$$('[data-pi]',sh).forEach(function(x){th[+x.getAttribute('data-pi')]=x.value})}
+ on(sh,'[data-pk]',function(b){pg.k=b.getAttribute('data-pk');th=PROG[pg.k].slice();$('[data-rows]',sh).innerHTML=rows()});
+ on(sh,'[data-share]',function(){read();P.toast('Programmation envoyée à '+plural(l.riders.length,'cavalier')+' dans leur carnet de progression',{icon:'send'})});
+ on(sh,'[data-ok]',function(){read();pg.th=th;pg.saved=true;ST.notes[l.id]={th:th[0],tx:(ST.notes[l.id]&&ST.notes[l.id].tx)||'Séance 1 sur 12 de la programmation du trimestre. Reprendre la mise en selle dix minutes avant d’aborder le thème.'};sh.close();if(after)after();P.toast('Programmation du trimestre enregistrée : 12 séances, thème de la semaine « '+th[0]+' »',{icon:'checkc'})})}
+
+/* ---------- Écran de la sellerie : plein écran, mise à jour toutes les 20 secondes ---------- */
+P.sellerieParts=P.sellerieParts||{};
+P.sellerie=function(o){o=o||{};var root=P.app();if(!root)return;var old=$('.sl-k',root);if(old)old.remove();
+ var t=NOW,tick=0,el=document.createElement('div');el.className='sl-k';el.setAttribute('role','dialog');el.setAttribute('aria-label','Écran de la sellerie');root.appendChild(el);
+ var NEWS=['Feuille de monte à jour, chevaux attribués par l’assistant','Hersage de la carrière d’honneur confirmé à '+hm(mn(FX.hersage.at)),'Ferrure d’Ulysse confirmée jeudi à 9 h avec Benoît Gautier','Tornado reste au box : vétérinaire à 14 h','Distribution de midi : Lucie prend le relais','Pensez à curer les pieds au retour du paddock'];
+ function lessons(){return weekEvents(0).filter(function(e){return e.d===TDI&&!e.cx&&e.l.cap>0}).sort(function(a,b){return a.s-b.s})}
+ function paint(){var L=lessons(),nx=o.lesson?L.find(function(e){return e.l.id===o.lesson&&e.s+e.dur>t}):null;nx=nx||L.find(function(e){return e.s+e.dur>t});
+  var ld=loads(TDI),h='<div class="sl-hd">'+LOGO(30,'var(--hero-ink)','var(--strass)')+'<div class="grow"><h2>'+D.club.name+' · sellerie</h2><div class="sl-m s">'+cap1(F.dateL(D.today))+'</div></div><span class="sl-live"><i></i>DIRECT</span><span class="sl-clock">'+hc(t)+'</span><button class="btn sl-q" data-q>'+ICON('x','sm')+'Quitter</button></div>'+
+   '<div class="sl-upd"><span class="sl-m">Mis à jour à '+hm(t)+'</span><span class="bar"><i></i></span>'+(tick?'<span class="sl-news">'+ICON('refresh','sm')+'<span>'+NEWS[(tick-1)%NEWS.length]+'</span></span>':'<span class="sl-m">Prochaine mise à jour dans 20 secondes</span>')+'</div><div class="sl-grid">';
+  /* reprises du jour et attributions */
+  h+='<div class="sl-col'+(o.focus==='reprises'?' hi':'')+'"><h3>'+ICON('planning','sm')+'Reprises du jour<small>'+cntTxt(dayCnt(weekEvents(0).filter(function(e){return e.d===TDI})))+'</small></h3>';
+  if(nx){var mins=nx.s-t;h+='<div class="sl-next"><div class="ey">'+(mins>0?'Prochaine séance · dans '+(mins>=60?hm(mins):mins+' min'):'En cours · jusqu’à '+hm(nx.s+nx.dur))+'</div><h4>'+hm(nx.s)+' · '+nx.l.title+'</h4><div class="sl-m s">'+D.name(nx.l.coach)+' · '+place(nx)+' · '+nx.l.riders.length+'/'+nx.l.cap+'</div>'+
+    '<div class="sl-pairs">'+nx.l.riders.map(function(r){var m=D.member(r),hid=nx.l.horses[r],hh=hid&&D.horse(hid);return '<div class="sl-pair'+(hh?'':' none')+'"><span>'+m.first+' '+m.last.charAt(0)+'.</span><b>'+(hh?hh.name.split(' ')[0]:'À attribuer')+'</b></div>'}).join('')+'</div></div>'}
+  h+=L.filter(function(e){return e!==nx}).map(function(e){return '<div class="sl-ls'+(e.s+e.dur<=t?' past':'')+'"><span class="tm">'+hc(e.s)+'</span><div style="min-width:0"><div class="b ellip">'+e.l.title+'</div><div class="xs sl-m ellip">'+D.person(e.l.coach).first+' · '+place(e)+'</div></div><span class="xs num">'+(e.s+e.dur<=t?'Terminée':e.l.riders.length+'/'+e.l.cap)+'</span></div>'}).join('')+'</div>';
+  /* consignes */
+  var cs=[];if(P.sellerieParts.consignes)cs=P.sellerieParts.consignes(t)||[];else D.horses.filter(function(x){return x.alerts.length}).slice(0,5).forEach(function(x){cs.push({i:'horse',c:x.status,t:'<b>'+x.name+'</b> : '+x.alerts[0].charAt(0).toLowerCase()+x.alerts[0].slice(1)})});
+  var hs=mn(FX.hersage.at);cs.unshift({i:'tractor',c:t<hs+45?'warn':'',t:'<b>'+arena(FX.hersage.arena).name+'</b> fermée de '+hm(hs)+' à '+hm(hs+45)+' pour le hersage'});
+  var tb=(D.trackBookings||[]).filter(function(b){return b.date===D.iso(D.today)});if(tb.length)cs.push({i:'arena',c:'',t:'Pistes réservées par les propriétaires : '+tb.map(function(b){var x=D.horse(b.horse);return hm(mn(b.from))+', '+arena(b.arena).name.toLowerCase()+(x?' ('+x.name.split(' ')[0]+')':'')}).join(' ; ')});
+  h+='<div class="sl-col'+(o.focus==='consignes'?' hi':'')+'"><h3>'+ICON('info','sm')+'Consignes<small>'+cs.length+'</small></h3>'+cs.map(function(c){return '<div class="sl-c '+(c.c||'')+'">'+ICON(c.i||'info','sm')+'<span>'+c.t+'</span></div>'}).join('')+'</div>';
+  /* distribution */
+  var ds=P.sellerieParts.distribution?P.sellerieParts.distribution(t):null;
+  h+='<div class="sl-col'+(o.focus==='distribution'?' hi':'')+'"><h3>'+ICON('feed','sm')+(ds?ds.title:'Distribution')+'<small>'+(ds?ds.sub:'')+'</small></h3>'+(ds?ds.html:'<div class="sl-c">'+ICON('feed','sm')+'<span>Le tableau de distribution s’affiche ici depuis l’écran Alimentation.</span></div>')+'</div>';
+  el.innerHTML=h+'</div>';$('[data-q]',el).onclick=close}
+ function close(){clearInterval(iv);document.removeEventListener('keydown',esc);el.classList.add('out');setTimeout(function(){el.remove()},P.RM?0:200);P.toast('Écran de la sellerie fermé',{icon:'expand'})}
+ function esc(e){if(e.key==='Escape')close()}
+ document.addEventListener('keydown',esc);paint();
+ var iv=setInterval(function(){if(!el.isConnected){clearInterval(iv);document.removeEventListener('keydown',esc);return}t+=1;tick++;paint()},20000);
+ return {close:close}};
+
 /* ---------- Palette, assistant, visite ---------- */
 function goPlan(fn){P.go('planning');setTimeout(fn,380)}
 P.actions.push(
  {role:'gerant',label:'Créer une reprise',icon:'calendar_add',run:function(){goPlan(function(){openCreate({})})}},
  {role:'gerant',label:'Créer un stage',icon:'flag',run:function(){goPlan(function(){openCreate({type:'stage'})})}},
+ {role:'gerant',label:'Générer la semaine type',icon:'assistant',run:function(){goPlan(openGenerate)}},
+ {role:'gerant',label:'Afficher l’écran de la sellerie',icon:'expand',run:function(){goPlan(function(){P.sellerie({focus:'reprises'})})}},
  {role:'gerant',label:'Attribuer les chevaux de la prochaine reprise',icon:'horse',run:function(){ST.off=0;ST.tab='montoir';goPlan(function(){openLesson('l05',1)})}},
  {role:'gerant',label:'Gérer les vacances et jours fériés',icon:'holiday',run:function(){goPlan(openHolidays)}},
  {role:'gerant',label:'Voir le planning de la semaine prochaine',icon:'planning',run:function(){ST.off=1;ST.view='week';P.go('planning')}});
-P.brain.push({role:'gerant',re:/planning|samedi|reprise|montoir|conflit/i,reply:function(){var ev=weekEvents(0).filter(function(e){return e.d===5&&e.l.cap>0}),ins=0,pl=0,is=0;ev.forEach(function(e){ins+=e.l.riders.length;pl+=e.l.cap;is+=issues(e.l)});var cf=conflicts(weekEvents(0));
- return {text:'Samedi 21 novembre compte '+ev.length+' reprises et stages pour '+ins+' cavaliers ('+(pl-ins)+' places libres). '+(is?plural(is,'cheval','chevaux')+' à revoir dans le montoir.':'Le montoir est complet et aucun cheval ne dépasse trois reprises.')+(cf.length?' Attention, '+plural(cf.length,'conflit')+' de piste cette semaine.':''),
+P.brain.push({role:'gerant',re:/planning|samedi|reprise|montoir|conflit/i,reply:function(){var all5=weekEvents(0).filter(function(e){return e.d===5&&e.l.cap>0&&!e.cx}),ev=all5.filter(function(e){return e.k!=='particulier'}),pa=all5.filter(function(e){return e.k==='particulier'}),ins=0,pl=0,hs={},none=0;ev.forEach(function(e){ins+=e.l.riders.length;pl+=e.l.cap;var ld=loads(e.d);e.l.riders.forEach(function(r){var st=hstate(e.l,r,ld);if(st.none)none++;else if(st.lvl==='bad')hs[st.h.id]=1})});var nh=Object.keys(hs).length,cf=conflicts(weekEvents(0));
+ return {text:'Samedi 21 novembre compte '+ev.length+' reprises et stages pour '+ins+' cavaliers ('+(pl-ins)+' places libres). '+(pa.length?'S’y ajoute'+(pa.length>1?'nt ':' ')+plural(pa.length,'cours particulier','cours particuliers')+' ('+pa.map(function(e){return hm(e.s)}).join(', ')+'). ':'')+(nh||none?'Dans le montoir, '+(nh?plural(nh,'cheval','chevaux')+' à remplacer':'')+(none?(nh?' et ':'')+plural(none,'cavalier')+' encore sans cheval':'')+'.':'Le montoir est complet et aucun cheval ne dépasse trois reprises.')+(cf.length?' Attention, '+plural(cf.length,'conflit')+' de piste cette semaine.':''),
   card:ev.map(function(e){return '<div class="hrow sp"><span class="s">'+hm(e.s)+' · '+e.l.title+'</span><b class="s num">'+e.l.riders.length+'/'+e.l.cap+'</b></div>'}).join(''),
   actions:[{label:'Ouvrir samedi par piste',run:function(){ST.off=0;ST.day=5;ST.view='day';P.go('planning');return 'Planning ouvert'}},{label:'Proposer les places libres en rattrapage',run:function(){D.planCatch.forEach(function(c){ST.prop[c.m]=1});P.toast(D.planCatch.length+' propositions de rattrapage envoyées');return D.planCatch.length+' propositions envoyées'}}]}}});
 P.tourSteps.push({route:'planning',title:'Le planning se règle en glissant',text:'Chaque reprise se déplace à la souris : Piaffe vérifie le moniteur et la piste avant le lâcher. Ouvrez une reprise et l’assistant attribue les chevaux selon le niveau, le gabarit et la charge de travail du jour.'});

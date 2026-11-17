@@ -23,9 +23,9 @@ P.fmt={
   eur:function(v,dec){var n=Number(v)||0,neg=n<0;n=Math.abs(n);var s=n.toLocaleString('fr-FR',{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});return (neg?'−':'')+s.replace(/[\u202f\u2009]/g,'\u00a0')+'\u00a0€'},
   num:function(v,d){return (Number(v)||0).toLocaleString('fr-FR',{maximumFractionDigits:d||0})},
   pct:function(v){return Math.round(v)+' %'},
-  date:function(x){var d=toD(x);return d.getDate()+' '+MO[d.getMonth()]},
-  dateL:function(x){var d=toD(x);return DW[d.getDay()]+' '+d.getDate()+' '+MOL[d.getMonth()]},
-  dateY:function(x){var d=toD(x);return d.getDate()+' '+MO[d.getMonth()]+' '+d.getFullYear()},
+  date:function(x){var d=toD(x);return (d.getDate()===1?'1er':d.getDate())+' '+MO[d.getMonth()]},
+  dateL:function(x){var d=toD(x);return DW[d.getDay()]+' '+(d.getDate()===1?'1er':d.getDate())+' '+MOL[d.getMonth()]},
+  dateY:function(x){var d=toD(x);return (d.getDate()===1?'1er':d.getDate())+' '+MO[d.getMonth()]+' '+d.getFullYear()},
   rel:function(x){var d=toD(x),t=new Date(D.today);t.setHours(12,0,0,0);d.setHours(12,0,0,0);var n=Math.round((d-t)/864e5);
     if(n===0)return 'aujourd’hui';if(n===1)return 'demain';if(n===-1)return 'hier';if(n>1&&n<7)return 'dans '+n+' j';if(n<0&&n>-7)return 'il y a '+(-n)+' j';return P.fmt.date(d)},
   days:function(x){var d=toD(x),t=new Date(D.today);t.setHours(12,0,0,0);d.setHours(12,0,0,0);return Math.round((d-t)/864e5)},

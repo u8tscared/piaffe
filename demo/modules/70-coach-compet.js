@@ -341,7 +341,7 @@ P.css(`
 .cp-k .nm{font-weight:650;font-size:13.500px;line-height:1.25}
 .cp-head{padding:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:14px}
 .cp-head h2{font-size:22px}
-.cp-e{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) 110px 70px 170px;gap:14px;align-items:center;padding:10px 16px}
+.cp-e{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) 110px 70px 210px;gap:14px;align-items:center;padding:10px 16px}
 .cp-e+.cp-e{border-top:1px solid var(--line)}
 .cp-eh{font-size:11.500px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);padding-top:12px;padding-bottom:8px}
 .cp-e .n{text-align:right;font-variant-numeric:tabular-nums}
@@ -420,7 +420,7 @@ P.css(`
  .qq{grid-template-columns:minmax(0,1fr) 280px}
  .qq-pool{grid-column:1 / -1;position:static}
  .qq-pool .qq-zone{flex-direction:row;flex-wrap:wrap}
- .cp-e{grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) 70px 170px}.cp-e .co{display:none}
+ .cp-e{grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) 70px 210px}.cp-e .co{display:none}
  .cp-fee{grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(56px,.5fr)) 96px}
 }
 @container main (max-width:760px){
@@ -449,13 +449,16 @@ P.css(`
 `);
 
 var cpSel='k1',cpTab={},TP={},ENT={},CHK={},BILL={k5:true},cpRate=1.2,cpPub={k5:true};
+/* les véhicules ne reçoivent jamais plus de chevaux ni de passagers que de places : le surplus attend dans « À placer » */
+function fit(list,cap,over){list.slice(cap).forEach(function(x){if(over.indexOf(x)<0)over.push(x)});return list.slice(0,cap)}
 function plan(k){if(TP[k.id])return TP[k.id];var es=ents(k),t1=D.vans[0],t2=D.vans[1],lv=9*60-90-drive(k.km),V=[],pl;
- if(k.id==='k1'){V=[
-  {id:'v1',kind:'truck',name:t1.name,plate:t1.plate,drv:t1.driver,cap:t1.horses,seats:t1.seats-1,leave:hm(t1.leave),from:t1.from,club:true,h:['h12','h05','h18','h09'],p:['m003','m008','m022']},
-  {id:'v2',kind:'van',name:t2.name+' de Léa',plate:t2.plate,drv:t2.driver,cap:t2.horses,seats:t2.seats-1,leave:hm(t2.leave),from:t2.from,h:['h01','h14'],p:[]},
+ if(k.id==='k1'){var oH=[],oP=[],byV=function(v){return es.filter(function(e){return e.transport===v}).map(function(e){return e.horse})};
+  V=[
+  {id:'v1',kind:'truck',name:t1.name,plate:t1.plate,drv:t1.driver,cap:t1.horses,seats:t1.seats-1,leave:hm(t1.leave),from:t1.from,club:true,h:fit(byV('v1'),t1.horses,oH),p:fit(['m003','m008','m022'],t1.seats-1,oP)},
+  {id:'v2',kind:'van',name:t2.name+' de Léa',plate:t2.plate,drv:t2.driver,cap:t2.horses,seats:t2.seats-1,leave:hm(t2.leave),from:t2.from,h:fit(byV('v2'),t2.horses,oH),p:[]},
   {id:'v3',kind:'truck',name:'Camion 3 places, famille Muller',plate:'EV-731-QA',drvName:'Stéphane Muller',cap:3,seats:3,leave:7*60,from:'Parking du haut',h:['h16'],p:['m040']}]
   .concat(D.carpool.map(function(c,i){return {id:'c'+i,kind:'car',name:'Voiture de '+fst(c.driver),drv:c.driver,cap:0,seats:c.seats,leave:7*60+15+i*10,from:c.from,h:[],p:c.taken.slice()}}));
-  pl={veh:V,poolH:['h20','h07'],poolP:['m034']}}
+  pl={veh:V,poolH:oH.concat(['h07'].filter(function(h){return oH.indexOf(h)<0})),poolP:oP.concat(['m034'])}}
  else{V=[{id:'v1',kind:'truck',name:t1.name,plate:t1.plate,drv:t1.driver,cap:t1.horses,seats:t1.seats-1,leave:lv,from:t1.from,club:true,h:[],p:[]}];
   if(k.vans>1)V.push({id:'v2',kind:'van',name:'Van 2 places du club',plate:'GK-044-ZD',drv:'s02',cap:2,seats:3,leave:lv+15,from:t1.from,club:true,h:[],p:[]});
   pl={veh:V,poolH:[],poolP:[]};es.forEach(function(e,i){if(i<es.length-1){var v=V.find(function(x){return x.h.length<x.cap});v.h.push(e.horse);var s=V.find(function(x){return x.p.length<x.seats});s.p.push(e.rider)}else{pl.poolH.push(e.horse);pl.poolP.push(e.rider)}})}
@@ -489,8 +492,64 @@ function ffeSheet(k){var es=ents(k),st=ENT[k.id]=ENT[k.id]||{done:{}},mode='sais
    open:function(){P.toast('FFE Compet s’ouvre dans un nouvel onglet',{icon:'ext'})},
    all:function(){es.forEach(function(e){st.done[e.rider]=true});draw();fin()},
    dl:function(){P.toast('engagements-'+k.place.split(',')[0].toLowerCase()+'.csv téléchargé',{icon:'download'})}});
-  function fin(){if(es.every(function(e){return st.done[e.rider]})){st.sent=true;P.rerender();P.toast('Les '+es.length+' engagements sont saisis, cavaliers prévenus')}else if(st.sent){st.sent=false;P.rerender()}}
+  function fin(){if(es.every(function(e){return st.done[e.rider]})){st.sent=true;P.rerender();P.toast('Les '+es.length+' engagements sont saisis par le club, cavaliers prévenus')}else if(st.sent){st.sent=false;P.rerender()}}
  },foot:' '})}
+
+/* ---------- Import des résultats FFE : fichier, rapprochement, rangement dans les fiches ---------- */
+P.css(`
+.cp-stp{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12.500px;font-weight:600;color:var(--mut);min-width:0}
+.cp-stp span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;min-width:0}
+.cp-stp b{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:12px;box-shadow:inset 0 0 0 1.500px var(--line-2)}
+.cp-stp b svg.i{width:13px;height:13px}
+.cp-stp span.on{color:var(--ink)}.cp-stp span.on b{background:var(--acc);color:var(--acc-ink);box-shadow:none}
+.cp-stp span.ok b{background:var(--ok-pale);color:var(--ok);box-shadow:none}
+.cp-stp i{flex:1;height:2px;background:var(--line);min-width:10px;border-radius:1px}
+.cp-drop{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:30px 16px;border-radius:var(--r-lg);border:1.500px dashed var(--line-2);background:var(--surface-2);text-align:center;transition:background var(--t-2),border-color var(--t-2)}
+.cp-drop svg.i{width:28px;height:28px;color:var(--acc)}
+.cp-drop:hover{border-color:var(--acc);background:var(--acc-pale)}
+.cp-drop[disabled] svg.i{animation:cpspin 1s linear infinite}
+@keyframes cpspin{to{transform:rotate(360deg)}}
+.cp-mt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:10px 14px}
+.cp-mt+.cp-mt{border-top:1px solid var(--line)}
+.cp-mt.skip>div:first-child{opacity:.6}
+.cp-mt .b svg.i{width:13px;height:13px;color:var(--mut);vertical-align:-2px}
+.cp-mtq{grid-column:1 / -1;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:var(--r-md);background:var(--warn-pale)}
+`);
+var RESIMP={};
+function ffeResSheet(k){var es=ents(k).filter(function(e){return e.res}),step=0,file='resultats-ffe-'+k.place.split(',')[0].toLowerCase().replace(/\s+/g,'-')+'-'+F.date(k.date).replace(/\D+/g,'-').replace(/-$/,'')+'.csv';
+ var rows=es.map(function(e,i){var m=D.member(e.rider),h=D.horse(e.horse),how='Licence '+m.lic,st='ok',fileR=(m.last.toUpperCase()+' '+m.first).normalize('NFD').replace(/[̀-ͯ]/g,''),fileH=h.name.toUpperCase();
+   if(i===2){fileH=h.name.toUpperCase().split(' ')[0]+'*HDV';how='SIRE '+h.sire+', nom du cheval différent'}
+   if(i===3){fileR=m.last.toUpperCase()+' '+m.first.charAt(0)+'.';how='Licence absente du fichier';st='check'}
+   return {e:e,m:m,h:h,fileR:fileR,fileH:fileH,how:how,st:st}});
+ rows.push({ext:true,fileR:'DURAND PAUL',fileH:'IRIS DU CLOS',how:'Cavalier d’un autre club',st:'skip',cls:'Amateur 2 · 110 cm'});
+ var alt=D.members.filter(function(m){return rows[3]&&rows[3].m&&m.last===rows[3].m.last&&m.id!==rows[3].m.id})[0]||D.member('m019');
+ var sh=P.sheet({title:'Importer les résultats FFE',icon:'import',wide:true,body:function(b,sheet){
+  function steps(){return '<div class="cp-stp">'+['Fichier','Rapprochement','Fiches'].map(function(t,i){return '<span class="'+(i<step?'ok':i===step?'on':'')+'"><b>'+(i<step?I('check','sm'):i+1)+'</b>'+t+'</span>'}).join('<i></i>')+'</div>'}
+  function draw(){var s=steps(),f=sheet.querySelector('.sf');
+   if(step===0){s+='<p class="s mut" style="margin-bottom:12px">Exportez les résultats depuis votre espace FFE Compet (menu Résultats, format tableur) puis déposez le fichier ici. Piaffe retrouve chaque cavalier par sa licence et chaque cheval par son numéro SIRE.</p>'+
+     '<button class="cp-drop" data-a="pick">'+I('upload')+'<b>Déposer le fichier des résultats</b><span class="xs mut">ou toucher pour choisir · tableur ou XML</span></button>'+
+     '<div class="note" style="margin-top:14px">'+I('info','sm')+'<span>FFE Compet ne transmet pas les résultats directement aux logiciels. Le fichier suffit : aucune saisie à refaire.</span></div>';
+    f.innerHTML='<button class="btn" data-a="cancel">Annuler</button>'}
+   else if(step===1){var chk=rows.filter(function(r){return r.st==='check'}).length,ok=rows.filter(function(r){return r.st==='ok'}).length;
+    s+='<div class="hrow sp wrap" style="--g:8px;margin-bottom:12px"><span class="hrow s" style="--g:8px">'+I('doc','sm')+'<b class="ellip">'+file+'</b></span><span class="s mut">'+rows.length+' lignes lues · <b class="num" style="color:var(--ink)">'+ok+'</b> rapprochées'+(chk?' · <b class="warnc">'+chk+' à vérifier</b>':'')+'</span></div><div class="card flat">'+
+     rows.map(function(r,i){var chip=r.st==='ok'?U.chip(r.how.indexOf('SIRE')===0?'Rapproché par le SIRE':'Rapproché','ok',true):r.st==='skip'?U.chip('Ignoré','',true):U.chip('À vérifier','warn',true);
+      return '<div class="cp-mt'+(r.st==='skip'?' skip':'')+'"><div style="min-width:0"><div class="xs mut mono ellip">'+r.fileR+' · '+r.fileH+'</div><div class="b s ellip" style="margin-top:3px">'+(r.ext?'Hors club':I('arrow','sm')+' '+r.m.first+' '+r.m.last+' <span class="mut" style="font-weight:500">· '+r.h.name+'</span>')+'</div><div class="xs mut ellip">'+(r.ext?r.cls:r.e.class+' · '+(r.e.res.rank?r.e.res.rank+'e sur '+r.e.res.of:'non classée'))+' · '+r.how+'</div></div>'+
+       '<div class="hrow" style="--g:6px;justify-content:flex-end">'+chip+'</div>'+
+       (r.st==='check'?'<div class="cp-mtq"><span class="xs mut">'+(alt.last===r.m.last?'Deux membres du club portent ce nom.':'Ce nom correspond à plusieurs membres du club.')+' Choisissez la bonne personne.</span><div class="hrow wrap" style="--g:6px"><button class="btn sm dark" data-a="mok" data-i="'+i+'">'+r.m.first+' '+r.m.last+', Galop '+r.m.galop+'</button><button class="btn sm" data-a="malt" data-i="'+i+'">'+alt.first+' '+alt.last+', '+(alt.galop?'Galop '+alt.galop:'sans galop')+'</button></div></div>':'')+'</div>'}).join('')+'</div>';
+    f.innerHTML='<button class="btn" data-a="back">Retour</button><button class="btn pri" data-a="store"'+(chk?' disabled':'')+'>'+(chk?'Vérifiez la ligne restante':'Ranger les '+ok+' résultats dans les fiches')+'</button>'}
+   else{var n=rows.filter(function(r){return r.st==='ok'}).length,cl=rows.filter(function(r){return r.st==='ok'&&r.e.res.clear}).length;
+    s+='<div class="stack" style="--g:14px;align-items:center;text-align:center;padding:8px 0 4px"><span class="strass" style="width:22px;height:22px"></span><h3 style="font-size:21px">'+n+' résultats rangés</h3><p class="s mut" style="max-width:440px">Le palmarès de chaque cavalier et la fiche de chaque cheval sont à jour. Les cavaliers voient leur résultat dans leur application.</p></div>'+
+     '<div class="card flat" style="padding:4px 14px">'+row('Palmarès des cavaliers mis à jour','<span class="num">'+n+'</span>')+row('Fiches des chevaux mises à jour','<span class="num">'+n+'</span>')+row('Sans-faute','<span class="num">'+cl+'</span>')+row('Ligne d’un autre club','Ignorée')+'</div>';
+    f.innerHTML='<button class="btn" data-a="cancel">Fermer</button><button class="btn pri" data-a="pub">'+I('send','sm')+'Publier sur le portail</button>'}
+   b.innerHTML=s;P.animate(b)}
+  draw();
+  act(sheet,{pick:function(x){x.innerHTML=I('refresh')+'<b>Lecture du fichier</b><span class="xs mut">'+file+'</span>';x.disabled=true;setTimeout(function(){step=1;draw();P.toast(rows.length+' lignes lues, '+rows.filter(function(r){return r.st==='ok'}).length+' rapprochées automatiquement',{icon:'import'})},P.RM?50:700)},
+   mok:function(x){var r=rows[+x.getAttribute('data-i')];r.st='ok';r.how='Confirmé par vous';draw();P.toast('Résultat rattaché à '+r.m.first+' '+r.m.last,{icon:'link'})},
+   malt:function(x){var r=rows[+x.getAttribute('data-i')];r.st='skip';r.how='Écarté : '+alt.first+' n’était pas engagée';draw();P.toast(alt.first+' n’était pas engagée à ce concours, la ligne est écartée',{icon:'info'})},
+   back:function(){step=0;draw()},cancel:function(){sheet.close()},
+   store:function(){step=2;RESIMP[k.id]={at:'aujourd’hui à '+th(9*60+41),n:rows.filter(function(r){return r.st==='ok'}).length};draw();P.toast(RESIMP[k.id].n+' résultats rangés dans les fiches des cavaliers',{icon:'checkc'})},
+   pub:function(){cpPub[k.id]=true;sheet.close();P.rerender();P.toast('Résultats publiés sur le portail des adhérents',{icon:'send'})}});
+ },foot:' ',onClose:function(){if(RESIMP[k.id])P.rerender()}})}
 
 /* ---------- Qui emmène qui ---------- */
 function board(root,k){var pl=plan(k),es=ents(k),rOf={},hOf={},sel=null;es.forEach(function(e){rOf[e.horse]=e.rider;hOf[e.rider]=e.horse});
@@ -602,8 +661,8 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
   function drawDetail(){var k=D.competitions.find(function(x){return x.id===cpSel}),kind=kKind(k),es=ents(k),st=ENT[k.id]||{},dc=F.days(k.closes);
    var tabs=kind==='away'?[['eng','Engagements'],['qui','Qui emmène qui'],['mat','Matériel'],['frais','Frais']]:kind==='home'?[['epr','Épreuves'],['ben','Bénévoles'],['buv','Buvette'],['chrono','Chronométrage']]:[['res','Résultats'],['eng','Engagements'],['frais','Frais']];
    var tab=cpTab[k.id]&&tabs.some(function(t){return t[0]===cpTab[k.id]})?cpTab[k.id]:tabs[0][0];
-   var h='<div class="card cp-head"><div class="grow" style="min-width:220px"><div class="hrow wrap" style="--g:6px;margin-bottom:8px">'+U.chip(k.disc,'navy')+U.chip(k.level,'line')+(kind==='away'?(st.sent?'<span class="chip acc"><span class="strass" style="width:8px;height:8px"></span>Engagements saisis</span>':U.chip('Clôture '+F.rel(k.closes),dc<=2?'warn':'',true)):kind==='home'?U.chip('Déclaré à la FFE · n° '+HS.duc,'ok',true):U.chip(k.results,'ok',true))+'</div><h2>'+k.name+'</h2><div class="s mut" style="margin-top:4px">'+F.dateL(k.date).replace(/^./,function(c){return c.toUpperCase()})+' · '+k.place+(k.km?' · '+k.km+' km':'')+'</div></div>'+
-    '<div class="acts hrow wrap" style="--g:8px">'+(kind==='away'?'<button class="btn cp-ic" data-a="grp" title="Écrire au groupe">'+I('chat','sm')+'<span>Écrire au groupe</span></button><button class="btn dark" data-a="ffe">'+I('send','sm')+'Envoyer les engagements</button>':kind==='home'?'<button class="btn cp-ic" data-a="aff" title="Créer l’affiche">'+I('image','sm')+'<span>Créer l’affiche</span></button><button class="btn dark" data-a="prog">'+I('send','sm')+'Publier le programme</button>':'<button class="btn dark" data-a="recap">'+I('send','sm')+'Partager le résumé</button>')+'</div></div>'+
+   var h='<div class="card cp-head"><div class="grow" style="min-width:220px"><div class="hrow wrap" style="--g:6px;margin-bottom:8px">'+U.chip(k.disc,'navy')+U.chip(k.level,'line')+(kind==='away'?(st.sent?'<span class="chip acc"><span class="strass" style="width:8px;height:8px"></span>Engagements saisis par le club</span>':U.chip('Clôture '+F.rel(k.closes),dc<=2?'warn':'',true)):kind==='home'?U.chip('Déclaré à la FFE · n° '+HS.duc,'ok',true):U.chip(k.results,'ok',true))+'</div><h2>'+k.name+'</h2><div class="s mut" style="margin-top:4px">'+F.dateL(k.date).replace(/^./,function(c){return c.toUpperCase()})+' · '+k.place+(k.km?' · '+k.km+' km':'')+'</div></div>'+
+    '<div class="acts hrow wrap" style="--g:8px">'+(kind==='away'?'<button class="btn cp-ic" data-a="grp" title="Écrire au groupe">'+I('chat','sm')+'<span>Écrire au groupe</span></button><button class="btn dark" data-a="ffe">'+I('send','sm')+'Envoyer les engagements</button>':kind==='home'?'<button class="btn cp-ic" data-a="aff" title="Créer l’affiche">'+I('image','sm')+'<span>Créer l’affiche</span></button><button class="btn dark" data-a="prog">'+I('send','sm')+'Publier le programme</button>':'<button class="btn cp-ic" data-a="resimp" title="Importer les résultats FFE">'+I('upload','sm')+'<span>Importer les résultats FFE</span></button><button class="btn dark" data-a="recap">'+I('send','sm')+'Partager le résumé</button>')+'</div></div>'+
     '<div class="fx-tabs">'+U.tabs(tabs,tab,'data-t')+'</div><div data-tb></div>';
    det.innerHTML=h;var tb=det.querySelector('[data-tb]');
    det.querySelectorAll('[data-t]').forEach(function(t){t.addEventListener('click',function(){cpTab[k.id]=t.getAttribute('data-t');drawTab(k,t.getAttribute('data-t'),tb)})});
@@ -614,7 +673,7 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
    if(tab==='eng'){var tot=es.reduce(function(a,e){return a+e.fee},0),bad=kind==='away'&&k.id==='k1'?'m034':null;
     s+=(bad&&!st.done[bad]?'<div class="note warn cp-nw" style="margin-bottom:14px">'+I('alert','sm')+'<span class="grow">La licence de '+nm(bad)+' n’autorise pas encore la compétition : il manque le certificat médical. Sa famille peut le déposer depuis l’application.</span><button class="btn sm" data-a="lic">Demander le certificat</button></div>':'')+
     '<div class="card"><div class="cp-e cp-eh"><span>Cavalier</span><span>Cheval et épreuve</span><span class="co">Coach</span><span class="n">Tarif</span><span>Statut</span></div>'+
-    es.map(function(e){var m=D.member(e.rider),c=D.coach(e.coach);return '<div class="cp-e"><span class="hrow" style="--g:10px">'+U.av(m)+'<span class="b s ellip">'+m.first+' '+m.last+'</span></span><span class="ho ellip"><span class="s b">'+D.horse(e.horse).name+'</span><span class="s mut"> · '+e.class+'</span></span><span class="co hrow s mut" style="--g:6px">'+U.av(c,'sm')+c.first+'</span><span class="n s">'+F.eur(e.fee)+'</span><span class="stt">'+(kind==='done'?U.chip('Parti','',true):st.done[e.rider]?U.chip('Saisi sur FFE Compet','ok',true):e.rider===bad?U.chip('Certificat manquant','warn',true):U.chip('Prêt à saisir','acc',true))+'</span></div>'}).join('')+
+    es.map(function(e){var m=D.member(e.rider),c=D.coach(e.coach);return '<div class="cp-e"><span class="hrow" style="--g:10px">'+U.av(m)+'<span class="b s ellip">'+m.first+' '+m.last+'</span></span><span class="ho ellip"><span class="s b">'+D.horse(e.horse).name+'</span><span class="s mut"> · '+e.class+'</span></span><span class="co hrow s mut" style="--g:6px">'+U.av(c,'sm')+c.first+'</span><span class="n s">'+F.eur(e.fee)+'</span><span class="stt">'+(kind==='done'?U.chip('Parti','',true):st.done[e.rider]?U.chip('Engagement saisi par le club','ok',true):e.rider===bad?U.chip('Certificat manquant','warn',true):U.chip('Prêt à saisir','acc',true))+'</span></div>'}).join('')+
     '<div class="cf hrow sp wrap"><span class="s mut">'+es.length+' engagements · <b class="num" style="color:var(--ink)">'+F.eur(tot)+'</b> à avancer par le club, refacturés aux cavaliers</span>'+(kind==='away'?'<button class="btn sm" data-a="add">'+I('plus','sm')+'Engager un cavalier</button>':'')+'</div></div>'}
    if(tab==='mat'){var M=matList(k),all=[].concat.apply([],M.map(function(g){return g[1]})),dn=all.filter(function(x){return x[1]}).length;
     s+='<div class="card pad hrow wrap sp" style="--g:14px;margin-bottom:14px"><div class="hrow" style="--g:14px">'+U.ring(dn/all.length*100,dn+'/'+all.length,dn===all.length?'var(--ok)':'var(--acc)',56)+'<div><b>'+(dn===all.length?'Tout est chargé':'Il reste '+(all.length-dn)+' choses à préparer')+'</b><div class="s mut">Chacun coche sa part depuis son téléphone, la liste se met à jour pour tous.</div></div></div><button class="btn" data-a="matsend">'+I('send','sm')+'Envoyer la liste aux cavaliers</button></div><div class="g2">'+
@@ -629,7 +688,7 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
     s+=stats([stat('Partants',es.length,'sur '+es.length+' engagés'),stat('Sans-faute',cl,'un tiers des parcours'),stat('Classements',1,'Léa et Ulysse, 3e'),stat('Publié sur le portail',cpPub[k.id]?'Oui':'Non','vu par 64 adhérents')])+
      '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:8px"><h3>Résultats des cavaliers du club</h3><label class="hrow xs mut" style="--g:8px;cursor:pointer">'+U.tog(cpPub[k.id]).replace('class="tog"','class="tog" data-a="respub"')+'Publier sur le portail</label></div>'+
      es.slice().sort(function(a,b){return (a.res.rank||99)-(b.res.rank||99)}).map(function(e){var r=e.res,m=D.member(e.rider);return '<div class="cp-rk'+(r.classed?' top':'')+'"><span class="pos">'+(r.rank||'·')+'</span><div class="hrow" style="--g:10px;min-width:0">'+U.av(m)+'<div style="min-width:0"><div class="b s ellip">'+m.first+' '+m.last+' <span class="mut" style="font-weight:500">· '+D.horse(e.horse).name+'</span></div><div class="xs mut ellip">'+e.class+(r.rank?' · '+r.rank+'e sur '+r.of:'')+'</div></div></div>'+(r.elim?U.chip('Éliminée',''):r.clear?'<span class="chip acc"><span class="strass" style="width:8px;height:8px"></span>Sans-faute'+(r.classed?', classée':'')+'</span>':'<span class="chip">'+r.pts+' points</span>')+'<b class="s num hide-s" style="min-width:58px;text-align:right">'+(r.time||'')+'</b></div>'}).join('')+
-     '<div class="cf hrow sp wrap"><span class="xs mut">Résultats officiels repris du fichier exporté de FFE Compet le 15 novembre. Le palmarès de chaque cavalier est à jour.</span><button class="btn sm" data-a="resimp">'+I('upload','sm')+'Réimporter le fichier</button></div></div>'}
+     '<div class="cf hrow sp wrap"><span class="xs mut">'+(RESIMP[k.id]?'Résultats officiels importés de FFE Compet '+RESIMP[k.id].at+' et rangés dans '+RESIMP[k.id].n+' fiches.':'Résultats repris du classement provisoire. Importez le fichier officiel de FFE Compet pour les ranger dans les fiches.')+'</span><button class="btn sm'+(RESIMP[k.id]?'':' dark')+'" data-a="resimp">'+I('upload','sm')+(RESIMP[k.id]?'Réimporter le fichier':'Importer les résultats FFE')+'</button></div></div>'}
    if(tab==='epr'){var dn2=HS.todo.filter(function(x){return x[1]}).length;
     s+='<div class="g3"><div class="card span2"><div class="ch" style="padding-bottom:8px"><h3>Programme du dimanche</h3><span class="xs mut">22 engagés · carrière d’honneur</span></div>'+HS.classes.map(function(c){return '<div class="cp-post"><div class="hrow" style="--g:14px;min-width:0"><span class="b num" style="width:44px">'+c.t+'</span><div style="min-width:0"><div class="b s">'+c.name+'</div><div class="xs mut ellip">Juge : '+c.judge+' · '+c.n+' engagés</div></div></div><span class="avs hide-s" style="width:120px;display:block">'+U.bar(c.n/12*100)+'</span><button class="btn sm" data-a="start" data-id="'+c.id+'">Liste de départ</button></div>'}).join('')+
      '<div class="cf hrow sp wrap"><span class="xs mut">Engagements ouverts jusqu’au '+F.date(D.competitions[2].closes)+' sur FFE Compet. Piaffe importe la liste des engagés par fichier.</span><button class="btn sm" data-a="engimp">'+I('upload','sm')+'Importer les engagés</button></div></div>'+
@@ -659,7 +718,7 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
    matsend:function(){P.toast('Liste du matériel envoyée aux '+ents(cur()).length+' cavaliers')},
    bill:function(){var k=cur(),n=ents(k).length;BILL[k.id]=true;retab('frais');P.toast(n+' factures créées et envoyées',{undo:function(){BILL[k.id]=false;retab('frais')}})},
    respub:function(){var k=cur();cpPub[k.id]=!cpPub[k.id];P.toast(cpPub[k.id]?'Résultats publiés sur le portail des adhérents':'Résultats retirés du portail');setTimeout(function(){retab('res')},250)},
-   resimp:function(){P.toast('6 résultats relus dans le fichier, aucun changement',{icon:'upload'})},
+   resimp:function(){ffeResSheet(cur())},
    start:function(b){startList(HS.classes.find(function(c){return c.id===b.getAttribute('data-id')}))},
    engimp:function(){P.toast('22 engagés importés du fichier FFE Compet',{icon:'upload'})},
    todo:function(b){var it=HS.todo[+b.getAttribute('data-id').split('-')[1]];it[1]=!it[1];b.setAttribute('aria-checked',it[1]);setTimeout(function(){retab('epr')},220)},
@@ -698,7 +757,11 @@ D.coachLessons=D.coachLessons||[
  {id:'a16',d:3,t:'10:00',dur:60,stable:'e2',who:['s8'],type:'Particulier',price:55},{id:'a17',d:3,t:'16:30',dur:60,stable:'e1',who:['s2'],type:'Particulier',price:55},
  {id:'a18',d:4,t:'09:00',dur:90,stable:'e1',who:['s1','s2','s4'],type:'Collectif',title:'Répétition avant Rambouillet',price:120},{id:'a19',d:4,t:'11:00',dur:60,stable:'e1',who:['s3'],type:'Particulier',price:55},
  {id:'a20',d:5,t:'08:15',dur:480,stable:'e1',who:['s1'],type:'Concours',title:'CSO de Rambouillet',price:150}];
+D.coachLapsed=D.coachLapsed||[{first:'Chloé',last:'Vasseur',horse:'Tango',stable:'e2',seen:'il y a 5 semaines',why:'carte de 10 cours terminée'},{first:'Mathis',last:'Leroy',horse:'Quinoa',stable:'e1',seen:'il y a 4 semaines',why:'aucune réservation depuis la Toussaint'},{first:'Camille',last:'Roche',horse:'Kenzo du Vallon',stable:'e2',seen:'ce matin',why:'une seule séance restante sur sa carte'}];
 var ST=D.coachStables,STU=D.coachStudents,LES=D.coachLessons;
+/* journée de Pauline aux Tilleuls : une seule version, celle de D.facts.paulineToday (11 h 15, 12 h 15, 14 h libre) */
+(function(){var f=D.facts&&D.facts.paulineToday;if(!f)return;['a05','a06','a07'].forEach(function(id,i){var l=LES.find(function(x){return x.id===id}),x=f[i];if(l&&x){l.t=x.at;if(x.arena)l.place=arena(x.arena)}});
+ ['b01','b02'].forEach(function(id,i){var b=BOOK.find(function(x){return x.id===id}),x=f[i];if(b&&x){b.t=x.at;if(x.arena)b.arena=x.arena}})})();
 function stb(i){return ST.find(function(s){return s.id===i})}
 function stu(i){var s=STU.find(function(x){return x.id===i});if(s&&s.m&&!s.first){var m=D.member(s.m);s.first=m.first;s.last=m.last;s.color=m.color}return s}
 STU.forEach(function(s){stu(s.id)});
@@ -772,10 +835,84 @@ P.css(`
 
 var caView='jour',caDay=0,caReq=[{id:'q1',who:'Inès Blanc · Zéphyr',avo:{first:'Inès',last:'Blanc',color:'var(--c3)'},what:'Cours particulier CSO',when:'Demain à 10 h',where:'Écurie des Tilleuls',note:'Le club doit aussi valider la piste.',price:55},{id:'q2',who:'Hugo Marchand · Nabab',avo:{first:'Hugo',last:'Marchand',color:'var(--c4)'},what:'Premier cours, Club 2',when:'Jeudi à 17 h 30',where:'Haras de la Vallée',note:'Nouveau cavalier, trouvé sur votre page publique.',price:55}];
 
+/* ---------- Hors ligne, raccourcis et personnalisation de l'agenda ---------- */
+P.css(`
+.ca-off{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:var(--r-md);background:var(--warn-pale);color:var(--ink);font-size:13px;margin-bottom:14px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--warn) 30%,transparent)}
+.ca-off svg.i{color:var(--warn);flex:none}
+.ca-off-b{font-weight:700;color:var(--warn);white-space:nowrap}
+.ca-offok{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:-4px;color:color-mix(in srgb,var(--navy-ink) 66%,transparent)}
+.ca-offok svg.i{width:14px;height:14px}
+.ca-net{display:flex;align-items:center;gap:8px;align-self:center;height:32px;padding:0 12px;border-radius:16px;font-size:12px;font-weight:600;background:var(--ok-pale);color:var(--ok);transition:background var(--t-2),color var(--t-2)}
+.ca-net small{font-weight:500;color:var(--mut)}
+.ca-net.off{background:var(--warn-pale);color:var(--warn)}
+.ca-net svg.i{width:15px;height:15px}
+.ca-qk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 12px 12px}
+.ca-q{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);text-align:left;min-width:0;min-height:58px;transition:background var(--t-2),transform var(--t-1)}
+.ca-q:hover{background:var(--acc-pale)}.ca-q:active{transform:scale(.98)}
+.ca-q b{display:block;font-size:13px;font-weight:650;line-height:1.25}
+.ca-q small{display:block;font-size:11.500px;color:var(--mut)}
+.ca-q .av.sq{flex:none}
+.ca-hz{display:flex;align-items:center;gap:10px;padding:8px 16px 8px 78px;font-size:12px;color:var(--ink-2);background:var(--warn-pale);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ca-hz svg.i{width:15px;height:15px;color:var(--warn);flex:none}
+.ca-ps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ca-ps button{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-md);text-align:left;min-width:0;font-size:13px;font-weight:600;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);transition:background var(--t-2),box-shadow var(--t-2)}
+.ca-ps button span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ca-ps button svg.i{flex:none;color:var(--mut)}
+.ca-ps button[aria-pressed="true"]{background:var(--acc-pale);box-shadow:inset 0 0 0 1.500px var(--acc)}
+.ca-ps button[aria-pressed="true"] svg.i{color:var(--acc)}
+.ca-bl{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.ca-bl.off{opacity:.55}
+.ca-bl .mv{display:flex;gap:2px}
+.ca-big .s{font-size:15px}.ca-big .xs{font-size:13px}.ca-big .ca-it .tm{font-size:15.500px}.ca-big .ca-it .b{font-size:16px}.ca-big .ca-q b{font-size:14.500px}.ca-big .ca-q small{font-size:12.500px}.ca-big h3{font-size:18px}
+@container main (max-width:860px){.ca-top{order:-1}}
+@container main (max-width:520px){.ca-hz{padding-left:16px}}
+`);
+var CO={offline:false,queue:[]};
+function offBar(){var n=CO.queue.length;return CO.offline?'<button class="ca-off" data-a="online">'+I('wifi')+'<span class="grow">Hors ligne. '+(n?'<b class="num">'+n+'</b> envoi'+(n>1?'s':'')+' gardé'+(n>1?'s':'')+' sur le téléphone, partira dès le retour du réseau.':'Votre agenda, le chrono et les notes restent disponibles. Tout part dès le retour du réseau.')+'</span><span class="ca-off-b">Reconnecter</span></button>':''}
+function reconnect(){var q=CO.queue.slice();CO.offline=false;CO.queue=[];P.rerender();P.toast(q.length?'Réseau retrouvé : '+q.join(', '):'Réseau retrouvé, tout est à jour',{icon:'wifi'})}
+var CA_BL=[['next','Prochain cours','Le grand bouton Démarrer le cours','play'],['quick','Raccourcis','Quatre actions à portée de pouce','grid'],['req','Demandes de réservation','Accepter ou proposer un autre horaire','calendar_add'],['today','Résumé du jour','Heures de cours, revenus et route','today']];
+function nextL(){return dayL(0).find(function(x){return !x.done&&x.who.length})}
+var CA_Q=[
+ ['start','play','Démarrer le cours',function(){var l=nextL();return l?'Prochain à '+th(hm(l.t)):'Journée terminée'},function(){var l=nextL();if(l)liveSheet(l);else P.toast('Tous vos cours du jour sont faits',{icon:'checkc'})}],
+ ['add','plus','Ajouter un cours',function(){return 'L’élève est prévenu'},function(){var b=document.querySelector('.view .ph [data-a="add"]');if(b)b.click()}],
+ ['block','holiday','Bloquer une période',function(){return 'Congés, maréchal'},function(){cdTab='sem';P.go('coach-dispo')}],
+ ['inv','invoice','Créer une facture',function(){return 'Numérotation continue'},function(){P.go('coach-revenus');setTimeout(function(){invoiceSheet(null)},350)}],
+ ['stu','members','Mes élèves',function(){return STU.length+' cavaliers suivis'},function(){P.go('coach-eleves')}],
+ ['ex','jump','Dessiner un parcours',function(){return 'Glisser les obstacles'},function(){ceTab='ex';P.go('coach-eleves')}],
+ ['comp','compet','Journée de concours',function(){return 'Rambouillet dimanche'},function(){ccSel='x1';P.go('coach-concours')}],
+ ['page','globe','Ma page publique',function(){return 'Voir et partager'},function(){cdTab='page';P.go('coach-dispo')}],
+ ['sync','refresh','Synchroniser',function(){return 'Google Agenda, Apple'},function(){P.toast(CO.offline?'Synchronisation en attente du réseau':'Vos cours sont à jour dans Google Agenda et Apple Calendrier',{icon:CO.offline?'wifi':'checkc'})}],
+ ['rev','wallet','Mes revenus',function(){return F.eur(3480)+' en novembre'},function(){P.go('coach-revenus')}],
+ ['off','wifi','Tester sans réseau',function(){return CO.offline?'Hors ligne en ce moment':'Comme au fond du manège'},function(){if(CO.offline)reconnect();else{CO.offline=true;P.rerender();P.toast('Hors ligne : vos actions sont gardées sur le téléphone',{icon:'wifi'})}}]];
+function caCfg(){var c=P.prefs.get('coach:home',null)||{},bl=(c.blocks||[]).filter(function(b){return CA_BL.some(function(x){return x[0]===b.id})});
+ CA_BL.forEach(function(x){if(!bl.some(function(b){return b.id===x[0]}))bl.push({id:x[0],on:true})});
+ var q=(c.quick||['start','add','block','inv']).filter(function(id){return CA_Q.some(function(x){return x[0]===id})}).slice(0,4);return {blocks:bl,quick:q,big:!!c.big}}
+function persoSheet(){var c=caCfg();
+ function theme(){return document.documentElement.getAttribute('data-theme')||'auto'}
+ var sh=P.sheet({title:'Personnaliser mon agenda',icon:'sliders',body:function(b,sheet){
+  function draw(){
+   b.innerHTML='<p class="s mut" style="margin-bottom:14px">Réglez votre page d’accueil comme vous l’aimez. Les changements s’appliquent tout de suite, sur votre téléphone et votre ordinateur.</p>'+
+    sec('Mes 4 raccourcis','<span class="xs mut num">'+c.quick.length+' sur 4</span>')+'<div class="ca-ps">'+CA_Q.map(function(q){return '<button data-a="pq" data-id="'+q[0]+'" aria-pressed="'+(c.quick.indexOf(q[0])>=0)+'">'+I(q[1],'sm')+'<span>'+q[2]+'</span></button>'}).join('')+'</div>'+
+    sec('Blocs affichés et leur ordre')+'<div class="stack" style="--g:8px">'+c.blocks.map(function(x,i){var d=CA_BL.find(function(y){return y[0]===x.id});return '<div class="ca-bl'+(x.on?'':' off')+'">'+sq(d[3])+'<div style="min-width:0"><div class="b s ellip">'+d[1]+'</div><div class="xs mut ellip">'+d[2]+'</div></div><span class="mv"><button class="btn ghost icon sm" data-a="up" data-i="'+i+'" title="Monter"'+(i===0?' disabled':'')+'>'+I('up','sm')+'</button><button class="btn ghost icon sm" data-a="dn" data-i="'+i+'" title="Descendre"'+(i===c.blocks.length-1?' disabled':'')+'>'+I('down','sm')+'</button></span>'+tg(x.on,'bon',String(i))+'</div>'}).join('')+'</div>'+
+    sec('Apparence')+U.seg([['auto','Automatique'],['light','Clair'],['dark','Sombre']],theme(),'data-th')+
+    '<div class="card flat" style="padding:4px 14px;margin-top:14px">'+row('Texte plus grand',tg(c.big,'big'))+'</div>';
+   b.querySelectorAll('[data-th]').forEach(function(x){x.addEventListener('click',function(){var v=x.getAttribute('data-th'),r=document.documentElement;if(v==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',v);P.store.set('theme',v==='auto'?null:v);draw();P.toast(v==='auto'?'Thème automatique, comme votre téléphone':v==='dark'?'Thème sombre appliqué':'Thème clair appliqué',{icon:v==='dark'?'moon':'sun',ms:1600})})})}
+  function save(){P.prefs.set('coach:home',c);P.rerender()}
+  draw();
+  act(sheet,{pq:function(x){var id=x.getAttribute('data-id'),i=c.quick.indexOf(id);if(i>=0){c.quick.splice(i,1)}else{if(c.quick.length>=4){P.toast('Quatre raccourcis au plus : retirez-en un d’abord',{icon:'info',ms:2000});return}c.quick.push(id)}draw();save()},
+   up:function(x){var i=+x.getAttribute('data-i');c.blocks.splice(i-1,0,c.blocks.splice(i,1)[0]);draw();save()},
+   dn:function(x){var i=+x.getAttribute('data-i');c.blocks.splice(i+1,0,c.blocks.splice(i,1)[0]);draw();save()},
+   bon:function(x){var i=+x.getAttribute('data-id');c.blocks[i].on=!c.blocks[i].on;setTimeout(function(){draw();save()},160)},
+   big:function(){c.big=!c.big;setTimeout(function(){draw();save()},160)},
+   reset:function(){c={blocks:CA_BL.map(function(x){return {id:x[0],on:true}}),quick:['start','add','block','inv'],big:false};draw();save();P.toast('Disposition par défaut rétablie',{icon:'refresh'})},
+   done:function(){sheet.close();P.toast('Agenda personnalisé')}});
+ },foot:'<button class="btn ghost" data-a="reset">'+I('refresh','sm')+'Rétablir</button><button class="btn pri" data-a="done">Terminé</button>'})}
+
+function netTxt(){return CO.offline?I('wifi','sm')+'Hors ligne <small>· tout est gardé sur le téléphone</small>':I('wifi','sm')+'En ligne <small>· tester sans réseau</small>'}
 function liveSheet(l){var s0=l.who.length?stu(l.who[0]):null,t0=Date.now(),tm,rec=false,noteDone=false;
  var last={s1:'Vendredi : sans-faute à Chantilly. À revoir : le dernier abord, Léa laisse filer.',s2:'Vendredi : bonne cadence, mains encore hautes à la réception.',s6:'Jeudi : Baltic regarde les barres au sol, prévoir du spa.'}[s0?s0.id:'']||'Dernière séance : travail des transitions et lignes courbes.';
  var sh=P.sheet({title:l.type==='Collectif'?l.title:s0.first+' et '+s0.horse,icon:'stopwatch',body:function(b,sheet){
-  b.innerHTML='<div class="ca-live"><div class="ca-clock num"><span data-ck>00:00</span><small>'+lSub(l)+' · prévu '+l.dur+' min</small></div>'+
+  b.innerHTML='<div class="ca-live"><button class="ca-net'+(CO.offline?' off':'')+'" data-a="net">'+netTxt()+'</button><div class="ca-clock num"><span data-ck>00:00</span><small>'+lSub(l)+' · prévu '+l.dur+' min</small></div>'+
    '<div class="note">'+I('bulb','sm')+'<span>'+last+'</span></div>'+
    '<div><div class="eyebrow" style="margin-bottom:8px">Travaillé aujourd’hui</div><div class="ca-tags">'+['Détente sur le plat','Cavalettis','Ligne en cinq foulées','Oxer 110','Tracé du barrage','Transitions'].map(function(x,i){return '<button class="tag" aria-pressed="'+(i<2)+'">'+x+'</button>'}).join('')+'</div></div>'+
    '<div class="card flat pad stack" style="--g:12px"><div class="hrow" style="--g:14px"><button class="ca-mic" data-a="mic" title="Dicter une note">'+I('mic')+'</button><div class="grow"><div class="b s" data-mt>Dicter une note vocale</div><div class="ca-wave" data-wave>'+Array.apply(null,Array(28)).map(function(_,i){return '<i style="--k:'+i+';--h:'+(20+(i*37)%60)+'"></i>'}).join('')+'</div></div></div>'+
@@ -784,7 +921,7 @@ function liveSheet(l){var s0=l.who.length?stu(l.who[0]):null,t0=Date.now(),tm,re
   tm=setInterval(function(){var c=b.querySelector('[data-ck]');if(!b.isConnected||!c){clearInterval(tm);return}c.textContent=ckText()},500);
   var TXT='Très bonne séance. Ligne en cinq foulées régulière aux deux mains. Sur l’oxer à 110, garder les épaules derrière jusqu’au pied de l’obstacle. À refaire seule : transitions galop, trot, galop sur le cercle.';
   act(sheet,{mic:function(x){var w=b.querySelector('[data-wave]'),mt=b.querySelector('[data-mt]'),ta=b.querySelector('[data-note]');
-    if(!rec){rec=true;x.classList.add('rec');x.innerHTML=I('pause');w.classList.add('rec');mt.textContent='Écoute en cours, parlez normalement';
+    if(!rec){rec=true;x.classList.add('rec');x.innerHTML=I('pause');w.classList.add('rec');mt.textContent=CO.offline?'Dictée sur le téléphone, sans réseau':'Écoute en cours, parlez normalement';
      var i=0;(function type(){if(!rec||!b.isConnected)return;i+=3;ta.value=TXT.slice(0,i);if(i<TXT.length)setTimeout(type,P.RM?1:28);else stop()})();}
     else stop();
     function stop(){rec=false;noteDone=true;x.classList.remove('rec');x.innerHTML=I('mic');w.classList.remove('rec');mt.textContent='Note transcrite, relisez avant de partager'}},
@@ -792,8 +929,9 @@ function liveSheet(l){var s0=l.who.length?stu(l.who[0]):null,t0=Date.now(),tm,re
     b.innerHTML='<div class="stack" style="--g:16px;align-items:center;text-align:center;padding:10px 0"><span class="strass" style="width:22px;height:22px"></span><h3 style="font-size:22px">Cours terminé</h3><p class="s mut">'+(l.type==='Collectif'?l.title:s0.first+' et '+s0.horse)+' · chrono '+d+' · '+F.eur(l.price)+' ajoutés à vos revenus</p></div>'+
      '<div class="card flat pad s" style="color:var(--ink-2)">'+(ta?E(ta):'Aucune note pour cette séance. Vous pouvez en ajouter une depuis la fiche de l’élève.')+'</div>';
     sheet.querySelector('.sf').innerHTML='<button class="btn" data-a="close">Garder pour moi</button><button class="btn pri" data-a="share">'+I('send','sm')+'Partager la note avec '+(l.type==='Collectif'?'le groupe':s0.first)+'</button>';P.animate(b)},
-   close:function(){sheet.close();P.rerender();P.toast('Cours enregistré dans votre agenda')},
-   share:function(){sheet.close();P.rerender();P.toast('Note de séance envoyée à '+(l.type==='Collectif'?'vos '+(l.who.length+(l.extra||0))+' cavaliers':s0.first),{icon:'send'})}});
+   net:function(x){if(CO.offline&&CO.queue.length){reconnect()}else{CO.offline=!CO.offline;P.rerender()}x.classList.toggle('off',CO.offline);x.innerHTML=netTxt();if(CO.offline)P.toast('Hors ligne : le chrono continue, la note est gardée sur le téléphone',{icon:'wifi'});else if(!CO.queue.length)P.toast('Réseau retrouvé',{icon:'wifi',ms:1500})},
+   close:function(){sheet.close();if(CO.offline)CO.queue.push('cours de '+(l.type==='Collectif'?l.title.toLowerCase():s0.first)+' synchronisé');P.rerender();P.toast(CO.offline?'Cours enregistré sur le téléphone, synchronisé au retour du réseau':'Cours enregistré dans votre agenda',{icon:CO.offline?'wifi':'checkc'})},
+   share:function(){var who=l.type==='Collectif'?'vos '+(l.who.length+(l.extra||0))+' cavaliers':s0.first;sheet.close();if(CO.offline){CO.queue.push('note de séance envoyée à '+who);P.rerender();P.toast('Note gardée sur le téléphone, envoyée à '+who+' dès le retour du réseau',{icon:'wifi'});return}P.rerender();P.toast('Note de séance envoyée à '+who,{icon:'send'})}});
  },foot:'<button class="btn pri lg block" data-a="end">'+I('check')+'Terminer le cours</button>',onClose:function(){clearInterval(tm)}});
  return sh}
 
@@ -816,24 +954,32 @@ P.mod({id:'coach-agenda',role:'coach',group:'Coaching',title:'Agenda',icon:'plan
  render:function(el){
   var today=dayL(0),nx=today.find(function(l){return !l.done&&l.who.length}),wk=LES.filter(function(l){return l.type!=='Libre'}),wsum=wk.reduce(function(a,l){return a+l.price},0),tsum=today.reduce(function(a,l){return a+l.price},0);
   var s0=nx&&stu(nx.who[0]),mins=nx?hm(nx.t)-(9*60+41):0;
+  var B={},cfg=caCfg(),tmin=today.filter(function(l){return l.who.length}).reduce(function(a,l){return a+l.dur},0);el.classList.toggle('ca-big',!!cfg.big);
   el.innerHTML=ph('Bonjour Pauline','Mardi 17 novembre · '+today.filter(function(l){return l.who.length}).length+' cours dans 3 écuries, '+F.eur(tsum)+' et 46 km de route',
-   '<button class="btn" data-a="sync">'+I('refresh','sm')+'Synchroniser</button><button class="btn" data-a="add">'+I('plus','sm')+'Ajouter un cours</button>')+
+   '<button class="btn" data-a="perso">'+I('sliders','sm')+'Personnaliser</button><button class="btn" data-a="add">'+I('plus','sm')+'Ajouter un cours</button>')+
+  offBar()+
   '<div class="ca"><div class="stack" style="--g:14px"><div class="hrow sp wrap">'+U.seg([['jour','Jour'],['sem','Semaine']],caView,'data-v')+'<span class="s mut">Semaine du 16 au 22 novembre · <b class="num" style="color:var(--ink)">'+wk.length+' cours</b> · <b class="num" style="color:var(--ink)">'+F.eur(wsum)+'</b></span></div><div data-main></div></div>'+
-  '<div class="ca-side">'+(nx?'<div class="card navy ca-next"><div class="glow"></div><div class="hrow sp"><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 70%,var(--acc))">Prochain cours dans '+th(mins)+'</span><span class="chip" style="background:color-mix(in srgb,var(--navy-ink) 14%,transparent);color:var(--navy-ink)">'+nx.t+'</span></div>'+
-    '<div class="hrow" style="--g:12px">'+U.av(s0,'lg')+'<div style="min-width:0"><h2>'+s0.first+' et '+s0.horse.split(' ')[0]+'</h2><div class="s mut">'+lSub(nx)+'</div></div></div>'+
-    '<div class="s mut">Objectif du moment : '+s0.goal.charAt(0).toLowerCase()+s0.goal.slice(1)+'. Départ conseillé à '+tc(hm(nx.t)-stb(nx.stable).min-10).replace(':',' h ')+', '+stb(nx.stable).min+' minutes de route depuis la Vallée.</div>'+
-    '<button class="ca-go" data-a="start">'+I('play')+'Démarrer le cours</button></div>':'<div class="card pad">'+U.empty('checkc','Journée terminée','Tous vos cours du jour sont faits.')+'</div>')+
-   '<div class="card" data-req></div>'+
-   '<div class="card"><div class="ch"><h3>Aujourd’hui</h3><span class="xs mut">3 écuries</span></div><div class="cb stack" style="--g:10px">'+row('Heures de cours','5 h 15')+row('Revenus du jour','<span class="num">'+F.eur(tsum)+'</span>')+row('Route','46 km · 58 min')+'<div class="hrow wrap" style="--g:6px;padding-top:4px">'+ST.filter(function(s){return s.on}).map(function(s){return '<span class="chip line"><i style="width:7px;height:7px;border-radius:50%;background:'+s.c+'"></i>'+s.short+'</span>'}).join('')+'</div></div></div></div></div>';
-  var main=el.querySelector('[data-main]'),rq=el.querySelector('[data-req]');
+  '<div class="ca-side" data-side></div></div>';
+  B.next=(nx?'<div class="card navy ca-next ca-top"><div class="glow"></div><div class="hrow sp"><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 70%,var(--acc))">Prochain cours dans '+th(mins)+'</span><span class="chip" style="background:color-mix(in srgb,var(--navy-ink) 14%,transparent);color:var(--navy-ink)">'+nx.t+'</span></div>'+
+    '<div class="hrow" style="--g:12px">'+(nx.who.length>1?lAvs(nx):U.av(s0,'lg'))+'<div style="min-width:0"><h2>'+(nx.who.length>1&&nx.title?nx.title:s0.first+' et '+s0.horse.split(' ')[0])+'</h2><div class="s mut">'+lSub(nx)+'</div></div></div>'+
+    '<div class="s mut">'+(nx.who.length>1?'Avec '+nx.who.map(function(w){return stu(w).first}).join(', ')+'.':'Objectif du moment : '+s0.goal.charAt(0).toLowerCase()+s0.goal.slice(1)+'.')+' Départ conseillé à '+tc(hm(nx.t)-stb(nx.stable).min-10).replace(':',' h ')+', '+stb(nx.stable).min+' minutes de route depuis la Vallée.</div>'+
+    '<button class="ca-go" data-a="start">'+I('play')+'Démarrer le cours</button><span class="xs ca-offok">'+I('wifi','sm')+'Fonctionne aussi sans réseau, au fond du manège</span></div>':'<div class="card pad ca-top">'+U.empty('checkc','Journée terminée','Tous vos cours du jour sont faits.')+'</div>');
+  B.quick='<div class="card ca-top"><div class="ch" style="padding-bottom:8px"><h3>Raccourcis</h3><button class="btn ghost sm" data-a="perso">'+I('edit','sm')+'Changer</button></div><div class="ca-qk">'+cfg.quick.map(function(id){var q=CA_Q.find(function(x){return x[0]===id});return q?'<button class="ca-q" data-a="q" data-id="'+q[0]+'">'+sq(q[1])+'<span style="min-width:0"><b>'+q[2]+'</b><small class="ellip">'+q[3]()+'</small></span></button>':''}).join('')+'</div></div>';
+  B.req='<div class="card" data-req></div>';
+  B.today='<div class="card"><div class="ch"><h3>Aujourd’hui</h3><span class="xs mut">3 écuries</span></div><div class="cb stack" style="--g:10px">'+row('Heures de cours',th(tmin))+row('Revenus du jour','<span class="num">'+F.eur(tsum)+'</span>')+row('Route','46 km · 58 min')+(D.facts&&D.facts.hersage?row('Carrière d’honneur','Hersage à '+th(hm(D.facts.hersage.at))):'')+'<div class="hrow wrap" style="--g:6px;padding-top:4px">'+ST.filter(function(s){return s.on}).map(function(s){return '<span class="chip line"><i style="width:7px;height:7px;border-radius:50%;background:'+s.c+'"></i>'+s.short+'</span>'}).join('')+'</div></div></div>';
+  el.querySelector('[data-side]').innerHTML=cfg.blocks.filter(function(b){return b.on&&B[b.id]}).map(function(b){return B[b.id]}).join('');
+  var main=el.querySelector('[data-main]'),rq=el.querySelector('[data-req]')||document.createElement('div');
   function drawReq(){rq.innerHTML='<div class="ch" style="padding-bottom:8px"><h3>Demandes de réservation</h3>'+(caReq.length?U.chip(caReq.length,'acc'):'')+'</div>'+(caReq.length?caReq.map(function(q){return '<div class="ca-rq"><div class="hrow" style="--g:10px">'+(q.av?U.av(q.av):U.av(q.avo))+'<div class="grow"><div class="b s ellip">'+q.who+'</div><div class="xs mut ellip">'+q.what+' · '+q.when+'</div></div><b class="s num">'+F.eur(q.price)+'</b></div><div class="xs mut">'+q.where+'. '+q.note+'</div><div class="g2" style="--g:8px;grid-template-columns:1fr 1fr"><button class="btn sm" style="height:40px" data-a="rno" data-id="'+q.id+'">Proposer un autre horaire</button><button class="btn sm dark" style="height:40px" data-a="rok" data-id="'+q.id+'">Accepter</button></div></div>'}).join(''):'<div class="cb s mut" style="padding-top:4px">Aucune demande en attente. Vos créneaux libres restent visibles sur votre page publique.</div>')}
   function item(l,i,L){var s=stb(l.stable),free=l.type==='Libre',prev=L[i-1],tr='';
    if(prev&&prev.stable!==l.stable){var gap=hm(l.t)-(hm(prev.t)+prev.dur);tr='<div class="ca-tr">'+I('car')+'<span class="grow">Trajet vers '+s.short+' · '+s.km+' km, '+s.min+' min</span><span class="num">'+(gap-s.min>=10?'Départ à '+tc(hm(l.t)-s.min-10):'Marge de '+(gap-s.min)+' min')+'</span></div>'}
    return tr+'<button class="ca-it'+(l.done?' done':'')+(nx&&l.id===nx.id?' next':'')+(free?' free':'')+'" data-a="les" data-id="'+l.id+'"><span class="tm">'+l.t+'<small>'+dur(l.dur)+'</small></span><span class="st" style="--c:'+s.c+'"></span><span style="min-width:0"><span class="b tt ellip" style="display:block">'+lTitle(l)+'</span><span class="s mut ellip" style="display:block">'+lSub(l)+'</span></span><span class="hrow" style="--g:8px">'+(l.todo?U.chip('Note à écrire','warn',true):l.done?U.chip('Fait','ok',true):l.pend?U.chip('À confirmer','warn',true):free?U.chip('Libre','line'):l.who.length>1?lAvs(l):'<b class="s num">'+F.eur(l.price)+'</b>')+'</span></button>'}
+  /* le hersage de la carrière d'honneur (fait de référence) s'intercale dans la journée des Tilleuls */
+  function withHerse(H,L){var hz=D.facts&&D.facts.hersage;if(!hz||caDay!==0)return H.join('');var at=hm(hz.at),i=L.findIndex(function(l){return hm(l.t)>=at});if(i<0)i=L.length;
+   H.splice(i,0,'<div class="ca-hz">'+I('tractor','sm')+'<span class="grow"><b>'+th(at)+'</b> · Hersage de la '+arena(hz.arena).toLowerCase()+' aux Tilleuls, piste fermée 30 minutes</span></div>');return H.join('')}
   function draw(){var h='';
    if(caView==='jour'){var L=dayL(caDay);
     h+='<div class="ca-days">'+[-1,0,1,2,3,4,5].map(function(o){var dl=dayL(o).filter(function(l){return l.who.length});return '<button data-a="day" data-d="'+o+'" aria-selected="'+(o===caDay)+'">'+DWS[day(o).getDay()]+'<b>'+day(o).getDate()+'</b><i>'+dl.slice(0,4).map(function(l){return '<u style="--c:'+stb(l.stable).c+'"></u>'}).join('')+'</i></button>'}).join('')+'</div>'+
-     '<div class="card" style="margin-top:14px;overflow:hidden"><div class="ch" style="padding-bottom:10px"><h3>'+F.dateL(day(caDay)).replace(/^./,function(c){return c.toUpperCase()})+'</h3><span class="xs mut">'+L.filter(function(l){return l.who.length}).length+' cours · '+F.eur(L.reduce(function(a,l){return a+l.price},0))+'</span></div>'+(L.length?L.map(item).join(''):U.empty('sun','Journée libre','Aucun cours ce jour-là.'))+'</div>'}
+     '<div class="card" style="margin-top:14px;overflow:hidden"><div class="ch" style="padding-bottom:10px"><h3>'+F.dateL(day(caDay)).replace(/^./,function(c){return c.toUpperCase()})+'</h3><span class="xs mut">'+L.filter(function(l){return l.who.length}).length+' cours · '+F.eur(L.reduce(function(a,l){return a+l.price},0))+'</span></div>'+(L.length?withHerse(L.map(item),L):U.empty('sun','Journée libre','Aucun cours ce jour-là.'))+'</div>'}
    else{h+='<div class="ca-wk">'+[-1,0,1,2,3,4,5].map(function(o){var L=dayL(o);return '<div class="ca-wc"><div class="ca-wh'+(o===0?' today':'')+'"><span>'+DWS[day(o).getDay()]+' '+day(o).getDate()+'</span><span class="num">'+F.eur(L.reduce(function(a,l){return a+l.price},0))+'</span></div>'+L.map(function(l){var s=stb(l.stable);return '<button class="ca-wb'+(l.done?' done':'')+'" style="--c:'+s.c+'" data-a="les" data-id="'+l.id+'"><b>'+l.t+'</b><span>'+(l.type==='Libre'?'Créneau libre':l.alt?l.alt.split(' · ')[0]:l.title||stu(l.who[0]).first+' '+stu(l.who[0]).last)+'</span><small>'+s.short+'</small></button>'}).join('')+'</div>'}).join('')+'</div>'+
      '<div class="hrow wrap" style="margin-top:14px;--g:14px">'+C.legend(ST.filter(function(s){return s.on}).map(function(s){return [s.name,s.c]}))+'</div>'}
    main.innerHTML=h}
@@ -842,7 +988,10 @@ P.mod({id:'coach-agenda',role:'coach',group:'Coaching',title:'Agenda',icon:'plan
   act(el,{day:function(b){caDay=+b.getAttribute('data-d');draw()},
    les:function(b){lessonSheet(LES.find(function(l){return l.id===b.getAttribute('data-id')}))},
    start:function(){liveSheet(nx)},
-   sync:function(b){b.innerHTML=I('check','sm')+'Agenda synchronisé';P.toast('Vos cours sont à jour dans Google Agenda et Apple Calendrier')},
+   sync:function(b){b.innerHTML=I('check','sm');P.toast(CO.offline?'Synchronisation en attente du réseau':'Vos cours sont à jour dans Google Agenda et Apple Calendrier',{icon:CO.offline?'wifi':'checkc'})},
+   perso:function(){persoSheet()},
+   online:function(){reconnect()},
+   q:function(b){var q=CA_Q.find(function(x){return x[0]===b.getAttribute('data-id')});if(q)q[4](nx)},
    add:function(){var sh=P.sheet({title:'Ajouter un cours',icon:'plus',body:'<div class="stack" style="--g:12px"><label class="field"><span>Élève</span><select class="in">'+STU.map(function(s){return '<option>'+s.first+' '+s.last+' · '+s.horse+'</option>'}).join('')+'</select></label><div class="g2" style="--g:12px"><label class="field"><span>Jour</span><select class="in"><option>Mercredi 18 novembre</option><option>Jeudi 19 novembre</option><option>Vendredi 20 novembre</option></select></label><label class="field"><span>Heure</span><select class="in"><option>16 h 30</option><option>17 h 30</option></select></label></div><label class="field"><span>Écurie</span><select class="in">'+ST.filter(function(s){return s.on}).map(function(s){return '<option>'+s.name+'</option>'}).join('')+'</select></label><div class="card flat" style="padding:4px 14px">'+row('Demander le paiement en ligne',U.tog(true))+row('Répéter chaque semaine',U.tog(false))+'</div></div>',foot:'<button class="btn pri" data-ok>Ajouter et prévenir l’élève</button>'});sh.querySelector('[data-ok]').onclick=function(){sh.close();P.toast('Cours ajouté, votre élève reçoit le lien de paiement')}},
    rok:function(b){var q=caReq.find(function(x){return x.id===b.getAttribute('data-id')});caReq=caReq.filter(function(x){return x!==q});drawReq();P.toast('Réservation acceptée : '+q.who.split(' · ')[0]+', '+q.when.toLowerCase(),{undo:function(){caReq.push(q);drawReq()}})},
    rno:function(b){var q=caReq.find(function(x){return x.id===b.getAttribute('data-id')});caReq=caReq.filter(function(x){return x!==q});drawReq();P.toast('Trois autres horaires proposés à '+q.who.split(' ')[0],{icon:'swap',undo:function(){caReq.push(q);drawReq()}})}});
@@ -874,7 +1023,7 @@ P.css(`
 @container main (max-width:1080px){.ce{grid-template-columns:280px minmax(0,1fr)}}
 @container main (max-width:860px){.ce{grid-template-columns:minmax(0,1fr)}.ce-detail{display:none}}
 `);
-var ceSel='s1',ceFil='all',ceQ='';
+var ceSel='s1',ceFil='all',ceQ='',ceTab='stu';
 var CE={goals:{s1:[['Garder la même cadence sur un parcours entier',true],['Enchaîner 115 cm sans faute à la maison',true],['Prendre les options courtes au barrage',false],['Premier Amateur 3 en mars',false]]},
  notes:{s1:[{d:'Ven. 13 nov.',tag:'Concours',t:'Chantilly : sans-faute et 3e du Grand Prix à 115 cm. Ulysse est resté à l’écoute jusqu’au dernier oxer.',sh:true},{d:'Mar. 10 nov.',tag:'Cours',t:'Ligne en cinq foulées, raccourcie puis allongée. Léa laisse encore filer le dernier abord, on y revient mardi.',sh:true},{d:'Mar. 3 nov.',tag:'Pour moi',t:'Étriers un trou trop longs. Lui proposer une séance sans étriers avant l’hiver.',sh:false}]}};
 function goalsOf(s){return CE.goals[s.id]=CE.goals[s.id]||[[s.goal,false],['Régularité des abords à '+s.h[7]+' cm',true],['Autonomie à la détente en concours',s.pct>60],['Travail sur le plat deux fois par semaine',false]]}
@@ -900,10 +1049,133 @@ function stuActions(root,gs,redraw){var H={
   sbook:function(s){P.toast('Vos trois prochains créneaux libres sont envoyés à '+s.first,{icon:'send'})}},M={};
  Object.keys(H).forEach(function(k){M[k]=function(b){H[k](gs(),b)}});act(root,M)}
 
+/* ---------- Exercices : bibliothèque par thème et créateur de parcours par glisser-déposer ---------- */
+P.css(`
+.cx{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start}
+.cx-pal{display:flex;gap:8px;flex-wrap:wrap}
+.cx-pal button{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 8px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);font-size:12.500px;font-weight:600;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:box-shadow var(--t-2),background var(--t-2)}
+.cx-pal button:hover{box-shadow:inset 0 0 0 1.500px var(--acc);background:var(--acc-pale)}
+.cx-pal svg{width:30px;height:18px;flex:none}
+.cx-ar{display:block;width:100%;height:auto;border-radius:var(--r-md);touch-action:none;user-select:none;-webkit-user-select:none}
+.cx-ar .sand{fill:color-mix(in srgb,var(--warn) 16%,var(--surface))}
+.cx-ar .fence{fill:none;stroke:color-mix(in srgb,var(--warn) 45%,var(--line-2));stroke-width:6}
+.cx-ar .grid{stroke:color-mix(in srgb,var(--warn) 22%,transparent);stroke-width:1}
+.cx-ar .bar{fill:var(--ink)}
+.cx-ar .std{fill:var(--acc)}
+.cx-ar .wall{fill:var(--bad)}
+.cx-ar .hit{fill:transparent;cursor:grab}
+.cx-ar .ob.sel .hit{fill:color-mix(in srgb,var(--acc) 16%,transparent);stroke:var(--acc);stroke-width:2;stroke-dasharray:5 4}
+.cx-ar .ob.drag .hit{cursor:grabbing}
+.cx-ar .num circle{fill:var(--navy)}
+.cx-ar .num text{fill:var(--navy-ink);font:700 15px var(--f-text);text-anchor:middle;dominant-baseline:central}
+.cx-ar .path{fill:none;stroke:var(--acc);stroke-width:2.500;stroke-dasharray:8 7;stroke-linecap:round;opacity:.85}
+.cx-ar .dist rect{fill:var(--surface);stroke:var(--acc-line)}
+.cx-ar .dist text{fill:var(--ink-2);font:600 13px var(--f-text);text-anchor:middle;dominant-baseline:central}
+.cx-ar .start text{fill:var(--mut);font:600 13px var(--f-text)}
+.cx-tb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cx-lib{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cx-f{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);text-align:left;min-width:0;transition:box-shadow var(--t-2),transform var(--t-2) var(--e-out)}
+.cx-f:hover{box-shadow:inset 0 0 0 1px var(--acc-line),var(--shadow-2);transform:translateY(-1px)}
+.cx-f svg.mini{width:100%;height:56px;border-radius:8px;background:color-mix(in srgb,var(--warn) 12%,var(--surface))}
+.cx-f svg.mini .bar{fill:var(--ink)}
+.cx-f svg.mini .path{fill:none;stroke:var(--acc);stroke-width:2;stroke-dasharray:5 4}
+.cx-sv{display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;text-align:left}
+.cx-sv+.cx-sv{border-top:1px solid var(--line)}
+.cx-sv:hover{background:var(--surface-2)}
+@container main (max-width:1080px){.cx{grid-template-columns:minmax(0,1fr)}.cx-lib{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container main (max-width:520px){.cx-lib{grid-template-columns:minmax(0,1fr)}.cx-pal button{padding:0 10px 0 6px}}
+`);
+var CXK={v:['Vertical',4],o:['Oxer',4],t:['Triple barre',4],c:['Cavaletti',3],m:['Mur',4]};
+function cxGlyph(k){var w=CXK[k][1]*10,h=w/2,s='';
+ if(k==='v')s='<rect class="bar" x="'+(-h)+'" y="-2.5" width="'+w+'" height="5" rx="2"/>';
+ else if(k==='o')s='<rect class="bar" x="'+(-h)+'" y="-8" width="'+w+'" height="4.500" rx="2"/><rect class="bar" x="'+(-h)+'" y="3.500" width="'+w+'" height="4.500" rx="2"/>';
+ else if(k==='t')s='<rect class="bar" x="'+(-h)+'" y="-11" width="'+w+'" height="4" rx="2"/><rect class="bar" x="'+(-h)+'" y="-2" width="'+w+'" height="4" rx="2"/><rect class="bar" x="'+(-h)+'" y="7" width="'+w+'" height="4" rx="2"/>';
+ else if(k==='c')s='<rect class="bar" x="'+(-h)+'" y="-2" width="'+w+'" height="4" rx="2"/><path d="M'+(-h+3)+' -6l6 12M'+(-h+9)+' -6l-6 12M'+(h-9)+' -6l6 12M'+(h-3)+' -6l-6 12" stroke="var(--ink)" stroke-width="2.200" stroke-linecap="round"/>';
+ else s='<rect class="wall" x="'+(-h)+'" y="-6" width="'+w+'" height="12" rx="2"/>';
+ var std=k==='c'?'':'<rect class="std" x="'+(-h-6)+'" y="-'+(k==='t'?13:k==='o'?10:7)+'" width="6" height="'+(k==='t'?26:k==='o'?20:14)+'" rx="2"/><rect class="std" x="'+h+'" y="-'+(k==='t'?13:k==='o'?10:7)+'" width="6" height="'+(k==='t'?26:k==='o'?20:14)+'" rx="2"/>';
+ return std+s}
+function cxPalIcon(k){return '<svg viewBox="-30 -18 60 36" aria-hidden="true"><g style="--ink:var(--ink)">'+cxGlyph(k).replace(/class="bar"/g,'fill="var(--ink)"').replace(/class="std"/g,'fill="var(--acc)"').replace(/class="wall"/g,'fill="var(--bad)"')+'</g></svg>'}
+var CX={sel:null,theme:'all',name:'Enchaînements avant Rambouillet',n:0,obs:[],
+ saved:[{name:'Enchaînements avant Rambouillet',obs:[['v',140,300,0],['o',300,300,0],['v',520,250,-45],['t',590,120,90],['o',430,90,0],['c',250,90,0],['m',110,160,90],['o',300,200,0]]},
+  {name:'Gymnastique sur quatre éléments',obs:[['c',160,200,0],['v',230,200,0],['v',300,200,0],['o',380,200,0]]},
+  {name:'Barrage court, options',obs:[['o',150,120,0],['v',360,300,-45],['t',560,140,90],['v',420,120,45],['o',230,300,0]]}],
+ lib:[{id:'x1',t:'Ligne en cinq foulées',th:'Lignes',lv:'Club 1 à Amateur',d:20,obs:[['v',120,30],['o',230,30]],txt:'Un vertical puis un oxer à 21 m. On saute la ligne en cinq foulées régulières, puis en six en raccourcissant, puis de nouveau en cinq.',steps:['Trois passages au trot sur une barre au sol à la place du vertical','Ligne à 90 cm en cinq foulées','Même ligne en six foulées','Montée à la hauteur du jour']},
+  {id:'x2',t:'Gymnastique sur quatre éléments',th:'Gymnastique',lv:'Club 2 à Amateur',d:25,obs:[['c',60,30],['v',110,30],['v',160,30],['o',220,30]],txt:'Cavaletti, deux foulées, vertical, une foulée, vertical, une foulée, oxer. Le cheval apprend à se replacer seul ; le cavalier garde les mains basses.',steps:['Abord au trot sur le cavaletti','Monter le premier vertical à 80 cm','Ajouter l’oxer à la fin','Une fois par main, sans étriers pour les plus avancés']},
+  {id:'x3',t:'Cercle aux quatre barres',th:'Plat',lv:'Tous niveaux',d:15,obs:[['c',140,10],['c',230,30],['c',140,50],['c',50,30]],txt:'Quatre barres au sol posées sur un cercle de 20 m. Même nombre de foulées entre chaque barre, aux deux mains.',steps:['Au trot, régularité entre les barres','Au galop, quatre foulées entre chaque barre','Agrandir puis réduire le cercle d’une foulée']},
+  {id:'x4',t:'Tracé court au barrage',th:'Barrage',lv:'Club Élite et plus',d:20,obs:[['o',60,40],['v',150,15],['v',240,40]],txt:'Deux options pour enchaîner un oxer et un vertical en diagonale : tourner court derrière le vertical ou prendre la ligne longue.',steps:['Repérer le point de tourne à pied','Tracé long au galop de travail','Tracé court, regard vers l’obstacle suivant']},
+  {id:'x5',t:'Huit de chiffre sur un vertical',th:'Tracé',lv:'Club 3 à Club 1',d:15,obs:[['v',140,30]],txt:'Un vertical au centre, sauté en huit de chiffre pour changer de pied à la réception et travailler les courbes.',steps:['Barre au sol au trot','Vertical à 70 cm, réception sur le bon pied','Huit de chiffre complet sans rupture']},
+  {id:'x6',t:'Transitions sur la diagonale',th:'Plat',lv:'Tous niveaux',d:10,obs:[],txt:'Galop, trot, galop sur la diagonale avec changement de pied au centre. Prépare l’équilibre avant de sauter.',steps:['Trois transitions par diagonale','Arrêt à la lettre X puis départ au galop','Aux deux mains']}]};
+function cxLoad(list){CX.obs=list.map(function(o,i){return {id:'o'+(++CX.n),k:o[0],x:o[1],y:o[2],a:o[3]||0}});CX.sel=null}
+cxLoad(CX.saved[0].obs);
+function cxDist(a,b){return Math.round(Math.hypot(a.x-b.x,a.y-b.y))/10}
+function cxStr(m){return Math.max(1,Math.round((m-7)/3.5))}
+function cxArena(){var L=CX.obs,bg=CX.big,fs=bg?26:13,s='<rect class="sand" x="0" y="0" width="700" height="400" rx="14"/>';
+ for(var gx=100;gx<700;gx+=100)s+='<line class="grid" x1="'+gx+'" y1="10" x2="'+gx+'" y2="390"/>';for(var gy=100;gy<400;gy+=100)s+='<line class="grid" x1="10" y1="'+gy+'" x2="690" y2="'+gy+'"/>';
+ s+='<rect class="fence" x="3" y="3" width="694" height="394" rx="12"/><g class="start"><text x="22" y="378" style="font-size:'+(bg?24:13)+'px">Départ</text></g>';
+ if(L.length>1)s+='<path class="path" d="M'+L.map(function(o){return o.x+' '+o.y}).join(' L')+'"/>';
+ for(var i=1;i<L.length;i++){var a=L[i-1],b=L[i],m=cxDist(a,b),mx=(a.x+b.x)/2,my=(a.y+b.y)/2,t=bg?cxStr(m)+' f.':m.toString().replace('.',',')+' m · '+cxStr(m)+' foulée'+(cxStr(m)>1?'s':''),w=t.length*fs*.56+fs*1.3,hh=fs*1.9;s+='<g class="dist"><rect x="'+(mx-w/2)+'" y="'+(my-hh/2)+'" width="'+w+'" height="'+hh+'" rx="'+hh/2+'"/><text x="'+mx+'" y="'+my+'" style="font-size:'+fs+'px">'+t+'</text></g>'}
+ L.forEach(function(o,i){s+='<g class="ob'+(CX.sel===o.id?' sel':'')+'" data-o="'+o.id+'" transform="translate('+o.x+' '+o.y+')"><g transform="rotate('+o.a+')'+(bg?' scale(1.5)':'')+'"><rect class="hit" x="-34" y="-22" width="68" height="44" rx="10"/>'+cxGlyph(o.k)+'</g><g class="num" transform="translate(0 '+(bg?-44:-32)+')"><circle r="'+(bg?21:12)+'"/><text style="font-size:'+(bg?26:15)+'px">'+(i+1)+'</text></g></g>'});
+ return s}
+function cxLen(){var t=0;for(var i=1;i<CX.obs.length;i++)t+=cxDist(CX.obs[i-1],CX.obs[i]);return Math.round(t)}
+function cxMini(f){return '<svg class="mini" viewBox="0 0 280 60" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+(f.obs.length>1?'<path class="path" d="M'+f.obs.map(function(o){return o[1]+' '+o[2]}).join(' L')+'"/>':'')+(f.obs.length?f.obs.map(function(o){return '<g transform="translate('+o[1]+' '+o[2]+') scale(.7)">'+cxGlyph(o[0]).replace(/class="std"/g,'fill="var(--acc)"').replace(/class="wall"/g,'fill="var(--bad)"')+'</g>'}).join(''):'<path class="path" d="M30 50L250 10M30 10L250 50"/>')+'</svg>'}
+function cxView(){var th=['all','Plat','Gymnastique','Lignes','Tracé','Barrage'],L=CX.lib.filter(function(f){return CX.theme==='all'||f.th===CX.theme});
+ return '<div class="cx"><div class="stack" style="--g:14px"><div class="card"><div class="ch" style="padding-bottom:10px"><div style="min-width:0"><h3>Créateur de parcours</h3><div class="xs mut">Carrière d’honneur, 70 × 40 m · glissez un obstacle sur la piste, touchez-le pour le tourner</div></div></div>'+
+  '<div class="cb stack" style="--g:12px;padding-top:0"><div class="cx-pal">'+Object.keys(CXK).map(function(k){return '<button data-pal="'+k+'" title="Glisser ou toucher pour ajouter">'+cxPalIcon(k)+CXK[k][0]+'</button>'}).join('')+'</div>'+
+  '<svg class="cx-ar" viewBox="0 0 700 400" role="img" aria-label="Plan du parcours" data-ar>'+cxArena()+'</svg>'+
+  '<div class="cx-tb" data-tb></div></div></div>'+
+  '<div class="card"><div class="ch" style="padding-bottom:10px"><h3>Bibliothèque d’exercices</h3><span class="xs mut">'+CX.lib.length+' fiches</span></div><div class="cb stack" style="--g:12px;padding-top:0"><div class="scroll-x">'+U.seg(th.map(function(t){return [t,t==='all'?'Tous':t]}),CX.theme,'data-cxt')+'</div><div class="cx-lib">'+L.map(function(f){return '<button class="cx-f" data-a="fiche" data-id="'+f.id+'">'+cxMini(f)+'<span class="hrow sp" style="--g:6px">'+U.chip(f.th,'acc')+'<span class="xs mut num">'+f.d+' min</span></span><b class="s">'+f.t+'</b><span class="xs mut">'+f.lv+'</span></button>'}).join('')+'</div></div></div></div>'+
+  '<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes parcours</h3><span class="xs mut">'+CX.saved.length+' enregistrés</span></div><div data-saved>'+cxSaved()+'</div><div class="cf"><span class="xs mut">Chaque parcours partagé apparaît dans l’application de l’élève, avec les distances et le nombre de foulées.</span></div></div></div>'}
+function cxSaved(){return CX.saved.map(function(p,i){return '<button class="cx-sv" data-a="ld" data-i="'+i+'">'+sq('jump',p.name===CX.name?'acc':'ok')+'<span class="grow" style="min-width:0"><b class="s ellip" style="display:block">'+p.name+'</b><span class="xs mut">'+p.obs.length+' obstacles</span></span>'+(p.name===CX.name?U.chip('Ouvert','acc',true):I('right','sm'))+'</button>'}).join('')}
+function cxBind(root){var ar=root.querySelector('[data-ar]'),tb=root.querySelector('[data-tb]'),dg=null;
+ function pt(e){var m=ar.getScreenCTM();if(!m)return {x:350,y:200};var p=ar.createSVGPoint();p.x=e.clientX;p.y=e.clientY;p=p.matrixTransform(m.inverse());return {x:Math.max(30,Math.min(670,p.x)),y:Math.max(40,Math.min(375,p.y))}}
+ function bar(){var o=CX.obs.find(function(x){return x.id===CX.sel}),n=CX.obs.length;
+  tb.innerHTML=(o?'<span class="s b">'+(CX.obs.indexOf(o)+1)+'. '+CXK[o.k][0]+'</span><button class="btn sm" data-a="rot">'+I('rotate','sm')+'Tourner</button><button class="btn sm" data-a="fw" title="Sauter plus tôt">'+I('up','sm')+'Avancer</button><button class="btn sm danger" data-a="del">'+I('trash','sm')+'Retirer</button>':'<span class="s mut"><b class="num" style="color:var(--ink)">'+n+'</b> obstacle'+(n>1?'s':'')+' · <b class="num" style="color:var(--ink)">'+cxLen()+' m</b> de parcours</span>')+
+   '<span class="grow"></span><button class="btn sm ghost" data-a="clr">Tout effacer</button><button class="btn sm" data-a="save">'+I('download','sm')+'Enregistrer</button><button class="btn sm dark" data-a="share">'+I('send','sm')+'Partager</button>'}
+ function draw(){ar.innerHTML=cxArena();bar()}
+ var big=ar.getBoundingClientRect().width<520;if(big!==!!CX.big){CX.big=big;ar.innerHTML=cxArena()}
+ bar();
+ ar.addEventListener('pointerdown',function(e){var g=e.target.closest('.ob');if(!g)return;e.preventDefault();var o=CX.obs.find(function(x){return x.id===g.getAttribute('data-o')}),p=pt(e);dg={o:o,dx:o.x-p.x,dy:o.y-p.y,sx:e.clientX,sy:e.clientY,on:false};try{ar.setPointerCapture(e.pointerId)}catch(_){}});
+ ar.addEventListener('pointermove',function(e){if(!dg)return;if(!dg.on&&Math.abs(e.clientX-dg.sx)+Math.abs(e.clientY-dg.sy)<5)return;dg.on=true;var p=pt(e);dg.o.x=Math.round(Math.max(30,Math.min(670,p.x+dg.dx)));dg.o.y=Math.round(Math.max(40,Math.min(375,p.y+dg.dy)));CX.sel=dg.o.id;ar.innerHTML=cxArena();var gg=ar.querySelector('[data-o="'+dg.o.id+'"]');if(gg)gg.classList.add('drag')});
+ function end(){if(!dg)return;var d=dg;dg=null;if(!d.on){CX.sel=CX.sel===d.o.id?null:d.o.id}draw()}
+ ar.addEventListener('pointerup',end);ar.addEventListener('pointercancel',end);
+ ar.addEventListener('click',function(e){if(!e.target.closest('.ob')&&CX.sel){CX.sel=null;draw()}});
+ /* palette : toucher pour ajouter, ou glisser jusqu'à la piste */
+ var pd=null;
+ root.querySelectorAll('[data-pal]').forEach(function(b){b.addEventListener('pointerdown',function(e){pd={k:b.getAttribute('data-pal'),sx:e.clientX,sy:e.clientY,o:null};e.preventDefault()})});
+ function pmove(e){if(!pd)return;try{getSelection().removeAllRanges()}catch(_){}if(!pd.o){if(Math.abs(e.clientX-pd.sx)+Math.abs(e.clientY-pd.sy)<8)return;pd.o={id:'o'+(++CX.n),k:pd.k,x:350,y:200,a:0};CX.obs.push(pd.o);CX.sel=pd.o.id}var p=pt(e);pd.o.x=Math.round(p.x);pd.o.y=Math.round(p.y);ar.innerHTML=cxArena()}
+ function pup(){if(!pd)return;var d=pd;pd=null;if(!d.o){var c=CX.obs.length,o={id:'o'+(++CX.n),k:d.k,x:200+(c*67)%320,y:110+(c*53)%190,a:0};CX.obs.push(o);CX.sel=o.id;d.o=o}draw();P.toast(CXK[d.k][0]+' posé, obstacle n° '+CX.obs.length,{ms:1500})}
+ document.addEventListener('pointermove',pmove);document.addEventListener('pointerup',pup);
+ var ob=new MutationObserver(function(){if(!root.isConnected){document.removeEventListener('pointermove',pmove);document.removeEventListener('pointerup',pup);ob.disconnect()}});ob.observe(P.app(),{childList:true,subtree:true});
+ act(root,{rot:function(){var o=CX.obs.find(function(x){return x.id===CX.sel});o.a=(o.a+45)%180;draw()},
+  fw:function(){var o=CX.obs.find(function(x){return x.id===CX.sel}),i=CX.obs.indexOf(o);if(i>0){CX.obs.splice(i,1);CX.obs.splice(i-1,0,o);draw();P.toast(CXK[o.k][0]+' devient l’obstacle n° '+i,{ms:1500})}else P.toast('C’est déjà le premier obstacle',{icon:'info',ms:1500})},
+  del:function(){var o=CX.obs.find(function(x){return x.id===CX.sel}),i=CX.obs.indexOf(o);CX.obs.splice(i,1);CX.sel=null;draw();P.toast(CXK[o.k][0]+' retiré',{undo:function(){CX.obs.splice(i,0,o);draw()}})},
+  clr:function(){var old=CX.obs.slice();CX.obs=[];CX.sel=null;draw();P.toast('Piste vidée',{undo:function(){CX.obs=old;draw()}})},
+  save:function(){var sh=P.sheet({title:'Enregistrer le parcours',icon:'jump',body:'<label class="field"><span>Nom du parcours</span><input class="in" data-n value="'+E(CX.name)+'"></label><p class="xs mut" style="margin-top:8px">'+CX.obs.length+' obstacles, '+cxLen()+' m. Le parcours est rangé dans « Mes parcours ».</p>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+   sh.querySelector('[data-ok]').onclick=function(){var n=sh.querySelector('[data-n]').value.trim()||'Parcours sans nom',list=CX.obs.map(function(o){return [o.k,o.x,o.y,o.a]}),ex=CX.saved.find(function(p){return p.name===n});if(ex)ex.obs=list;else CX.saved.unshift({name:n,obs:list});CX.name=n;sh.close();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+n+' » enregistré',{icon:'checkc'})}},
+  share:function(){cxShare('le parcours « '+CX.name+' »')},
+  ld:function(b){var p=CX.saved[+b.getAttribute('data-i')];CX.name=p.name;cxLoad(p.obs);draw();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+p.name+' » ouvert sur la piste',{ms:1600})},
+  fiche:function(b){cxFiche(CX.lib.find(function(f){return f.id===b.getAttribute('data-id')}),draw)}});
+ root.querySelectorAll('[data-cxt]').forEach(function(x){x.addEventListener('click',function(){CX.theme=x.getAttribute('data-cxt');P.rerender()})})}
+function cxShare(what){var pick={s1:true};var sh=P.sheet({title:'Partager avec mes élèves',icon:'send',body:function(b,sheet){
+  function draw(){b.innerHTML='<p class="s mut" style="margin-bottom:12px">Choisissez qui reçoit '+what+'. Il apparaît dans la fiche de chaque élève et dans son application.</p><div class="card flat list">'+STU.map(function(s){return '<div class="li click" data-a="pk" data-id="'+s.id+'">'+U.av(s)+'<div class="grow"><div class="t">'+s.first+' '+s.last+'</div><div class="s">'+s.horse+' · '+s.level+'</div></div>'+U.chk(!!pick[s.id])+'</div>'}).join('')+'</div>';
+   var n=Object.keys(pick).filter(function(k){return pick[k]}).length,ok=sheet.querySelector('[data-a="go"]');if(ok){ok.disabled=!n;ok.innerHTML=I('send','sm')+(n?'Envoyer à '+n+' élève'+(n>1?'s':''):'Choisissez un élève')}}
+  act(sheet,{pk:function(x){var id=x.getAttribute('data-id');pick[id]=!pick[id];draw()},go:function(){var ids=Object.keys(pick).filter(function(k){return pick[k]});sheet.close();ids.forEach(function(id){var s=stu(id);notesOf(s).unshift({d:'Mar. 17 nov.',tag:'Exercice',t:'Partagé : '+what.replace(/^(le|la|l’) ?/,'')+'.',sh:true})});P.toast(ids.length===1?'Envoyé à '+stu(ids[0]).first:'Envoyé à '+ids.length+' élèves',{icon:'send'})}});
+  setTimeout(draw,0)},foot:'<button class="btn pri" data-a="go">'+I('send','sm')+'Envoyer</button>'})}
+function cxFiche(f,redraw){var sh=P.sheet({title:f.t,icon:'jump',body:cxMini(f).replace('class="mini"','class="mini" style="height:110px;width:100%;border-radius:12px;background:color-mix(in srgb,var(--warn) 12%,var(--surface))"')+
+  '<div class="hrow wrap" style="--g:6px;margin:12px 0">'+U.chip(f.th,'acc')+U.chip(f.lv,'line')+U.chip(f.d+' min','line')+'</div><p class="s" style="color:var(--ink-2)">'+f.txt+'</p>'+sec('Progression')+'<div class="tl">'+f.steps.map(function(s){return '<div class="ev"><div class="s">'+s+'</div></div>'}).join('')+'</div>',
+  foot:(f.obs.length?'<button class="btn" data-ld>'+I('jump','sm')+'Poser sur la piste</button>':'')+'<button class="btn pri" data-sh>'+I('send','sm')+'Envoyer à un élève</button>'});
+ var l=sh.querySelector('[data-ld]');if(l)l.onclick=function(){CX.name=f.t;cxLoad(f.obs.map(function(o,i){return [o[0],150+o[1]*1.6,120+o[2]*3.5,0]}));sh.close();redraw();P.toast('Exercice posé sur la piste, ajustez les distances',{icon:'jump'})};
+ sh.querySelector('[data-sh]').onclick=function(){sh.close();setTimeout(function(){cxShare('l’exercice « '+f.t+' »')},300)}}
+
 P.mod({id:'coach-eleves',role:'coach',group:'Coaching',title:'Élèves',icon:'members',n:20,short:'Élèves',
  render:function(el,ctx){
-  var openId=ctx.params&&ctx.params.id&&stu(ctx.params.id)?ctx.params.id:null;if(openId){ceSel=openId;ctx.params.id=null}
-  el.innerHTML=ph('Élèves',STU.length+' cavaliers suivis dans 3 écuries · 1 note de séance à écrire','<button class="btn" data-a="inv">'+I('plus','sm')+'Inviter un élève</button>')+
+  var openId=ctx.params&&ctx.params.id&&stu(ctx.params.id)?ctx.params.id:null;if(openId){ceSel=openId;ctx.params.id=null;ceTab='stu'}
+  if(ctx.params&&ctx.params.tab){ceTab=ctx.params.tab;ctx.params.tab=null}
+  var tabs='<div class="fx-tabs" style="margin-bottom:14px">'+U.tabs([['stu','Mes élèves'],['ex','Exercices et parcours']],ceTab,'data-cet')+'</div>';
+  function bindTabs(){el.querySelectorAll('[data-cet]').forEach(function(t){t.addEventListener('click',function(){ceTab=t.getAttribute('data-cet');P.rerender()})})}
+  if(ceTab==='ex'){el.innerHTML=ph('Élèves','Exercices par thème et parcours à dessiner, à partager avec vos élèves','<button class="btn" data-a="exn">'+I('plus','sm')+'Nouveau parcours</button>')+tabs+cxView();bindTabs();cxBind(el);
+   act(el,{exn:function(){var old=CX.obs.slice(),on=CX.name;CX.obs=[];CX.sel=null;CX.name='Nouveau parcours';P.rerender();P.toast('Piste vide : glissez les obstacles depuis la palette',{undo:function(){CX.obs=old;CX.name=on;P.rerender()}})}});return}
+  el.innerHTML=ph('Élèves',STU.length+' cavaliers suivis dans 3 écuries · 1 note de séance à écrire','<button class="btn" data-a="inv">'+I('plus','sm')+'Inviter un élève</button>')+tabs+
    '<div class="ce"><div class="stack" style="--g:10px"><div class="search">'+I('search','sm')+'<input class="in" placeholder="Chercher un élève ou un cheval" data-q></div><div class="scroll-x">'+U.seg([['all','Tous']].concat(ST.filter(function(s){return s.on}).map(function(s){return [s.id,s.short]})),ceFil,'data-f')+'</div><div class="card" data-list style="overflow:hidden"></div></div><div class="ce-detail" data-detail></div></div>';
   var list=el.querySelector('[data-list]'),det=el.querySelector('[data-detail]');
   function narrow(){return getComputedStyle(det).display==='none'}
@@ -911,7 +1183,7 @@ P.mod({id:'coach-eleves',role:'coach',group:'Coaching',title:'Élèves',icon:'me
    list.innerHTML=L.length?L.map(function(s){return '<button class="ce-li" data-a="pick" data-id="'+s.id+'" aria-selected="'+(s.id===ceSel)+'">'+U.av(s)+'<span style="min-width:0"><span class="b s ellip" style="display:block">'+s.first+' '+s.last+'</span><span class="xs mut ellip" style="display:block">'+s.horse+' · '+s.level+'</span></span>'+(s.todo?U.chip('Note à écrire','warn',true):'<span title="Avancement vers l’objectif">'+U.ring(s.pct,s.pct,'var(--acc)',34)+'</span>')+'</button>'}).join(''):U.empty('search','Aucun élève trouvé','Essayez un autre nom ou une autre écurie.')}
   function drawDet(){var s=stu(ceSel);det.innerHTML=stuDetail(s);P.animate(det)}
   function openSheet(){var s=stu(ceSel);var sh=P.sheet({title:s.first+' '+s.last,icon:'members',wide:true,body:function(b,sheet){function rd(){b.innerHTML=stuDetail(s,true)}rd();stuActions(sheet,function(){return s},rd)}})}
-  drawList();drawDet();
+  bindTabs();drawList();drawDet();
   stuActions(det,function(){return stu(ceSel)},drawDet);
   el.querySelector('[data-q]').addEventListener('input',function(e){ceQ=e.target.value;drawList()});
   el.querySelectorAll('[data-f]').forEach(function(x){x.addEventListener('click',function(){ceFil=x.getAttribute('data-f');drawList()})});
@@ -1089,26 +1361,32 @@ P.css(`
 @container main (max-width:1080px){.cc{grid-template-columns:minmax(0,1fr)}}
 `);
 var ccSel='x1',CC={x1:{id:'x1',name:'CSO Club et Poney',place:'Rambouillet, Bergerie nationale',date:iso(day(5)),sent:false,
-  riders:[{s:'s7',cls:'Poney 1 · 95 cm',ring:'Piste B',no:12,of:31,pass:10*60+24,warm:10*60},{s:'s6',cls:'Club Élite · 115 cm',ring:'Piste A',no:7,of:24,pass:10*60+40,warm:10*60+10},{s:'s1',cls:'Club Élite · 115 cm',ring:'Piste A',no:19,of:24,pass:11*60+16,warm:10*60+50}]},
+  riders:(function(){var f=(D.facts&&D.facts.leaRambouillet)||{passage:'11:42',order:'14e sur 32',bib:214,recon:'11:10',warmup:'11:20',paddock:'B',classe:'Club Élite · 115 cm'},o=String(f.order).match(/(\d+)\D+(\d+)/)||[0,14,32];
+   return [{s:'s7',cls:'Poney 1 · 95 cm',ring:'Piste 2',pad:'A',no:12,of:31,bib:131,pass:10*60+24,warm:10*60,recon:9*60+35},
+    {s:'s1',cls:f.classe,ring:'Grande piste',pad:f.paddock,no:+o[1],of:+o[2],bib:f.bib,pass:hm(f.passage),warm:hm(f.warmup),recon:hm(f.recon),fact:true},
+    {s:'s6',cls:f.classe,ring:'Grande piste',pad:f.paddock,no:26,of:+o[2],bib:226,pass:hm(f.passage)+20,warm:hm(f.warmup)+20,recon:hm(f.recon)}]})()},
  x2:{id:'x2',name:'CSO Amateur et Pro',place:'Fontainebleau, Grand Parquet',date:'2026-12-19',sent:false,riders:[{s:'s5',cls:'Amateur 1 Grand Prix · 125 cm',ring:'Piste d’honneur',no:0,of:0,pass:14*60+30,warm:14*60},{s:'s1',cls:'Amateur 2 · 115 cm',ring:'Piste 2',no:0,of:0,pass:11*60,warm:10*60+35}],draft:true},
  x0:{id:'x0',name:'CSO Amateur',place:'Chantilly, Grand Parquet',date:iso(day(-4)),done:true,
   res:[{s:'s1',cls:'Amateur 2 Grand Prix · 115 cm',rank:3,of:52,clear:true,note:'Barrage rapide, option courte réussie sur le 4.'},{s:'s2',cls:'Amateur 2 · 110 cm',rank:14,of:52,clear:true,note:'Sans-faute mais trois secondes perdues dans les tournants.'},{s:'s3',cls:'Amateur 2 · 110 cm',rank:21,of:52,pts:4,note:'Une barre sur l’oxer d’entrée de ligne, abord trop long.'}]}};
 P.mod({id:'coach-concours',role:'coach',group:'Coaching',title:'Concours',icon:'compet',n:40,
  badge:function(){return {v:'J-5'}},
  render:function(el){
-  el.innerHTML=ph('Concours','Dimanche à Rambouillet : 3 cavaliers, premier passage à 10 h 24','<button class="btn" data-a="imp">'+I('upload','sm')+'Importer une liste de départ</button>')+
+  var rx=CC.x1.riders,lea=rx.find(function(r){return r.s==='s1'});
+  el.innerHTML=ph('Concours','Dimanche à Rambouillet : '+rx.length+' cavaliers, premier passage à '+th(Math.min.apply(null,rx.map(function(r){return r.pass})))+', Léa et Ulysse à '+th(lea.pass),'<button class="btn" data-a="imp">'+I('upload','sm')+'Importer une liste de départ</button>')+
    '<div class="cp-strip scroll-x" data-strip></div><div data-body style="margin-top:14px"></div>';
   var strip=el.querySelector('[data-strip]'),body=el.querySelector('[data-body]'),MO=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
   function drawStrip(){strip.innerHTML=['x0','x1','x2'].map(function(k){var x=CC[k],d=new Date(x.date+'T12:00:00');return '<button class="cp-k" data-a="sel" data-id="'+k+'" aria-selected="'+(k===ccSel)+'"><span class="fx-date"><span>'+MO[d.getMonth()]+'</span><b>'+d.getDate()+'</b></span><span style="min-width:0;display:flex;flex-direction:column;gap:5px"><span class="nm">'+x.name+'</span><span class="xs mut ellip">'+x.place.split(',')[0]+'</span><span>'+(x.done?U.chip('Terminé · 2 sans-faute',''):U.chip((x.riders.length)+' cavaliers'+(x.draft?' · horaires à venir':''),x.draft?'':'acc',true))+'</span></span></button>'}).join('')}
   function draw(){var x=CC[ccSel],s='';
    if(x.done){s+='<div class="cc"><div class="card"><div class="ch" style="padding-bottom:8px"><h3>Résultats de vos cavaliers</h3><span class="xs mut">'+F.dateL(x.date)+'</span></div>'+x.res.map(function(r){var st=stu(r.s);return '<div class="cc-r" style="align-items:flex-start">'+U.av(st)+'<div style="min-width:0"><div class="b s">'+st.first+' '+st.last+' <span class="mut" style="font-weight:500">· '+st.horse+'</span></div><div class="xs mut">'+r.cls+' · '+r.rank+'e sur '+r.of+'</div><p class="s" style="margin-top:6px;color:var(--ink-2)">'+r.note+'</p></div>'+(r.clear?'<span class="chip acc"><span class="strass" style="width:8px;height:8px"></span>Sans-faute</span>':'<span class="chip">'+r.pts+' points</span>')+'</div>'}).join('')+'<div class="cf hrow sp wrap"><span class="xs mut">Vos commentaires sont ajoutés à la fiche de chaque élève.</span><button class="btn sm" data-a="bilan">'+I('send','sm')+'Envoyer le bilan aux cavaliers</button></div></div>'+
      '<div class="card pad stack" style="--g:12px"><div class="hrow" style="--g:10px"><span class="strass"></span><b>Un week-end réussi</b></div><p class="s mut">Deux sans-faute sur trois parcours et un podium pour Léa et Ulysse. Depuis septembre, vos cavaliers bouclent 58 % de leurs tours sans pénalité, contre 41 % la saison dernière.</p>'+row('Coaching facturé','<span class="num">'+F.eur(150)+'</span>')+row('Tours coachés','5')+'</div></div>'}
-   else{var ev=[{t:x.riders[0].warm-135,k:'Arrivée et repérage des pistes',d:x.place.split(',')[0]+', parking des coachs'},{t:x.riders[0].warm-105,k:'Reconnaissance Poney 1',d:'Piste B, avec Margaux'},{t:x.riders[0].warm-45,k:'Reconnaissance Club Élite',d:'Piste A, avec Victor et Léa'}];
-    x.riders.forEach(function(r){var st=stu(r.s);ev.push({t:r.warm,k:'Détente de '+st.first,d:'Paddock '+r.ring.slice(-1)+' · '+(r.pass-r.warm)+' min avant le passage',r:r,warm:true});ev.push({t:r.pass,k:st.first+' entre en piste',d:r.cls+' · '+r.ring+(r.no?' · dossard '+r.no+' sur '+r.of:''),pass:true,c:'var(--acc)'})});
+   else{var ev=[],rc={};x.riders.forEach(function(r){var k=r.cls.split(' · ')[0];(rc[k]=rc[k]||{t:r.recon!=null?r.recon:r.warm-30,ring:r.ring,who:[]}).who.push(stu(r.s).first)});
+    var t0=Math.min.apply(null,Object.keys(rc).map(function(k){return rc[k].t}));ev.push({t:t0-45,k:'Arrivée et repérage des pistes',d:x.place.split(',')[0]+', parking des coachs'});
+    Object.keys(rc).forEach(function(k){var w=rc[k].who;ev.push({t:rc[k].t,k:'Reconnaissance '+k,d:rc[k].ring+', avec '+(w.length>1?w.slice(0,-1).join(', ')+' et '+w[w.length-1]:w[0])})});
+    x.riders.forEach(function(r){var st=stu(r.s);ev.push({t:r.warm,k:'Détente de '+st.first,d:'Paddock '+(r.pad||r.ring.slice(-1))+' · '+(r.pass-r.warm)+' min avant le passage',r:r,warm:true});ev.push({t:r.pass,k:st.first+' entre en piste',d:r.cls+' · '+r.ring+(r.bib?' · dossard '+r.bib:'')+(r.no?' · '+r.no+'e sur '+r.of:''),pass:true,c:'var(--acc)'})});
     ev.sort(function(a,b){return a.t-b.t});
     var clash=null;x.riders.forEach(function(a){x.riders.forEach(function(b){if(a!==b&&a.warm>b.warm&&a.warm<b.pass+2&&a.ring!==b.ring&&!clash)clash=[b,a]})});
     s+='<div class="cc"><div class="stack" style="--g:14px">'+(x.draft?'<div class="note">'+I('info','sm')+'<span>Les listes de départ de Fontainebleau paraissent la veille. Importez le fichier de FFE Compet et votre journée se construit toute seule.</span></div>':clash?'<div class="note warn" style="align-items:center;flex-wrap:wrap">'+I('alert','sm')+'<span class="grow" style="flex-basis:220px">'+stu(clash[1].s).first+' commence sa détente sur une autre piste pendant que '+stu(clash[0].s).first+' passe. Avancez-la de 10 minutes pour voir les deux.</span><button class="btn sm" data-a="fix">Avancer la détente</button></div>':'<div class="note ok">'+I('checkc','sm')+'<span>Aucun chevauchement : vous serez au paddock pour chaque détente et au bord de la piste pour chaque passage.</span></div>')+
-     '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Vos cavaliers engagés</h3><span class="xs mut">'+(x.draft?'Horaires estimés':'Ordres de passage du '+F.date(x.date))+'</span></div>'+x.riders.map(function(r,i){var st=stu(r.s);return '<div class="cc-r">'+U.av(st)+'<div style="min-width:0"><div class="b s ellip">'+st.first+' '+st.last+' <span class="mut" style="font-weight:500">· '+st.horse+'</span></div><div class="xs mut ellip">'+r.cls+' · '+r.ring+(r.no?' · n° '+r.no+' sur '+r.of:'')+' · passage à '+tc(r.pass)+'</div></div><div class="qq-leave" title="Heure de détente"><button data-a="wm" data-i="'+i+'" data-d="-5" title="Avancer la détente de 5 minutes">'+I('minus','sm')+'</button><b>'+tc(r.warm)+'</b><button data-a="wm" data-i="'+i+'" data-d="5" title="Reculer la détente de 5 minutes">'+I('plus','sm')+'</button></div></div>'}).join('')+
+     '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Vos cavaliers engagés</h3><span class="xs mut">'+(x.draft?'Horaires estimés':'Ordres de passage du '+F.date(x.date))+'</span></div>'+x.riders.map(function(r,i){var st=stu(r.s);return '<div class="cc-r">'+U.av(st)+'<div style="min-width:0"><div class="b s ellip">'+st.first+' '+st.last+' <span class="mut" style="font-weight:500">· '+st.horse+'</span></div><div class="xs mut ellip">'+r.cls+' · '+r.ring+(r.bib?' · dossard '+r.bib:'')+(r.no?' · '+r.no+'e sur '+r.of:'')+' · passage à '+th(r.pass)+'</div></div><div class="qq-leave" title="Heure de détente"><button data-a="wm" data-i="'+i+'" data-d="-5" title="Avancer la détente de 5 minutes">'+I('minus','sm')+'</button><b>'+tc(r.warm)+'</b><button data-a="wm" data-i="'+i+'" data-d="5" title="Reculer la détente de 5 minutes">'+I('plus','sm')+'</button></div></div>'}).join('')+
       '<div class="cf hrow sp wrap"><span class="xs mut">L’heure à droite est celle de la détente. Chaque cavalier reçoit la sienne.</span><button class="btn sm dark" data-a="send">'+(x.sent?I('check','sm')+'Horaires envoyés':I('send','sm')+'Envoyer les horaires')+'</button></div></div>'+
      '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Avant le départ</h3></div><div class="cb" style="padding-top:0">'+[['Tours du parcours regardés en vidéo avec Léa',true],['Crampons et guêtres vérifiés pour Victor',false],['Autorisation parentale de Margaux reçue',true]].map(function(c){return '<label class="ce-goal fx-click">'+U.chk(c[1])+'<span class="s grow">'+c[0]+'</span></label>'}).join('')+'</div></div></div>'+
      '<div class="card"><div class="ch" style="padding-bottom:10px"><h3>Ma journée de concours</h3><span class="xs mut">'+F.dateL(x.date)+'</span></div><div style="padding-bottom:12px">'+ev.map(function(e){var cl=clash&&e.r===clash[1];return '<div class="cc-t'+(e.pass?' pass':'')+(cl?' clash':'')+'" style="--c:'+(cl?'var(--warn)':e.c||'var(--mut-2)')+'"><span class="tm">'+tc(e.t)+'</span><span class="dotc"></span><div class="bx"><div class="b s">'+e.k+'</div><div class="xs mut">'+e.d+'</div></div></div>'}).join('')+'</div><div class="cf"><button class="btn block" data-a="cal">'+I('calendar_add','sm')+'Ajouter à mon agenda</button></div></div></div>'}
@@ -1137,15 +1415,97 @@ P.css(`
 var PF={bio:D.coach('c01').bio+' Diplômée DEJEPS, j’accompagne les couples de la première épreuve Club jusqu’à l’Amateur Élite, à domicile et en concours.',spec:{CSO:true,'Coaching de concours':true,'Jeunes chevaux':true,Hunter:false,'Travail sur le plat':true,Enfants:false},
  docs:[['medal','DEJEPS mention CSO','Obtenu en 2017 · vérifié par Piaffe','ok','Vérifié'],['shield','Carte professionnelle n° 07826ED0142','Valable jusqu’au 30 juin 2029','ok','Contrôlée'],['doc','Assurance RC professionnelle','Generali Équi-Pro · valable jusqu’au 14 mars 2027','ok','Valide'],['heart','Premiers secours (PSC1)','Recyclage conseillé avant mars 2027','warn','À renouveler']],
  set:{resa:true,veille:true,sms:false,avis:true}};
+/* ---------- Mes chevaux (déclaration) et parcours d'arrivée du coach ---------- */
+P.css(`
+.pf-ok{display:flex;align-items:center;gap:14px;padding:14px 16px;flex-wrap:wrap}
+.pf-ok .grow{min-width:180px}
+.pf-hr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px}
+.pf-hr+.pf-hr{border-top:1px solid var(--line)}
+.pf-ifce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;padding:14px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.pf-ifce span{display:block;font-size:11.500px;color:var(--mut)}
+.pf-ifce b{display:block;font-size:13.500px}
+.pf-opt{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:var(--r-md);text-align:left;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);transition:background var(--t-2),box-shadow var(--t-2)}
+.pf-opt+.pf-opt{margin-top:8px}
+.pf-opt[aria-pressed="true"]{background:var(--acc-pale);box-shadow:inset 0 0 0 1.500px var(--acc)}
+.pf-opt .rd{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1.500px var(--line-2)}
+.pf-opt[aria-pressed="true"] .rd{box-shadow:inset 0 0 0 5px var(--acc)}
+.pf-st{position:relative;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-2px;padding:2px 2px 14px}
+.pf-st button{flex:none;display:flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 4px;border-radius:16px;font-size:12px;font-weight:600;color:var(--mut);background:var(--surface-2)}
+.pf-st button b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11.500px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2)}
+.pf-st button b svg.i{width:12px;height:12px}
+.pf-st button.ok b{background:var(--ok-pale);color:var(--ok);box-shadow:none}
+.pf-st button[aria-selected="true"]{background:var(--acc-pale);color:var(--ink)}
+.pf-st button[aria-selected="true"] b{background:var(--acc);color:var(--acc-ink);box-shadow:none}
+.pf-wk{display:grid;grid-template-columns:70px repeat(3,minmax(0,1fr));gap:6px;align-items:center}
+.pf-wk .tag{height:36px;justify-content:center;width:100%}
+.pf-done{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:12px 0}
+`);
+PF.horses=[];PF.onb={step:0,done:{},wk:null,iban:'FR76 3000 4000 0312 3456 7894 521',code:false,ask:false,live:true};
+function myHorses(){return D.declarations.filter(function(x){return x.by==='c01'}).map(function(x){return {d:x,st:'e1'}}).concat(PF.horses)}
+function stayTxt(h){var s=stb(h.st);return h.d.stay==='pension'?'Demande de box en pension · '+s.short:'De passage pour mes cours · '+s.short}
+function horsesCard(){var L=myHorses();
+ return '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Mes chevaux</h3><button class="btn sm" data-a="hdecl">'+I('plus','sm')+'Déclarer un cheval</button></div>'+
+  (L.length?L.map(function(h){var x=h.d,wait=x.status==='en attente';return '<div class="pf-hr">'+sq('horse',wait?'warn':'ok')+'<div style="min-width:0"><div class="b s ellip">'+x.name+'</div><div class="xs mut ellip">'+x.breed+' · '+x.coat.toLowerCase()+' · '+x.born+' · SIRE '+x.sire+'</div><div class="xs mut ellip">'+stayTxt(h)+'</div></div>'+U.chip(wait?'En attente de validation':'Validé',wait?'warn':'ok',true)+'</div>'}).join(''):'<div class="cb">'+U.empty('horse','Aucun cheval déclaré','Déclarez vos chevaux pour les monter dans les écuries partenaires.')+'</div>')+
+  '<div class="cf"><span class="xs mut">L’écurie d’accueil valide la déclaration : le cheval apparaît alors dans son registre et sur son planning.</span></div></div>'}
+function declSheet(){var q='',found=null,st='e1',stay='passage';
+ var sh=P.sheet({title:'Déclarer un cheval',icon:'horse',body:function(b,sheet){
+  function draw(){var f=sheet.querySelector('.sf');
+   b.innerHTML='<p class="s mut" style="margin-bottom:12px">Saisissez le numéro SIRE ou le nom du cheval. Piaffe remplit la fiche depuis le fichier de l’IFCE.</p><div class="hrow" style="--g:8px"><input class="in grow" data-q placeholder="Numéro SIRE ou nom du cheval" value="'+E(q)+'"><button class="btn" data-a="find">'+I('search','sm')+'Rechercher</button></div>'+
+    (found?'<div style="margin-top:14px"><div class="hrow" style="--g:8px;margin-bottom:8px">'+U.chip('Trouvé dans le fichier SIRE','ok',true)+'</div><div class="pf-ifce">'+[['Nom',found.name],['Race',found.breed],['Robe',found.coat],['Année de naissance',found.born],['SIRE',found.sire],['Puce',found.chip]].map(function(r){return '<div style="min-width:0"><span>'+r[0]+'</span><b class="ellip">'+r[1]+'</b></div>'}).join('')+'</div>'+
+     sec('Écurie d’accueil')+ST.map(function(s){return '<button class="pf-opt" data-a="stb" data-id="'+s.id+'" aria-pressed="'+(st===s.id)+'"><span class="rd"></span><span class="grow" style="min-width:0"><b class="s" style="display:block">'+s.name+'</b><span class="xs mut">'+(s.on?s.city+' · écurie partenaire':'Demande d’accueil en cours')+'</span></span></button>'}).join('')+
+     sec('Hébergement')+[['passage','De passage pour mes cours','Le cheval vient en van, sans box'],['pension','En pension','Demande de box transmise à l’écurie']].map(function(o){return '<button class="pf-opt" data-a="sty" data-id="'+o[0]+'" aria-pressed="'+(stay===o[0])+'"><span class="rd"></span><span class="grow"><b class="s" style="display:block">'+o[1]+'</b><span class="xs mut">'+o[2]+'</span></span></button>'}).join('')+'</div>':'');
+   var inp=b.querySelector('[data-q]');inp.addEventListener('input',function(){q=inp.value});inp.addEventListener('keydown',function(e){if(e.key==='Enter')find()});
+   f.innerHTML=found?'<button class="btn" data-a="cancel">Annuler</button><button class="btn pri" data-a="send">'+I('send','sm')+'Envoyer la déclaration</button>':'<button class="btn" data-a="cancel">Annuler</button>'}
+  function find(){var v=q.trim(),sire=/\d{5,}/.test(v);
+   found={name:v&&!sire?v.charAt(0).toUpperCase()+v.slice(1):'Nuage de Bullion',breed:'Selle Français',coat:'Gris',born:2016,sire:sire?v.toUpperCase():'25012477M',chip:'250259600512477'};
+   if(myHorses().some(function(h){return h.d.sire===found.sire||h.d.name===found.name})){P.toast(found.name+' est déjà déclaré',{icon:'info'});found=null;return}
+   draw();P.toast('Fiche préremplie depuis l’IFCE',{icon:'checkc',ms:1600})}
+  draw();
+  act(sheet,{find:find,cancel:function(){sheet.close()},
+   stb:function(x){st=x.getAttribute('data-id');draw()},sty:function(x){stay=x.getAttribute('data-id');draw()},
+   send:function(){var s=stb(st),dc={id:'dc'+(D.declarations.length+1)+'c',by:'c01',link:'Propriétaire (coach)',name:found.name,sire:found.sire,breed:found.breed,coat:found.coat,born:found.born,chip:found.chip,stay:stay,box:null,when:'À l’instant',status:'en attente'};
+    if(st==='e1')D.declarations.push(dc);else PF.horses.push({d:dc,st:st});
+    sheet.close();P.rerender();P.toast(st==='e1'?'Déclaration envoyée à '+D.staffer('s01').first:'Déclaration envoyée à '+s.name,{icon:'send'})}});
+ },foot:' '})}
+var ONB=[['shield','Diplômes et assurance'],['planning','Semaine type'],['euro','Tarifs'],['bank','Compte de versement'],['stable','Accueil en écurie'],['globe','Page publique']];
+function onbSheet(){var o=PF.onb;o.step=0;o.final=false;
+ if(!o.wk){o.wk={};['Lun','Mar','Mer','Jeu','Ven','Sam'].forEach(function(d,i){o.wk[d]=[i<5,i<5,i===1||i===3]})}
+ var sh=P.sheet({title:'Mon arrivée sur Piaffe',icon:'onboarding',wide:true,body:function(b,sheet){
+  function draw(){var f=sheet.querySelector('.sf'),k=o.step,n=Object.keys(o.done).length,s='';
+   s+='<div class="hrow" style="--g:12px;margin-bottom:12px"><div class="grow">'+U.bar(n/ONB.length*100,n===ONB.length?'var(--ok)':null)+'</div><span class="s b num">'+n+' / '+ONB.length+'</span></div>';
+   s+='<div class="pf-st">'+ONB.map(function(x,i){return '<button class="'+(o.done[i]?'ok':'')+'" data-a="go" data-i="'+i+'" aria-selected="'+(i===k&&!o.final)+'"><b>'+(o.done[i]?I('check','sm'):i+1)+'</b>'+x[1]+'</button>'}).join('')+'</div>';
+   if(o.final){s+='<div class="pf-done"><span class="strass" style="width:24px;height:24px"></span><h3 style="font-size:22px">Votre profil est complet</h3><p class="s mut" style="max-width:420px">Les adhérents de vos écuries partenaires vous trouvent et réservent en ligne. Les paiements arrivent sur votre compte sous 2 jours ouvrés.</p><div class="cd-url" style="width:100%;max-width:360px"><span>piaffe.app/coach/pauline-arnaud</span></div></div>';f.innerHTML='<button class="btn pri" data-a="close">Terminé</button>';b.innerHTML=s;P.animate(b);return}
+   s+='<h3 style="font-size:18px;margin-bottom:4px">'+(k+1)+'. '+ONB[k][1]+'</h3>';
+   if(k===0)s+='<p class="s mut" style="margin-bottom:12px">Piaffe contrôle vos pièces auprès des organismes, une seule fois. Les écuries qui vous accueillent les voient sans vous les redemander.</p><div class="card flat list">'+PF.docs.slice(0,3).map(function(d){return '<div class="li">'+sq(d[0],o.done[0]?'ok':'acc')+'<div class="grow"><div class="t ellip">'+d[1]+'</div><div class="s ellip">'+d[2]+'</div></div>'+(o.done[0]?U.chip(d[4],'ok',true):U.chip('Reçu','',true))+'</div>'}).join('')+'</div>';
+   if(k===1)s+='<p class="s mut" style="margin-bottom:12px">Touchez les demi-journées où vous enseignez. Piaffe en tire vos créneaux réservables, sans chevaucher vos cours.</p><div class="pf-wk"><span></span><b class="xs mut" style="text-align:center">Matin</b><b class="xs mut" style="text-align:center">Après-midi</b><b class="xs mut" style="text-align:center">Soir</b>'+Object.keys(o.wk).map(function(d){return '<b class="s">'+d+'</b>'+o.wk[d].map(function(on,j){return '<button class="tag" data-a="wk" data-d="'+d+'" data-j="'+j+'" aria-pressed="'+on+'">'+(on?'Ouvert':'Fermé')+'</button>'}).join('')}).join('')+'</div>';
+   if(k===2)s+='<p class="s mut" style="margin-bottom:12px">Vos tarifs s’affichent sur votre page publique et dans l’application des adhérents.</p><div class="card flat">'+CD.prices.slice(0,4).map(function(p,i){return '<div class="cd-pr"><div style="min-width:0"><div class="b s ellip">'+p[0]+'</div><div class="xs mut ellip">'+p[1]+'</div></div>'+stepper('op'+i,p[2],'€')+'</div>'}).join('')+'</div>';
+   if(k===3)s+='<p class="s mut" style="margin-bottom:12px">Les paiements en ligne de vos élèves et les reversements des écuries arrivent sur ce compte.</p><label class="field"><span>Titulaire</span><input class="in" value="Pauline Arnaud EI"></label><label class="field" style="margin-top:10px"><span>IBAN</span><input class="in mono" value="'+o.iban+'"></label>'+(o.code?'<div class="note ok" style="margin-top:12px">'+I('checkc','sm')+'<span>Code 4 8 1 2 reçu au 06 •• •• •• 42 et vérifié.</span></div>':'<button class="btn" style="margin-top:12px" data-a="code">'+I('lock','sm')+'Recevoir le code de confirmation</button>');
+   if(k===4)s+='<p class="s mut" style="margin-bottom:12px">Vous enseignez dans une écurie quand elle vous accueille. Chacune fixe ses conditions : commission, droit de piste ou forfait.</p><div class="card flat list">'+ST.map(function(x){return '<div class="li"><span class="av sq" style="--c:color-mix(in srgb,'+x.c+' 16%,var(--surface));color:'+x.c+'">'+I('stable')+'</span><div class="grow"><div class="t ellip">'+x.name+'</div><div class="s ellip">'+x.deal+'</div></div>'+(x.on?U.chip('Partenaire','ok',true):o.ask?U.chip('Relancée','acc',true):'<button class="btn sm" data-a="ask">Relancer</button>')+'</div>'}).join('')+'</div>';
+   if(k===5)s+='<p class="s mut" style="margin-bottom:12px">Voici votre page telle que la voient les cavaliers. Mettez-la en ligne quand elle vous plaît.</p><div style="max-width:380px;pointer-events:none">'+publicCard()+'</div>';
+   b.innerHTML=s;P.animate(b);var sc=b.querySelector('.pf-st'),sa=sc&&sc.querySelector('[aria-selected="true"]');if(sa)sc.scrollLeft=sa.offsetLeft-sc.clientWidth/2+sa.offsetWidth/2;
+   f.innerHTML=(k>0?'<button class="btn" data-a="prev">Retour</button>':'')+'<button class="btn pri" data-a="ok">'+(k===0?(o.done[0]?'Continuer':'Lancer la vérification'):k===5?'Mettre ma page en ligne':'Valider cette étape')+'</button>'}
+  var MSG=['Diplômes, carte professionnelle et assurance vérifiés','Semaine type enregistrée','Tarifs publiés','Compte de versement vérifié','Demandes d’accueil à jour','Votre page publique est en ligne'];
+  function next(){o.done[o.step]=true;P.toast(MSG[o.step],{icon:'checkc',ms:1800});if(Object.keys(o.done).length===ONB.length&&o.step===ONB.length-1){o.final=true}else{for(var i=1;i<=ONB.length;i++){var j=(o.step+i)%ONB.length;if(!o.done[j]){o.step=j;break}}if(Object.keys(o.done).length===ONB.length)o.final=true}draw()}
+  draw();
+  act(sheet,{go:function(x){o.final=false;o.step=+x.getAttribute('data-i');draw()},prev:function(){o.step=Math.max(0,o.step-1);draw()},
+   ok:function(x){if(o.step===0&&!o.done[0]){x.disabled=true;x.innerHTML=I('refresh','sm')+'Vérification en cours';setTimeout(function(){next()},P.RM?50:900);return}
+    if(o.step===3&&!o.code){o.code=true;P.toast('Code reçu par SMS et vérifié',{icon:'lock',ms:1500})}next()},
+   wk:function(x){var d=x.getAttribute('data-d'),j=+x.getAttribute('data-j');o.wk[d][j]=!o.wk[d][j];draw()},
+   code:function(){o.code=true;draw();P.toast('Code reçu par SMS et vérifié',{icon:'lock'})},
+   ask:function(){o.ask=true;draw();P.toast('Relance envoyée au Poney-club de Sonchamp',{icon:'send'})},
+   close:function(){sheet.close();P.rerender();P.toast('Profil complet à 100 %',{icon:'checkc'})}});
+  b.addEventListener('click',function(e){var bt=e.target.closest('.fx-step button');if(!bt)return;var w=bt.parentNode,i=+w.getAttribute('data-step').slice(2),p=CD.prices[i];p[2]=Math.max(10,p[2]+(+bt.getAttribute('data-d'))*5);w.querySelector('[data-v]').textContent=p[2];pulse(w)});
+ },foot:' '})}
 P.mod({id:'coach-profil',role:'coach',group:'Compte',title:'Profil',icon:'user',n:20,
  render:function(el){var c=D.coach('c01'),rv=D.coachReviews.filter(function(r){return r.coach==='c01'}).concat([{id:'r9',by:'m047',stars:5,when:'il y a 3 sem.',text:'Domino n’a jamais aussi bien sauté. Pauline explique sans jamais s’énerver.'}]);
   el.innerHTML=ph('Profil','Votre page est visible dans l’annuaire Piaffe et réservable par les adhérents de 3 écuries','<button class="btn" data-a="see">'+I('eye','sm')+'Voir ma page publique</button>')+
+  '<div class="card pf-ok" style="margin-bottom:14px">'+U.ring(100,'100 %','var(--ok)',52)+'<div class="grow"><div class="hrow" style="--g:8px"><span class="strass"></span><b>Profil complet à 100 %</b></div><div class="s mut" style="margin-top:2px">Diplômes vérifiés, semaine type, tarifs, compte de versement, 3 écuries partenaires et page publique en ligne.</div></div><button class="btn" data-a="onb">'+I('onboarding','sm')+'Revoir mon arrivée</button></div>'+
   '<div class="pf"><div class="stack" style="--g:14px"><div class="card pf-hero"><div class="cov"></div><div class="bd"><div class="hrow sp" style="align-items:flex-end">'+U.av(c,'xl')+'<button class="btn sm" data-a="bio">'+I('edit','sm')+'Modifier</button></div><h2 style="font-size:22px;margin-top:10px">Pauline Arnaud</h2><div class="s mut">Coach CSO · '+c.level+'</div><div class="s" style="margin-top:6px">'+stars(c.rating)+' <b>4,9</b> <span class="mut">· '+c.reviews+' avis · 312 cours donnés en 2026</span></div><p class="s" style="margin-top:12px;color:var(--ink-2)" data-bio>'+PF.bio+'</p>'+
     '<div class="eyebrow" style="margin:16px 0 8px">Spécialités</div><div class="hrow wrap" style="--g:6px">'+Object.keys(PF.spec).map(function(k){return '<button class="tag" style="height:34px" data-a="spec" data-k="'+k+'" aria-pressed="'+PF.spec[k]+'">'+k+'</button>'}).join('')+'</div></div></div>'+
    '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Diplômes et pièces</h3><button class="btn ghost sm" data-a="doc">'+I('upload','sm')+'Ajouter</button></div><div class="list">'+PF.docs.map(function(d){return '<div class="li">'+sq(d[0],d[3])+'<div class="grow"><div class="t ellip">'+d[1]+'</div><div class="s ellip">'+d[2]+'</div></div>'+U.chip(d[4],d[3],true)+'</div>'}).join('')+'</div><div class="cf"><span class="xs mut">Les écuries qui vous accueillent voient ces pièces et sont prévenues 30 jours avant une échéance.</span></div></div></div>'+
-  '<div class="stack" style="--g:14px"><div class="card"><div class="ch" style="padding-bottom:6px"><h3>Avis de vos élèves</h3><span class="xs mut">98 % de 5 étoiles</span></div>'+rv.map(function(r){return '<div class="co-rev">'+U.av(r.by)+'<div class="grow"><div class="hrow wrap sp" style="--g:8px"><span class="s"><b>'+nm(r.by)+'</b> <span class="mut">· '+r.when+'</span></span>'+stars(r.stars)+'</div><p class="s" style="margin:6px 0 8px;color:var(--ink-2)">'+r.text+'</p>'+(r.thanks?U.chip('Vous avez remercié '+fst(r.by),'ok',true):'<button class="btn ghost sm" data-a="thx" data-id="'+r.id+'">'+I('heart','sm')+'Remercier</button>')+'</div></div>'}).join('')+'</div>'+
+  '<div class="stack" style="--g:14px">'+horsesCard()+'<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Avis de vos élèves</h3><span class="xs mut">98 % de 5 étoiles</span></div>'+rv.map(function(r){return '<div class="co-rev">'+U.av(r.by)+'<div class="grow"><div class="hrow wrap sp" style="--g:8px"><span class="s"><b>'+nm(r.by)+'</b> <span class="mut">· '+r.when+'</span></span>'+stars(r.stars)+'</div><p class="s" style="margin:6px 0 8px;color:var(--ink-2)">'+r.text+'</p>'+(r.thanks?U.chip('Vous avez remercié '+fst(r.by),'ok',true):'<button class="btn ghost sm" data-a="thx" data-id="'+r.id+'">'+I('heart','sm')+'Remercier</button>')+'</div></div>'}).join('')+'</div>'+
    '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Réglages</h3></div><div class="cb" style="padding-top:0">'+row('Me prévenir à chaque réservation',tg(PF.set.resa,'set','resa'))+row('Rappel aux élèves la veille du cours',tg(PF.set.veille,'set','veille'))+row('Recevoir aussi les alertes par SMS',tg(PF.set.sms,'set','sms'))+row('Demander un avis après chaque cours',tg(PF.set.avis,'set','avis'))+row('Agenda Google','<span class="hrow" style="--g:8px;justify-content:flex-end">'+U.chip('Connecté','ok',true)+'<button class="btn sm" data-a="ics">'+I('link','sm')+'Copier le lien</button></span>')+row('Compte de versement','<span class="hrow" style="--g:8px;justify-content:flex-end"><span class="mono" style="white-space:nowrap">FR76 •••• 4521</span><button class="btn sm" data-a="iban">Changer</button></span>')+'</div><div class="cf hrow sp"><span class="xs mut">Piaffe Coach est gratuit pour les coachs. Les écuries règlent l’abonnement.</span><button class="btn ghost sm danger" data-a="out">'+I('logout','sm')+'Se déconnecter</button></div></div></div></div>';
-  act(el,{see:function(){cdTab='page';P.go('coach-dispo')},
+  act(el,{see:function(){cdTab='page';P.go('coach-dispo')},hdecl:declSheet,onb:onbSheet,
    bio:function(){var sh=P.sheet({title:'Modifier ma présentation',icon:'edit',body:'<label class="field"><span>Présentation, visible sur votre page publique</span><textarea class="in" rows="6" data-t>'+PF.bio+'</textarea></label><p class="xs mut" style="margin-top:8px">Parlez de votre façon d’enseigner et de vos résultats. Deux ou trois phrases suffisent.</p>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});sh.querySelector('[data-ok]').onclick=function(){PF.bio=E(sh.querySelector('[data-t]').value);sh.close();el.querySelector('[data-bio]').textContent=sh.querySelector('[data-t]').value;P.toast('Présentation mise à jour sur votre page publique')}},
    spec:function(b){var k=b.getAttribute('data-k');PF.spec[k]=!PF.spec[k]},
    doc:function(){P.toast('Prenez la pièce en photo : Piaffe lit la date de validité',{icon:'scan'})},
@@ -1171,6 +1531,11 @@ P.actions.push(
  {role:'coach',label:'Bloquer une période',icon:'holiday',run:function(){cdTab='sem';P.go('coach-dispo')}},
  {role:'coach',label:'Créer une facture',icon:'invoice',run:function(){P.go('coach-revenus');setTimeout(function(){invoiceSheet(null)},350)}},
  {role:'coach',label:'Voir ma journée de concours',icon:'compet',run:function(){ccSel='x1';P.go('coach-concours')}},
+ {role:'gerant',label:'Importer les résultats FFE',icon:'upload',run:function(){var k=D.competitions.find(function(x){return x.status==='Terminé'});P.go('competitions',{id:k.id,tab:'res'});setTimeout(function(){ffeResSheet(k)},350)}},
+ {role:'coach',label:'Déclarer un cheval',icon:'horse',run:function(){P.go('coach-profil');setTimeout(declSheet,350)}},
+ {role:'coach',label:'Revoir mon arrivée sur Piaffe',icon:'onboarding',run:function(){P.go('coach-profil');setTimeout(onbSheet,350)}},
+ {role:'coach',label:'Dessiner un parcours',icon:'jump',run:function(){ceTab='ex';P.go('coach-eleves')}},
+ {role:'coach',label:'Personnaliser mon agenda',icon:'sliders',run:function(){P.go('coach-agenda');setTimeout(persoSheet,350)}},
  {role:'coach',label:'Copier le lien de ma page de réservation',icon:'link',run:function(){P.toast('Lien de votre page copié',{icon:'link'})}});
 
 P.brain.push(
@@ -1186,10 +1551,27 @@ P.brain.push(
    return {text:p.length+' réservations de coachs attendent votre accord, dont une en conflit avec la reprise de 18 h. En novembre, les coachs ont donné 140 cours pour '+F.eur(7038)+' ; vous reversez '+F.eur(sum,1)+' aux 4 coachs extérieurs le 30. L’assurance de Julien Mercier expire dans 12 jours.',
     card:p.map(function(b){return '<div class="hrow sp"><span class="s">'+fst(b.coach)+' · '+bookWho(b)+'</span><span class="s mut">'+(b.d===0?'auj.':dlab(b.d))+' '+b.t+'</span></div>'}).join(''),
     actions:[{label:'Confirmer les '+ok.length+' sans conflit',run:function(){ok.forEach(function(b){b.status='confirmée'});P.toast(ok.length+' réservations confirmées, coachs et cavaliers prévenus');return ok.length+' réservations confirmées'}},{label:'Voir les réservations',run:function(){P.go('coachs',{tab:'resa'});return 'Ouvert'}}]}}},
+ {role:'coach',re:/trajet|route|\bkm\b|itin[ée]raire|conduire|d[ée]placement/i,reply:function(){var L=dayL(0),legs=[];for(var i=1;i<L.length;i++)if(L[i].stable!==L[i-1].stable){var st=stb(L[i].stable),gap=hm(L[i].t)-(hm(L[i-1].t)+L[i-1].dur);legs.push({st:st,at:L[i].t,leave:hm(L[i].t)-st.min-10,gap:gap})}
+   var km=legs.reduce(function(a,l){return a+l.st.km},0),nx=legs.find(function(l){return l.leave>=9*60+41});
+   return {text:'Aujourd’hui, '+legs.length+' trajets entre vos écuries, soit '+km+' km en voiture, plus l’aller et le retour depuis chez vous (46 km au total). '+(nx?'Prochain départ à '+th(nx.leave)+', direction '+nx.st.name+', '+nx.st.min+' minutes de route.':'Plus de trajet entre écuries aujourd’hui.')+' Vos frais kilométriques sont comptés à 0,50 € le kilomètre au-delà de 25 km.',
+    card:legs.map(function(l){return '<div class="hrow sp"><span class="s">Vers '+l.st.short+' · '+l.st.km+' km</span><span class="s mut num">départ '+tc(l.leave)+'</span></div>'}).join(''),
+    actions:[{label:'Ouvrir l’itinéraire',run:function(){var t=nx||legs[0];P.toast('Itinéraire vers '+t.st.name+' ouvert : '+t.st.km+' km, '+t.st.min+' min',{icon:'route'});return 'Itinéraire ouvert'}},{label:'Voir mon agenda',run:function(){P.go('coach-agenda');return 'Ouvert'}}]}}},
+ {role:'coach',re:/avis|[ée]toile|commentaire|note moyenne|r[ée]putation/i,reply:function(){var c=D.coach('c01'),rv=D.coachReviews.filter(function(r){return r.coach==='c01'}),todo=rv.filter(function(r){return !r.thanks});
+   return {text:'Vous avez '+String(c.rating).replace('.',',')+' sur 5 sur '+c.reviews+' avis, dont 98 % de 5 étoiles. Les deux derniers viennent de '+rv.slice(0,2).map(function(r){return nm(r.by)}).join(' et ')+'. '+(todo.length?todo.length+' avis attendent encore votre remerciement.':'Vous avez remercié tout le monde.'),
+    card:rv.slice(0,3).map(function(r){return '<div class="hrow sp"><span class="s ellip">'+nm(r.by)+' · '+r.when+'</span><b class="s num">'+r.stars+' sur 5</b></div>'}).join(''),
+    actions:[{label:'Remercier '+(todo.length>1?'les '+todo.length+' élèves':'l’élève'),run:function(){todo.forEach(function(r){r.thanks=true});P.toast('Remerciements envoyés',{icon:'heart'});return todo.length+' remerciement'+(todo.length>1?'s':'')+' envoyé'+(todo.length>1?'s':'')}},{label:'Voir mes avis',run:function(){P.go('coach-profil');return 'Ouvert'}}]}}},
+ {role:'coach',re:/relanc|inactif|pas vu|pas revu|sans cours|perdu de vue|reviennent/i,reply:function(){var L=D.coachLapsed;
+   return {text:'Vos élèves suivis ont tous un cours cette semaine. '+L.length+' cavaliers sont à relancer : '+L.map(function(x){return x.first+' ('+x.why+')'}).join(', ')+'. Je peux leur proposer vos créneaux libres, dont mardi 14 h aux Tilleuls.',
+    card:L.map(function(x){return '<div class="hrow sp"><span class="s ellip">'+x.first+' '+x.last+' · '+x.horse+'</span><span class="s mut">'+x.seen+'</span></div>'}).join(''),
+    actions:[{label:'Proposer un créneau aux '+L.length,run:function(){L.forEach(function(x){x.done=true});P.toast('Vos créneaux libres sont proposés à '+L.map(function(x){return x.first}).join(', '),{icon:'send'});return L.length+' propositions envoyées'}},{label:'Voir mes élèves',run:function(){P.go('coach-eleves');return 'Ouvert'}}]}}},
+ {role:'coach',re:/factur/i,reply:function(){var wait=CR.inv.filter(function(v){return v.st==='envoyée'}),next=CR.inv.find(function(v){return /émettre/.test(v.st)});
+   return {text:(next?'La facture '+next.id+' de '+F.eur(next.amt,1)+' aux '+next.who.replace('Écurie des ','')+' part le 30 novembre. ':'')+(wait.length?wait.map(function(v){return v.who+' n’a pas encore réglé la facture '+v.id+' ('+F.eur(v.amt)+')'}).join(', ')+'. ':'')+'Je peux aussi préparer la facture de novembre de Victor Hamel : 4 cours particuliers, '+F.eur(220)+'.',
+    card:CR.inv.slice(0,3).map(function(v){return '<div class="hrow sp"><span class="s ellip">'+v.id+' · '+v.who+'</span><span class="s mut">'+v.st+'</span></div>'}).join(''),
+    actions:[{label:'Créer la facture de Victor',run:function(){P.go('coach-revenus');setTimeout(function(){invoiceSheet(null)},350);return 'Facture préparée'}}].concat(wait.length?[{label:'Relancer '+wait[0].who.split(' ')[0],run:function(){P.toast('Relance envoyée à '+wait[0].who+' avec le lien de paiement',{icon:'send'});return 'Relance envoyée'}}]:[])}}},
  {role:'coach',re:/bloque|vendredi|cong[ée]|indispo/i,reply:function(){return {text:'Vendredi 20 novembre, vous avez 2 cours : Clémence à 10 h à la Vallée et Louise à 16 h 30 aux Tilleuls. Je peux fermer la journée et leur proposer vos créneaux libres de jeudi et samedi.',actions:[{label:'Bloquer et proposer un report',run:function(){var g=cdGrid();for(var h=8;h<20;h++)g['4-'+h]='off';CD.exc.unshift({d:'Ven. 20 nov.',t:'Journée bloquée depuis l’assistant'});P.toast('Vendredi bloqué, 2 propositions de report envoyées');return 'Vendredi bloqué'}},{label:'Voir mes disponibilités',run:function(){P.go('coach-dispo');return 'Ouvert'}}]}}},
  {role:'coach',re:/progress|[ée]l[èe]ve|qui a/i,reply:function(){var L=STU.slice().sort(function(a,b){return (b.h[7]-b.h[4])-(a.h[7]-a.h[4])}).slice(0,3);return {text:'Ce mois-ci, trois élèves ont nettement avancé. Léa a signé un sans-faute et une 3e place à Chantilly.',card:L.map(function(s){return '<div class="hrow sp"><span class="s">'+s.first+' '+s.last+' · '+s.horse+'</span><b class="s num okc">+'+(s.h[7]-s.h[4])+' cm</b></div>'}).join(''),actions:[{label:'Ouvrir la fiche de '+L[0].first,run:function(){P.go('coach-eleves',{id:L[0].id});return 'Ouvert'}}]}}},
  {role:'coach',re:/revenu|gagn|factur|urssaf|argent|chiffre/i,reply:function(){return {text:'En novembre, vous avez donné pour '+F.eur(3480)+' de cours. '+F.eur(1390)+' sont déjà sur votre compte et les Tilleuls vous reversent '+F.eur(1776.5,1)+' le 30. Après frais d’écurie, il vous reste '+F.eur(2950.5,1)+'.',actions:[{label:'Voir mes revenus',run:function(){P.go('coach-revenus');return 'Ouvert'}}]}}},
- {role:'coach',re:/cours|semaine|agenda|aujourd|planning|concours/i,reply:function(){var wk=LES.filter(function(l){return l.type!=='Libre'});return {text:'Cette semaine : '+wk.length+' cours dans 3 écuries pour '+F.eur(wk.reduce(function(a,l){return a+l.price},0))+'. Aujourd’hui, il vous reste 4 cours ; le prochain est à 11 h 15 avec Léa et Ulysse aux Tilleuls. Dimanche, vous coachez 3 cavaliers à Rambouillet.',card:dayL(0).filter(function(l){return !l.done&&l.who.length}).map(function(l){return '<div class="hrow sp"><span class="s ellip">'+lTitle(l).split(' · ')[0]+'</span><span class="s mut num">'+l.t+'</span></div>'}).join(''),actions:[{label:'Démarrer le cours de 11 h 15',run:function(){P.go('coach-agenda');setTimeout(function(){liveSheet(LES.find(function(l){return l.id==='a05'}))},350);return 'Chrono lancé'}},{label:'Voir ma journée de concours',run:function(){ccSel='x1';P.go('coach-concours');return 'Ouvert'}}]}}});
+ {role:'coach',re:/cours|semaine|agenda|aujourd|planning|concours/i,reply:function(){var wk=LES.filter(function(l){return l.type!=='Libre'});return {text:'Cette semaine : '+wk.length+' cours dans 3 écuries pour '+F.eur(wk.reduce(function(a,l){return a+l.price},0))+'. Aujourd’hui, il vous reste '+dayL(0).filter(function(l){return !l.done&&l.who.length}).length+' cours'+(nextL()?' ; le prochain est à '+th(hm(nextL().t))+' avec '+lTitle(nextL()).split(' · ')[0]+' aux '+stb(nextL().stable).short.replace(/^Les /,''):'')+'. Dimanche, vous coachez 3 cavaliers à Rambouillet.',card:dayL(0).filter(function(l){return !l.done&&l.who.length}).map(function(l){return '<div class="hrow sp"><span class="s ellip">'+lTitle(l).split(' · ')[0]+'</span><span class="s mut num">'+l.t+'</span></div>'}).join(''),actions:[{label:'Démarrer le cours de 11 h 15',run:function(){P.go('coach-agenda');setTimeout(function(){liveSheet(LES.find(function(l){return l.id==='a05'}))},350);return 'Chrono lancé'}},{label:'Voir ma journée de concours',run:function(){ccSel='x1';P.go('coach-concours');return 'Ouvert'}}]}}});
 
 P.tourSteps.push(
  {route:'competitions',params:{id:'k1',tab:'qui'},title:'Qui emmène qui, en un coup d’œil',text:'Avant un concours, le gérant glisse chevaux et cavaliers dans le camion, les vans et les voitures des familles. Piaffe compte les places, calcule l’heure de départ et envoie le plan à tout le monde. Les engagements, le matériel et les frais suivent dans les onglets voisins.'},

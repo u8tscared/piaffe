@@ -150,7 +150,7 @@ D.entries=[
  {comp:'k1',rider:'m003',horse:'h12',class:'Club 2 · 95 cm',fee:22,transport:'v1',coach:'c06'},{comp:'k1',rider:'m008',horse:'h05',class:'Club 1 · 105 cm',fee:24,transport:'v1',coach:'c06'},
  {comp:'k1',rider:'m011',horse:'h18',class:'Poney 2 · 85 cm',fee:18,transport:'v1',coach:'c06'},{comp:'k1',rider:'m016',horse:'h09',class:'Club 3 · 85 cm',fee:22,transport:'v1',coach:'c06'},
  {comp:'k1',rider:'m001',horse:'h01',class:'Club Élite · 115 cm',fee:26,transport:'v2',coach:'c01'},{comp:'k1',rider:'m022',horse:'h14',class:'Club 2 · 95 cm',fee:22,transport:'v2',coach:'c06'},
- {comp:'k1',rider:'m029',horse:'h20',class:'Poney 1 · 95 cm',fee:18,transport:'v2',coach:'c06'},{comp:'k1',rider:'m034',horse:'h07',class:'Club 3 · 85 cm',fee:22,transport:'car',coach:'c06'},
+ {comp:'k1',rider:'m029',horse:'h20',class:'Poney 1 · 95 cm',fee:18,transport:'proprio',coach:'c06'},{comp:'k1',rider:'m034',horse:'h07',class:'Club 3 · 85 cm',fee:22,transport:'car',coach:'c06'},
  {comp:'k1',rider:'m040',horse:'h16',class:'Club 2 · 95 cm',fee:22,transport:'proprio',coach:'c06'}];
 /* engagés : âge et galop cohérents avec l'épreuve (Club 1 ≥ Galop 5, Club 2 / Poney 1 ≥ Galop 4, Club 3 / Poney 2 ≥ Galop 3) */
 (function(){var need={'Club Élite':7,'Club 1':5,'Club 2':4,'Club 3':3,'Poney 1':4,'Poney 2':3};
@@ -185,7 +185,7 @@ D.tasks=[
  {id:'t3',title:'Curer les boxes B01 à B16',zone:'Écurie principale',who:'s05',time:'09:00',done:false,kind:'routine'},
  {id:'t4',title:'Vermifuger Bijou',zone:'B27',who:'s06',time:'10:00',done:false,kind:'soin'},
  {id:'t5',title:'Surveiller Xanthos (colique)',zone:'B23',who:'s05',time:'Toutes les 2 h',done:false,kind:'soin',urgent:true},
- {id:'t6',title:'Herser la carrière d’honneur',zone:'Carrière d’honneur',who:'s07',time:'11:30',done:false,kind:'entretien'},
+ {id:'t6',title:'Herser la carrière d’honneur',zone:'Carrière d’honneur',who:'s07',time:'13:30',done:false,kind:'entretien'},
  {id:'t7',title:'Préparer Tornado pour le véto',zone:'B04',who:'s06',time:'13:45',done:false,kind:'soin'},
  {id:'t8',title:'Réparer la lisse du paddock d’hiver',zone:'Paddock d’hiver',who:'s07',time:'14:00',done:false,kind:'entretien'},
  {id:'t9',title:'Rentrée des paddocks',zone:'Tous les paddocks',who:'s06',time:'16:30',done:false,kind:'routine'},
@@ -242,11 +242,11 @@ D.notifs=[
 /* ---------- Données partagées entre lots (manches 2) ---------- */
 /* chevaux déclarés par des adhérents ou des coachs, en attente de validation par la gérante. Un ajout côté adhérent fait push ici. */
 D.declarations=[
- {id:'dc1',by:'m083',link:'Propriétaire',name:'Quartz du Moulin',sire:'25041873K',breed:'Selle Français',coat:'Alezan',born:2019,chip:'250259600418731',stay:'pension',box:'B41',when:'Hier, 21:12',status:'en attente'},
+ {id:'dc1',by:'m083',link:'Propriétaire',name:'Quartz du Moulin',sire:'25041873K',breed:'Selle Français',coat:'Alezan',born:2019,chip:'250259600418731',stay:'pension',box:'B45',when:'Hier, 21:12',status:'en attente'},
  {id:'dc2',by:'c01',link:'Propriétaire (coach)',name:'Vigo des Bruyères',sire:'21008342T',breed:'KWPN',coat:'Bai',born:2017,chip:'528210004183427',stay:'passage',box:null,when:'Lundi, 08:30',status:'en attente'}];
 /* réservations de pistes par les propriétaires (onglet Installations côté adhérent, Jour par piste côté planning) */
 D.trackBookings=[
- {id:'tb1',who:'m014',horse:'h03',arena:'a3',date:iso(day(0)),from:'12:30',to:'13:30'},
+ {id:'tb1',who:'m014',horse:'h26',arena:'a3',date:iso(day(0)),from:'12:30',to:'13:30'},
  {id:'tb2',who:'m052',horse:'h06',arena:'a2',date:iso(day(0)),from:'15:00',to:'16:00'},
  {id:'tb3',who:'m001',horse:'h01',arena:'a2',date:iso(day(1)),from:'09:00',to:'10:00'}];
 /* faits de référence partagés : un seul chiffre partout */

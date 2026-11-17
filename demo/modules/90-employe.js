@@ -20,6 +20,8 @@ D.empTasks=D.empTasks||[
  {id:'e8',t:'16:30',title:'Rentrer les paddocks',zone:'Avec Lucie · tous les paddocks',icon:'paddock'},
  {id:'t10',t:'18:00',title:'Distribution du soir',zone:'Toutes les écuries',icon:'feed'},
  {id:'e10',t:'18:20',title:'Tournée du soir',zone:'Eau, couvertures, lumières',icon:'moon'}];
+/* Le numéro du vétérinaire n'est celui de personne d'autre dans la démo. */
+var VET='06 71 28 45 19';
 D.empHugo=D.empHugo||[
  {id:'g1',t:'10:00',title:'Travailler Jazz à la longe',zone:'Rond de longe · 30 min',icon:'horse'},
  {id:'g3',t:'14:00',title:'Point pédagogique avec Claire',zone:'Bureau · 30 min',icon:'chat'},
@@ -39,7 +41,7 @@ D.empNotes=D.empNotes||{
  h23:'Colique légère cette nuit. Diète : foin mouillé seulement, pas de granulés. Contrôle toutes les 2 h.',
  h27:'Vermifuge à donner aujourd’hui.'};
 D.empPresence=D.empPresence||[
- {id:'s01',st:'in',txt:'Bureau · depuis 8 h 15'},{id:'s05',st:'in',txt:'Écurie principale · depuis 6 h 58'},
+ {id:'s01',st:'in',txt:'Bureau · depuis 8 h 15'},{id:'s05',st:'in',txt:'Écurie principale · depuis 6 h 56'},
  {id:'s06',st:'in',txt:'Paddocks · depuis 7 h 30'},{id:'s07',st:'in',txt:'Carrière d’honneur · depuis 9 h 00'},
  {id:'s04',st:'in',txt:'Carrière d’honneur · reprise à 10 h'},{id:'s09',st:'in',txt:'Accueil · depuis 9 h 00'},
  {id:'s02',st:'later',txt:'Arrive à 10 h 00'},{id:'s03',st:'later',txt:'Arrive à 16 h 00'},
@@ -58,7 +60,7 @@ D.empCare=D.empCare||[
 D.empRegister=D.empRegister||[
  {n:'RS-2026-1183',d:'Auj. 7 h 40',horse:'h16',what:'Pesée au ruban : 412 kg',by:'s05'},
  {n:'RS-2026-1182',d:'Auj. 7 h 12',horse:'h04',what:'Equipalazone, 1 sachet (lot EQP-2208)',by:'s05'},
- {n:'RS-2026-1181',d:'Auj. 4 h 35',horse:'h23',what:'Calmagine 20 mL en intraveineuse, Dr Leclerc',by:'s01'},
+ {n:'RS-2026-1181',d:'Auj. 4 h 35',horse:'h23',what:'Calmagine 20 mL en intraveineuse, Dr Leclerc',by:'s05'},
  {n:'RS-2026-1180',d:'Hier 18 h 05',horse:'h04',what:'Equipalazone, 1 sachet (lot EQP-2208)',by:'s06'},
  {n:'RS-2026-1179',d:'Hier 11 h 20',horse:'h12',what:'Goudron de Norvège, antérieurs',by:'s05'}];
 D.empShifts=D.empShifts||[
@@ -69,12 +71,26 @@ D.empShifts=D.empShifts||[
  {d:3,l:'Ven',n:20,parts:[['13:00','18:30','Écurie']],h:5.5,note:'Matin de repos après l’astreinte'},
  {d:4,l:'Sam',n:21,parts:[['07:00','12:00','Écurie']],h:5,swap:true},
  {d:5,l:'Dim',n:22,parts:[],h:0}];
-D.empNights=D.empNights||[['Lun','s01',true],['Mar','s06'],['Mer','s01'],['Jeu','s05'],['Ven','s06'],['Sam','s01'],['Dim','s07']];
+D.empNights=D.empNights||[['Lun','s05',true],['Mar','s06'],['Mer','s05'],['Jeu','s01'],['Ven','s05'],['Sam','s01'],['Dim','s01']];
+/* La semaine de Mamadou se lit dans le planning de l'équipe (écran Équipe du gérant, D.shifts et D.nights) :
+   mêmes postes, mêmes astreintes, même total. Les données propres à l'employé ne servent que si ce planning manque. */
+var SHC={E:[8,[['07:00','12:00'],['14:00','17:00']],'Écurie'],L:[9.5,[['07:00','12:00'],['14:00','18:30']],'Écurie et soins'],A:[5,[['07:00','12:00']],'Matinée d’écurie'],M:[5.5,[['07:00','12:30']],'Écurie, matin'],S:[5.5,[['13:30','19:00']],'Écurie, soir'],J:[8,[['08:30','12:30'],['13:30','17:30']],'Journée'],C:[7,[['07:00','11:00'],['16:00','19:00']],'Écurie'],K:[8,[['06:30','12:00'],['13:30','16:00']],'Concours'],F:[7,[['08:30','12:30'],['13:30','16:30']],'Formation'],P:[7,[],'Congé payé'],R:[0,[],'Repos']};
+var WD=[['Lun',16],['Mar',17],['Mer',18],['Jeu',19],['Ven',20],['Sam',21],['Dim',22]];
+function myWeek(){var K=D.shifts&&D.shifts.s05;if(!K)return D.empShifts;
+  return K.map(function(k,i){var c=SHC[k]||SHC.R,o={d:i-1,l:WD[i][0],n:WD[i][1],k:k,h:c[0],night:!!(D.nights&&D.nights[i]==='s05'),
+    parts:c[1].map(function(p,j){return [p[0],p[1],k==='C'?(j?'Écurie, soir':'Écurie, matin'):c[2]]})};
+    if(i===0&&c[0]){o.real=hh(c[0]+1.25);o.realH=c[0]+1.25;o.note='Dont 1 h 15 d’intervention d’astreinte pour la colique de Xanthos, comptée et majorée.'}
+    if(i===5)o.swap=true;return o})}
+function myNights(){if(!D.nights)return D.empNights;return D.nights.map(function(id,i){return [WD[i][0],id,i===0&&id==='s05']})}
+function nextNight(){var W=myWeek();for(var i=2;i<W.length;i++)if(W[i].night)return i;return -1}
+function hrOf(){return (D.hr&&D.hr.s05)||{cp:[25,6],rec:7,ot:9.5}}
+function weekTot(){return myWeek().reduce(function(a,s){return a+s.h},0)}
+function monH(){var w=myWeek()[0];return w.realH||w.h||8}
 D.empThreads=D.empThreads||[
  {id:'eq',title:'Équipe de l’écurie',grp:['s01','s06','s07','s02'],unread:2,msgs:[
    {w:'s06',t:'8 h 32',x:'Groupe A sorti. Volga a perdu un fer au postérieur droit, je l’ai mis de côté dans la sellerie.'},
    {w:'s01',t:'8 h 40',x:'Merci Lucie. J’ajoute Volga à la liste du maréchal de jeudi.'},
-   {w:'s07',t:'9 h 15',x:'Je herse la carrière d’honneur à 11 h 30, évitez de traverser avec les brouettes.'},
+   {w:'s07',t:'9 h 15',x:'Je herse la carrière d’honneur à 13 h 30, évitez de traverser avec les brouettes.'},
    {w:'s01',t:'9 h 30',x:'Mamadou, tu me dis comment va Xanthos après le contrôle de 10 h ?'}]},
  {id:'cl',title:'Claire Morel',with:'s01',unread:0,msgs:[
    {w:'s05',t:'8 h 05',x:'Xanthos a recrotté, il mange un peu de foin mouillé.',read:true},
@@ -84,15 +100,20 @@ D.empThreads=D.empThreads||[
  {id:'co',title:'Groupe Concours Rambouillet',grp:['s04','s01','s06'],unread:0,msgs:[
    {w:'s04',t:'8 h 47',x:'Départ dimanche à 6 h 45, soyez là à 6 h 30. Mamadou, peux-tu préparer le foin du camion samedi soir ?'},
    {w:'s05',t:'8 h 52',x:'Oui, 4 filets prêts samedi à 18 h.',read:true}]}];
+/* Les demandes en cours sont celles que voit la gérante (D.leaves, écran Équipe) ; ici seulement l'historique déjà pris. */
 D.empLeaves=D.empLeaves||[
- {id:'v1',kind:'Congé payé',from:'2026-12-24',to:'2026-12-31',days:6,st:'en attente',note:'Demandé le 12 novembre'},
- {id:'v2',kind:'Récupération',from:'2026-11-27',to:'2026-11-27',days:1,st:'validé',note:'Validé par Claire le 10 novembre'},
- {id:'v3',kind:'Congé payé',from:'2026-08-03',to:'2026-08-16',days:12,st:'validé',note:'Pris'}];
+ {id:'v3',kind:'Congé payé',from:'2026-08-10',to:'2026-08-15',days:6,st:'validé',note:'Pris',past:true}];
+var LST={attente:'en attente','validé':'validé','refusé':'refusé'};
+function myLeaves(){if(!D.leaves)return D.empLeaves;
+  return D.leaves.filter(function(l){return l.who==='s05'}).map(function(l){return {id:l.id,kind:l.kind.replace('Congés payés','Congé payé'),from:l.from,to:l.to,days:l.days,st:LST[l.state]||l.state,note:l.state==='attente'?'Demandée '+l.asked:l.state==='validé'?'Validée par Claire':'Refusée par Claire',fresh:l.fresh,src:l}}).concat(D.empLeaves)}
+function addLeave(o){if(D.leaves){var l={id:'a'+Date.now(),who:'s05',kind:o.kind==='Congé payé'?'Congés payés':o.kind,from:o.from,to:o.to,days:o.days,state:'attente',asked:'à l’instant',impact:'ok',note:'Demande envoyée depuis l’application de Mamadou.',fresh:true};D.leaves.unshift(l);return function(){var i=D.leaves.indexOf(l);if(i>=0)D.leaves.splice(i,1)}}
+  var v={id:'v'+Date.now(),kind:o.kind,from:o.from,to:o.to,days:o.days,st:'en attente',note:'Demandée à l’instant',fresh:true};D.empLeaves.unshift(v);return function(){var i=D.empLeaves.indexOf(v);if(i>=0)D.empLeaves.splice(i,1)}}
+function cpLeft(){var H=hrOf();return H.cp[0]-H.cp[1]}
 D.empDocs=D.empDocs||[
  {id:'b10',t:'Bulletin de paie d’octobre 2026',s:'Net payé 1 742,18 € · 169 h dont 4 h supplémentaires',pay:{net:'1 742,18 €',brut:'2 236,40 €',h:'169 h',sup:'4 h à 125 %'}},
  {id:'b09',t:'Bulletin de paie de septembre 2026',s:'Net payé 1 698,52 € · 165 h',pay:{net:'1 698,52 €',brut:'2 180,10 €',h:'165 h',sup:'Aucune'}},
  {id:'b08',t:'Bulletin de paie d’août 2026',s:'Net payé 1 701,90 € · 12 jours de congés payés',pay:{net:'1 701,90 €',brut:'2 184,00 €',h:'91 h',sup:'Aucune'}},
- {id:'d1',t:'Contrat de travail CDI 39 h',s:'Signé le 2 mars 2022 · convention des centres équestres'},
+ {id:'d1',t:'Contrat de travail CDI 39 h',s:'Signé le 13 juin 2016 · convention des centres équestres'},
  {id:'d2',t:'Attestation de mutuelle 2026',s:'Valable jusqu’au 31 décembre 2026'},
  {id:'d3',t:'Consignes de sécurité et document unique',s:'Mis à jour le 4 septembre 2026'}];
 D.empIncidents=D.empIncidents||[
@@ -104,7 +125,7 @@ D.empIncidents=D.empIncidents||[
    État de la session (en mémoire)
    ===================================================================== */
 var E={who:'s05',offline:false,queue:0,
- tour:null,cons:{},care:{},obs:{},clock:{state:'in',since:'6 h 58',base:2*3600+43*60,pause:0,log:[['6 h 58','Arrivée pointée','Sellerie, position vérifiée']]},
+ tour:null,cons:{},care:{},obs:{},clock:{state:'in',since:'6 h 56',base:2*3600+45*60,pause:0,log:[['6 h 56','Arrivée pointée','Sellerie, position vérifiée']]},
  ctl:[{t:'4 h',st:'bad',x:'Colique, Dr Leclerc appelé'},{t:'6 h',st:'warn',x:'Pas de crottins, marché 10 min'},{t:'8 h',st:'ok',x:'A recrotté, mange un peu'},{t:'10 h',st:null},{t:'12 h',st:null}],
  pres:{},assign:null,swap:null,pad:{},t0:Date.now()};
 function me(){return D.staffer(E.who)}
@@ -117,7 +138,8 @@ function say(msg,o){if(E.offline){E.queue++;P.toast(msg+'. Envoi au retour du r�
 function ico(n,k,c){return '<span class="em-ic '+(k||'')+'"'+(c?' style="--c:'+c+'"':'')+'>'+ICON(n)+'</span>'}
 function offBar(){return E.offline?'<button class="em-off" data-online>'+ICON('wifi')+'<span class="grow">Hors ligne. <b>'+E.queue+'</b> action'+(E.queue>1?'s':'')+' gardée'+(E.queue>1?'s':'')+' sur le téléphone, envoi dès le retour du réseau.</span><span class="em-off-b">Reconnecter</span></button>':''}
 function hd(title,sub,acts){return '<div class="ph em-hd"><div class="grow"><h1>'+title+'</h1><div class="sub">'+sub+'</div></div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>'+offBar()}
-function online(el,draw){on(el,'[data-online]',function(){var n=E.queue;E.offline=false;E.queue=0;draw();P.toast(n?'Réseau retrouvé : '+n+' action'+(n>1?'s':'')+' synchronisée'+(n>1?'s':''):'Réseau retrouvé',{icon:'wifi'})})}
+function unqueue(){D.empHugo.concat(D.empTasks).forEach(function(t){t.queued=false})}
+function online(el,draw){on(el,'[data-online]',function(){var n=E.queue;E.offline=false;E.queue=0;unqueue();draw();P.toast(n?'Réseau retrouvé : '+n+' action'+(n>1?'s':'')+' synchronisée'+(n>1?'s':''):'Réseau retrouvé',{icon:'wifi'})})}
 function ck(id,isOn,k){return '<button class="em-ck '+(k||'')+(isOn?' on':'')+'" data-ck="'+id+'" title="'+(isOn?'Décocher':'Cocher')+'" aria-pressed="'+(!!isOn)+'"><svg viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg></button>'}
 function tri(k,opts,sel){return '<div class="em-3" data-k="'+k+'">'+opts.map(function(o,i){return '<button type="button" class="k'+i+'" data-v="'+i+'" aria-pressed="'+(i===sel)+'">'+o+'</button>'}).join('')+'</div>'}
 function bindTri(root,fn){on(root,'.em-3 button',function(b){$$('button',b.parentNode).forEach(function(x){x.setAttribute('aria-pressed',x===b)});if(fn)fn(b.parentNode.getAttribute('data-k'),+b.getAttribute('data-v'))})}
@@ -132,7 +154,7 @@ function shot(lbl){return '<span class="em-shot pop">'+HORSE_GLYPH()+'<small>'+(
 function dictate(btn,ta,text){if(btn.classList.contains('rec'))return;btn.classList.add('rec');var lab=btn.querySelector('span');var old=lab?lab.textContent:'';if(lab)lab.textContent='J’écoute…';
   var i=0,base=ta.value?ta.value+' ':'';(function step(){if(!btn.isConnected)return;i+=P.RM?text.length:2;ta.value=base+text.slice(0,i);if(i<text.length)setTimeout(step,28);else{btn.classList.remove('rec');if(lab)lab.textContent=old}})()}
 function vetSheet(h){var s=P.sheet({title:'Appeler le vétérinaire',icon:'phone',body:
-  '<div class="stack" style="--g:14px"><div class="card flat hrow" style="padding:14px">'+ico('care','lg','var(--bad)')+'<div class="grow"><b class="l">Dr Antoine Leclerc</b><div class="s mut">Vétérinaire de l’écurie · de garde aujourd’hui</div><div class="num b" style="font-size:19px;margin-top:4px">06 12 34 56 78</div></div></div>'+
+  '<div class="stack" style="--g:14px"><div class="card flat hrow" style="padding:14px">'+ico('care','lg','var(--bad)')+'<div class="grow"><b class="l">Dr Antoine Leclerc</b><div class="s mut">Vétérinaire de l’écurie · de garde aujourd’hui</div><div class="num b" style="font-size:19px;margin-top:4px">'+VET+'</div></div></div>'+
   (h?'<div class="note">'+ICON('info','sm')+'<span>Piaffe lui envoie la fiche de <b>'+h.name+'</b> ('+h.box+') avec les derniers contrôles pendant l’appel.</span></div>':'')+
   '<div class="list card flat"><button class="li click" data-alt="clinique" style="width:100%;text-align:left">'+ico('phone','','var(--acc)')+'<div class="grow"><div class="t">Clinique équine de Rambouillet</div><div class="s">Urgences jour et nuit · 01 30 00 00 00</div></div>'+ICON('right','sm')+'</button><button class="li click" data-alt="Claire" style="width:100%;text-align:left">'+U.av('s01')+'<div class="grow"><div class="t">Claire Morel, gérante</div><div class="s">À prévenir avant tout appel non urgent</div></div>'+ICON('right','sm')+'</button></div></div>',
   foot:'<button class="btn em-b pri block" data-call>'+ICON('phone')+'Appeler le Dr Leclerc</button>'});
@@ -199,7 +221,7 @@ button.em-row:hover,.em-row.click:hover{background:var(--surface-2);cursor:point
 .em-sticky .btn{flex:1}
 @container main (min-width:761px){.em-sticky{display:none}}
 @container main (max-width:900px){.em-cols,.em-cols.eq{grid-template-columns:minmax(0,1fr)}}
-@container main (max-width:520px){.em-hd{flex-direction:column;align-items:stretch;gap:10px}.em-hd .sub{margin-top:0;font-size:13.5px}.em-hd .acts{justify-content:space-between}.em-row.w2{flex-wrap:wrap}.em-row.w2>.chip{margin-left:52px}}
+@container main (max-width:520px){.em-row.w2>.grow{flex:1 1 calc(100% - 60px)}.em-hd{flex-direction:column;align-items:stretch;gap:10px}.em-hd .sub{margin-top:0;font-size:13.5px}.em-hd .acts{justify-content:space-between}.em-row.w2{flex-wrap:wrap}.em-row.w2>.chip{margin-left:52px}}
 `);
 
 /* =====================================================================
@@ -294,7 +316,7 @@ function missing(){var it=D.empHugo.find(function(x){return x.lesson}),a=assignO
 function lessonSheet(it,draw){var L=lessonItems(it),A=assignOf(it),W=workToday(),open=null,pr=E.pres[it.id]=E.pres[it.id]||{};
   function cands(){var used=Object.keys(A).map(function(k){return A[k]});return D.horses.filter(function(h){return h.kind==='club'&&h.status!=='bad'&&h.id!=='h06'&&used.indexOf(h.id)<0}).sort(function(a,b){return (W[a.id]||[]).length-(W[b.id]||[]).length}).slice(0,8)}
   function body(){var n=L.riders.length,y=L.riders.filter(function(r){return pr[r]==='y'}).length,no=L.riders.filter(function(r){return pr[r]==='n'}).length,miss=L.riders.filter(function(r){return !A[r]}).length;
-    return '<div class="hrow sp wrap" style="margin-bottom:6px"><div><b class="l">'+L.title+'</b><div class="s mut">'+L.sub+'</div></div><div class="hrow wrap" style="--g:6px">'+U.chip(y+' présent'+(y>1?'s':''),'ok',true)+(no?U.chip(no+' absent'+(no>1?'s':''),'bad',true):'')+(n-y-no?U.chip((n-y-no)+' à pointer','',true):'')+'</div></div>'+
+    return (E.offline?'<div class="em-off">'+ICON('wifi')+'<span class="grow">Hors ligne. L’appel et les chevaux attribués restent sur le téléphone et partent vers la feuille de monte dès le retour du réseau.</span></div>':'')+'<div class="hrow sp wrap" style="margin-bottom:6px"><div><b class="l">'+L.title+'</b><div class="s mut">'+L.sub+'</div></div><div class="hrow wrap" style="--g:6px">'+U.chip(y+' présent'+(y>1?'s':''),'ok',true)+(no?U.chip(no+' absent'+(no>1?'s':''),'bad',true):'')+(n-y-no?U.chip((n-y-no)+' à pointer','',true):'')+'</div></div>'+
      (miss?'<div class="note warn" style="margin:10px 0 2px">'+ICON('alert','sm')+'<span><b>'+miss+' cheva'+(miss>1?'ux':'l')+' à attribuer.</b> Tornado et Opale sont arrêtés. Touchez « Choisir un cheval » ou laissez Piaffe proposer.</span></div>':'')+
      L.riders.map(function(r){var m=D.member(r),h=A[r]&&D.horse(A[r]),w=h?(W[h.id]||[]).length:0;
       return '<div class="em-ap"><div class="hrow">'+U.av(r,'lg')+'<div class="grow"><div class="b" style="font-size:15px">'+m.first+' '+m.last+'</div><div class="xs mut">Galop '+m.galop+(m.licence!=='2027'?' · licence à renouveler':'')+'</div>'+
@@ -308,57 +330,128 @@ function lessonSheet(it,draw){var L=lessonItems(it),A=assignOf(it),W=workToday()
   on(s,'[data-pk]',function(x){A[x.getAttribute('data-r')]=x.getAttribute('data-pk');open=null;re();P.toast(D.horse(x.getAttribute('data-pk')).name+' attribué à '+D.member(x.getAttribute('data-r')).first)});
   var au=s.querySelector('[data-auto]');if(au)au.onclick=function(){var n=0;L.riders.forEach(function(r){if(!A[r]){var c=cands()[0];if(c){A[r]=c.id;n++}}});open=null;re();P.toast(n?n+' chevaux proposés selon leur charge de travail du jour':'Tous les cavaliers ont déjà un cheval',{icon:'assistant'})};
   s.querySelector('[data-close]').onclick=function(){var miss=L.riders.filter(function(r){return !A[r]}).length;if(miss){P.toast('Il reste '+miss+' cheva'+(miss>1?'ux':'l')+' à attribuer',{icon:'alert'});return}
-    var y=0,no=0;L.riders.forEach(function(r){if(pr[r]==='n')no++;else{pr[r]='y';y++}});it.done=true;s.close();draw();say('Appel enregistré : '+y+' présent'+(y>1?'s':'')+(no?', '+no+' absent'+(no>1?'s':''):'')+'. Feuille de monte à jour')};
+    var y=0,no=0;L.riders.forEach(function(r){if(pr[r]==='n')no++;else{pr[r]='y';y++}});it.done=true;it.queued=E.offline;s.close();draw();say('Appel enregistré : '+y+' présent'+(y>1?'s':'')+(no?', '+no+' absent'+(no>1?'s':''):'')+'. Feuille de monte à jour')};
   return s}
 
 function contactSheet(id){var p=D.staffer(id),s=P.sheet({title:p.first+' '+p.last,icon:'user',body:'<div class="stack" style="--g:12px"><div class="hrow">'+U.av(p,'xl')+'<div><b class="l">'+p.role+'</b><div class="s mut">'+(D.empPresence.find(function(x){return x.id===id})||{}).txt+'</div></div></div><div class="g2" style="--g:8px"><button class="btn em-b" data-c="call">'+ICON('phone')+'Appeler</button><button class="btn em-b pri" data-c="msg">'+ICON('chat')+'Écrire</button></div></div>'});
   on(s,'[data-c]',function(b){s.close();if(b.getAttribute('data-c')==='call')P.toast('Appel de '+p.first+' en cours',{icon:'phone'});else P.go('emp-messages',{id:id==='s01'?'cl':id==='s06'?'lu':'eq'})})}
 
+/* ---------- Personnaliser la journée : raccourcis, blocs, apparence ---------- */
+var QA={signaler:['alert','Signaler','Un problème, avec photo'],scan:['qr','Scanner','Le QR code d’un box'],puce:['scan','Lire la puce','Le transpondeur d’un cheval'],soins:['care','Soins','Soins du jour à valider'],pointage:['clockin','Pointage','Arrivée, pause, départ'],messages:['chat','Messages','Équipe et consignes'],tournee:['stable','Tournée','La tournée des boxes'],chevaux:['horse','Chevaux','Fiches et paddocks'],conges:['holiday','Congés','Demandes et soldes'],vet:['phone','Vétérinaire','Appeler le Dr Leclerc']};
+var QA0=['signaler','scan','puce','soins'];
+var BLK=[['urg','Urgence du jour','alert','L','Colique de Xanthos, attributions manquantes'],['now','Tâche en cours','today','L','Ce que vous faites maintenant'],['qa','Raccourcis','grid','L','Vos quatre boutons'],['next','Ensuite','list','L','Le reste de la journée'],['cons','Consignes de Claire','chat','R','Les consignes à lire'],['wx','Météo de l’écurie','cloud','R','Pluie, froid, couvertures'],['pres','Présents aujourd’hui','members','R','Qui est où']];
+function jourPrefs(){var p=P.prefs.get('emp:jour',null)||{};var qa=(p.qa||QA0).filter(function(k){return QA[k]}).slice(0,4);if(!qa.length)qa=QA0.slice();
+  var bl=(p.blocks||[]).filter(function(b){return BLK.some(function(x){return x[0]===b.id})});BLK.forEach(function(x){if(!bl.some(function(b){return b.id===x[0]}))bl.push({id:x[0],on:true})});
+  return {qa:qa,blocks:bl,big:!!p.big}}
+function saveJour(o){P.prefs.set('emp:jour',o)}
+function themeNow(){var t=document.documentElement.getAttribute('data-theme');return t==='dark'||t==='light'?t:'auto'}
+function setTheme(v){var r=document.documentElement;if(v==='auto'){r.removeAttribute('data-theme');P.store.set('theme',null)}else{r.setAttribute('data-theme',v);P.store.set('theme',v)}}
+P.css(`
+.em-big{zoom:1.12}
+.em-qs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.em-qs button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);text-align:left;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);min-width:0;transition:box-shadow var(--t-2),background var(--t-2)}
+.em-qs button svg.i{color:var(--mut);flex:none}
+.em-qs button b{display:block;font-size:13.5px}.em-qs button small{display:block;font-size:11.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.em-qs button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
+.em-qs button[aria-pressed="true"] svg.i{color:var(--acc)}
+.em-qs .n{margin-left:auto;flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;background:var(--acc);color:var(--acc-ink)}
+.em-bl{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);background:var(--surface);transition:opacity var(--t-2)}
+.em-bl.off{opacity:.55}
+.em-bl .mv{display:flex;gap:2px;flex:none}
+.em-pu{position:relative;height:190px;border-radius:var(--r-lg);background:linear-gradient(160deg,var(--bg-2),var(--acc-pale));display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.em-pu .pd{width:74px;height:120px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 3px var(--ink),var(--shadow-2);display:grid;place-items:center;color:var(--acc);position:relative;z-index:1;margin:0}
+.em-pu .pd svg.i{width:30px;height:30px}
+.em-pu i{position:absolute;left:50%;top:50%;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;box-shadow:0 0 0 2px var(--acc);opacity:0;animation:em-wave 1.8s var(--e-out) infinite}
+.em-pu i:nth-of-type(2){animation-delay:.6s}.em-pu i:nth-of-type(3){animation-delay:1.2s}
+.em-pu.ok i{animation:none;opacity:0}
+.em-pu.ok .pd{color:var(--ok);box-shadow:0 0 0 3px var(--ok),var(--shadow-2)}
+@keyframes em-wave{from{opacity:.7;transform:scale(.6)}to{opacity:0;transform:scale(2.2)}}
+.em-chip{font:600 15px var(--f-mono);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+`);
+function persoSheet(draw){var o=jourPrefs();
+  function body(){var th=themeNow();
+    return '<div class="stack" style="--g:18px"><div><span class="em-lbl">Mes quatre raccourcis · '+o.qa.length+' sur 4</span><div class="em-qs">'+Object.keys(QA).map(function(k){var q=QA[k],i=o.qa.indexOf(k);return '<button type="button" data-q="'+k+'" aria-pressed="'+(i>=0)+'">'+ICON(q[0])+'<span style="min-width:0"><b>'+q[1]+'</b><small>'+q[2]+'</small></span>'+(i>=0?'<span class="n">'+(i+1)+'</span>':'')+'</button>'}).join('')+'</div></div>'+
+     '<div><span class="em-lbl">Blocs affichés et leur ordre</span><div class="stack" style="--g:6px">'+o.blocks.map(function(b,i){var x=BLK.find(function(y){return y[0]===b.id});return '<div class="em-bl'+(b.on?'':' off')+'">'+ico(x[2],'sm')+'<div class="grow" style="min-width:0"><div class="b s">'+x[1]+'</div><div class="xs mut ellip">'+x[4]+'</div></div><span class="mv"><button class="btn ghost icon sm" data-up="'+i+'" title="Monter"'+(i===0?' disabled':'')+'>'+ICON('up','sm')+'</button><button class="btn ghost icon sm" data-dn="'+i+'" title="Descendre"'+(i===o.blocks.length-1?' disabled':'')+'>'+ICON('down','sm')+'</button></span><button class="tog" role="switch" aria-checked="'+b.on+'" data-manual data-bt="'+i+'" title="Afficher ou masquer '+x[1]+'"></button></div>'}).join('')+'</div></div>'+
+     '<div><span class="em-lbl">Apparence</span>'+U.seg([['auto','Automatique'],['light',ICON('sun','sm')+'Clair'],['dark',ICON('moon','sm')+'Sombre']],th,'data-th')+'</div>'+
+     '<div class="card flat"><div class="li"><div class="grow"><div class="t">Texte plus grand</div><div class="s">Plus lisible au soleil ou avec des gants</div></div><button class="tog" role="switch" aria-checked="'+o.big+'" data-manual data-big title="Texte plus grand"></button></div></div></div>'}
+  var s=P.sheet({title:'Personnaliser ma journée',icon:'sliders',body:function(b){b.innerHTML=body()},foot:'<button class="btn em-b ghost" data-reset>'+ICON('refresh')+'Rétablir</button><button class="btn em-b pri" style="flex:1" data-ok>Terminé</button>'});
+  var b=s.querySelector('.sb');function re(){var st=b.scrollTop;b.innerHTML=body();b.scrollTop=st;saveJour(o);draw()}
+  on(s,'[data-q]',function(x){var k=x.getAttribute('data-q'),i=o.qa.indexOf(k);if(i>=0){if(o.qa.length===1){P.toast('Gardez au moins un raccourci',{icon:'info'});return}o.qa.splice(i,1)}else{if(o.qa.length>=4){P.toast('Quatre raccourcis au plus : retirez-en un d’abord',{icon:'info'});return}o.qa.push(k)}re()});
+  on(s,'[data-up]',function(x){var i=+x.getAttribute('data-up');o.blocks.splice(i-1,0,o.blocks.splice(i,1)[0]);re()});
+  on(s,'[data-dn]',function(x){var i=+x.getAttribute('data-dn');o.blocks.splice(i+1,0,o.blocks.splice(i,1)[0]);re()});
+  on(s,'[data-bt]',function(x){var bl=o.blocks[+x.getAttribute('data-bt')];bl.on=!bl.on;re()});
+  on(s,'[data-th]',function(x){setTheme(x.getAttribute('data-th'));re()});
+  on(s,'[data-big]',function(){o.big=!o.big;re()});
+  s.querySelector('[data-reset]').onclick=function(){o={qa:QA0.slice(),blocks:BLK.map(function(x){return {id:x[0],on:true}}),big:false};re();P.toast('Disposition par défaut rétablie',{icon:'refresh'})};
+  s.querySelector('[data-ok]').onclick=function(){s.close();P.toast('Ma journée est enregistrée sur ce téléphone',{icon:'sliders'})};
+  return s}
+
+/* ---------- Lire la puce : le transpondeur sous la crinière ---------- */
+function chipFmt(c){return String(c).replace(/(\d{3})(?=\d)/g,'$1 ')}
+function puceSheet(){var T=tourState(),order=[],c=tourCur();if(c>=0)order.push(T.boxes[c].h);['h12','h23','h04','h16'].forEach(function(id){if(order.indexOf(id)<0&&D.horse(id))order.push(id)});var k=0,tm=null;
+  var s=P.sheet({title:'Lire la puce',icon:'scan',body:function(b){b.innerHTML='<div data-pz></div>'},foot:'<button class="btn em-b" data-again disabled>'+ICON('refresh')+'Autre puce</button><button class="btn em-b pri" style="flex:1" data-open disabled>'+ICON('horse')+'Ouvrir la fiche</button>'});
+  var z=s.querySelector('[data-pz]'),bo=s.querySelector('[data-open]'),ba=s.querySelector('[data-again]');
+  function read(){bo.disabled=ba.disabled=true;
+    z.innerHTML='<div class="stack" style="--g:14px"><div class="em-pu"><i></i><i></i><i></i><span class="pd">'+ICON('scan')+'</span></div><div class="b" style="font-size:15px;text-align:center">Approchez le téléphone de l’encolure</div><div class="s mut" style="text-align:center">Côté gauche, sous la crinière, à mi-hauteur. Le lecteur répond en moins de deux secondes.</div></div>';
+    clearTimeout(tm);tm=setTimeout(function(){if(!s.isConnected)return;var h=D.horse(order[k%order.length]),note=D.empNotes[h.id]||h.alerts[0];z.querySelector('.em-pu').classList.add('ok');
+      z.innerHTML='<div class="stack pop" style="--g:14px"><div class="em-pu ok" style="height:110px"><span class="pd" style="width:56px;height:56px;border-radius:50%">'+ICON('check')+'</span></div><div class="hrow">'+U.hav(h,'lg')+'<div class="grow"><div class="b" style="font-size:17px">'+h.name+'</div><div class="s mut">Box '+h.box+' · '+h.breed+' · '+h.sex.toLowerCase()+' de '+h.age+' ans</div></div></div>'+
+       '<div class="stack" style="--g:8px"><div class="em-kv"><small>'+ICON('scan')+'Puce</small><b class="em-chip">'+chipFmt(h.chip)+'</b></div><div class="em-kv"><small>'+ICON('doc')+'SIRE</small><b class="num">'+h.sire+'</b></div></div>'+
+       (note?'<div class="note '+(h.status==='bad'?'bad':'warn')+'">'+ICON('alert','sm')+'<span><b>Consigne :</b> '+note+'</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Identité confirmée. Aucune consigne particulière aujourd’hui.</span></div>')+'</div>';
+      bo.disabled=ba.disabled=false;say('Puce lue : '+h.name+', box '+h.box,{icon:'scan'})},P.RM?60:1700)}
+  bo.onclick=function(){var h=order[k%order.length];s.close();P.go('emp-cheval',{id:h})};
+  ba.onclick=function(){k++;read()};read();return s}
+
 P.mod({id:'emp-jour',role:'employe',group:'Ma journée',title:'Aujourd’hui',icon:'today',n:10,short:'Journée',phoneTitle:'Bonjour Mamadou',
  badge:function(){var n=tasksLeft();return n?{v:n}:null},
  render:function(el,ctx){var first=true,showDone=false;
-  function draw(){var p=me(),T=tasks(),mt=$('.mt',P.app());if(mt)mt.textContent='Bonjour '+p.first;
+  function draw(){var p=me(),T=tasks(),mt=$('.mt',P.app()),O=jourPrefs();if(mt)mt.textContent='Bonjour '+p.first;
    var left=T.filter(function(t){return !t.done}),done=T.filter(function(t){return t.done}),now=mon()?left.filter(function(t){return t.priv||t.lesson})[0]:left[0],rest=left.filter(function(t){return t!==now});
    var who=U.seg([['s05',U.av('s05','sm')+'Mamadou'],['s02',U.av('s02','sm')+'Hugo']],E.who,'data-who');
    var h=hd('Bonjour '+p.first,'Mardi 17 novembre · 9 h 41 · '+p.role+(mon()?' · arrivée à 10 h':''),
-     who+'<button class="btn icon" data-net title="Simuler une coupure du réseau">'+ICON('wifi')+'</button>');
-   h+='<div class="em-cols"><div class="stack'+(first?' rise':'')+'" style="--g:14px">';
+     who+'<span class="hrow" style="--g:6px"><button class="btn icon" data-perso title="Personnaliser ma journée">'+ICON('sliders')+'</button><button class="btn icon" data-net title="Simuler une coupure du réseau">'+ICON('wifi')+'</button></span>');
+   var B={};
    /* urgence */
    if(!mon()){var nx=E.ctl.find(function(c){return !c.st});
-    h+='<div class="em-urg"><div class="hrow" style="--g:12px;align-items:flex-start">'+U.hav('h23','lg')+'<div class="grow"><div class="eyebrow">Urgence · colique sous surveillance</div><div class="ti">Xanthos · box B23</div><div class="s" style="color:var(--ink-2);margin-top:3px">'+(nx&&nx.t==='10 h'?'Prochain contrôle à 10 h, dans 19 minutes. Il boit 40 % de moins depuis hier soir.':'Contrôle de 10 h noté. Prochain contrôle à 12 h, vétérinaire à 14 h.')+'</div></div></div>'+
+    B.urg='<div class="em-urg"><div class="hrow" style="--g:12px;align-items:flex-start">'+U.hav('h23','lg')+'<div class="grow"><div class="eyebrow">Urgence · colique sous surveillance</div><div class="ti">Xanthos · box B23</div><div class="s" style="color:var(--ink-2);margin-top:3px">'+(nx&&nx.t==='10 h'?'Prochain contrôle à 10 h, dans 19 minutes. Il boit 40 % de moins depuis hier soir.':'Contrôle de 10 h noté. Prochain contrôle à 12 h, vétérinaire à 14 h.')+'</div></div></div>'+
      '<div class="em-ctl">'+E.ctl.map(function(c){return '<div class="'+(c.st||(c===nx?'next':''))+'" title="'+(c.x||'À faire')+'"><i></i>'+c.t+'</div>'}).join('')+'</div>'+
      '<div class="hrow" style="--g:8px"><button class="btn em-b dark grow" data-ctl>'+ICON('pulse')+'Noter le contrôle</button><button class="btn em-b icon" style="width:52px" data-vet title="Appeler le vétérinaire">'+ICON('phone')+'</button><button class="btn em-b icon" style="width:52px" data-go="emp-cheval" data-id="h23" title="Ouvrir la fiche de Xanthos">'+ICON('horse')+'</button></div></div>'}
-   else if(missing()){h+='<div class="em-urg warn"><div class="hrow" style="--g:12px;align-items:flex-start">'+ico('alert','lg','var(--warn)')+'<div class="grow"><div class="eyebrow">À régler avant 19 h</div><div class="ti">'+missing()+' cavaliers sans cheval</div><div class="s" style="color:var(--ink-2);margin-top:3px">Tornado et Opale sont arrêtés. La reprise Adultes Galop 4 doit être réattribuée.</div></div></div><button class="btn em-b dark" data-les="g5">'+ICON('swap')+'Attribuer les chevaux</button></div>'}
+   else if(missing()){B.urg='<div class="em-urg warn"><div class="hrow" style="--g:12px;align-items:flex-start">'+ico('alert','lg','var(--warn)')+'<div class="grow"><div class="eyebrow">À régler avant 19 h</div><div class="ti">'+missing()+' cavaliers sans cheval</div><div class="s" style="color:var(--ink-2);margin-top:3px">Tornado et Opale sont arrêtés. La reprise Adultes Galop 4 doit être réattribuée.</div></div></div><button class="btn em-b dark" data-les="g5">'+ICON('swap')+'Attribuer les chevaux</button></div>'}
    /* maintenant */
    if(now){var tp=E.tour?E.tour.boxes.filter(function(b){return b.st}).length:5,isL=now.priv||now.lesson,rd=isL&&lessonItems(now);
-    h+='<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+now.id+'"><div class="hrow sp"><span class="eyebrow">'+(isL?'Prochaine reprise · '+hm(now.t):now.t<='09:41'?'Maintenant · depuis '+hm(now.t):'À suivre · à '+hm(now.t))+'</span>'+(isL?'<span class="em-pill">dans '+(function(t){var d=(+t.slice(0,2))*60+(+t.slice(3))-581;return Math.floor(d/60)+' h '+String(d%60).padStart(2,'0')})(now.t)+'</span>':now.t<='09:41'?'<span class="em-pill">41 min</span>':'')+'</div>'+
+    B.now='<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+now.id+'"><div class="hrow sp"><span class="eyebrow">'+(isL?'Prochaine reprise · '+hm(now.t):now.t<='09:41'?'Maintenant · depuis '+hm(now.t):'À suivre · à '+hm(now.t))+'</span>'+(isL?'<span class="em-pill">dans '+(function(t){var d=(+t.slice(0,2))*60+(+t.slice(3))-581;return Math.floor(d/60)+' h '+String(d%60).padStart(2,'0')})(now.t)+'</span>':now.t<='09:41'?'<span class="em-pill">41 min</span>':'')+'</div>'+
      '<div class="hrow" style="--g:14px;align-items:flex-start">'+(isL?'':ck(now.id,false,'xl'))+'<div class="grow"><h2>'+(now.priv?'Cours particulier de '+D.member(now.rider).first:now.title)+'</h2><div class="sb2">'+(now.priv?'Sur Ulysse de la Roche · '+now.zone:isL?now.zone+' · '+rd.riders.length+' cavaliers':now.zone)+'</div></div></div>'+
      (now.tour?'<div class="stack" style="--g:8px">'+U.bar(tp/16*100)+'<div class="hrow sp s" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent)"><span>Tournée en cours</span><b class="num" style="color:var(--navy-ink)">'+tp+' boxes sur 16</b></div></div>':'')+
      '<div class="hrow" style="--g:8px">'+(now.tour?'<button class="btn em-b pri grow" data-go="emp-tournee">Continuer la tournée'+ICON('arrow')+'</button>':isL?'<button class="btn em-b pri grow" data-les="'+now.id+'">'+ICON('check')+'Faire l’appel</button>'+(now.priv?'<button class="btn em-b em-nb" data-go="emp-cheval" data-id="h01">'+ICON('horse')+'Ulysse</button>':''):now.go?'<button class="btn em-b pri grow" data-go="'+now.go+'">Ouvrir les soins'+ICON('arrow')+'</button>':'<button class="btn em-b pri grow" data-fin="'+now.id+'">'+ICON('check')+'C’est fait</button>')+'</div></div>'}
-   else h+='<div class="card navy em-now pop"><div class="hrow"><span class="strass" style="background:var(--navy-ink)"></span><span class="eyebrow">Journée bouclée</span></div><h2>Tout est fait. Bonne soirée '+p.first+'.</h2><div class="sb2" style="margin-top:-8px">'+T.length+' tâches terminées. Pensez à pointer votre départ.</div><button class="btn em-b pri" data-go="emp-pointage">'+ICON('clockin')+'Pointer mon départ</button></div>';
-   /* raccourcis */
-   h+='<div class="em-qa"><button class="al" data-go="emp-signaler">'+ICON('alert')+'Signaler</button><button data-scan>'+ICON('qr')+'Scanner</button><button data-go="emp-pointage">'+ICON('clockin')+(E.clock.state==='out'?'Pointer':'Pointé')+'</button><button data-go="emp-soins">'+ICON('care')+'Soins'+(careLeft()?'<span class="bd">'+careLeft()+'</span>':'')+'</button></div>';
+   else B.now='<div class="card navy em-now pop"><div class="hrow"><span class="strass" style="background:var(--navy-ink)"></span><span class="eyebrow">Journée bouclée</span></div><h2>Tout est fait. Bonne soirée '+p.first+'.</h2><div class="sb2" style="margin-top:-8px">'+T.length+' tâches terminées. Pensez à pointer votre départ.</div><button class="btn em-b pri" data-go="emp-pointage">'+ICON('clockin')+'Pointer mon départ</button></div>';
+   /* raccourcis choisis */
+   B.qa='<div class="em-qa" style="grid-template-columns:repeat('+O.qa.length+',minmax(0,1fr))">'+O.qa.map(function(k){var q=QA[k],lb=k==='pointage'?(E.clock.state==='out'?'Pointer':'Pointé'):q[1],at={signaler:'data-go="emp-signaler"',scan:'data-scan',puce:'data-puce',soins:'data-go="emp-soins"',pointage:'data-go="emp-pointage"',messages:'data-go="emp-messages"',tournee:'data-go="emp-tournee"',chevaux:'data-go="emp-chevaux"',conges:'data-go="emp-conges"',vet:'data-vet'}[k];
+     return '<button '+at+(k==='signaler'?' class="al"':'')+'>'+ICON(q[0])+lb+(k==='soins'&&careLeft()?'<span class="bd">'+careLeft()+'</span>':'')+'</button>'}).join('')+'</div>';
    /* suite */
-   h+='<div class="card"><div class="ch" style="padding-bottom:8px"><h3>'+(mon()?'Ma journée':'Ensuite')+'</h3><div class="hrow" style="--g:8px"><span class="s mut num">'+done.length+' sur '+T.length+' faites</span>'+U.ring(done.length/T.length*100,done.length,'var(--ok)',34)+'</div></div><div>'+
+   B.next='<div class="card"><div class="ch" style="padding-bottom:8px"><h3>'+(mon()?'Ma journée':'Ensuite')+'</h3><div class="hrow" style="--g:8px"><span class="s mut num">'+done.length+' sur '+T.length+' faites</span>'+U.ring(done.length/T.length*100,done.length,'var(--ok)',34)+'</div></div><div>'+
      (rest.length?rest.map(taskRow).join(''):'<div class="empty" style="padding:22px">'+ICON('checkc')+'<span class="s">Plus rien après cette tâche.</span></div>')+'</div>'+
      (done.length?'<button class="em-more" data-done aria-expanded="'+showDone+'">'+ICON('down','sm')+done.length+' tâche'+(done.length>1?'s':'')+' faite'+(done.length>1?'s':'')+' ce matin</button>'+(showDone?'<div>'+done.map(taskRow).join('')+'</div>':''):'')+'</div>';
-   h+='</div><div class="stack'+(first?' rise':'')+'" style="--g:14px">';
    /* consignes */
-   var C=D.empConsignes;h+='<div class="card"><div class="ch"><h3>Consignes de Claire</h3><button class="btn ghost sm" data-go="emp-messages">Tout voir'+ICON('arrow','sm')+'</button></div><div style="padding-top:4px">'+C.slice(0,2).map(consRow).join('')+'</div></div>';
+   B.cons='<div class="card"><div class="ch"><h3>Consignes de Claire</h3><button class="btn ghost sm" data-go="emp-messages">Tout voir'+ICON('arrow','sm')+'</button></div><div style="padding-top:4px">'+D.empConsignes.slice(0,2).map(consRow).join('')+'</div></div>';
    /* météo */
-   h+='<div class="card"><div class="ch"><h3>Météo de l’écurie</h3><span class="xs mut">Saint-Arnoult</span></div><div class="cb stack" style="--g:14px"><div class="hrow" style="--g:14px">'+ico('cloud','lg')+'<div class="disp num" style="font-size:36px;font-weight:700;line-height:1">9°</div><div class="grow s mut">Couvert, vent d’ouest 15 km/h. Il fera 3 °C cette nuit.</div></div>'+
+   B.wx='<div class="card"><div class="ch"><h3>Météo de l’écurie</h3><span class="xs mut">Saint-Arnoult</span></div><div class="cb stack" style="--g:14px"><div class="hrow" style="--g:14px">'+ico('cloud','lg')+'<div class="disp num" style="font-size:36px;font-weight:700;line-height:1">9°</div><div class="grow s mut">Couvert, vent d’ouest 15 km/h. Il fera 3 °C cette nuit.</div></div>'+
      '<div class="em-wx">'+D.weather.map(function(w){return '<div><span class="xs mut">'+w.d+'</span>'+ICON(w.i)+'<b class="num">'+w.t+'°</b><span class="xs num '+(w.r>50?'acc b':'mut')+'">'+w.r+' %</span></div>'}).join('')+'</div>'+
      '<div class="note warn">'+ICON('rain','sm')+'<span>Pluie jeudi et vendredi : prairie du bas fermée, le groupe A sort au paddock d’hiver.</span></div></div></div>';
    /* présents */
    var PR=D.empPresence,nin=PR.filter(function(x){return x.st==='in'}).length;
-   h+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Présents aujourd’hui</h3>'+U.chip(nin+' sur '+PR.length,'ok',true)+'</div><div>'+PR.filter(function(x){return x.id!==E.who}).map(function(x){var s=D.staffer(x.id);return '<button class="em-row" data-st="'+x.id+'">'+U.av(s)+'<div class="grow"><div class="t">'+s.first+' '+s.last+' <span class="mut" style="font-weight:500;font-size:13px">· '+s.role+'</span></div><div class="s">'+x.txt+'</div></div><span class="em-st" style="--c:var(--'+(x.st==='in'?'ok':x.st==='later'?'warn':'mut-2')+')"></span></button>'}).join('')+'</div></div>';
-   h+='</div></div>';
-   el.innerHTML=h;if(first)P.animate(el);first=false}
-  function taskRow(t){var isL=t.priv||t.lesson;return '<div class="em-row em-task'+(t.done?' done':'')+(isL||t.go?' click':'')+'" data-task="'+t.id+'"'+(isL?' data-les="'+t.id+'"':'')+'><span class="em-tm">'+t.t+'</span><div class="grow"><div class="t">'+t.title+(t.priv?' · '+D.member(t.rider).first:'')+'</div><div class="s">'+t.zone+(t.lesson?' · 8 cavaliers':'')+'</div>'+(t.lesson&&missing()&&!t.done?'<div style="margin-top:6px">'+U.chip(missing()+' chevaux à attribuer','warn',true)+'</div>':'')+'</div>'+(isL&&!t.done?'<span class="btn sm">Appel</span>':ck(t.id,t.done))+'</div>'}
+   B.pres='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Présents aujourd’hui</h3>'+U.chip(nin+' sur '+PR.length,'ok',true)+'</div><div>'+PR.filter(function(x){return x.id!==E.who}).map(function(x){var s=D.staffer(x.id);return '<button class="em-row" data-st="'+x.id+'">'+U.av(s)+'<div class="grow"><div class="t">'+s.first+' '+s.last+' <span class="mut" style="font-weight:500;font-size:13px">· '+s.role+'</span></div><div class="s">'+x.txt+'</div></div><span class="em-st" style="--c:var(--'+(x.st==='in'?'ok':x.st==='later'?'warn':'mut-2')+')"></span></button>'}).join('')+'</div></div>';
+   /* mise en page : une colonne sur téléphone dans l'ordre choisi, deux colonnes sur grand écran */
+   var on1=O.blocks.filter(function(b){return b.on&&B[b.id]}),col=function(c){return on1.filter(function(b){return BLK.find(function(x){return x[0]===b.id})[3]===c}).map(function(b){return B[b.id]}).join('')};
+   if(!on1.length)h+='<div class="card">'+U.empty('sliders','Aucun bloc affiché','Choisissez ce que vous voulez voir sur votre journée.','<button class="btn pri" data-perso>'+ICON('sliders','sm')+'Personnaliser</button>')+'</div>';
+   else if(P.isMobile())h+='<div class="stack'+(first?' rise':'')+'" style="--g:14px">'+on1.map(function(b){return B[b.id]}).join('')+'</div>';
+   else h+='<div class="em-cols"><div class="stack'+(first?' rise':'')+'" style="--g:14px">'+col('L')+'</div><div class="stack'+(first?' rise':'')+'" style="--g:14px">'+col('R')+'</div></div>';
+   el.innerHTML='<div class="'+(O.big?'em-big':'')+'">'+h+'</div>';if(first)P.animate(el);first=false}
+  function taskRow(t){var isL=t.priv||t.lesson;return '<div class="em-row em-task'+(t.done?' done':'')+(isL||t.go?' click':'')+'" data-task="'+t.id+'"'+(isL?' data-les="'+t.id+'"':'')+'><span class="em-tm">'+t.t+'</span><div class="grow"><div class="t">'+t.title+(t.priv?' · '+D.member(t.rider).first:'')+'</div><div class="s">'+t.zone+(t.lesson?' · 8 cavaliers':'')+'</div>'+(t.lesson&&missing()&&!t.done?'<div style="margin-top:6px">'+U.chip(missing()+' chevaux à attribuer','warn',true)+'</div>':'')+(t.queued?'<div style="margin-top:6px">'+U.chip('Appel gardé sur le téléphone, envoi au retour du réseau','warn',true)+'</div>':'')+'</div>'+(isL&&!t.done?'<span class="btn sm">Appel</span>':ck(t.id,t.done))+'</div>'}
   function consRow(c){var r=E.cons[c.id]||c.mine,n=c.read.length+(r&&!c.mine?1:0);return '<div class="em-cons">'+(c.urgent?'<div>'+U.chip('Prioritaire','bad',true)+'</div>':'')+'<p>'+c.text+'</p><div class="hrow sp"><span class="xs mut">Claire · '+c.when+' · lu par '+n+' sur 8</span>'+(r?'<span class="chip ok">'+ICON('check','sm')+'Lu'+(E.cons[c.id]?' à 9 h 41':'')+'</span>':'<button class="btn sm dark" data-read="'+c.id+'">'+ICON('check','sm')+'J’ai lu</button>')+'</div></div>'}
   on(el,'[data-who]',function(b){E.who=b.getAttribute('data-who');first=true;draw();P.toast('Vous voyez la journée de '+me().first+' '+me().last+', '+me().role.toLowerCase(),{icon:'user'})});
-  on(el,'[data-net]',function(){E.offline=!E.offline;if(E.offline){E.queue=E.queue||2;draw();P.toast('Réseau perdu. Piaffe continue de fonctionner sur le téléphone',{icon:'wifi'})}else{var n=E.queue;E.queue=0;draw();P.toast('Réseau retrouvé : '+n+' actions synchronisées',{icon:'wifi'})}});
+  on(el,'[data-net]',function(){E.offline=!E.offline;if(E.offline){E.queue=E.queue||2;draw();P.toast('Réseau perdu. Piaffe continue de fonctionner sur le téléphone',{icon:'wifi'})}else{var n=E.queue;E.queue=0;unqueue();draw();P.toast('Réseau retrouvé : '+n+' actions synchronisées',{icon:'wifi'})}});
   online(el,draw);
+  on(el,'[data-perso]',function(){persoSheet(draw)});
+  on(el,'[data-puce]',function(){puceSheet()});
   on(el,'[data-ck]',function(b,e){e.stopPropagation();finishTask(b.getAttribute('data-ck'),el,draw)});
   on(el,'[data-fin]',function(b){finishTask(b.getAttribute('data-fin'),el,draw)});
   on(el,'[data-ctl]',function(){controlSheet(draw)});
@@ -609,10 +702,10 @@ P.mod({id:'emp-cheval',role:'employe',group:'Écurie',title:'Fiche cheval',icon:
    x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Soins du jour</h3><button class="btn ghost sm" data-go="emp-soins">Tous les soins'+ICON('arrow','sm')+'</button></div>'+(care.length?care.map(function(c){var dn=c.done||E.care[c.id];return '<div class="em-row">'+ico(c.icon,'',dn?'var(--ok)':'var(--acc)')+'<div class="grow"><div class="t">'+c.kind+' · '+c.prod+'</div><div class="s">'+c.poso+'</div></div>'+(dn?U.chip('Fait à '+dn,'ok',true):'<button class="btn sm pri" data-care="'+c.id+'">Valider</button>')+'</div>'}).join(''):'<div class="empty" style="padding:22px">'+ICON('checkc')+'<span class="s">Aucun soin prévu aujourd’hui pour '+h.name+'.</span></div>')+'</div>';
    x+='<div class="card"><div class="ch"><h3>Journal</h3><button class="btn sm" data-obs>'+ICON('plus','sm')+'Observation</button></div><div class="cb"><div class="tl">'+J.slice(0,7).map(function(j,i){var s=D.person(j.who);return '<div class="ev em-ev'+(i===0&&j.when==='À l’instant'?' fade':'')+'" style="--c:var(--'+(j.kind==='alerte'?'bad':j.kind==='travail'||j.kind==='balade'?'acc':'ok')+')"><div class="hrow sp"><b>'+(s?s.first+' '+s.last:'Équipe')+'</b><span class="xs mut">'+j.when+'</span></div><p>'+j.text+'</p>'+(j.photos?'<div class="hrow" style="--g:6px;margin-top:8px">'+Array.apply(null,Array(j.photos)).map(function(_,k){return shot('Photo '+(k+1))}).join('')+'</div>':'')+'</div>'}).join('')+'</div></div></div>';
    x+='</div><div class="stack" style="--g:14px">';
-   x+='<div class="card"><div class="ch"><h3>Ration</h3><span class="s mut">'+h.weight+' kg · état '+h.bcs+' sur 9</span></div><div class="cb stack" style="--g:10px">'+(isX?'<div class="note bad">'+ICON('alert','sm')+'<span><b>Diète jusqu’à nouvel ordre :</b> foin mouillé 1 kg par repas, pas de granulés.</span></div>':'')+'<div class="g3" style="--g:8px;grid-template-columns:repeat(3,minmax(0,1fr))">'+[['Matin','7 h',.4,.5],['Midi','11 h 45',.2,0],['Soir','18 h',.4,.5]].map(function(r){return '<div class="em-kv"><small>'+r[0]+' · '+r[1]+'</small><b>'+String(Math.round(hay*r[2]*2)/2).replace('.',',')+' kg de foin</b><span class="xs mut">'+(r[3]?String(Math.round(h.ration.grain*r[3]*10)/10).replace('.',',')+' L de granulés':'Pas de granulés')+'</span></div>'}).join('')+'</div><div class="hrow sp s"><span class="mut">Complément</span><b>'+h.ration.supp+(D.empNotes[h.id]&&/trempé/.test(D.empNotes[h.id])?' · foin trempé':'')+'</b></div></div></div>';
+   x+='<div class="card"><div class="ch"><h3>Ration</h3><span class="s mut">'+h.weight+' kg · état corporel '+String(h.bcs).replace('.',',')+' sur 5</span></div><div class="cb stack" style="--g:10px">'+(isX?'<div class="note bad">'+ICON('alert','sm')+'<span><b>Diète jusqu’à nouvel ordre :</b> foin mouillé 1 kg par repas, pas de granulés.</span></div>':'')+'<div class="g3" style="--g:8px;grid-template-columns:repeat(3,minmax(0,1fr))">'+[['Matin','7 h',.4,.5],['Midi','11 h 45',.2,0],['Soir','18 h',.4,.5]].map(function(r){return '<div class="em-kv"><small>'+r[0]+' · '+r[1]+'</small><b>'+String(Math.round(hay*r[2]*2)/2).replace('.',',')+' kg de foin</b><span class="xs mut">'+(r[3]?String(Math.round(h.ration.grain*r[3]*10)/10).replace('.',',')+' L de granulés':'Pas de granulés')+'</span></div>'}).join('')+'</div><div class="hrow sp s"><span class="mut">Complément</span><b>'+h.ration.supp+(D.empNotes[h.id]&&/trempé/.test(D.empNotes[h.id])?' · foin trempé':'')+'</b></div></div></div>';
    x+='<div class="card"><div class="ch"><h3>Aujourd’hui</h3></div><div class="cb stack" style="--g:8px"><div class="em-kv"><small>'+ICON('paddock')+'Paddock</small><b>'+(p?p.p+' · groupe '+p.g+', '+PADT[p.g]:'Reste au box aujourd’hui')+'</b></div><div class="em-kv"><small>'+ICON('layers')+'Couverture</small><b>'+blanket(h)+(h.status==='bad'?'':' · 3 °C cette nuit')+'</b></div><div class="em-kv"><small>'+ICON('whistle')+'Travail</small><b>'+(w?w.length+' reprise'+(w.length>1?'s':'')+' : '+w.map(hm).join(', '):h.status==='bad'||h.id==='h06'?'Arrêté, aucun travail':'Repos, pas de reprise')+'</b></div></div></div>';
    x+='<div class="card"><div class="ch"><h3>Échéances</h3></div><div class="cb"><div class="em-ech">'+[['Vaccin','syringe',rel(h.vacc,365)],['Vermifuge','pill',rel(h.worm,120)],['Maréchal','hoof',rel(h.farrier,49)],['Dentiste','tooth',rel(h.dentist,365)]].map(function(e){return '<div class="em-kv"><small>'+ICON(e[1])+e[0]+'</small><b>'+e[2]+'</b></div>'}).join('')+'</div></div></div>';
-   x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Contacts</h3></div>'+(h.owner?'<button class="em-row" data-call="'+D.name(h.owner)+'">'+U.av(h.owner)+'<div class="grow"><div class="t">'+D.name(h.owner)+'</div><div class="s">Propriétaire · '+D.member(h.owner).phone+'</div></div>'+ICON('phone')+'</button>':'')+'<button class="em-row" data-vet>'+ico('care','sm','var(--bad)')+'<div class="grow"><div class="t">Dr Antoine Leclerc</div><div class="s">Vétérinaire · 06 12 34 56 78</div></div>'+ICON('phone')+'</button><button class="em-row" data-call="Benoît Gautier">'+ico('hoof','sm')+'<div class="grow"><div class="t">Benoît Gautier</div><div class="s">Maréchal-ferrant · passe jeudi à 9 h</div></div>'+ICON('phone')+'</button></div>';
+   x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Contacts</h3></div>'+(h.owner?'<button class="em-row" data-call="'+D.name(h.owner)+'">'+U.av(h.owner)+'<div class="grow"><div class="t">'+D.name(h.owner)+'</div><div class="s">Propriétaire · '+D.member(h.owner).phone+'</div></div>'+ICON('phone')+'</button>':'')+'<button class="em-row" data-vet>'+ico('care','sm','var(--bad)')+'<div class="grow"><div class="t">Dr Antoine Leclerc</div><div class="s">Vétérinaire · '+VET+'</div></div>'+ICON('phone')+'</button><button class="em-row" data-call="Benoît Gautier">'+ico('hoof','sm')+'<div class="grow"><div class="t">Benoît Gautier</div><div class="s">Maréchal-ferrant · passe jeudi à 9 h</div></div>'+ICON('phone')+'</button></div>';
    x+='</div></div><div class="em-sticky"><button class="btn em-b" data-vet>'+ICON('phone')+'Véto</button><button class="btn em-b pri" style="flex:2" data-obs>'+ICON('plus')+'Observation</button></div></div>';
    el.innerHTML=x;if(first)P.animate(el);first=false}
   on(el,'[data-obs]',function(){obsSheet(h,draw)});
@@ -666,21 +759,21 @@ P.css(`
 function toMin(t){var p=t.split(':');return +p[0]*60+ +p[1]}
 function fromMin(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
 function hh(v){var h=Math.floor(v),m=Math.round((v-h)*60);return h+' h'+(m?' '+String(m).padStart(2,'0'):'')}
-function weekOf(){if(!mon())return D.empShifts;return D.empShifts.map(function(s,i){var dow=(i+1)%7,L=D.lessons.filter(function(l){return l.coach==='s02'&&l.dow===dow}).sort(function(a,b){return a.start<b.start?-1:1});
+function weekOf(){if(!mon())return myWeek();return D.empShifts.map(function(s,i){var dow=(i+1)%7,L=D.lessons.filter(function(l){return l.coach==='s02'&&l.dow===dow}).sort(function(a,b){return a.start<b.start?-1:1});
   var parts=L.map(function(l){return [l.start,fromMin(toMin(l.start)+l.dur),l.title,l]});if(i===1)parts=[['10:00','10:30','Longe de Jazz'],['11:00','11:45','Cours particulier']].concat(parts);if(i===2)parts=[['09:30','12:00','Travail des chevaux du club']].concat(parts);if(i===5)parts=parts.concat([['14:00','17:00','Stage de préparation aux galops']]);
   var m=parts.reduce(function(a,p){return a+toMin(p[1])-toMin(p[0])},0);return {d:s.d,l:s.l,n:s.n,parts:parts,h:m/60}})}
 var DL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 
-function nightSheet(){P.sheet({title:'Astreinte de nuit',icon:'moonstar',body:'<div class="stack" style="--g:14px"><div class="card flat" style="padding:14px"><div class="eyebrow">Votre prochaine astreinte</div><div class="em-h2" style="font-size:19px;margin-top:4px">Jeudi 19 novembre, de 20 h à 7 h</div><div class="s mut" style="margin-top:4px">Prime de 35 €. Vendredi matin de repos, reprise à 13 h.</div></div>'+
+function nightSheet(){P.sheet({title:'Astreinte de nuit',icon:'moonstar',body:'<div class="stack" style="--g:14px"><div class="card flat" style="padding:14px"><div class="eyebrow">Votre prochaine astreinte</div><div class="em-h2" style="font-size:19px;margin-top:4px">'+(function(i){return i<0?'Aucune cette semaine':DL[i]+' '+myWeek()[i].n+' novembre, de 20 h à 7 h'})(nextNight())+'</div><div class="s mut" style="margin-top:4px">Prime de 18 € par nuit. Une intervention est comptée en heures et majorée.</div></div>'+
   '<div><span class="em-lbl">Votre tour de 22 h</span><div class="card flat">'+['Vérifier les 46 abreuvoirs et les portes des boxes','Regarder Xanthos (B23) et noter un contrôle','Fermer la sellerie et le portail, éteindre les lumières du manège'].map(function(t){return '<div class="li"><div class="grow s" style="color:var(--ink);font-weight:500">'+t+'</div>'+U.chk(false)+'</div>'}).join('')+'</div></div>'+
-  '<div><span class="em-lbl">Qui appeler la nuit</span><div class="card flat">'+[['Dr Leclerc, vétérinaire de garde','06 12 34 56 78'],['Claire Morel, gérante','06 45 12 78 30'],['Clinique équine de Rambouillet','01 30 00 00 00']].map(function(c){return '<button class="em-row" data-nc="'+c[0].split(',')[0]+'">'+ico('phone','sm')+'<div class="grow"><div class="t">'+c[0]+'</div><div class="s num">'+c[1]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'+
+  '<div><span class="em-lbl">Qui appeler la nuit</span><div class="card flat">'+[['Dr Leclerc, vétérinaire de garde',VET],['Claire Morel, gérante','06 45 12 78 30'],['Clinique équine de Rambouillet','01 30 00 00 00']].map(function(c){return '<button class="em-row" data-nc="'+c[0].split(',')[0]+'">'+ico('phone','sm')+'<div class="grow"><div class="t">'+c[0]+'</div><div class="s num">'+c[1]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'+
   '<div class="note">'+ICON('camera','sm')+'<span>Les caméras des boxes B23 et B04 vous envoient une alerte si un cheval reste couché plus de 40 minutes.</span></div></div>',
   foot:'<button class="btn em-b block" data-go="emp-signaler">'+ICON('alert')+'Signaler un incident</button>'}).addEventListener('click',function(e){var b=e.target.closest('[data-nc]');if(b)P.toast('Appel en cours : '+b.getAttribute('data-nc'),{icon:'phone'})})}
 
-function swapSheet(draw){var W=D.empShifts.filter(function(s){return s.parts.length&&s.d>0});
+function swapSheet(draw){var W=myWeek().filter(function(s){return s.parts.length&&s.d>0});
   var s=P.sheet({title:'Proposer un échange',icon:'swap',body:'<div class="stack" style="--g:14px"><label class="field"><span>Je donne ce créneau</span><select class="in em-in" id="sw-a">'+W.map(function(x){return x.parts.map(function(p){return '<option>'+DL[x.d+1]+' '+x.n+' · '+hm(p[0])+' à '+hm(p[1])+'</option>'}).join('')}).join('')+'</select></label>'+
    '<div><span class="em-lbl">À qui</span><div class="g2" style="--g:8px;grid-template-columns:1fr 1fr">'+[['s06','Peut samedi et dimanche'],['s07','Peut mercredi']].map(function(c,i){var p=D.staffer(c[0]);return '<button class="card flat hrow" style="padding:12px;text-align:left" data-col="'+c[0]+'" aria-pressed="'+(i===0)+'">'+U.av(p)+'<div class="grow"><div class="b s">'+p.first+'</div><div class="xs mut">'+c[1]+'</div></div></button>'}).join('')+'</div></div>'+
-   '<label class="field"><span>Contre ce créneau</span><select class="in em-in" id="sw-b"><option>Dimanche 29 · 7 h à 12 h</option><option>Samedi 28 · 7 h à 12 h</option><option>Sans contrepartie, je rends service</option></select></label>'+
+   '<label class="field"><span>Contre ce créneau</span><select class="in em-in" id="sw-b"><option>Dimanche 29 · 7 h à 12 h 30</option><option>Samedi 28 · 7 h à 12 h 30</option><option>Sans contrepartie, je rends service</option></select></label>'+
    '<label class="field"><span>Un mot (facultatif)</span><textarea class="in" rows="2" placeholder="Exemple : rendez-vous chez le dentiste"></textarea></label>'+
    '<div class="note">'+ICON('info','sm')+'<span>Votre collègue accepte, puis Claire valide. Piaffe vérifie les 11 heures de repos entre deux journées.</span></div></div>',
    foot:'<button class="btn em-b pri block" data-send>'+ICON('send')+'Envoyer la proposition</button>'});var col='s06';
@@ -694,18 +787,18 @@ P.mod({id:'emp-planning',role:'employe',group:'Ma journée',title:'Mon planning'
    var x=hd('Mon planning','Semaine du 16 au 22 novembre · '+hh(tot)+(m?' de reprises et de travail des chevaux':' prévues pour '+p.hours+' h au contrat'),m?'':'<button class="btn" data-swapnew>'+ICON('swap','sm')+'Proposer un échange</button>');
    x+='<div class="em-cols"><div class="stack'+(first?' rise':'')+'" style="--g:14px">';
    x+='<div class="em-wk">'+Wk.map(function(s,i){return '<button data-day="'+i+'" class="'+(i===1?'td':'')+'" aria-pressed="'+(i===sel)+'" title="'+DL[i]+' '+s.n+' novembre"><span>'+s.l+'</span><b>'+s.n+'</b><small>'+(s.h?hh(s.h):'Repos')+'</small>'+(s.night&&!m?'<i class="nt"></i>':'')+'</button>'}).join('')+'</div>';
-   x+='<div class="card"><div class="ch" style="padding-bottom:4px"><h3>'+DL[sel]+' '+d.n+' novembre</h3>'+(sel===1?U.chip('Aujourd’hui','acc',true):sel===0?U.chip('Pointé : '+(d.real||hh(d.h)),'ok',true):d.swap&&E.swap==='ok'?U.chip('Échangé avec Lucie','warn',true):'')+'</div>'+
-     (d.parts.length?d.parts.map(function(pt){var l=pt[3];return '<div class="em-sh"><span class="br"'+(l?' style="--c:'+p.color+'"':'')+'></span><div class="grow"><div class="hh">'+hm(pt[0])+' à '+hm(pt[1])+'</div><div class="s mut">'+pt[2]+(l?' · '+D.club.arenas.find(function(a){return a.id===l.arena}).name:'')+'</div></div>'+(l?'<div class="hrow" style="--g:8px">'+U.avs(l.riders,3)+(sel===1?'<button class="btn sm pri" data-les="g5">Appel</button>':'<span class="chip">'+l.riders.length+'/'+l.cap+'</span>')+'</div>':'<span class="chip">'+hh((toMin(pt[1])-toMin(pt[0]))/60)+'</span>')+'</div>'}).join(''):'<div class="empty">'+ICON('holiday')+'<b style="color:var(--ink)">Jour de repos</b><span class="s">'+(m?'Aucune reprise ce jour-là.':'Astreinte assurée par Kévin.')+'</span></div>')+
-     (d.night&&!m?'<div class="em-sh"><span class="br" style="--c:var(--c5)"></span><div class="grow"><div class="hh">Astreinte de 20 h à 7 h</div><div class="s mut">Vous dormez sur place. Prime de 35 €.</div></div><button class="btn sm" data-night>Consignes</button></div>':'')+
+   x+='<div class="card"><div class="ch" style="padding-bottom:4px"><h3>'+DL[sel]+' '+d.n+' novembre</h3>'+(sel===1?U.chip('Aujourd’hui','acc',true):sel===0&&d.h?U.chip('Pointé : '+(d.real||hh(d.h)),'ok',true):d.swap&&E.swap==='ok'?U.chip('Échangé avec Lucie','warn',true):'')+'</div>'+
+     (d.parts.length?d.parts.map(function(pt){var l=pt[3];return '<div class="em-sh"><span class="br"'+(l?' style="--c:'+p.color+'"':'')+'></span><div class="grow"><div class="hh">'+hm(pt[0])+' à '+hm(pt[1])+'</div><div class="s mut">'+pt[2]+(l?' · '+D.club.arenas.find(function(a){return a.id===l.arena}).name:'')+'</div></div>'+(l?'<div class="hrow" style="--g:8px">'+U.avs(l.riders,3)+(sel===1?'<button class="btn sm pri" data-les="g5">Appel</button>':'<span class="chip">'+l.riders.length+'/'+l.cap+'</span>')+'</div>':'<span class="chip">'+hh((toMin(pt[1])-toMin(pt[0]))/60)+'</span>')+'</div>'}).join(''):'<div class="empty">'+ICON('holiday')+'<b style="color:var(--ink)">Jour de repos</b><span class="s">'+(m?'Aucune reprise ce jour-là.':D.nights&&D.nights[sel]&&D.nights[sel]!=='s05'?'Astreinte de nuit assurée par '+D.staffer(D.nights[sel]).first+'.':'Profitez de votre journée.')+'</span></div>')+
+     (d.night&&!m?'<div class="em-sh"><span class="br" style="--c:var(--c5)"></span><div class="grow"><div class="hh">Astreinte de 20 h à 7 h</div><div class="s mut">Vous dormez sur place. Prime de 18 €.</div></div><button class="btn sm" data-night>Consignes</button></div>':'')+
      (d.note&&!m?'<div class="cf s mut">'+ICON('info','sm')+d.note+'</div>':'')+(!m&&d.parts.length&&sel>1?'<div class="cf"><button class="btn sm" data-swapnew>'+ICON('swap','sm')+'Échanger ce jour</button><button class="btn sm ghost" data-go="emp-conges">'+ICON('holiday','sm')+'Poser un congé</button></div>':'')+'</div>';
    x+='<div class="card"><div class="ch" style="padding-bottom:10px"><h3>Ma semaine</h3><span class="s mut">'+(m?'Reprises et travail':'Écurie et astreinte')+'</span></div><div class="em-ax"><span></span><div><span>6 h</span><span>11 h</span><span>16 h</span><span>21 h</span></div><span></span></div>'+Wk.map(function(s,i){return '<button class="em-gt'+(i===1?' td':'')+'" data-day="'+i+'"><span class="dl">'+s.l+' '+s.n+'</span><span class="tr">'+s.parts.map(function(pt){var a=(toMin(pt[0])-360)/900*100,w=(toMin(pt[1])-toMin(pt[0]))/900*100;return '<i class="'+(i===0?'past':'')+'" style="left:'+a.toFixed(1)+'%;width:'+w.toFixed(1)+'%"></i>'}).join('')+(s.night&&!m?'<i class="n" style="left:93.3%;width:6.7%"></i>':'')+'</span><span class="tt">'+(s.h?hh(s.h):'Repos')+'</span></button>'}).join('')+'<div class="cf s mut" style="margin-top:8px">'+P.chart.legend(m?[['Reprises et travail','var(--acc)']]:[['Travail','var(--acc)'],['Astreinte de nuit','var(--c5)']])+'</div></div>';
    x+='</div><div class="stack'+(first?' rise':'')+'" style="--g:14px">';
-   x+='<div class="card"><div class="ch"><h3>Mes heures</h3><button class="btn ghost sm" data-go="emp-pointage">Pointage'+ICON('arrow','sm')+'</button></div><div class="cb stack" style="--g:12px"><div class="em-bigh">'+(m?'8 h 00':'10 h 48')+'<small> faites sur '+hh(tot)+'</small></div>'+U.bar((m?8:10.8)/tot*100)+
-     '<div class="stack" style="--g:8px">'+(m?[['Contrat','35 h par semaine'],['Reprises cette semaine',Wk.reduce(function(a,s){return a+s.parts.filter(function(q){return q[3]}).length},0)+' reprises'],['Cavaliers encadrés','58 cette semaine']]:[['Contrat','39 h par semaine'],['Heures supplémentaires','2 h, majorées de 25 %'],['Compteur de récupération','6 h 30 à poser']]).map(function(r){return '<div class="hrow sp s"><span class="mut">'+r[0]+'</span><b class="num">'+r[1]+'</b></div>'}).join('')+'</div></div></div>';
-   if(!m){x+='<div class="card"><div class="ch"><h3>Échanges de créneaux</h3>'+(E.swap?'':U.chip('1 demande','acc',true))+'</div><div class="cb stack" style="--g:12px"><div class="hrow" style="--g:12px;align-items:flex-start">'+U.av('s06','lg')+'<div class="grow"><div class="b">Lucie vous propose un échange</div><div class="s mut" style="margin-top:2px">Elle prend votre <b style="color:var(--ink)">samedi 21 de 7 h à 12 h</b> et vous prenez son <b style="color:var(--ink)">dimanche 29 de 7 h à 12 h</b>.</div></div></div>'+
+   x+='<div class="card"><div class="ch"><h3>Mes heures</h3><button class="btn ghost sm" data-go="emp-pointage">Pointage'+ICON('arrow','sm')+'</button></div><div class="cb stack" style="--g:12px"><div class="em-bigh">'+(m?'8 h 00':hh(monH()+E.clock.base/3600))+'<small> faites sur '+hh(tot)+'</small></div>'+U.bar((m?8:monH()+E.clock.base/3600)/tot*100)+
+     '<div class="stack" style="--g:8px">'+(m?[['Contrat','35 h par semaine'],['Reprises cette semaine',Wk.reduce(function(a,s){return a+s.parts.filter(function(q){return q[3]}).length},0)+' reprises'],['Cavaliers encadrés','58 cette semaine']]:[['Contrat','39 h par semaine'],['Heures supplémentaires',(tot>39?hh(tot-39):'Aucune')+', majorées de 25 %'],['Compteur de récupération',hh(hrOf().rec)+' à poser']]).map(function(r){return '<div class="hrow sp s"><span class="mut">'+r[0]+'</span><b class="num">'+r[1]+'</b></div>'}).join('')+'</div></div></div>';
+   if(!m){x+='<div class="card"><div class="ch"><h3>Échanges de créneaux</h3>'+(E.swap?'':U.chip('1 demande','acc',true))+'</div><div class="cb stack" style="--g:12px"><div class="hrow" style="--g:12px;align-items:flex-start">'+U.av('s06','lg')+'<div class="grow"><div class="b">Lucie vous propose un échange</div><div class="s mut" style="margin-top:2px">Elle prend votre <b style="color:var(--ink)">samedi 21 '+(Wk[5].parts.length?'de '+hm(Wk[5].parts[0][0])+' à '+hm(Wk[5].parts[Wk[5].parts.length-1][1]):'')+'</b> et vous prenez son <b style="color:var(--ink)">dimanche 29 de 7 h à 12 h 30</b>.</div></div></div>'+
      (E.swap==='ok'?'<div class="note ok">'+ICON('checkc','sm')+'<span>Vous avez accepté. Claire doit encore valider l’échange.</span></div>':E.swap==='no'?'<div class="note">'+ICON('info','sm')+'<span>Vous avez refusé. Lucie est prévenue.</span></div>':'<div class="g2" style="--g:8px;grid-template-columns:1fr 1fr"><button class="btn em-b" data-sw="no">Refuser</button><button class="btn em-b pri" data-sw="ok">'+ICON('check')+'Accepter</button></div>')+
      (E.swap2?'<div class="hr"></div><div class="hrow" style="--g:12px">'+ico('send','','var(--acc)')+'<div class="grow"><div class="b s">Votre proposition à '+D.staffer(E.swap2.to).first+'</div><div class="xs mut">'+E.swap2.a+' contre '+E.swap2.b.toLowerCase()+'</div></div>'+U.chip('En attente','warn',true)+'</div>':'')+'</div></div>';
-    x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Astreintes de nuit</h3><button class="btn ghost sm" data-night>Consignes'+ICON('arrow','sm')+'</button></div>'+D.empNights.map(function(n){var s=D.staffer(n[1]),mine=n[1]==='s05';return '<div class="em-row"'+(mine?' style="background:var(--acc-pale)"':'')+'><span class="em-tm" style="font-family:var(--f-text)">'+n[0]+'</span>'+U.av(s,'sm')+'<div class="grow t" style="font-size:13.5px">'+(mine?'Vous, de 20 h à 7 h':s.first+' '+s.last)+'</div>'+(n[2]?U.chip('Colique de Xanthos','bad'):mine?ICON('moonstar'):'')+'</div>'}).join('')+'</div>'}
+    x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Astreintes de nuit</h3><button class="btn ghost sm" data-night>Consignes'+ICON('arrow','sm')+'</button></div>'+myNights().map(function(n){var s=D.staffer(n[1]),mine=n[1]==='s05';return '<div class="em-row"'+(mine?' style="background:var(--acc-pale)"':'')+'><span class="em-tm" style="font-family:var(--f-text)">'+n[0]+'</span>'+U.av(s,'sm')+'<div class="grow t" style="font-size:13.5px">'+(mine?'Vous, de 20 h à 7 h':s.first+' '+s.last)+'</div>'+(n[2]?U.chip('Colique de Xanthos','bad'):mine?ICON('moonstar'):'')+'</div>'}).join('')+'</div>'}
    else x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes cavaliers à suivre</h3></div>'+[['m019','Prépare le Galop 7, travail du galop à faux'],['m003','Deux absences ce mois-ci'],['m011','Premier concours dimanche à Rambouillet']].map(function(r){return '<div class="em-row">'+U.av(r[0])+'<div class="grow"><div class="t">'+D.name(r[0])+'</div><div class="s">'+r[1]+'</div></div></div>'}).join('')+'</div>';
    x+='</div></div>';el.innerHTML=x;if(first)P.animate(el);first=false}
   on(el,'[data-day]',function(b){sel=+b.getAttribute('data-day');draw()});
@@ -818,7 +911,7 @@ P.mod({id:'emp-pointage',role:'employe',group:'Moi',title:'Pointage',icon:'clock
  render:function(el,ctx){var C=E.clock,first=true,iv=null;
   function secs(){return C.state==='in'?C.base+Math.floor((Date.now()-E.t0)/1000):C.base}
   function fmtT(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0')}
-  function draw(){var st=C.state,wk=(Math.floor(secs()/60)+485)/60,m=mon();
+  function draw(){var st=C.state,wk=(Math.floor(secs()/60)+Math.round(monH()*60))/60,m=mon(),W=myWeek(),tot=W.reduce(function(a,q){return a+q.h},0),mx=Math.max.apply(null,W.map(function(q){return q.h}).concat([monH()]));
    var x=hd('Pointage','Mardi 17 novembre · '+(st==='out'?'vous n’êtes pas en service':st==='pause'?'en pause depuis '+C.pauseAt:'en service depuis '+C.since),'<button class="btn" data-fix>'+ICON('edit','sm')+'Corriger un pointage</button>');
    x+='<div class="em-cols eq"><div class="stack'+(first?' rise':'')+'" style="--g:14px"><div class="card em-pt">'+
      '<button class="em-hold '+st+'" data-hold aria-label="'+(st==='out'?'Maintenir pour pointer mon arrivée':st==='pause'?'Maintenir pour reprendre le travail':'Maintenir pour pointer mon départ')+'"><svg class="rg" viewBox="0 0 212 212"><circle class="bg" cx="106" cy="106" r="100"/><circle class="fg" cx="106" cy="106" r="100"/></svg>'+
@@ -826,10 +919,10 @@ P.mod({id:'emp-pointage',role:'employe',group:'Moi',title:'Pointage',icon:'clock
      '<div class="s mut" style="max-width:300px">Un appui long d’une seconde évite les pointages par erreur, même avec des gants.</div>'+
      (st==='in'?'<button class="btn em-b block" data-pause>'+ICON('pause')+'Prendre ma pause</button>':st==='out'?'<div class="note ok" style="text-align:left;width:100%">'+ICON('checkc','sm')+'<span>Départ pointé à '+(C.left||'9 h 41')+'. Journée de '+hh(C.base/3600)+' enregistrée.</span></div>':'<div class="note" style="text-align:left;width:100%">'+ICON('info','sm')+'<span>La pause de midi n’est pas comptée dans votre temps de travail.</span></div>')+'</div>'+
      '<div class="card"><div class="ch"><h3>Position vérifiée</h3>'+U.chip('À 12 m de la sellerie','ok',true)+'</div><div class="cb stack" style="--g:10px">'+planSvg(null,'sel')+'<div class="xs mut">Piaffe vérifie seulement que vous êtes à l’écurie au moment du pointage. Votre position n’est pas suivie pendant la journée.</div></div></div></div>';
-   x+='<div class="stack'+(first?' rise':'')+'" style="--g:14px"><div class="card"><div class="ch"><h3>Aujourd’hui</h3><span class="s mut">Prévu : 7 h à 12 h, 14 h à 18 h 30</span></div><div class="cb"><div class="tl">'+C.log.slice().reverse().map(function(l,i){return '<div class="ev em-ev'+(l[3]&&i===0?' fade':'')+'" style="--c:var(--'+(/Départ/.test(l[1])?'bad':/ause/.test(l[1])?'warn':'ok')+')"><div class="hrow sp"><b>'+l[1]+'</b><span class="s num b">'+l[0]+'</span></div><div class="s mut">'+l[2]+'</div></div>'}).join('')+'</div></div></div>'+
-     '<div class="card"><div class="ch"><h3>Ma semaine</h3><span class="s mut">Du 16 au 22 novembre</span></div><div class="cb stack" style="--g:14px"><div class="em-bigh"><span data-wk>'+hh(wk)+'</span><small> sur '+(m?'35':'41')+' h prévues</small></div>'+
-     '<div class="em-wb">'+D.empShifts.map(function(s,i){var v=i===0?8.08:i===1?secs()/3600:s.h;return '<div class="'+(i===1?'td':i>1?'pl':'')+'"><b>'+(s.h?(i===0?'8 h 05':i===1?hh(Math.floor(v*60)/60):hh(s.h)):'')+'</b><i style="--h:'+(i===1?s.h:v)/9.5*72+'%;--d:'+Math.min(100,v/s.h*100||0).toFixed(0)+'%"></i>'+s.l+'</div>'}).join('')+'</div>'+
-     P.chart.legend([['Pointé','var(--acc)'],['Prévu','var(--line-2)']])+'<div class="hr"></div>'+[['Heures supplémentaires de la semaine','2 h prévues'],['Retards ce mois-ci','Aucun'],['Compteur de récupération','6 h 30']].map(function(r){return '<div class="hrow sp s"><span class="mut">'+r[0]+'</span><b class="num">'+r[1]+'</b></div>'}).join('')+
+   x+='<div class="stack'+(first?' rise':'')+'" style="--g:14px"><div class="card"><div class="ch"><h3>Aujourd’hui</h3><span class="s mut">Prévu : '+W[1].parts.map(function(q){return hm(q[0])+' à '+hm(q[1])}).join(', ')+'</span></div><div class="cb"><div class="tl">'+C.log.slice().reverse().map(function(l,i){return '<div class="ev em-ev'+(l[3]&&i===0?' fade':'')+'" style="--c:var(--'+(/Départ/.test(l[1])?'bad':/ause/.test(l[1])?'warn':'ok')+')"><div class="hrow sp"><b>'+l[1]+'</b><span class="s num b">'+l[0]+'</span></div><div class="s mut">'+l[2]+'</div></div>'}).join('')+'</div></div></div>'+
+     '<div class="card"><div class="ch"><h3>Ma semaine</h3><span class="s mut">Du 16 au 22 novembre</span></div><div class="cb stack" style="--g:14px"><div class="em-bigh"><span data-wk>'+hh(wk)+'</span><small> sur '+(m?'35 h':hh(tot))+' prévues</small></div>'+
+     '<div class="em-wb">'+W.map(function(s,i){var v=i===0?monH():i===1?secs()/3600:s.h;return '<div class="'+(i===1?'td':i>1?'pl':'')+'"><b>'+(s.h?(i===0?hh(monH()):i===1?hh(Math.floor(v*60)/60):hh(s.h)):'')+'</b><i style="--h:'+(i===1?s.h:v)/mx*72+'%;--d:'+Math.min(100,v/s.h*100||0).toFixed(0)+'%"></i>'+s.l+'</div>'}).join('')+'</div>'+
+     P.chart.legend([['Pointé','var(--acc)'],['Prévu','var(--line-2)']])+'<div class="hr"></div>'+[['Heures supplémentaires de la semaine',(tot>39?hh(tot-39):'Aucune')+' prévues'],['Retards ce mois-ci','Aucun'],['Compteur de récupération',hh(hrOf().rec)]].map(function(r){return '<div class="hrow sp s"><span class="mut">'+r[0]+'</span><b class="num">'+r[1]+'</b></div>'}).join('')+
      '<button class="btn em-b block" data-export>'+ICON('download')+'Recevoir ma feuille d’heures</button></div></div></div></div>';
    el.innerHTML=x;if(first)P.animate(el);first=false;bindHold()}
   function bindHold(){var b=el.querySelector('[data-hold]'),fg=b.querySelector('.fg'),raf=0,t0=0,down=false,DUR=P.RM?150:800,L=628.3;
@@ -962,8 +1055,8 @@ P.mod({id:'emp-messages',role:'employe',group:'Moi',title:'Messages',icon:'chat'
 
 /* ---------- Congés et documents ---------- */
 function workDays(a,b){var d=new Date(a+'T12:00:00'),e=new Date(b+'T12:00:00'),n=0;if(isNaN(d)||isNaN(e)||e<d)return 0;while(d<=e){var w=d.getDay();if(w!==0&&!(d.getMonth()===11&&d.getDate()===25))n++;d.setDate(d.getDate()+1)}return n}
-function leaveSheet(draw){var kind='Congé payé',left=11;
-  var s=P.sheet({title:'Demander un congé',icon:'holiday',body:'<div class="stack" style="--g:16px"><div><span class="em-lbl">Type d’absence</span><div class="g2" style="--g:8px;grid-template-columns:1fr 1fr">'+[['Congé payé','11 jours restants'],['Récupération','6 h 30 à poser'],['Sans solde','Sur accord de Claire'],['Événement familial','Justificatif à joindre']].map(function(k,i){return '<button class="card flat" style="padding:12px;text-align:left" data-kind="'+k[0]+'"><div class="b s">'+k[0]+'</div><div class="xs mut">'+k[1]+'</div></button>'}).join('')+'</div></div>'+
+function leaveSheet(draw){var kind='Congé payé',left=cpLeft()-myLeaves().filter(function(l){return l.st==='en attente'&&l.kind==='Congé payé'}).reduce(function(a,l){return a+l.days},0);
+  var s=P.sheet({title:'Demander un congé',icon:'holiday',body:'<div class="stack" style="--g:16px"><div><span class="em-lbl">Type d’absence</span><div class="g2" style="--g:8px;grid-template-columns:1fr 1fr">'+[['Congé payé',String(left).replace('.',',')+' jours disponibles'],['Récupération',hh(hrOf().rec)+' à poser'],['Sans solde','Sur accord de Claire'],['Événement familial','Justificatif à joindre']].map(function(k,i){return '<button class="card flat" style="padding:12px;text-align:left" data-kind="'+k[0]+'"><div class="b s">'+k[0]+'</div><div class="xs mut">'+k[1]+'</div></button>'}).join('')+'</div></div>'+
    '<div class="g2" style="--g:10px;grid-template-columns:1fr 1fr"><label class="field"><span>Du</span><input class="in em-in num" type="date" id="lv-a" value="2026-12-07"></label><label class="field"><span>Au</span><input class="in em-in num" type="date" id="lv-b" value="2026-12-08"></label></div>'+
    '<div class="card flat"><div class="li"><div class="grow"><div class="t">Demi-journée</div><div class="s">Le matin seulement, de 7 h à 12 h</div></div>'+U.tog(false,'lv-half')+'</div></div>'+
    '<div class="card soft hrow sp" style="padding:14px"><div><div class="b" data-cnt></div><div class="xs mut" data-after></div></div>'+ico('holiday','','var(--acc)')+'</div>'+
@@ -974,7 +1067,7 @@ function leaveSheet(draw){var kind='Congé payé',left=11;
   function calc(){var n=workDays(a.value,b.value);if(hf.getAttribute('aria-checked')==='true')n=n?.5:0;var cp=kind==='Congé payé';s.querySelector('[data-cnt]').textContent=n?String(n).replace('.',',')+' jour'+(n>1?'s':'')+' ouvrable'+(n>1?'s':'')+' demandé'+(n>1?'s':''):'Choisissez des dates valides';s.querySelector('[data-after]').textContent=n?(cp?'Il vous restera '+String(left-n).replace('.',',')+' jours de congés payés':'Aucun jour de congé payé décompté'):'La date de fin doit suivre la date de début';
    $$('[data-kind]',s).forEach(function(q){q.style.boxShadow=q.getAttribute('data-kind')===kind?'inset 0 0 0 2px var(--acc)':''});return n}
   on(s,'[data-kind]',function(q){kind=q.getAttribute('data-kind');calc()});s.addEventListener('input',calc);s.addEventListener('click',function(e){if(e.target.closest('.tog'))setTimeout(calc,0)});calc();
-  s.querySelector('[data-send]').onclick=function(){var n=calc();if(!n){P.toast('Vérifiez les dates de votre demande',{icon:'alert'});return}D.empLeaves.unshift({id:'v'+Date.now(),kind:kind,from:a.value,to:b.value,days:n,st:'en attente',note:'Demandé à l’instant',fresh:true});s.close();draw();say('Demande envoyée à Claire. Réponse sous 48 heures',{icon:'send'})}}
+  s.querySelector('[data-send]').onclick=function(){var n=calc();if(!n){P.toast('Vérifiez les dates de votre demande',{icon:'alert'});return}var undo=addLeave({kind:kind,from:a.value,to:b.value,days:n});s.close();draw();say('Demande envoyée à Claire. Réponse sous 48 heures',{icon:'send',undo:function(){undo();draw()}})}}
 function paySheet(d){var p=d.pay,s=P.sheet({title:d.t,icon:'doc',body:p?'<div class="stack" style="--g:14px"><div class="card navy" style="padding:18px"><div class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 68%,transparent)">Net payé</div><div class="disp num" style="font-size:34px;font-weight:700;color:var(--navy-ink);margin-top:4px">'+p.net+'</div><div class="s" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent);margin-top:4px">Viré le dernier jour ouvré du mois sur le compte se terminant par 4821</div></div>'+
    '<div>'+[['Salarié','Mamadou Diallo · palefrenier soigneur'],['Convention','Centres équestres, coefficient 121'],['Heures payées',p.h],['Heures supplémentaires',p.sup],['Salaire brut',p.brut],['Net avant impôt',p.net]].map(function(r){return '<div class="em-pay"><span class="mut">'+r[0]+'</span><b class="num" style="text-align:right">'+r[1]+'</b></div>'}).join('')+'</div>'+
    '<div class="note">'+ICON('lock','sm')+'<span>Vos bulletins sont gardés 50 ans dans votre coffre personnel. Vous y gardez accès même après votre départ de l’écurie.</span></div></div>':
@@ -985,13 +1078,13 @@ function paySheet(d){var p=d.pay,s=P.sheet({title:d.t,icon:'doc',body:p?'<div cl
 P.mod({id:'emp-conges',role:'employe',group:'Moi',title:'Congés et documents',icon:'holiday',n:30,phoneTitle:'Congés',
  render:function(el,ctx){var first=true;
   function span(l){var one=F.dateL(l.from);return l.from===l.to?one.charAt(0).toUpperCase()+one.slice(1):'Du '+F.date(l.from)+' au '+F.date(l.to)}
-  function draw(){var pend=D.empLeaves.filter(function(l){return l.st==='en attente'}),pd=pend.reduce(function(a,l){return a+(l.kind==='Congé payé'?l.days:0)},0);
-   var x=hd('Congés et documents','Période du 1er juin 2026 au 31 mai 2027 · '+pend.length+' demande'+(pend.length>1?'s':'')+' en attente','<button class="btn pri" data-ask>'+ICON('plus','sm')+'Demander un congé</button>');
+  function draw(){var LV=myLeaves(),H=hrOf(),left=cpLeft(),pend=LV.filter(function(l){return l.st==='en attente'}),pd=pend.reduce(function(a,l){return a+(l.kind==='Congé payé'?l.days:0)},0);
+   var x=hd('Congés et documents','Période du 1er juin 2026 au 31 mai 2027 · '+pend.length+' demande'+(pend.length>1?'s':'')+' en attente','<button class="btn" data-wel>'+ICON('onboarding','sm')+'Revoir mon arrivée</button><button class="btn pri" data-ask>'+ICON('plus','sm')+'Demander un congé</button>');
    x+='<div class="em-cols"><div class="stack'+(first?' rise':'')+'" style="--g:14px">';
-   x+='<div class="em-sol"><div class="card"><span class="xs mut b">Congés payés</span><div class="v"><span data-count="11">11</span><small> j</small></div>'+U.bar(14/25*100)+'<span class="xs mut">14 pris sur 25</span></div><div class="card"><span class="xs mut b">En attente</span><div class="v">'+String(pd).replace('.',',')+'<small> j</small></div>'+U.bar(pd/11*100,'var(--warn)')+'<span class="xs mut">Réponse de Claire</span></div><div class="card"><span class="xs mut b">Récupération</span><div class="v">6<small> h 30</small></div>'+U.bar(65,'var(--c5)')+'<span class="xs mut">À poser avant mars</span></div></div>';
-   x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes demandes</h3></div>'+D.empLeaves.map(function(l){var c=l.st==='validé'?'ok':l.st==='refusé'?'bad':'warn';return '<div class="em-row w2'+(l.fresh?' fade':'')+'">'+ico(l.kind==='Récupération'?'hourglass':'holiday','',c==='ok'?'var(--ok)':'var(--warn)')+'<div class="grow"><div class="t">'+span(l)+'</div><div class="s">'+l.kind+' · '+String(l.days).replace('.',',')+' jour'+(l.days>1?'s':'')+' · '+l.note+'</div></div>'+U.chip(l.st==='en attente'?'En attente':l.st==='validé'?'Validé':'Refusé',c,true)+(l.st==='en attente'?'<button class="btn ghost icon sm" data-cancel="'+l.id+'" title="Annuler cette demande">'+ICON('x','sm')+'</button>':'')+'</div>'}).join('')+'</div>';
-   var cal='';['L','M','M','J','V','S','D'].forEach(function(d){cal+='<span>'+d+'</span>'});cal+='<div style="visibility:hidden"></div>';for(var d=1;d<=31;d++){var wd=(d+1)%7,mine=pend.some(function(l){return l.from<='2026-12-'+String(d).padStart(2,'0')&&l.to>='2026-12-'+String(d).padStart(2,'0')});cal+='<div class="'+(mine?'pd ':'')+(wd===0?'we ':'')+(d===25?'fe ':'')+(d>=21&&d<=23?'ot':'')+'">'+d+'</div>'}
-   x+='<div class="card"><div class="ch"><h3>Décembre 2026</h3><span class="s mut">Absences de l’équipe</span></div><div class="cb stack" style="--g:12px"><div class="em-cal">'+cal+'</div>'+P.chart.legend([['Ma demande en attente','var(--acc)'],['Lucie absente','var(--c5)'],['Jour férié','var(--bad)']])+'</div></div>';
+   x+='<div class="em-sol"><div class="card"><span class="xs mut b">Congés payés</span><div class="v"><span data-count="'+left+'">'+left+'</span><small> j</small></div>'+U.bar(H.cp[1]/H.cp[0]*100)+'<span class="xs mut">'+H.cp[1]+' pris sur '+H.cp[0]+'</span></div><div class="card"><span class="xs mut b">En attente</span><div class="v">'+String(pd).replace('.',',')+'<small> j</small></div>'+U.bar(pd/Math.max(1,left)*100,'var(--warn)')+'<span class="xs mut">Réponse de Claire</span></div><div class="card"><span class="xs mut b">Récupération</span><div class="v">'+hh(H.rec).replace(/ h.*$/,'')+'<small>'+hh(H.rec).replace(/^\d+/,'')+'</small></div>'+U.bar(H.rec/10*100,'var(--c5)')+'<span class="xs mut">À poser avant mars</span></div></div>';
+   x+='<div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes demandes</h3></div>'+LV.map(function(l){var c=l.st==='validé'?'ok':l.st==='refusé'?'bad':'warn';return '<div class="em-row w2'+(l.fresh?' fade':'')+'">'+ico(l.kind==='Récupération'?'hourglass':'holiday','',c==='ok'?'var(--ok)':'var(--warn)')+'<div class="grow"><div class="t">'+span(l)+'</div><div class="s">'+l.kind+' · '+String(l.days).replace('.',',')+' jour'+(l.days>1?'s':'')+' · '+l.note+'</div></div>'+U.chip(l.st==='en attente'?'En attente':l.st==='validé'?'Validé':'Refusé',c,true)+(l.st==='en attente'?'<button class="btn ghost icon sm" data-cancel="'+l.id+'" title="Annuler cette demande">'+ICON('x','sm')+'</button>':'')+'</div>'}).join('')+'</div>';
+   var cal='';['L','M','M','J','V','S','D'].forEach(function(d){cal+='<span>'+d+'</span>'});cal+='<div style="visibility:hidden"></div>';var OT=(D.leaves||[]).filter(function(l){return l.who!=='s05'&&l.state!=='refusé'&&l.to>='2026-12-01'&&l.from<='2026-12-31'}),cov=function(l,ds){return l.from<=ds&&l.to>=ds};for(var d=1;d<=31;d++){var wd=(d+1)%7,ds='2026-12-'+String(d).padStart(2,'0'),mine=pend.some(function(l){return cov(l,ds)}),ot=OT.some(function(l){return cov(l,ds)});cal+='<div class="'+(mine?'pd ':'')+(wd===0?'we ':'')+(d===25?'fe ':'')+(ot&&!mine?'ot':'')+'">'+d+'</div>'}
+   x+='<div class="card"><div class="ch"><h3>Décembre 2026</h3><span class="s mut">Absences de l’équipe</span></div><div class="cb stack" style="--g:12px"><div class="em-cal">'+cal+'</div>'+P.chart.legend([['Ma demande en attente','var(--acc)'],['Collègue absent','var(--c5)'],['Jour férié','var(--bad)']])+(OT.length?'<div class="xs mut">'+OT.map(function(l){return D.staffer(l.who).first+' du '+F.date(l.from)+' au '+F.date(l.to)}).join(' · ')+'</div>':'')+'</div></div>';
    x+='</div><div class="stack'+(first?' rise':'')+'" style="--g:14px"><div class="card"><div class="ch" style="padding-bottom:6px"><h3>Bulletins de paie</h3><span class="s mut">Coffre personnel</span></div>'+D.empDocs.filter(function(d){return d.pay}).map(docRow).join('')+'</div><div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes documents</h3></div>'+D.empDocs.filter(function(d){return !d.pay}).map(docRow).join('')+'</div>'+
      '<div class="note">'+ICON('info','sm')+'<span>Piaffe prépare vos heures pour la paie mais ne calcule pas le salaire : le bulletin vient du cabinet comptable de l’écurie.</span></div></div></div>'+
      '<div class="em-sticky"><button class="btn em-b pri" data-ask>'+ICON('plus')+'Demander un congé</button></div>';
@@ -999,8 +1092,112 @@ P.mod({id:'emp-conges',role:'employe',group:'Moi',title:'Congés et documents',i
   function docRow(d){return '<button class="em-row" data-doc="'+d.id+'">'+ico(d.pay?'euro':'doc','',d.pay?'var(--ok)':'var(--acc)')+'<div class="grow"><div class="t">'+d.t+'</div><div class="s">'+d.s+'</div></div>'+ICON('download')+'</button>'}
   on(el,'[data-ask]',function(){leaveSheet(draw)});
   on(el,'[data-doc]',function(b){paySheet(D.empDocs.find(function(d){return d.id===b.getAttribute('data-doc')}))});
-  on(el,'[data-cancel]',function(b){var i=D.empLeaves.findIndex(function(l){return l.id===b.getAttribute('data-cancel')}),l=D.empLeaves[i];D.empLeaves.splice(i,1);draw();P.toast('Demande annulée',{icon:'x',undo:function(){D.empLeaves.splice(i,0,l);if(el.isConnected)draw()}})});
+  on(el,'[data-cancel]',function(b){var id=b.getAttribute('data-cancel'),A=D.leaves&&D.leaves.some(function(l){return l.id===id})?D.leaves:D.empLeaves,i=A.findIndex(function(l){return l.id===id}),l=A[i];A.splice(i,1);draw();P.toast('Demande annulée, Claire est prévenue',{icon:'x',undo:function(){A.splice(i,0,l);if(el.isConnected)draw()}})});
+  on(el,'[data-wel]',function(){P.go('emp-bienvenue')});
   online(el,draw);draw()}});
+
+/* =====================================================================
+   Mon arrivée : les six étapes du premier jour, à revoir
+   ===================================================================== */
+P.css(`
+.ew-top{padding:16px;display:flex;flex-direction:column;gap:12px}
+.ew-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.ew-steps button{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--mut);padding:4px 0;min-width:0;text-align:center;line-height:1.2}
+.ew-steps .c{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:700;box-shadow:inset 0 0 0 1.5px var(--line-2);background:var(--surface);color:var(--ink-2);transition:all var(--t-2) var(--e-out)}
+.ew-steps .c svg.i{width:15px;height:15px;stroke-width:2.4}
+.ew-steps .ok .c{background:var(--ok);color:var(--surface);box-shadow:none}
+.ew-steps .on{color:var(--ink)}.ew-steps .on .c{background:var(--acc);color:var(--acc-ink);box-shadow:0 0 0 4px var(--acc-pale)}
+.ew-steps span.l{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ew-card{padding:18px;display:flex;flex-direction:column;gap:14px}
+.ew-card h2{font-size:21px;letter-spacing:-.025em;line-height:1.15}
+.ew-mail{border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface-2)}
+.ew-doc{border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);padding:14px 16px;background:var(--surface-2);font-size:13px;line-height:1.5;color:var(--ink-2);display:flex;flex-direction:column;gap:6px}
+.ew-doc b{color:var(--ink)}
+.ew-pad{position:relative;height:150px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line-2);touch-action:none;overflow:hidden}
+.ew-pad canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.ew-pad .hint{position:absolute;left:14px;right:14px;bottom:30px;border-top:1.5px dashed var(--line-2);pointer-events:none}
+.ew-pad .hint span{position:absolute;left:0;top:6px;font-size:11.5px;color:var(--mut)}
+.ew-pad.signed{box-shadow:inset 0 0 0 2px var(--ok)}
+.ew-rule{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;text-align:left;width:100%}
+.ew-rule+.ew-rule{border-top:1px solid var(--line)}
+.ew-rule .t{font-weight:600;font-size:14px;line-height:1.35}.ew-rule .s{font-size:12.5px;color:var(--mut);margin-top:2px;line-height:1.4}
+.ew-hold{width:170px;height:170px;border-radius:50%;margin:4px auto 0;display:grid;place-items:center;position:relative;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-2);touch-action:none;user-select:none;-webkit-user-select:none}
+.ew-hold svg.rg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ew-hold circle{fill:none;stroke-width:8}.ew-hold .bg{stroke:var(--bg-2)}.ew-hold .fg{stroke:var(--acc);stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502}
+.ew-hold.press .fg{stroke-dashoffset:0;transition:stroke-dashoffset .8s linear}
+.ew-hold.done .fg{stroke:var(--ok);stroke-dashoffset:0}
+.ew-hold .dk{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:600;font-size:13px;color:var(--ink-2);text-align:center}
+.ew-hold .dk svg.i{width:30px;height:30px;color:var(--acc)}.ew-hold.done .dk svg.i{color:var(--ok)}
+.ew-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ew-tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:var(--r-lg);text-align:left;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);position:relative;transition:box-shadow var(--t-2),background var(--t-2)}
+.ew-tabs button svg.i{color:var(--acc);width:24px;height:24px}
+.ew-tabs button b{font-size:14.5px}.ew-tabs button small{font-size:12px;color:var(--mut);line-height:1.35}
+.ew-tabs button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--ok);background:var(--ok-pale)}
+.ew-tabs button .ck{position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--ok);color:var(--surface);display:none;place-items:center}
+.ew-tabs button .ck svg.i{width:13px;height:13px;color:var(--surface);stroke-width:2.6}
+.ew-tabs button[aria-pressed="true"] .ck{display:grid}
+.ew-foot{display:flex;flex-wrap:wrap;gap:8px}.ew-foot .btn{flex:1 1 200px;min-width:0;white-space:normal;line-height:1.2;text-align:center}
+@container main (max-width:520px){.ew-steps span.l{display:none}.ew-card{padding:16px}.ew-card h2{font-size:19px}}
+`);
+var EW={step:0,done:[],rules:{},tabs:{},signed:false,held:false};
+var EWS=[['Invitation','mail'],['Rôle','shield'],['Contrat','sign'],['Sécurité','helmet'],['Pointage','clockin'],['Visite','grid']];
+var RULES=[['Approcher un cheval par l’épaule, en lui parlant','Jamais par derrière, même un cheval que vous connaissez bien.'],['Chaussures de sécurité à l’écurie et au hangar','Le gilet haute visibilité est obligatoire pour le tracteur.'],['Attacher un cheval avec un nœud qui se défait d’un geste','Jamais à une porte, une barrière ou une partie mobile.'],['Savoir où sont les extincteurs','Sellerie, hangar à foin, manège et bureau. Aucune flamme près du foin.'],['En cas de blessure, prévenir puis soigner','Trousse de secours dans la sellerie. Appelez le 15 ou le 112, puis Claire.']];
+var EWT=[['emp-jour','today','Journée','Ce que vous faites maintenant, les urgences et les consignes'],['emp-tournee','stable','Tournée','Un box après l’autre, un geste si tout va bien'],['emp-chevaux','horse','Chevaux','Les fiches, les rations et qui sort au paddock'],['emp-planning','planning','Planning','Vos horaires, vos astreintes et les échanges']];
+function ewDone(i,msg){if(EW.done.indexOf(i)<0)EW.done.push(i);P.toast(msg,{icon:'checkc'});if(i<5)EW.step=i+1}
+P.mod({id:'emp-bienvenue',role:'employe',group:'Moi',title:'Mon arrivée',icon:'onboarding',hidden:true,tab:'emp-jour',phoneTitle:'Mon arrivée',
+ render:function(el,ctx){var p=me(),first=true;
+  function stepHTML(){var i=EW.step;
+   if(i===0)return '<div class="eyebrow">Étape 1 · Invitation</div><h2>Claire vous invite dans l’équipe des Tilleuls</h2><div class="ew-mail"><div class="hrow">'+U.av('s01')+'<div class="grow"><div class="b s">Claire Morel, gérante</div><div class="xs mut">Reçu par SMS et par e-mail le 9 novembre à 18 h 02</div></div></div><p class="s" style="line-height:1.5;color:var(--ink)">Bonjour Mamadou, l’écurie passe sur Piaffe. Votre journée, les soins, la tournée et le pointage seront sur votre téléphone. Touchez le lien pour créer votre accès, cela prend deux minutes.</p><div class="hrow wrap" style="--g:6px">'+U.chip('Écurie des Tilleuls','acc',true)+U.chip('Lien valable 7 jours','',true)+'</div></div>'+
+     '<div class="card flat" style="padding:4px 0"><div class="li"><div class="grow"><div class="t">Votre numéro</div><div class="s num">06 •• •• 41 27, vérifié par code SMS</div></div>'+U.chip('Vérifié','ok',true)+'</div><div class="li"><div class="grow"><div class="t">Votre code à 4 chiffres</div><div class="s">Pour ouvrir l’application, même avec des gants</div></div>'+U.chip('Choisi','ok',true)+'</div></div>'+
+     '<div class="ew-foot"><button class="btn em-b pri" data-ok="0">'+ICON('check')+'Accepter l’invitation</button></div>';
+   if(i===1)return '<div class="eyebrow">Étape 2 · Rôle attribué</div><h2>Vous êtes palefrenier soigneur</h2><p class="s mut">Claire a choisi ce rôle pour vous. Il décide de ce que vous voyez et de ce que vous pouvez modifier.</p>'+
+     '<div class="card flat">'+[['ok','Vous pouvez','Faire la tournée, valider les soins, signaler un problème, pointer, écrire à l’équipe'],['acc','Vous voyez','Les fiches des chevaux, les rations, les stocks, votre planning et vos bulletins'],['','Vous ne voyez pas','Les factures des familles, la comptabilité et la paie de vos collègues']].map(function(r){return '<div class="li" style="align-items:flex-start">'+ico(r[0]==='ok'?'checkc':r[0]==='acc'?'eye':'eye_off','sm',r[0]==='ok'?'var(--ok)':r[0]==='acc'?'var(--acc)':'var(--mut)')+'<div class="grow"><div class="t">'+r[1]+'</div><div class="s">'+r[2]+'</div></div></div>'}).join('')+'</div>'+
+     '<div class="ew-foot"><button class="btn em-b" data-err>Ce n’est pas mon rôle</button><button class="btn em-b pri" data-ok="1">'+ICON('check')+'C’est bien mon rôle</button></div>';
+   if(i===2)return '<div class="eyebrow">Étape 3 · Contrat</div><h2>Signez l’avenant de votre contrat</h2><div class="ew-doc"><b>Avenant au contrat de travail de Mamadou Diallo</b><span>CDI de 39 h, palefrenier soigneur, coefficient 121. Le contrat d’origine est inchangé.</span><span>Article 1. Le temps de travail est pointé sur le téléphone, à l’écurie seulement. La position n’est jamais suivie pendant la journée.</span><span>Article 2. Les bulletins de paie et les documents sont rangés dans un coffre personnel, gardé 50 ans.</span></div>'+
+     '<div><span class="em-lbl">Signez avec le doigt</span><div class="ew-pad'+(EW.signed?' signed':'')+'"><div class="hint"><span>Mamadou Diallo, le 17 novembre 2026</span></div><canvas data-pad aria-label="Zone de signature"></canvas></div></div>'+
+     '<div class="ew-foot"><button class="btn em-b" data-clear>'+ICON('refresh')+'Effacer</button><button class="btn em-b pri" data-ok="2"'+(EW.signed?'':' disabled')+'>'+ICON('sign')+'Signer l’avenant</button></div>';
+   if(i===3){var n=RULES.filter(function(_,k){return EW.rules[k]}).length;return '<div class="eyebrow">Étape 4 · Sécurité</div><h2>Les cinq consignes de sécurité</h2><p class="s mut">Lisez chaque consigne et cochez-la. Le document unique complet reste dans vos documents.</p><div class="card flat">'+RULES.map(function(r,k){return '<button class="ew-rule" data-rule="'+k+'" aria-pressed="'+!!EW.rules[k]+'">'+'<span class="em-ck'+(EW.rules[k]?' on':'')+'" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg></span>'+'<div class="grow"><div class="t">'+r[0]+'</div><div class="s">'+r[1]+'</div></div></button>'}).join('')+'</div>'+
+     '<div class="ew-foot"><button class="btn em-b pri" data-ok="3"'+(n===RULES.length?'':' disabled')+'>'+ICON('check')+(n===RULES.length?'J’ai lu les consignes':'Encore '+(RULES.length-n)+' à lire')+'</button></div>'}
+   if(i===4)return '<div class="eyebrow">Étape 5 · Pointage d’essai</div><h2>Faites votre premier pointage</h2><p class="s mut">Maintenez le bouton une seconde. Ce pointage d’essai n’est pas compté dans vos heures.</p>'+
+     '<button class="ew-hold'+(EW.held?' done':'')+'" data-hold aria-label="Maintenir pour pointer"><svg class="rg" viewBox="0 0 170 170"><circle class="bg" cx="85" cy="85" r="80"/><circle class="fg" cx="85" cy="85" r="80"/></svg><span class="dk">'+ICON(EW.held?'checkc':'clockin')+(EW.held?'Pointé à 9 h 41':'Maintenez')+'</span></button>'+
+     (EW.held?'<div class="note ok">'+ICON('checkc','sm')+'<span>Essai réussi, à 12 m de la sellerie. Vos vrais pointages commencent demain matin.</span></div>':'<div class="note">'+ICON('info','sm')+'<span>Un appui long évite les pointages par erreur dans la poche.</span></div>')+
+     '<div class="ew-foot"><button class="btn em-b pri" data-ok="4"'+(EW.held?'':' disabled')+'>Continuer'+ICON('arrow')+'</button></div>';
+   var nv=EWT.filter(function(t){return EW.tabs[t[0]]}).length;
+   return '<div class="eyebrow">Étape 6 · Visite</div><h2>Vos quatre onglets</h2><p class="s mut">Touchez chaque onglet pour découvrir ce qu’il contient. Ils restent en bas de l’écran, à portée de pouce.</p><div class="ew-tabs">'+EWT.map(function(t){return '<button data-tab="'+t[0]+'" aria-pressed="'+!!EW.tabs[t[0]]+'"><span class="ck">'+ICON('check')+'</span>'+ICON(t[1])+'<b>'+t[2]+'</b><small>'+t[3]+'</small></button>'}).join('')+'</div>'+
+     '<div class="ew-foot"><button class="btn em-b pri" data-ok="5"'+(nv===4?'':' disabled')+'>'+(nv===4?ICON('today')+'Commencer ma journée':nv+' onglet'+(nv>1?'s':'')+' sur 4 visité'+(nv>1?'s':''))+'</button></div>'}
+  function draw(){var n=EW.done.length;
+   var x=hd('Mon arrivée aux Tilleuls','Les six étapes de votre premier jour sur Piaffe, à revoir quand vous voulez.','<button class="btn" data-restart>'+ICON('refresh','sm')+'Recommencer</button>');
+   x+='<div class="stack'+(first?' rise':'')+'" style="--g:14px;max-width:720px"><div class="card ew-top"><div class="hrow sp"><b class="s">'+(n===6?'Arrivée terminée':'Étape '+(EW.step+1)+' sur 6')+'</b><span class="s mut num">'+n+' validée'+(n>1?'s':'')+' sur 6</span></div>'+U.bar(n/6*100,n===6?'var(--ok)':'')+
+     '<div class="ew-steps">'+EWS.map(function(s,i){var ok=EW.done.indexOf(i)>=0;return '<button data-st="'+i+'" class="'+(i===EW.step?'on':ok?'ok':'')+'" title="'+s[0]+'"><span class="c">'+(ok&&i!==EW.step?ICON('check'):i+1)+'</span><span class="l">'+s[0]+'</span></button>'}).join('')+'</div></div>'+
+     '<div class="card ew-card fade" data-body>'+stepHTML()+'</div></div>';
+   el.innerHTML=x;if(first)P.animate(el);first=false;bind()}
+  function bind(){var pad=el.querySelector('[data-pad]');if(pad)padInit(pad);var hb=el.querySelector('[data-hold]');if(hb&&!EW.held)holdInit(hb)}
+  function padInit(cv){var r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.max(1,r.width*dpr);cv.height=Math.max(1,r.height*dpr);var c=cv.getContext('2d');c.scale(dpr,dpr);c.lineWidth=2.4;c.lineCap='round';c.lineJoin='round';c.strokeStyle=getComputedStyle(cv).color||'currentColor';var down=false,len=0,last=null;
+   cv.style.color='var(--ink)';c.strokeStyle=getComputedStyle(cv).color;
+   function pt(e){var b=cv.getBoundingClientRect();return [e.clientX-b.left,e.clientY-b.top]}
+   cv.addEventListener('pointerdown',function(e){e.preventDefault();down=true;last=pt(e);try{cv.setPointerCapture(e.pointerId)}catch(x){}});
+   cv.addEventListener('pointermove',function(e){if(!down)return;var q=pt(e);c.beginPath();c.moveTo(last[0],last[1]);c.lineTo(q[0],q[1]);c.stroke();len+=Math.hypot(q[0]-last[0],q[1]-last[1]);last=q;if(len>60&&!EW.signed){EW.signed=true;var b=el.querySelector('[data-ok="2"]');if(b)b.disabled=false;cv.parentNode.classList.add('signed')}});
+   ['pointerup','pointercancel','pointerleave'].forEach(function(t){cv.addEventListener(t,function(){down=false})})}
+  function holdInit(b){var tm=null;function start(e){if(e)e.preventDefault();if(EW.held)return;b.classList.add('press');tm=setTimeout(function(){EW.held=true;b.classList.remove('press');P.toast('Pointage d’essai enregistré à 9 h 41',{icon:'clockin'});draw()},P.RM?120:820)}
+   function stop(){if(EW.held)return;clearTimeout(tm);b.classList.remove('press')}
+   b.addEventListener('pointerdown',start);['pointerup','pointercancel','pointerleave'].forEach(function(t){b.addEventListener(t,stop)});
+   b.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&!e.repeat)start(e)});b.addEventListener('keyup',stop);b.addEventListener('contextmenu',function(e){e.preventDefault()})}
+  on(el,'[data-st]',function(b){var i=+b.getAttribute('data-st');if(i>EW.done.length&&EW.done.indexOf(i-1)<0){P.toast('Validez d’abord l’étape '+(i)+'',{icon:'info'});return}EW.step=i;draw()});
+  on(el,'[data-restart]',function(){EW={step:0,done:[],rules:{},tabs:{},signed:false,held:false};draw();P.toast('Parcours d’arrivée remis au début',{icon:'refresh'})});
+  on(el,'[data-err]',function(){P.toast('Claire est prévenue, elle corrige votre rôle',{icon:'send'})});
+  on(el,'[data-clear]',function(){EW.signed=false;draw()});
+  on(el,'[data-rule]',function(b){var k=+b.getAttribute('data-rule');EW.rules[k]=!EW.rules[k];draw()});
+  on(el,'[data-tab]',function(b){var id=b.getAttribute('data-tab'),t=EWT.find(function(q){return q[0]===id});if(!EW.tabs[id]){EW.tabs[id]=true;P.toast('Onglet « '+t[2]+' » : '+t[3].charAt(0).toLowerCase()+t[3].slice(1),{icon:t[1]})}draw()});
+  on(el,'[data-ok]',function(b){var i=+b.getAttribute('data-ok');
+   if(i===0)ewDone(0,'Invitation acceptée, bienvenue '+p.first);
+   else if(i===1)ewDone(1,'Rôle confirmé : palefrenier soigneur');
+   else if(i===2)ewDone(2,'Avenant signé et rangé dans votre coffre');
+   else if(i===3)ewDone(3,'Consignes de sécurité lues, Claire est prévenue');
+   else if(i===4)ewDone(4,'Pointage d’essai validé');
+   else{ewDone(5,'Arrivée terminée. Bonne journée '+p.first);EW={step:0,done:[0,1,2,3,4,5],rules:{},tabs:{},signed:false,held:false,fin:true};P.go('emp-jour');return}
+   draw();var v=el.closest('.view');if(v&&P.isMobile())v.scrollTop=0});
+  if(EW.fin){EW={step:0,done:[],rules:{},tabs:{},signed:false,held:false}}
+  draw()}});
 
 /* =====================================================================
    Palette, assistant et visite guidée
@@ -1011,6 +1208,9 @@ P.actions.push(
  {role:'employe',label:'Scanner le QR code d’un box',icon:'qr',run:function(){scanSheet(function(i){P.go('emp-tournee',{jump:i})})}},
  {role:'employe',label:'Noter le contrôle de Xanthos',icon:'pulse',run:function(){P.go('emp-cheval',{id:'h23'})}},
  {role:'employe',label:'Demander un congé',icon:'holiday',run:function(){P.go('emp-conges')}},
+ {role:'employe',label:'Lire la puce d’un cheval',icon:'scan',run:function(){puceSheet()}},
+ {role:'employe',label:'Personnaliser ma journée',icon:'sliders',run:function(){P.go('emp-jour');setTimeout(function(){var b=$('[data-perso]',P.app());if(b)b.click()},350)}},
+ {role:'employe',label:'Revoir mon arrivée',icon:'onboarding',run:function(){P.go('emp-bienvenue')}},
  {role:'employe',label:'Voir la journée de Hugo, moniteur',icon:'whistle',run:function(){E.who='s02';P.go('emp-jour');P.rerender()}});
 
 P.brain.push({role:'employe',re:/signal|probl[eè]me|panne|cass[ée]|bless/i,reply:function(t){var m=/(?:box|b)\s*0?(\d{1,2})/i.exec(t),h=m&&D.horses.find(function(x){return +x.box.slice(1)===+m[1]});
@@ -1025,6 +1225,51 @@ P.brain.push({role:'employe',re:/maintenant|quoi faire|que faire|je fais|t[aâ]c
   return {text:(mon()?'Votre prochaine tâche : ':'En ce moment : ')+'<b>'+now.title+'</b> ('+now.zone+')'+(now.tour?', '+dn+' boxes faits sur 16':'')+'. '+(mon()?'':'N’oubliez pas le contrôle de <b>Xanthos</b> à 10 h, dans 19 minutes. ')+'Ensuite :',card:L.slice(1,4).map(function(t){return '<div class="hrow sp"><span class="s"><b class="num">'+hm(t.t)+'</b> · '+t.title+'</span></div>'}).join(''),
    actions:mon()?[{label:'Ouvrir ma journée',run:function(){P.go('emp-jour');return 'Journée ouverte'}}]:[{label:'Continuer la tournée',run:function(){P.go('emp-tournee');return 'Tournée ouverte'}},{label:'Fiche de Xanthos',run:function(){P.go('emp-cheval',{id:'h23'});return 'Fiche ouverte'}}]}}});
 P.brain.push({role:'employe',re:/soin|vermifuge|traitement|pansement/i,reply:function(){var L=D.empCare.filter(function(c){return !c.done&&!E.care[c.id]});return {text:L.length?'Il reste <b>'+L.length+' soins</b> à donner aujourd’hui :':'Tous les soins du jour sont donnés et inscrits au registre sanitaire.',card:L.map(function(c){return '<div class="hrow sp"><span class="s"><b>'+D.horse(c.horse).name.split(' ')[0]+'</b> · '+c.prod+'</span><span class="xs '+(c.late?'badc':'mut')+'">'+(c.late?'En retard':hm(c.t))+'</span></div>'}).join('')||null,actions:[{label:'Ouvrir les soins',run:function(){P.go('emp-soins');return 'Soins ouverts'}}]}}});
+/* ---------- L'assistant de l'employé : planning, congés, stock, ration, pointage ---------- */
+function nrm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+function horseIn(t){t=nrm(t);var m=/(?:box|b)\s*0?(\d{1,2})\b/i.exec(t);if(m){var hb=D.horses.find(function(x){return +x.box.slice(1)===+m[1]});if(hb)return hb}
+  return D.horses.find(function(h){var w=nrm(h.name).split(' ')[0];return w.length>2&&new RegExp('\\b'+w+'\\b').test(t)})}
+function kg(v){return String(Math.round(v*2)/2).replace('.',',')}
+var EB=[];
+/* ration d'un cheval */
+EB.push({role:'employe',re:/ration|mange|manger|nourri|granul|repas|donne[rz]? (?:a|à)|combien de foin/i,reply:function(t){var h=horseIn(t)||D.horse('h23'),r=h.ration,isX=h.id==='h23',note=D.empNotes[h.id];
+  return {text:isX?'<b>Xanthos</b> est à la diète jusqu’au passage du Dr Leclerc : <b>1 kg de foin mouillé</b> par repas, aucun granulé.':'Ration '+(/^[AEIOUÉÈYH]/i.test(h.name)?'d’':'de ')+'<b>'+h.name+'</b> (box '+h.box+', '+h.weight+' kg, état corporel '+String(h.bcs).replace('.',',')+' sur 5) :',
+   card:isX?'<div class="xs mut">Contrôle toutes les 2 heures. Prochain contrôle à '+((E.ctl.find(function(c){return !c.st})||{t:'12 h'}).t)+'.</div>':[['Matin · 7 h',.4,.5],['Midi · 11 h 45',.2,0],['Soir · 18 h',.4,.5]].map(function(x){return '<div class="hrow sp"><span class="s">'+x[0]+'</span><span class="s b">'+kg(r.hay*x[1])+' kg de foin'+(x[2]?' · '+String(Math.round(r.grain*x[2]*10)/10).replace('.',',')+' L de granulés':'')+'</span></div>'}).join('')+'<div class="hrow sp"><span class="xs mut">Complément</span><span class="xs b">'+r.supp+'</span></div>'+(note?'<div class="xs mut">Consigne : '+note+'</div>':''),
+   actions:[{label:'Ouvrir la fiche de '+h.name.split(' ')[0],run:function(){P.go('emp-cheval',{id:h.id});return 'Fiche ouverte'}}]}}});
+/* congés */
+EB.push({role:'employe',re:/cong[ée]|vacances|r[ée]cup|absence|poser un jour|jours? de repos/i,reply:function(){var H=hrOf(),L=myLeaves().filter(function(l){return l.st==='en attente'});
+  return {text:'Il vous reste <b>'+cpLeft()+' jours de congés payés</b> sur '+H.cp[0]+' et <b>'+hh(H.rec)+'</b> de récupération à poser.'+(L.length?' Demande en attente de Claire :':' Aucune demande en attente.'),
+   card:L.map(function(l){return '<div class="hrow sp"><span class="s">'+l.kind+' · '+(l.from===l.to?F.date(l.from):F.date(l.from)+' au '+F.date(l.to))+'</span>'+U.chip('En attente','warn',true)+'</div>'}).join('')||null,
+   actions:[{label:'Demander un congé',run:function(){P.go('emp-conges');setTimeout(function(){var b=$('[data-ask]',P.app());if(b)b.click()},350);return 'Formulaire ouvert'}},{label:'Voir mes congés',run:function(){P.go('emp-conges');return 'Congés ouverts'}}]}}});
+/* stock */
+EB.push({role:'employe',re:/stock|copeau|sacs?\b|balles? de|commande|rupture|liti[eè]re/i,reply:function(){var L=(D.stock||[]).map(function(k){return {k:k,d:k.daily?Math.floor(k.qty/k.daily):99}}).sort(function(a,b){return a.d-b.d}),low=L.filter(function(x){return x.k.qty<x.k.min});
+  return {text:low.length?'<b>'+low.length+' produit'+(low.length>1?'s':'')+'</b> sous le seuil. Le plus urgent : <b>'+low[0].k.name.toLowerCase()+'</b>, '+low[0].k.qty+' '+low[0].k.unit+', soit environ '+low[0].d+' jours.':'Tous les stocks sont au-dessus du seuil.',
+   card:L.slice(0,4).map(function(x){return '<div class="hrow sp"><span class="s">'+x.k.name+'</span><span class="xs '+(x.k.qty<x.k.min?'badc b':'mut')+'">'+x.k.qty+' '+x.k.unit+' · '+x.d+' j</span></div>'}).join(''),
+   actions:low.length?[{label:'Signaler le stock bas',run:function(){D.empIncidents.unshift({id:'i'+Date.now(),kind:'Stock bas',where:'Hangar',when:'À l’instant',sev:0,st:'Envoyé à Claire',txt:low.map(function(x){return x.k.name+' : '+x.k.qty+' '+x.k.unit}).join(', ')+'.',fresh:true});say('Stock bas signalé à Claire',{icon:'stock'});return 'Signalé à Claire'}},{label:'Voir mes signalements',run:function(){P.go('emp-signaler');return 'Signalements ouverts'}}]:null}}});
+/* pointage */
+EB.push({role:'employe',re:/point|mes heures|heures sup|combien d.?heures|arriv[ée]|d[ée]part|pause/i,reply:function(){var C=E.clock,done=C.base+(C.state==='in'?Math.floor((Date.now()-E.t0)/1000):0),tot=weekTot();
+  return {text:C.state==='out'?'Votre départ est pointé. Journée de <b>'+hh(Math.floor(done/60)/60)+'</b>.':'Vous êtes '+(C.state==='pause'?'en pause':'en service depuis <b>'+C.since+'</b>')+', soit <b>'+hh(Math.floor(done/60)/60)+'</b> aujourd’hui.',
+   card:'<div class="hrow sp"><span class="s">Cette semaine</span><b class="s num">'+hh(monH()+done/3600)+' sur '+hh(tot)+'</b></div><div class="hrow sp"><span class="s">Heures au-delà de 39 h</span><b class="s num">'+(tot>39?hh(tot-39):'Aucune')+'</b></div><div class="hrow sp"><span class="s">Compteur de récupération</span><b class="s num">'+hh(hrOf().rec)+'</b></div>',
+   actions:[{label:'Ouvrir le pointage',run:function(){P.go('emp-pointage');return 'Pointage ouvert'}}]}}});
+/* planning */
+EB.push({role:'employe',re:/planning|horaire|semaine|demain|quand (?:est-ce que )?je travaille|astreinte|je commence|je finis|samedi|dimanche|lundi|mercredi|jeudi|vendredi/i,reply:function(t){var W=myWeek(),tot=weekTot(),k=/demain/i.test(t)?2:-1;['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].forEach(function(d,i){if(nrm(t).indexOf(d)>=0)k=i});
+  var d=k>=0?W[k]:null,ni=nextNight(),part=function(s){return s.parts.length?s.parts.map(function(q){return hm(q[0])+' à '+hm(q[1])}).join(' et '):'repos'};
+  return {text:d?DL[k]+' '+d.n+' : <b>'+part(d)+'</b>'+(d.night?', puis astreinte de nuit de 20 h à 7 h':'')+'.':'Cette semaine : <b>'+hh(tot)+'</b> prévues pour 39 h au contrat.'+(ni>=0?' Prochaine astreinte de nuit <b>'+DL[ni].toLowerCase()+' '+W[ni].n+'</b>.':''),
+   card:d?null:W.map(function(s,i){return '<div class="hrow sp"><span class="s'+(i===1?' b':'')+'">'+s.l+' '+s.n+'</span><span class="xs mut" style="text-align:right">'+part(s)+(s.night?' · nuit':'')+'</span></div>'}).join(''),
+   actions:[{label:'Ouvrir mon planning',run:function(){P.go('emp-planning');return 'Planning ouvert'}},{label:'Proposer un échange',run:function(){P.go('emp-planning');setTimeout(function(){var b=$('[data-swapnew]',P.app());if(b)b.click()},350);return 'Échange préparé'}}]}}});
+/* les questions précises passent avant les réponses générales de la journée */
+for(var bi=EB.length-1;bi>=0;bi--)P.brain.unshift(EB[bi]);
+P.suggestions.employe=['Qu’est-ce que je fais maintenant ?','Quelle ration pour Ulysse ?','Il reste combien de copeaux ?','Je travaille quand samedi ?','Combien de congés me reste-t-il ?','Mes heures cette semaine'];
+
+/* ---------- Dictée dans le panneau de l'assistant (vue employé) ---------- */
+var DICT=['Quelle ration pour Ulysse ?','Il reste combien de copeaux ?','Je travaille quand samedi ?','Signale un problème au box 12','Combien de congés me reste-t-il ?'],dk=0;
+P.css(`.em-mic{flex:none}.em-mic.rec{background:var(--bad);color:var(--surface);box-shadow:none;animation:pulse 1.2s infinite}`);
+function micInject(){if(P.state.role!=='employe')return;var w=$('.aip',P.app());if(!w||w.querySelector('.em-mic'))return;var f=w.querySelector('form.comp'),inp=f&&f.querySelector('input');if(!f||!inp)return;
+  var b=document.createElement('button');b.type='button';b.className='btn icon sm em-mic';b.title='Dicter une question';b.setAttribute('aria-label','Dicter une question');b.innerHTML=ICON('mic','sm');f.insertBefore(b,f.lastElementChild);
+  b.onclick=function(){if(b.classList.contains('rec'))return;var txt=DICT[dk++%DICT.length],i=0;b.classList.add('rec');inp.value='';inp.placeholder='J’écoute…';
+    (function step(){if(!b.isConnected)return;i+=P.RM?txt.length:2;inp.value=txt.slice(0,i);if(i<txt.length)setTimeout(step,45);else setTimeout(function(){b.classList.remove('rec');inp.placeholder='Demandez n’importe quoi…';if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event('submit',{cancelable:true}))},P.RM?0:380)})()}}
+(function(){var a0=P.assistant;P.assistant=function(){var r=a0.apply(this,arguments);micInject();return r}})();
+
 P.tourSteps.push({route:'emp-tournee',title:'La tournée des boxes, un geste par cheval',text:'Le soigneur fait défiler une carte par box : ration, couverture, consignes. Un glissement à droite si tout va bien, à gauche pour signaler avec photo. Sans réseau, tout part chez la gérante dès que la connexion revient.'});
 /* Téléphone, avec des gants : toutes les cibles de la vue employé font au moins 40 px de haut. */
 P.css(`
