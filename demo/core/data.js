@@ -40,7 +40,7 @@ D.coaches=[
 ];
 
 /* ---------- Chevaux ---------- */
-var HN=['Ulysse de la Roche','Quiétude','Vanille','Tornado','Sirius du Moulin','Opale','Diablo','Câline','Hermès','Jazz','Kalinka','Lune d’Or','Macaron','Nuage','Orphée','Pistache','Quartz','Réglisse','Saphir','Tango','Uranus','Volga','Whisky','Xanthos','Yuma','Zéphyr','Bijou','Caramel','Domino','Étoile','Filou','Gribouille','Hirondelle','Iris','Joker','Kiwi','Lord Vitesse','Mistral','Noisette','Oural'];
+var HN=['Ulysse de la Roche','Quiétude','Vanille','Tornado','Sirius du Moulin','Opale','Diablo','Câline','Hermès','Jazz','Kalinka','Lune d’Or','Macaron','Nuage','Orphée','Pistache','Quartz','Réglisse','Saphir','Tango','Uranus','Volga','Xanthos','Whisky','Yuma','Zéphyr','Bijou','Caramel','Domino','Étoile','Filou','Gribouille','Hirondelle','Iris','Joker','Kiwi','Lord Vitesse','Mistral','Noisette','Oural'];
 var BR=['Selle Français','Selle Français','Poney Français de Selle','KWPN','Connemara','Pur-sang','Anglo-arabe','Welsh','Shetland','Haflinger','Lusitanien','Frison','Trotteur Français','Holsteiner'];
 var RO=['Bai','Bai brun','Alezan','Gris','Noir','Pie alezan','Palomino','Isabelle','Rouan','Alezan brûlé'];
 D.horses=HN.map(function(n,i){
@@ -172,7 +172,7 @@ D.tasks=[
  {id:'t1',title:'Distribution du matin',zone:'Toutes les écuries',who:'s05',time:'07:00',done:true,kind:'routine'},
  {id:'t2',title:'Sortie au paddock, groupe A',zone:'Prairie du bas',who:'s06',time:'08:30',done:true,kind:'routine'},
  {id:'t3',title:'Curer les boxes B01 à B16',zone:'Écurie principale',who:'s05',time:'09:00',done:false,kind:'routine'},
- {id:'t4',title:'Vermifuger Réglisse',zone:'B18',who:'s06',time:'10:00',done:false,kind:'soin'},
+ {id:'t4',title:'Vermifuger Bijou',zone:'B27',who:'s06',time:'10:00',done:false,kind:'soin'},
  {id:'t5',title:'Surveiller Xanthos (colique)',zone:'B23',who:'s05',time:'Toutes les 2 h',done:false,kind:'soin',urgent:true},
  {id:'t6',title:'Herser la carrière d’honneur',zone:'Carrière d’honneur',who:'s07',time:'11:30',done:false,kind:'entretien'},
  {id:'t7',title:'Préparer Tornado pour le véto',zone:'B04',who:'s06',time:'13:45',done:false,kind:'soin'},

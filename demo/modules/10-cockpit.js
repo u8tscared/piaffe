@@ -30,11 +30,12 @@ P.css(`
 
 var WIDGETS=[['brief','Résumé du matin'],['kpis','Indicateurs'],['lessons','Reprises du jour'],['alerts','À traiter'],['finance','Trésorerie'],['stable','Écurie en direct'],['weather','Météo et carrières']];
 
-P.mod({id:'cockpit',role:'gerant',group:'Pilotage',title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour Claire',
+P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour Claire',
  badge:function(){return {v:5,hot:true}},
  render:function(el,ctx){
   var on=P.prefs.get('cockpit:widgets',WIDGETS.map(function(w){return w[0]}));
   var today=D.lessons.filter(function(l){return l.dow===2}),late=D.invoices.filter(function(i){return i.status==='en retard'}),lateSum=late.reduce(function(a,i){return a+i.amount},0);
+  var fill=Math.round(D.lessons.reduce(function(a,l){return a+l.riders.length},0)/D.lessons.reduce(function(a,l){return a+l.cap},0)*100);
   var riders=today.reduce(function(a,l){return a+l.riders.length},0),alerts=D.horses.filter(function(h){return h.status!=='ok'});
   var h=U.ph('Bonjour Claire','Mardi 17 novembre · '+today.length+' reprises, '+riders+' cavaliers et 2 rendez-vous de soins aujourd’hui',
     '<button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Créer</button>');
@@ -55,7 +56,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',title:'Aujourd’hui',icon:'t
   if(on.indexOf('kpis')>=0)h+='<div class="g4" data-w="kpis">'+
     U.kpi({label:'Chiffre d’affaires de novembre',count:49600,fmt:'eur',value:F.eur(49600),delta:'+8,4 %',dsub:' vs nov. 2025',spark:D.revenue,icon:'euro'})+
     U.kpi({label:'Encaissé aujourd’hui',count:5396,fmt:'eur',value:F.eur(5396),delta:'20 paiements',spark:[2,4,3,6,5,8,7,9],icon:'card'})+
-    U.kpi({label:'Taux de remplissage des reprises',count:94,unit:'%',delta:'+3 pts',spark:D.occupancy,icon:'planning'})+
+    U.kpi({label:'Remplissage des reprises, cette semaine',count:fill,unit:'%',delta:'+3 pts',spark:D.occupancy.slice(0,11).concat([fill]),icon:'planning'})+
     U.kpi({label:'Adhérents actifs',count:148,delta:'+3 cette semaine',spark:[131,133,136,138,139,141,144,145,148],icon:'members'})+'</div>';
 
   h+='<div class="g3">';
