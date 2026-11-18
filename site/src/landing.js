@@ -373,7 +373,7 @@ if(window.ILLU&&window.ILLU.cheval)$('#finIllu').innerHTML=window.ILLU.cheval();
       fp[o]=fx[i];fp[o+1]=.004;fp[o+2]=fz[i];fp[o+3]=fx[i];fp[o+4]=.004;fp[o+5]=fz[i]+fl[i];fa[i*2]=0;fa[i*2+1]=al}
     gF.attributes.position.needsUpdate=true;gF.attributes.aA.needsUpdate=true;
     sx+=(mx-sx)*Math.min(1,dt*3);sy+=(my-sy)*Math.min(1,dt*3);
-    var ang=Math.PI*.5+.4+sx*.34,dist=cam.aspect<1.05?4.5:3.75;cam.position.set(Math.sin(ang)*dist,.62-sy*.22,Math.cos(ang)*dist);cam.lookAt(0,.5,-.02);
+    var ang=Math.PI*.5+.4+sx*.34,dist=cam.aspect<1.05?4.3:3.35;cam.position.set(Math.sin(ang)*dist,.62-sy*.22,Math.cos(ang)*dist);cam.lookAt(0,.5,-.02);
     strass.material.size=.015+Math.sin(t*3)*.003;rd.render(scene,cam)}
   function boucle(ts){if(!actif)return;var dt=Math.min(.05,(ts-dernier)/1000||.016);dernier=ts;taille();image(dt);requestAnimationFrame(boucle)}
   function etat(){var go=vuH&&!document.hidden&&!RM;if(go&&!actif){actif=true;dernier=performance.now();requestAnimationFrame(boucle)}else if(!go)actif=false}
