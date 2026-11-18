@@ -1,455 +1,356 @@
 <title>Piaffe</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Piaffe, le logiciel tout-en-un des centres équestres : planning, chevaux, adhérents, facturation, comptabilité, équipe, caméras, compétitions, assistant IA.">
+<meta name="description" content="Piaffe, le logiciel tout-en-un des centres équestres : planning, chevaux et soins, adhérents, facturation, comptabilité, équipe, caméras, concours et Piaffe AI.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /*__CSS__*/
 </style>
 
-<div class="prog" aria-hidden="true"><i id="prog"></i></div>
+<div class="pg" id="top" data-demo="{{demobase}}">
+
+<a class="annonce" href="#ai"><span class="an-tag">Nouveau</span><span class="an-t">Piaffe AI répond avec les chiffres de votre écurie</span>{{i:arrow}}</a>
 
 <header class="nav" id="nav">
-  <div class="wrap nav-in">
+  <div class="w nav-in">
     <a class="marque" href="#top" aria-label="Piaffe, retour en haut">{{logo:30}}<span>Piaffe</span></a>
-    <nav class="nav-l" aria-label="Sections">
-      <a href="#vues">Quatre vues</a><a href="#fonctions">Fonctions</a><a href="#connecteurs">Connecteurs</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
+    <nav class="nav-l" id="navL" aria-label="Sections">
+      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai" class="nl-ai">Piaffe AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
     </nav>
-    <button class="theme" id="theme" type="button" title="Changer de thème" aria-label="Changer de thème">{{i:moon}}{{i:sun}}</button>
+    <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre">{{i:moon}}{{i:sun}}</button>
     <a class="btn pri sm nav-cta" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+    <button class="ibtn nav-b" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navL">{{i:menu}}{{i:x}}</button>
   </div>
 </header>
 
-<main id="top">
+<main>
 
 <!-- ================= HERO ================= -->
 <section class="hero" aria-labelledby="h-hero">
-  <div class="hero-fond" aria-hidden="true"><div class="grille"></div></div>
-  <div class="wrap hero-in">
-    <a class="annonce" data-r {{demo:connecteurs}}><span class="strass"></span><b>Nouveau</b>Pilotez votre club depuis Claude, grâce au serveur MCP{{i:arrow}}</a>
-    <h1 id="h-hero" class="h1"><span class="l1"><span class="m">Gérez</span> <span class="roule" id="roule" aria-live="polite"><span class="in">la facturation</span></span></span><span class="l2"><span class="m">dans</span> <span class="m">une</span> <span class="m">seule</span> <span class="m">appli<span class="pt"></span></span></span></h1>
-    <div class="hero-bas">
-      <div class="hero-txt">
-        <p class="chapo" data-r>Planning, chevaux, adhérents, facturation, comptabilité, équipe, caméras et concours. Piaffe remplace tous les outils du centre équestre par une seule application, claire et rapide, pour le gérant, l’équipe, les cavaliers et les coachs.</p>
-        <div class="actions" data-r>
-          <a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-          <a class="btn lg" href="#fonctions">Voir toutes les fonctions</a>
-        </div>
-        <ul class="preuves" data-r>
-          <li>{{i:check}}30 jours d’essai, sans carte</li>
-          <li>{{i:check}}Sans engagement</li>
-          <li>{{i:check}}Reprise de vos données incluse</li>
-          <li>{{i:check}}Hébergé en France</li>
+  <div class="hero-fond" aria-hidden="true"></div>
+  <div class="w hero-in">
+    <p class="sur"><span class="sur-dot"></span>Le logiciel des centres équestres et des écuries</p>
+    <h1 id="h-hero">Tout votre centre équestre dans une seule app.</h1>
+    <p class="chapo">Planning, chevaux et soins, adhérents, facturation et comptabilité, équipe, caméras, concours. Et Piaffe AI, qui répond avec vos chiffres. Un seul outil pour le gérant, l’équipe, les cavaliers et les coachs.</p>
+    <div class="hero-cta">
+      <a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+      <a class="btn sec lg" href="#fonctions">Voir les fonctionnalités</a>
+    </div>
+    <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
+    <ul class="confiance">
+      <li>{{i:check}}30 jours d’essai, sans carte</li><li>{{i:check}}Sans engagement</li><li>{{i:check}}Reprise de vos données incluse</li><li>{{i:check}}Hébergé en France</li>
+    </ul>
+  </div>
+
+  <div class="w">
+    <div class="collage" id="collage">
+      <div class="col-tilt">
+        <figure class="nav-frame col-ecran">
+          <div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.piaffe.fr/les-tilleuls</span></div>
+          <div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900;--mx:290;--my:62;--mw:590;--mh:520">
+            <img class="only-l" src="shots/g-cockpit.webp" width="2160" height="1350" alt="Tableau de bord du gérant : résumé du matin, cavaliers en selle, remplissage, factures à encaisser" fetchpriority="high">
+            <img class="only-d" src="shots/g-cockpit-dark.webp" width="2160" height="1350" alt="" loading="lazy">
+          </div>
+        </figure>
+        <figure class="tel col-tel">
+          <img class="only-l" src="shots/p-adh-accueil.webp" width="780" height="1688" alt="Espace adhérent sur téléphone : le cours de Léa dans 25 minutes">
+          <img class="only-d" src="shots/p-adh-accueil-dark.webp" width="780" height="1688" alt="" loading="lazy">
+        </figure>
+        <div class="flot f1 d-mo"><span class="fl-i">{{i:send}}</span><div><b>7 relances prêtes</b><small>2 073 € à encaisser</small></div></div>
+        <div class="flot f2 d-cr"><span class="fl-i">{{i:drop}}</span><div><b>Xanthos, box B23</b><small>Boit 40 % de moins depuis hier soir</small></div></div>
+        <div class="flot f3 d-rd"><span class="fl-ring" style="--v:86"><b>86</b></span><div><b>Planning de la semaine</b><small>Rempli à 86 %</small></div></div>
+      </div>
+    </div>
+    <p class="col-note">Écrans réels de Piaffe, avec les données d’exemple de l’Écurie des Tilleuls.</p>
+  </div>
+</section>
+
+<!-- ================= BANDE ================= -->
+<section class="sec bande" id="apercu" aria-labelledby="h-bande">
+  <div class="w">
+    <div class="tete c" data-r>
+      <h2 id="h-bande"><span class="hl">55 écrans, 4 espaces,</span> une seule app.</h2>
+      <p>Tout ce qui fait tourner une écurie, rangé par métier. Les mêmes données partout, sans rien ressaisir.</p>
+    </div>
+    <div class="bento" id="bento"></div>
+  </div>
+</section>
+
+<!-- ================= QUATRE ESPACES ================= -->
+<section class="sec espaces" id="espaces" aria-labelledby="h-esp">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Quatre espaces</p>
+      <h2 id="h-esp">Chacun son espace, <span class="hl">les mêmes données.</span></h2>
+      <p>Le gérant pilote, l’équipe fait sa journée, les cavaliers réservent et paient, les coachs remplissent leur agenda. Chacun ouvre Piaffe et n’y voit que ce qui le concerne.</p>
+    </div>
+    <div class="esp" id="esp" data-r></div>
+  </div>
+</section>
+
+<!-- ================= TOUR DES MODULES ================= -->
+<section class="sec tour" id="fonctions" aria-labelledby="h-tour">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Fonctionnalités</p>
+      <h2 id="h-tour">Ce que fait Piaffe, <span class="hl">métier par métier.</span></h2>
+      <p>Huit familles de fonctions qui se parlent. Chaque capture vient de la démo : ouvrez-la pour toucher le vrai écran.</p>
+    </div>
+  </div>
+  <nav class="ancres" id="ancres" aria-label="Familles de fonctions"><div class="w"><div class="anc-in" id="ancIn"></div></div></nav>
+  <div class="w mods" id="mods"></div>
+</section>
+
+<!-- ================= PIAFFE AI ================= -->
+<section class="ai" id="ai" aria-labelledby="h-ai">
+  <div class="ai-fond" aria-hidden="true"></div>
+  <div class="w ai-in">
+
+    <div class="ai-tete" data-r>
+      <p class="ai-sur">{{i:spark}}Piaffe AI</p>
+      <h2 id="h-ai">Posez la question. Piaffe AI répond avec les chiffres de votre écurie.</h2>
+      <p>Il lit vos factures, votre planning, vos chevaux et votre équipe. Il répond avec les vrais chiffres, repère ce qui cloche et prépare l’action. Rien ne part sans votre validation.</p>
+    </div>
+
+    <div class="ai-demo" data-r>
+      <div class="ai-qs">
+        <p class="ai-qs-t">Essayez une question</p>
+        <div class="ai-qs-l" id="aiQs" role="group" aria-label="Exemples de questions"></div>
+        <ul class="ai-pts">
+          <li>{{i:eye}}<span><b>Vos chiffres, en une question.</b> Pas un texte générique : vos factures, vos chevaux, vos reprises.</span></li>
+          <li>{{i:checkc}}<span><b>Il propose, vous validez.</b> Chaque action est montrée avant d’être faite, puis notée au journal.</span></li>
+          <li>{{i:plug}}<span><b>Aussi dans Claude et ChatGPT.</b> Votre écurie répond dans l’assistant que vous utilisez déjà.</span></li>
         </ul>
       </div>
-      <div class="hero-cheval" aria-hidden="true"><canvas id="scene"></canvas><span class="cheval-leg mono" id="chevalLeg">Ulysse de la Roche · au galop</span></div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="vitrine" id="vitrine">
-      <div class="v-lap" id="vLap"><div class="cadre"><div class="fen-barre"><i></i><i></i><i></i><span class="url mono">{{i:lock}}app.piaffe.fr/les-tilleuls</span></div><div class="fit" data-w="1240" data-h="720" style="aspect-ratio:1240/720"><div class="fit-in ui" id="heroApp"></div></div></div></div>
-      <div class="v-phone" id="vPhone" data-par="-0.06"><div class="tel"><div class="ilot"></div><div class="fit" data-w="320" data-h="660" style="aspect-ratio:320/660"><div class="fit-in ui" id="heroTel"></div></div></div></div>
-      <div class="flotte f1" data-par="-0.12"><span class="fi ok">{{i:check}}</span><div><b>7 relances envoyées</b><small>2 073 € à recevoir</small></div><span class="strass"></span></div>
-      <div class="flotte f2" data-par="-0.18"><span class="fi warn">{{i:drop}}</span><div><b>Abreuvoir B23</b><small>3,1 L par heure, à vérifier</small></div></div>
-      <div class="flotte f3" data-par="-0.09"><span class="fi acc">{{i:sign}}</span><div><b>Contrat signé</b><small>Emma Moreau, demi-pension</small></div></div>
-    </div>
-    <p class="vitrine-leg"><span class="live-dot"></span>Interface réelle de Piaffe, données d’exemple de l’Écurie des Tilleuls</p>
-  </div>
-</section>
-
-<!-- ================= CHIFFRES + BANDE ================= -->
-<section class="chiffres" aria-label="Piaffe en chiffres">
-  <div class="wrap ch-grille">
-    <div data-r><b><span data-count="4">4</span></b><span>vues : gérant, employé, adhérent, coach</span></div>
-    <div data-r><b><span data-count="55">55</span></b><span>écrans, du planning à la paie</span></div>
-    <div data-r><b><span data-count="70">70</span></b><span>connecteurs prêts à l’emploi</span></div>
-    <div data-r><b><span data-count="36">36</span></b><span>outils pour votre assistant IA</span></div>
-    <div data-r><b><span data-count="0">0</span>&nbsp;€</b><span>de frais d’entrée ou de reprise</span></div>
-  </div>
-  <div class="bande" aria-hidden="true"><ul class="b1" id="bande1"></ul><ul class="b2" id="bande2"></ul></div>
-</section>
-
-<!-- ================= QUATRE VUES ================= -->
-<section class="bloc vues" id="vues" aria-labelledby="h-vues">
-  <div class="wrap">
-    <div class="tete">
-      <p class="sur mono" data-r><span class="strass"></span>01 · Pour tout le club</p>
-      <h2 id="h-vues" class="h2" data-r>Une appli, quatre vues</h2>
-      <p class="chapo" data-r>Chacun ouvre Piaffe et y trouve son club. Le gérant pilote, l’équipe exécute, les cavaliers réservent, les coachs remplissent leur agenda. Les mêmes données, partout, sans rien ressaisir.</p>
-    </div>
-    <div class="v-grille">
-      <div class="v-etapes">
-        <article class="v-etape" data-v="0">
-          <p class="v-role">{{i:today}}Gérant · ordinateur et tablette</p>
-          <h3>Tout le club sous les yeux, chaque matin</h3>
-          <p>L’assistant prépare le résumé du jour : chevaux à surveiller, factures en retard, reprises pleines. Un bouton suffit pour agir.</p>
-          <ul class="puces"><li>{{i:assistant}}Résumé du matin et actions en un geste</li><li>{{i:report}}Chiffre d’affaires, remplissage, trésorerie</li><li>{{i:stable}}Écurie en direct : boxes, capteurs, caméras</li></ul>
-          <a class="lien-demo" {{demo:cockpit}}>Ouvrir la vue gérant{{i:ext}}</a>
-          <div class="v-inline" data-inline="0"></div>
-        </article>
-        <article class="v-etape" data-v="1">
-          <p class="v-role">{{i:hay}}Employé · téléphone</p>
-          <h3>La tournée des boxes, au pouce</h3>
-          <p>Palefreniers et moniteurs voient leur journée, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.</p>
-          <ul class="puces"><li>{{i:stable}}Tournée, soins et rations du jour</li><li>{{i:clockin}}Pointage par appui maintenu</li><li>{{i:wifi}}Fonctionne hors ligne, synchronise ensuite</li></ul>
-          <a class="lien-demo" {{demo:emp-tournee}}>Ouvrir la vue employé{{i:ext}}</a>
-          <div class="v-inline" data-inline="1"></div>
-        </article>
-        <article class="v-etape" data-v="2">
-          <p class="v-role">{{i:user}}Adhérent · téléphone</p>
-          <h3>Le club dans la poche des cavaliers</h3>
-          <p>Réserver, rattraper un cours, payer, signer. Les propriétaires regardent leur cheval en direct et suivent son journal.</p>
-          <ul class="puces"><li>{{i:camera}}Caméra du box et journal du cheval</li><li>{{i:calendar_add}}Réservations, rattrapages, liste d’attente</li><li>{{i:family}}Compte famille, un seul payeur</li></ul>
-          <a class="lien-demo" {{demo:adh-accueil}}>Ouvrir la vue adhérent{{i:ext}}</a>
-          <div class="v-inline" data-inline="2"></div>
-        </article>
-        <article class="v-etape" data-v="3">
-          <p class="v-role">{{i:coach}}Coach · téléphone et ordinateur</p>
-          <h3>Un agenda qui se remplit tout seul</h3>
-          <p>Les coachs indépendants publient leurs disponibilités. Les cavaliers réservent et paient en ligne, le club perçoit sa part automatiquement.</p>
-          <ul class="puces"><li>{{i:calendar_add}}Réservation et paiement en ligne</li><li>{{i:members}}Élèves, notes de séance, vidéos</li><li>{{i:wallet}}Revenus et reversements clairs</li></ul>
-          <a class="lien-demo" {{demo:coach-agenda}}>Ouvrir la vue coach{{i:ext}}</a>
-          <div class="v-inline" data-inline="3"></div>
-        </article>
+      <div class="chat" id="chat">
+        <div class="chat-h"><span class="chat-logo">{{logo:22}}</span><div><b>Piaffe AI</b><small>Il agit dans Les Tilleuls avec vos droits de gérante</small></div><span class="chat-tag">Démo interactive</span></div>
+        <div class="chat-fil" id="chatFil" aria-live="polite"></div>
+        <form class="chat-f" id="chatF" autocomplete="off"><input id="chatIn" type="text" aria-label="Votre question à Piaffe AI" placeholder="Demandez n’importe quoi…"><button type="submit" aria-label="Envoyer">{{i:send}}</button></form>
       </div>
-      <div class="v-scene" aria-hidden="true">
-        <div class="v-sticky">
-          <div class="v-rail"><i></i><i></i><i></i><i></i></div>
-          <div class="v-dev v-lap2" data-dev="0"><div class="cadre"><div class="fit" data-w="1180" data-h="760" style="aspect-ratio:1180/760"><div class="fit-in ui" id="vGerant"></div></div></div></div>
-          <div class="v-dev v-tel2" data-dev="1"><div class="tel"><div class="ilot"></div><div class="fit" data-w="320" data-h="660" style="aspect-ratio:320/660"><div class="fit-in ui ecrans" id="vTel"></div></div></div></div>
-          <div class="v-dev v-tab2" data-dev="3"><div class="tab"><div class="fit" data-w="900" data-h="660" style="aspect-ratio:900/660"><div class="fit-in ui" id="vCoach"></div></div></div></div>
+    </div>
+
+    <figure class="ai-shot" data-r>
+      <div class="nav-frame">
+        <div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.piaffe.fr/les-tilleuls</span></div>
+        <div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900;--mx:960;--my:215;--mw:480;--mh:640">
+          <img class="only-l" src="shots/g-ai-relances.webp" width="2160" height="1350" loading="lazy" alt="Piaffe AI ouvert sur le tableau de bord : la liste des impayés et le bouton Préparer les 7 relances">
+          <img class="only-d" src="shots/g-ai-dark.webp" width="2160" height="1350" loading="lazy" alt="">
         </div>
       </div>
+      <figcaption>Capture réelle de la démo : Piaffe AI s’ouvre par-dessus n’importe quel écran, ici le tableau de bord.</figcaption>
+    </figure>
+
+    <div class="ai-caps">
+      <div class="ai-st" data-r><h3>Tout ce que Piaffe AI fait pour vous</h3><p>Six usages, du plus simple au plus puissant.</p></div>
+      <div class="caps" id="caps"></div>
     </div>
+
+    <div class="ai-bloc" data-r>
+      <div class="ab-t">
+        <p class="ai-num">05 · Le point chaque matin</p>
+        <h3>Votre journée, résumée avant le premier café.</h3>
+        <p>À l’ouverture, Piaffe AI a déjà lu la nuit : les caméras, les abreuvoirs, la météo, les paiements. Il vous dit ce qui demande une décision aujourd’hui, et rien de plus.</p>
+        <a class="btn blanc" {{demo:cockpit}}>Voir le point du matin{{i:arrow}}</a>
+      </div>
+      <div class="matin" id="matin"></div>
+    </div>
+
+    <div class="ai-bloc inv" data-r>
+      <div class="ab-t">
+        <p class="ai-num">06 · Votre écurie dans votre IA</p>
+        <h3>Parlez à votre écurie, dans Claude et ChatGPT.</h3>
+        <p>Collez une adresse dans l’assistant de votre choix. Il interroge alors vos chevaux, vos reprises et vos factures avec vos droits, et vous demande votre accord avant d’écrire quoi que ce soit.</p>
+        <div class="mcp-adr"><code id="mcpUrl">https://mcp.piaffe.fr/mcp</code><button type="button" id="mcpCopy" class="btn blanc sm">{{i:copy}}<span>Copier</span></button></div>
+        <div class="ias" aria-label="Assistants compatibles"><span>Claude</span><span>ChatGPT</span><span>Le Chat</span><span>Tout assistant compatible MCP</span></div>
+      </div>
+      <div class="claude" aria-label="Exemple de conversation dans Claude">
+        <div class="cl-h"><span class="cl-n">Claude</span><span class="cl-ok"><i></i>Piaffe relié</span></div>
+        <div class="cl-fil">
+          <div class="cl-moi">Qui n’a pas payé sa pension ou son forfait de novembre ?</div>
+          <div class="cl-outil">{{i:check}}<span>A lu <b>factures</b> et <b>adhérents</b></span><em>Piaffe</em></div>
+          <div class="cl-ia">
+            <p><b>7 familles vous doivent 2 073 €</b>, sur 7 factures en retard. La plus ancienne a 57 jours.</p>
+            <table><tbody><tr><td>Chloé Roux</td><td>26 j</td><td>640 €</td></tr><tr><td>Léa Martin</td><td>2 j</td><td>520 €</td></tr><tr><td>Juliette Bertrand</td><td>27 j</td><td>390 €</td></tr><tr><td>4 autres familles</td><td></td><td>523 €</td></tr></tbody></table>
+            <p>Voulez-vous que je prépare les 7 relances ? Vous les validerez dans Piaffe.</p>
+          </div>
+        </div>
+        <p class="cl-note">Exemple, avec les chiffres de la démo.</p>
+      </div>
+    </div>
+
+    <div class="garanties" data-r>
+      <h3>Vous gardez la main, toujours.</h3>
+      <ul>
+        <li><span>{{i:eye}}</span><b>Lecture seule par défaut</b><small>Il lit pour répondre. Écrire demande votre accord.</small></li>
+        <li><span>{{i:checkc}}</span><b>Aperçu avant toute action</b><small>Qui, quoi, combien : vous voyez tout avant d’envoyer.</small></li>
+        <li><span>{{i:shield}}</span><b>Vos droits, pas plus</b><small>Il agit au nom d’une personne et hérite de son rôle.</small></li>
+        <li><span>{{i:list}}</span><b>Journal et annulation</b><small>Chaque action est notée, et se défait en un geste.</small></li>
+        <li><span>{{i:lock}}</span><b>Coupure en un geste</b><small>Un assistant relié se débranche d’un bouton.</small></li>
+      </ul>
+      <a class="btn blanc lg" {{demo:assistant}}>Essayer Piaffe AI dans la démo{{i:arrow}}</a>
+    </div>
+
   </div>
 </section>
 
-<!-- ================= FONCTIONS ================= -->
-<section class="bloc fonctions" id="fonctions" aria-labelledby="h-fonc">
-  <div class="wrap">
-    <div class="tete centre">
-      <p class="sur mono" data-r><span class="strass"></span>02 · Toutes les fonctions</p>
-      <h2 id="h-fonc" class="h2" data-r>Tout le club, une seule appli</h2>
-      <p class="chapo" data-r>Six familles de fonctions qui partagent les mêmes données. Chaque carte s’ouvre sur le vrai écran de la démo.</p>
+<!-- ================= MULTI-APPAREILS ================= -->
+<section class="sec multi" id="appareils" aria-labelledby="h-multi">
+  <div class="w multi-in">
+    <div class="multi-t" data-r>
+      <p class="sur2">Partout avec vous</p>
+      <h2 id="h-multi">Le téléphone à l’écurie, <span class="hl">l’ordinateur au bureau.</span></h2>
+      <p>Piaffe s’adapte à l’écran et à la main qui le tient. De gros boutons pour la tournée, des tableaux complets pour la comptabilité.</p>
+      <ul class="pts">
+        <li><span class="pt-i d-tm">{{i:wifi}}</span><div><b>Sans réseau, ça continue</b><small>Tournée, soins, pointage et appel fonctionnent hors ligne, puis se synchronisent.</small></div></li>
+        <li><span class="pt-i d-hz">{{i:phone}}</span><div><b>Rien à installer, ou presque</b><small>Un lien suffit. L’application s’ajoute à l’écran d’accueil en un geste.</small></div></li>
+        <li><span class="pt-i d-rd">{{i:refresh}}</span><div><b>Une seule vérité</b><small>Ce qui est coché au box apparaît aussitôt au bureau et chez le propriétaire.</small></div></li>
+      </ul>
     </div>
-  </div>
-  <nav class="chap-nav" id="chapNav" aria-label="Familles de fonctions">
-    <div class="wrap"><div class="cn-in">
-      <a href="#f-pilotage" data-c="0">{{i:today}}Pilotage</a><a href="#f-ecurie" data-c="1">{{i:stable}}Écurie</a><a href="#f-club" data-c="2">{{i:members}}Club</a><a href="#f-argent" data-c="3">{{i:euro}}Argent</a><a href="#f-equipe" data-c="4">{{i:team}}Équipe</a><a href="#f-plateforme" data-c="5">{{i:layers}}Plateforme</a>
-      <i class="cn-pill" id="cnPill"></i>
-    </div></div>
-  </nav>
-
-  <div class="wrap">
-    <!-- Pilotage -->
-    <div class="chap" id="f-pilotage" data-c="0">
-      <div class="chap-h"><span class="chap-n mono" data-r>A</span><div><h3 class="h3" data-r>Pilotage</h3><p data-r>Le cockpit du matin et un assistant qui agit vraiment.</p></div></div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:assistant}}Cockpit et assistant IA</p>
-          <h4>Posez une question. L’assistant répond, puis il agit.</h4>
-          <p>Il connaît chaque cheval, chaque facture et chaque reprise. Il prépare les relances, compose le montoir, lit une ordonnance photographiée et vous montre tout avant d’écrire.</p>
-          <ul class="tags"><li>Résumé du matin</li><li>Relances d’impayés</li><li>Montoir automatique</li><li>Dictée des soins</li><li>Journal des actions</li><li>Palette ⌘K</li></ul>
-          <a class="lien-demo" {{demo:assistant}}>Essayer l’assistant{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock navy-mock" id="mkAssistant"></div></div>
-      </article>
-      <div class="bento b3">
-        <a class="bt" {{demo:cockpit}}><div class="bt-vis" id="mkMatin"></div><div class="bt-txt"><h5>Le résumé du matin</h5><p>Ce qui demande une décision aujourd’hui, rien de plus.</p><span class="bt-go">Ouvrir le cockpit{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:rapports}}><div class="bt-vis" id="mkRapports"></div><div class="bt-txt"><h5>Rapports clairs</h5><p>Chiffre d’affaires par activité, remplissage, rentabilité par cheval.</p><span class="bt-go">Voir les rapports{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:cockpit}}><div class="bt-vis" id="mkPalette"></div><div class="bt-txt"><h5>Tout au clavier</h5><p>Tapez ⌘K, puis ce que vous cherchez : une fiche, une action, un écran.</p><span class="bt-go">Essayer la palette{{i:ext}}</span></div></a>
-      </div>
-    </div>
-
-    <!-- Écurie -->
-    <div class="chap" id="f-ecurie" data-c="1">
-      <div class="chap-h"><span class="chap-n mono" data-r>B</span><div><h3 class="h3" data-r>Écurie</h3><p data-r>Chaque cheval suivi, chaque box visible, chaque alerte à temps.</p></div></div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:horse}}Chevaux et fiche 3D</p>
-          <h4>La fiche du cheval, en volume</h4>
-          <p>Touchez le cheval pour noter une blessure à l’endroit exact. Soins, ferrure, vermifuges, travail de la semaine, coûts et journal partagé avec le propriétaire : tout est sur une seule fiche.</p>
-          <ul class="tags"><li>SIRE et IFCE</li><li>Rappels de soins</li><li>Charge de travail</li><li>Rations</li><li>Accès vétérinaire invité</li><li>QR du box</li></ul>
-          <a class="lien-demo" {{demo:cheval}}>Ouvrir la fiche d’Ulysse{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkCheval"></div></div>
-      </article>
-      <article class="feat inv">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:cube}}Écurie 3D</p>
-          <h4>Votre écurie, vue du ciel</h4>
-          <p>Le plan en trois dimensions montre qui occupe chaque box, les places libres et les alertes des capteurs. Le mode constructeur dessine votre bâtiment en quelques minutes.</p>
-          <ul class="tags"><li>Occupation en direct</li><li>Boxes libres</li><li>Paddocks</li><li>Mode constructeur</li></ul>
-          <a class="lien-demo" {{demo:ecurie3d}}>Ouvrir le plan 3D{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock iso-mock" id="mkIso"></div></div>
-      </article>
-      <div class="bento b3">
-        <a class="bt" {{demo:cameras}}><div class="bt-vis" id="mkCam"></div><div class="bt-txt"><h5>Caméras et capteurs</h5><p>Le box en direct, l’abreuvoir, la température, le silo. Une alerte part quand quelque chose sort de l’habitude.</p><span class="bt-go">Voir les caméras{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:soins}}><div class="bt-vis" id="mkSoins"></div><div class="bt-txt"><h5>Soins et rappels</h5><p>Vermifuges, vaccins, maréchal, dentiste : rien n’est oublié.</p><span class="bt-go">Ouvrir les soins{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:entretien}}><div class="bt-vis" id="mkEntretien"></div><div class="bt-txt"><h5>Entretien et stocks</h5><p>Carrières, clôtures, tracteur, copeaux. Signalé avec une photo, réparé, tracé.</p><span class="bt-go">Ouvrir l’entretien{{i:ext}}</span></div></a>
-      </div>
-    </div>
-
-    <!-- Club -->
-    <div class="chap" id="f-club" data-c="2">
-      <div class="chap-h"><span class="chap-n mono" data-r>C</span><div><h3 class="h3" data-r>Club</h3><p data-r>Reprises, cavaliers, familles, coachs, concours et boutique.</p></div></div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:planning}}Planning et montoir</p>
-          <h4>Le montoir se compose tout seul, et il ménage vos chevaux</h4>
-          <p>Reprises, stages, balades et cours particuliers sur toutes vos pistes. Piaffe attribue les chevaux selon le niveau et la charge de chacun, gère absences, rattrapages et liste d’attente.</p>
-          <ul class="tags"><li>Attribution automatique</li><li>Limite de charge</li><li>Rattrapages</li><li>Liste d’attente</li><li>Appel sur téléphone</li><li>Feuille de monte</li></ul>
-          <a class="lien-demo" {{demo:planning}}>Ouvrir le planning{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkPlanning"></div></div>
-      </article>
-      <article class="feat inv">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:family}}Adhérents et familles</p>
-          <h4>Une famille, un payeur, tous les cavaliers</h4>
-          <p>Fiches complètes, licences FFE en lot, certificats et autorisations signés en ligne. Les enfants sans e-mail ont leur espace, les parents paient pour tous.</p>
-          <ul class="tags"><li>Licences FFE</li><li>Inscriptions en ligne</li><li>Tiers payeurs</li><li>Documents à jour</li><li>Galops et progression</li></ul>
-          <a class="lien-demo" {{demo:adherents}}>Ouvrir les adhérents{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkFamille"></div></div>
-      </article>
-      <div class="bento b3">
-        <a class="bt" {{demo:adh-cheval}}><div class="bt-vis" id="mkDeclarer"></div><div class="bt-txt"><h5>Chacun déclare son cheval</h5><p>Un numéro SIRE et la fiche se remplit. Le club valide en un geste.</p><span class="bt-go">Déclarer un cheval{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:adh-demipension}}><div class="bt-vis" id="mkDP"></div><div class="bt-txt"><h5>Demi-pensions</h5><p>Le propriétaire publie son annonce, choisit, signe. Le planning se partage.</p><span class="bt-go">Voir la demi-pension{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:adh-coachs}}><div class="bt-vis" id="mkCoachRes"></div><div class="bt-txt"><h5>Coachs réservables en ligne</h5><p>Un créneau, un paiement, c’est réservé. La piste aussi.</p><span class="bt-go">Réserver un coach{{i:ext}}</span></div></a>
-      </div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:trophy}}Compétitions</p>
-          <h4>Qui emmène qui ? Réglé en glissant</h4>
-          <p>Engagements préparés pour FFE Compet, horaires de passage, coachs, vans et covoiturage. Les cavaliers voient leur heure, le coach son programme, le club ses frais.</p>
-          <ul class="tags"><li>Engagements</li><li>Vans et places</li><li>Horaires de passage</li><li>Concours organisés au club</li><li>Résultats en direct</li></ul>
-          <a class="lien-demo" {{demo:competitions}}>Ouvrir les compétitions{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkCompet"></div></div>
-      </article>
-      <div class="bento b2">
-        <a class="bt" {{demo:boutique}}><div class="bt-vis" id="mkBoutique"></div><div class="bt-txt"><h5>Boutique, stages et caisse</h5><p>Stages de vacances, cartes cadeaux, sellerie, anniversaires. Acompte en ligne, encaissement au comptoir.</p><span class="bt-go">Ouvrir la boutique{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:communication}}><div class="bt-vis" id="mkCom"></div><div class="bt-txt"><h5>Messages aux familles</h5><p>Notification, SMS ou e-mail, avec qui l’a lu. Fini les groupes de discussion débordés.</p><span class="bt-go">Ouvrir la communication{{i:ext}}</span></div></a>
-      </div>
-    </div>
-
-    <!-- Argent -->
-    <div class="chap" id="f-argent" data-c="3">
-      <div class="chap-h"><span class="chap-n mono" data-r>D</span><div><h3 class="h3" data-r>Argent</h3><p data-r>De la facture à la déclaration de TVA, sans double saisie.</p></div></div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:invoice}}Facturation</p>
-          <h4>Toutes les factures du mois, en un seul geste</h4>
-          <p>Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, prélèvement SEPA, chèques-vacances, espèces : chaque paiement se rapproche de sa facture.</p>
-          <ul class="tags"><li>Devis</li><li>Avoirs et acomptes</li><li>Paiement en 3 fois</li><li>Prélèvement SEPA</li><li>Relances automatiques</li><li>Factur-X</li></ul>
-          <a class="lien-demo" {{demo:facturation}}>Ouvrir la facturation{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkFact"></div></div>
-      </article>
-      <div class="bento b3">
-        <a class="bt" {{demo:compta}}><div class="bt-vis" id="mkCompta"></div><div class="bt-txt"><h5>Comptabilité et banque</h5><p>Les virements se pointent seuls. Justificatifs lus par l’IA, export FEC, accès direct pour votre expert-comptable.</p><span class="bt-go">Ouvrir la comptabilité{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:compta}}><div class="bt-vis" id="mkTVA"></div><div class="bt-txt"><h5>TVA à taux multiples</h5><p>5,5 %, 10 %, 20 % : chaque ligne au bon taux, la déclaration préparée.</p><span class="bt-go">Voir la TVA{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:facturation}}><div class="bt-vis" id="mkChorus"></div><div class="bt-txt"><h5>Facture électronique et Chorus Pro</h5><p>Prêt pour la réforme. La mairie ou l’école reçoit sa facture sur Chorus Pro.</p><span class="bt-go">Voir la facture électronique{{i:ext}}</span></div></a>
-      </div>
-      <article class="feat inv">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:contract}}Contrats</p>
-          <h4>Signé au doigt, rangé tout seul</h4>
-          <p>Pension, demi-pension, inscription, règlement intérieur, contrat de travail. Le modèle se remplit, la signature se fait sur le téléphone, le document va dans le bon dossier.</p>
-          <ul class="tags"><li>Modèles prêts</li><li>Signature au doigt</li><li>Rappels de signature</li><li>Avenants</li><li>Valeur probante</li></ul>
-          <a class="lien-demo" {{demo:contrats}}>Ouvrir les contrats{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock" id="mkContrat"></div></div>
-      </article>
-    </div>
-
-    <!-- Équipe -->
-    <div class="chap" id="f-equipe" data-c="4">
-      <div class="chap-h"><span class="chap-n mono" data-r>E</span><div><h3 class="h3" data-r>Équipe</h3><p data-r>Une vraie RH, pensée pour les écuries.</p></div></div>
-      <article class="feat">
-        <div class="feat-txt" data-r>
-          <p class="feat-k">{{i:clockin}}RH et pointage</p>
-          <h4>Plannings, pointage, congés et paie, enfin réunis</h4>
-          <p>Chacun pointe en maintenant le doigt sur son téléphone. Heures supplémentaires, congés, documents et convention collective des centres équestres sont suivis. La paie part vers votre logiciel.</p>
-          <ul class="tags"><li>Planning du personnel</li><li>Pointage</li><li>Congés</li><li>Export Silae et PayFit</li><li>Droits par rôle</li></ul>
-          <a class="lien-demo" {{demo:equipe}}>Ouvrir l’équipe{{i:ext}}</a>
-        </div>
-        <div class="feat-vis" data-r><div class="carte-mock duo" id="mkRH"></div></div>
-      </article>
-    </div>
-
-    <!-- Plateforme -->
-    <div class="chap" id="f-plateforme" data-c="5">
-      <div class="chap-h"><span class="chap-n mono" data-r>F</span><div><h3 class="h3" data-r>Plateforme</h3><p data-r>Un logiciel qui s’adapte à votre club, et pas l’inverse.</p></div></div>
-      <div class="bento b3">
-        <a class="bt" {{demo:emp-tournee}}><div class="bt-vis" id="mkOffline"></div><div class="bt-txt"><h5>Hors ligne</h5><p>Pas de réseau au fond de l’écurie ? Tournée, soins et pointage continuent, puis se synchronisent.</p><span class="bt-go">Voir la tournée{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:adh-bienvenue}}><div class="bt-vis" id="mkArrivee"></div><div class="bt-txt"><h5>L’arrivée de chaque profil</h5><p>Gérant, employé, adhérent, coach : chacun est guidé pas à pas dès sa première ouverture.</p><span class="bt-go">Voir une arrivée{{i:ext}}</span></div></a>
-        <a class="bt" {{demo:reglages}}><div class="bt-vis" id="mkPerso"></div><div class="bt-txt"><h5>Personnalisation</h5><p>Activez seulement vos modules, à vos couleurs. Chaque adhérent choisit aussi son accueil.</p><span class="bt-go">Ouvrir les réglages{{i:ext}}</span></div></a>
-      </div>
+    <div class="multi-v" data-r aria-hidden="true">
+      <figure class="nav-frame mv-ecran"><div class="nf-bar"><i></i><i></i><i></i></div><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900"><img src="shots/g-planning-piste.webp" width="2160" height="1350" loading="lazy" alt=""></div></figure>
+      <figure class="tab mv-tab"><div class="crop" style="--iw:1180;--dx:0;--dy:0;--dw:1180;--dh:820"><img src="shots/e-tournee-tab.webp" width="1770" height="1230" loading="lazy" alt=""></div></figure>
+      <figure class="tel mv-tel"><img src="shots/p-emp-soins.webp" width="780" height="1688" loading="lazy" alt=""></figure>
     </div>
   </div>
 </section>
 
-<!-- ================= TOUT REMPLACER ================= -->
-<section class="remplace" id="remplacer" aria-labelledby="h-rem">
-  <div class="rem-pin">
-    <div class="wrap rem-in">
-      <div class="tete centre">
-        <p class="sur mono"><span class="strass"></span>03 · Tout remplacer</p>
-        <h2 id="h-rem" class="h2">Douze outils de moins</h2>
-        <p class="chapo">Le cahier de monte, le tableur, les groupes de discussion, le classeur des contrats… Tout rentre dans Piaffe, et tout se parle.</p>
+<!-- ================= DÉMO ================= -->
+<section class="sec demo" id="demo" aria-labelledby="h-demo">
+  <div class="w">
+    <div class="demo-c" data-r>
+      <div class="demo-t">
+        <p class="sur2">La démo</p>
+        <h2 id="h-demo">Essayez, <span class="hl">tout est déjà rempli.</span></h2>
+        <p>L’Écurie des Tilleuls vous attend : 44 chevaux, 148 adhérents, une semaine de planning et des factures en cours. Cliquez partout, rien n’est enregistré.</p>
+        <a class="btn pri lg" {{demo:cockpit}}>Ouvrir la démo{{i:arrow}}</a>
       </div>
-      <div class="rem-scene" id="remScene">
-        <div class="rem-coeur"><span class="rem-logo">{{logo:64}}</span><b id="remN">12</b><small>outils remplacés</small></div>
-      </div>
-      <div class="centre-cta"><a class="btn pri" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a></div>
+      <div class="demo-l" id="demoL"></div>
     </div>
   </div>
 </section>
 
-<!-- ================= CONNECTEURS, API, MCP ================= -->
-<section class="bloc connect" id="connecteurs" aria-labelledby="h-con">
-  <div class="wrap">
-    <div class="tete">
-      <p class="sur mono" data-r><span class="strass"></span>04 · Connecteurs, API et MCP</p>
-      <h2 id="h-con" class="h2" data-r>Votre club parle à tous vos outils. Et à votre IA.</h2>
-      <p class="chapo" data-r>Banque, comptable, FFE, SIRE, paiement, paie, agenda, caméras : 70 connecteurs prêts à l’emploi. Une API publique documentée. Et un serveur MCP pour piloter l’écurie depuis Claude.</p>
+<!-- ================= CONNECTEURS ================= -->
+<section class="sec conn" id="connecteurs" aria-labelledby="h-conn">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Connecteurs</p>
+      <h2 id="h-conn">Piaffe parle <span class="hl">à vos outils.</span></h2>
+      <p>Banque, comptable, paiement, paie, FFE, SIRE, caméras : 72 connecteurs au catalogue, une API publique et des webhooks pour le reste.</p>
     </div>
-    <div class="con-grille">
-      <div class="con-mcp" data-r>
-        <div class="mcp-tete"><span class="mcp-av">{{i:spark}}</span><div><b>Claude</b><small>relié au serveur MCP Piaffe · droits de Claire Morel</small></div><span class="chip ok">{{i:lock}}Lecture et écriture validée</span></div>
-        <div class="mcp-fil" id="mcpFil"></div>
-        <div class="mcp-saisie"><span id="mcpSaisie">Écrivez à Claude…</span><i>{{i:send}}</i></div>
-      </div>
-      <div class="con-orbite" data-r>
-        <div class="orb" id="orbite"><div class="orb-c">{{logo:44}}<span class="mono">Piaffe</span></div></div>
-        <div class="con-cats" id="conCats"></div>
-      </div>
-    </div>
-    <div class="con-bas">
-      <div class="api" data-r>
-        <div class="api-tete"><span class="mono">API REST publique</span><div class="api-onglets"><span class="on">cURL</span><span>JavaScript</span><span>Python</span></div></div>
-<pre class="mono" id="apiCode"></pre>
-      </div>
-      <div class="con-txt" data-r>
-        <h3 class="h3s">Ouvert, documenté, sous contrôle</h3>
-        <ul class="puces"><li>{{i:mcp}}36 outils MCP : lecture par défaut, chaque écriture vous est montrée avant d’être faite</li><li>{{i:shield}}Droits par rôle, journal de chaque action de l’IA, annulation possible</li><li>{{i:webhook}}Webhooks : facture payée, contrat signé, cheval arrivé…</li><li>{{i:plug}}Zapier, Make et n8n pour le reste</li></ul>
-        <a class="lien-demo" {{demo:connecteurs}}>Ouvrir les connecteurs{{i:ext}}</a>
-      </div>
-    </div>
+    <div class="conn-g" id="connG"></div>
+    <p class="c mt" data-r><a class="lien" {{demo:connecteurs}}>Voir les 72 connecteurs dans la démo{{i:arrow}}</a></p>
   </div>
 </section>
 
-<!-- ================= IMPORT ================= -->
-<section class="bloc import" id="import" aria-labelledby="h-imp">
-  <div class="wrap">
-    <div class="tete centre">
-      <p class="sur mono" data-r><span class="strass"></span>05 · Reprise des données</p>
-      <h2 id="h-imp" class="h2" data-r>Votre ancien logiciel, repris en cinq étapes</h2>
-      <p class="chapo" data-r>Adhérents, familles, chevaux, forfaits, soldes et factures ouvertes. L’IA reconnaît les colonnes, repère les doublons, et rien n’est écrasé sans votre accord. Nous le faisons avec vous, gratuitement.</p>
+<!-- ================= MISE EN ROUTE ================= -->
+<section class="sec route" id="demarrer" aria-labelledby="h-route">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Mise en route</p>
+      <h2 id="h-route">Prêt en une après‑midi, <span class="hl">en trois étapes.</span></h2>
+      <p>Pas de formation de trois jours ni de consultant. Nous reprenons vos données avec vous, et c’est inclus.</p>
     </div>
-    <div class="imp-sources" data-r id="impSources"></div>
-    <div class="imp" data-r>
-      <ol class="imp-etapes" id="impEtapes"></ol>
-      <div class="imp-scene" id="impScene"></div>
-    </div>
-    <div class="centre-cta"><a class="btn pri" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a></div>
-  </div>
-</section>
+    <ol class="etapes" id="etapes"></ol>
 
-<!-- ================= COMPARATIF ================= -->
-<section class="bloc compare" id="comparatif" aria-labelledby="h-cmp">
-  <div class="wrap">
-    <div class="tete">
-      <p class="sur mono" data-r><span class="strass"></span>06 · Comparatif</p>
-      <h2 id="h-cmp" class="h2" data-r>Ce que le marché ne fait pas encore</h2>
-      <p class="chapo" data-r>Nous avons étudié 25 logiciels francophones de gestion équestre. Voici où Piaffe va plus loin, et où le marché fait déjà bien.</p>
+    <div class="reprise" data-r>
+      <div class="rp-t">
+        <h3>Vous venez d’un autre logiciel ?</h3>
+        <p>Adhérents, familles, chevaux, forfaits, soldes et factures ouvertes : tout se reprend. Piaffe reconnaît les colonnes, repère les doublons, et rien n’est écrasé sans votre accord. L’import reste annulable pendant 30 jours.</p>
+        <div class="src" id="srcL"></div>
+        <a class="lien" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a>
+      </div>
+      <figure class="rp-v">
+        <div class="shot"><div class="crop" style="--dx:296;--dy:256;--dw:1124;--dh:644;--mx:300;--my:258;--mw:560;--mh:470"><img src="shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>
+      </figure>
     </div>
-    <div class="cmp" data-r>
-      <div class="cmp-tete"><span></span><span class="cmp-p">{{logo:22}}Piaffe</span><span class="cmp-m">Logiciels du marché</span></div>
-      <div id="cmpLignes"></div>
+
+    <div class="remp" data-r>
+      <div class="remp-t"><b class="remp-n">12</b><div><h3>outils en moins</h3><p>Tout ce que Piaffe remplace, et qui se parle enfin.</p></div></div>
+      <ul class="remp-l" id="rempL"></ul>
     </div>
-    <p class="note-src">Source : notre étude de 25 éditeurs francophones (sites des éditeurs, magasins d’applications, avis publics), novembre 2026. Les offres évoluent : vérifiez auprès de chaque éditeur.</p>
-    <div class="centre-cta"><a class="btn pri" {{demo:cockpit}}>Comparer avec la démo{{i:arrow}}</a></div>
   </div>
 </section>
 
 <!-- ================= TARIFS ================= -->
-<section class="bloc tarifs" id="tarifs" aria-labelledby="h-tar">
-  <div class="wrap">
-    <div class="tete centre">
-      <p class="sur mono" data-r><span class="strass"></span>07 · Tarifs</p>
-      <h2 id="h-tar" class="h2" data-r>Un prix clair, sans engagement</h2>
-      <p class="chapo" data-r>Chevaux, utilisateurs et adhérents illimités dans toutes les formules. 30 jours d’essai sans carte bancaire. Aucun frais d’entrée.</p>
+<section class="sec tarifs" id="tarifs" aria-labelledby="h-tarifs">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Tarifs</p>
+      <h2 id="h-tarifs">Trois formules. <span class="hl">C’est tout.</span></h2>
+      <p>Chevaux, utilisateurs et adhérents illimités dans chaque formule. 30 jours d’essai sans carte bancaire, aucun frais d’entrée ni de reprise.</p>
+      <div class="bascule" id="bascule" role="group" aria-label="Rythme de facturation">
+        <span class="bs-g"></span>
+        <button type="button" data-p="m" aria-pressed="true">Mensuel</button>
+        <button type="button" data-p="a" aria-pressed="false">Annuel<em>2 mois offerts</em></button>
+      </div>
     </div>
-    <div class="prix">
-      <article class="offre" data-r>
-        <h3>Essentiel</h3><p class="o-pour">Pour démarrer : poney-club, petite écurie</p>
-        <p class="o-px"><b data-count="59">59</b><span>€ HT<br>par mois</span></p>
-        <a class="btn block" {{demo:planning}}>Essayer la démo</a>
-        <ul><li>{{i:check}}Planning, montoir et réservations</li><li>{{i:check}}Adhérents, familles et licences FFE</li><li>{{i:check}}Facturation, devis et paiements</li><li>{{i:check}}Contrats signés au doigt</li><li>{{i:check}}Application adhérent et employé</li></ul>
-      </article>
-      <article class="offre top" data-r>
-        <span class="o-badge"><span class="strass"></span>La plus choisie</span>
-        <h3>Écurie</h3><p class="o-pour">Pour le centre équestre complet</p>
-        <p class="o-px"><b data-count="149">149</b><span>€ HT<br>par mois</span></p>
-        <a class="btn pri block" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-        <ul><li>{{i:check}}Tout Essentiel, plus :</li><li>{{i:check}}Chevaux, soins, écurie 3D, entretien</li><li>{{i:check}}Comptabilité, TVA, RH et pointage</li><li>{{i:check}}Compétitions, coachs et boutique</li><li>{{i:check}}Assistant IA et serveur MCP</li><li>{{i:check}}8 caméras et capteurs inclus</li></ul>
-      </article>
-      <article class="offre" data-r>
-        <h3>Réseau</h3><p class="o-pour">Pour plusieurs sites ou un grand domaine</p>
-        <p class="o-px"><b data-count="289">289</b><span>€ HT<br>par mois</span></p>
-        <a class="btn block" {{demo:connecteurs}}>Essayer la démo</a>
-        <ul><li>{{i:check}}Tout Écurie, plus :</li><li>{{i:check}}Plusieurs sites, un seul compte</li><li>{{i:check}}API sans limite d’appels</li><li>{{i:check}}Accompagnement dédié</li><li>{{i:check}}Caméras sans limite</li></ul>
-      </article>
-    </div>
+    <div class="offres" id="offres"></div>
     <ul class="inclus" data-r>
-      <li>{{i:horse}}Chevaux illimités</li><li>{{i:members}}Utilisateurs illimités</li><li>{{i:import}}Reprise des données offerte</li><li>{{i:download}}Export complet à tout moment</li><li>{{i:shield}}Hébergé en France, RGPD</li>
+      <li>{{i:check}}Chevaux illimités</li><li>{{i:check}}Utilisateurs illimités</li><li>{{i:check}}Reprise des données offerte</li><li>{{i:check}}Export complet à tout moment</li><li>{{i:check}}Hébergé en France, RGPD</li>
     </ul>
   </div>
 </section>
 
-<!-- ================= FAQ ================= -->
-<section class="bloc faq" id="faq" aria-labelledby="h-faq">
-  <div class="wrap faq-in">
-    <div class="tete">
-      <p class="sur mono" data-r><span class="strass"></span>08 · Questions</p>
-      <h2 id="h-faq" class="h2" data-r>Vos questions, nos réponses</h2>
-      <p class="chapo" data-r>Une autre question ? Ouvrez la démo et demandez à l’assistant : il connaît Piaffe par cœur.</p>
-      <a class="lien-demo" data-r {{demo:assistant}}>Demander à l’assistant{{i:ext}}</a>
+<!-- ================= COMPARATIF ================= -->
+<section class="sec cmp-s" id="comparatif" aria-labelledby="h-cmp">
+  <div class="w">
+    <div class="tete c" data-r>
+      <p class="sur2">Comparatif</p>
+      <h2 id="h-cmp">Ce que le marché <span class="hl">ne fait pas encore.</span></h2>
+      <p>Nous avons étudié 25 logiciels francophones de gestion équestre. Voici où Piaffe va plus loin, et où le marché fait déjà bien.</p>
     </div>
-    <div class="faq-liste" id="faqListe"></div>
+    <div class="cmp" id="cmp" data-r></div>
+    <p class="note c" data-r>Source : notre étude de 25 éditeurs francophones (sites des éditeurs, magasins d’applications, avis publics), novembre 2026. Les offres évoluent : vérifiez auprès de chaque éditeur.</p>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="sec faq" id="faq" aria-labelledby="h-faq">
+  <div class="w faq-in">
+    <div class="faq-t" data-r>
+      <p class="sur2">Questions</p>
+      <h2 id="h-faq">Vos questions, <span class="hl">nos réponses.</span></h2>
+      <p>Une autre question ? Ouvrez la démo et demandez à Piaffe AI : il connaît le logiciel par cœur.</p>
+      <a class="btn sec" {{demo:assistant}}>Demander à Piaffe AI{{i:arrow}}</a>
+    </div>
+    <div class="faq-l" id="faqL"></div>
   </div>
 </section>
 
 <!-- ================= FINAL ================= -->
-<section class="final" id="essai" aria-labelledby="h-fin">
-  <canvas id="cvFinal" aria-hidden="true"></canvas>
-  <div class="wrap final-in">
-    <span class="final-logo" data-r>{{logo:72}}</span>
-    <h2 id="h-fin" class="h-fin" data-r>En selle<span class="pt"></span></h2>
-    <p class="chapo" data-r>Trente jours pour tout essayer, sans carte bancaire. Nous reprenons vos adhérents, vos chevaux et vos factures pour vous.</p>
-    <div class="actions centre" data-r><a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a><a class="btn lg" href="#tarifs">Voir les tarifs</a></div>
+<section class="fin" aria-labelledby="h-fin">
+  <div class="w">
+    <div class="fin-c" data-r>
+      <div class="fin-illu" id="finIllu" aria-hidden="true"></div>
+      <h2 id="h-fin">En selle.</h2>
+      <p>Trente jours pour tout essayer, sans carte bancaire. Nous reprenons vos adhérents, vos chevaux et vos factures avec vous.</p>
+      <div class="hero-cta">
+        <a class="btn blanc lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+        <a class="btn fant lg" href="#tarifs">Voir les tarifs</a>
+      </div>
+      <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
+    </div>
   </div>
 </section>
+
 </main>
 
 <footer class="pied">
-  <div class="wrap pied-in">
-    <div class="pied-m"><a class="marque" href="#top">{{logo:26}}<span>Piaffe</span></a><p>Le logiciel tout-en-un des centres équestres et des écuries.</p></div>
-    <div class="pied-c"><b>Produit</b><a href="#vues">Quatre vues</a><a href="#fonctions">Fonctions</a><a href="#connecteurs">Connecteurs et MCP</a><a href="#tarifs">Tarifs</a></div>
-    <div class="pied-c"><b>Démo</b><a {{demo:cockpit}}>Vue gérant</a><a {{demo:emp-jour}}>Vue employé</a><a {{demo:adh-accueil}}>Vue adhérent</a><a {{demo:coach-agenda}}>Vue coach</a></div>
-    <div class="pied-c"><b>Club</b><a href="#import">Reprise des données</a><a href="#comparatif">Comparatif</a><a href="#faq">Questions</a></div>
+  <div class="w pied-in">
+    <div class="pd-m">
+      <a class="marque" href="#top">{{logo:28}}<span>Piaffe</span></a>
+      <p>Le logiciel tout-en-un des centres équestres et des écuries.</p>
+    </div>
+    <nav aria-label="Produit"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Piaffe AI</a><a href="#connecteurs">Connecteurs</a><a href="#tarifs">Tarifs</a></nav>
+    <nav aria-label="Démo"><b>Démo</b><a {{demo:cockpit}}>Espace gérant</a><a {{demo:emp-jour}}>Espace employé</a><a {{demo:adh-accueil}}>Espace adhérent</a><a {{demo:coach-agenda}}>Espace coach</a><a {{demo:assistant}}>Piaffe AI</a></nav>
+    <nav aria-label="Aide"><b>Bien démarrer</b><a href="#demarrer">Mise en route</a><a href="#demarrer">Reprise des données</a><a href="#comparatif">Comparatif</a><a href="#faq">Questions</a></nav>
   </div>
-  <div class="wrap pied-bas"><span>© 2026 Piaffe</span><span>Démonstration : données fictives de l’Écurie des Tilleuls</span></div>
+  <div class="w pied-b"><span>© 2026 Piaffe</span><span>Démonstration : données fictives de l’Écurie des Tilleuls</span></div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</div>
+
 <script>
 /*__ICONS__*/
-/*__HORSE__*/
 /*__JS__*/
 </script>

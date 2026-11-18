@@ -1,0 +1,346 @@
+{
+ "g-cockpit": {
+  "route": "cockpit",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 145
+ },
+ "g-cockpit-dark": {
+  "route": "cockpit",
+  "dev": "desktop",
+  "dark": true,
+  "w": 1440,
+  "h": 900,
+  "kb": 134
+ },
+ "g-planning": {
+  "route": "planning",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 122
+ },
+ "g-planning-dark": {
+  "route": "planning",
+  "dev": "desktop",
+  "dark": true,
+  "w": 1440,
+  "h": 900,
+  "kb": 111
+ },
+ "g-planning-piste": {
+  "route": "planning",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 106
+ },
+ "g-chevaux": {
+  "route": "chevaux",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 116
+ },
+ "g-soins": {
+  "route": "soins",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 110
+ },
+ "g-alimentation": {
+  "route": "alimentation",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 114
+ },
+ "g-3d": {
+  "route": "ecurie3d",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 96
+ },
+ "g-cameras": {
+  "route": "cameras",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 171
+ },
+ "g-adherents": {
+  "route": "adherents",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 135
+ },
+ "g-pensions": {
+  "route": "pensions",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 120
+ },
+ "g-competitions": {
+  "route": "competitions",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 127
+ },
+ "g-communication": {
+  "route": "communication",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 129
+ },
+ "g-facturation": {
+  "route": "facturation",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 119
+ },
+ "g-compta": {
+  "route": "compta",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 149
+ },
+ "g-contrats": {
+  "route": "contrats",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 124
+ },
+ "g-equipe": {
+  "route": "equipe",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 111
+ },
+ "g-rapports": {
+  "route": "rapports",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 117
+ },
+ "g-assistant": {
+  "route": "assistant",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 121
+ },
+ "g-connecteurs": {
+  "route": "connecteurs",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 119
+ },
+ "g-import": {
+  "route": "import",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 137
+ },
+ "g-ai-relances": {
+  "route": "cockpit",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 138
+ },
+ "g-ai-planning": {
+  "route": "planning",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 123
+ },
+ "g-ai-dark": {
+  "route": "cockpit",
+  "dev": "desktop",
+  "dark": true,
+  "w": 1440,
+  "h": 900,
+  "kb": 126
+ },
+ "c-agenda": {
+  "route": "coach-agenda",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 112
+ },
+ "c-eleves": {
+  "route": "coach-eleves",
+  "dev": "desktop",
+  "dark": false,
+  "w": 1440,
+  "h": 900,
+  "kb": 105
+ },
+ "e-jour-tab": {
+  "route": "emp-jour",
+  "dev": "tablet",
+  "dark": false,
+  "w": 1180,
+  "h": 820,
+  "kb": 109
+ },
+ "e-tournee-tab": {
+  "route": "emp-tournee",
+  "dev": "tablet",
+  "dark": false,
+  "w": 1180,
+  "h": 820,
+  "kb": 96
+ },
+ "p-adh-accueil": {
+  "route": "adh-accueil",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 63
+ },
+ "p-adh-reserver": {
+  "route": "adh-reserver",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 62
+ },
+ "p-adh-cheval": {
+  "route": "adh-cheval",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 57
+ },
+ "p-adh-paiements": {
+  "route": "adh-paiements",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 57
+ },
+ "p-adh-progression": {
+  "route": "adh-progression",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 53
+ },
+ "p-adh-concours": {
+  "route": "adh-concours",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 64
+ },
+ "p-emp-jour": {
+  "route": "emp-jour",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 66
+ },
+ "p-emp-tournee": {
+  "route": "emp-tournee",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 50
+ },
+ "p-emp-soins": {
+  "route": "emp-soins",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 62
+ },
+ "p-emp-pointage": {
+  "route": "emp-pointage",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 50
+ },
+ "p-coach-agenda": {
+  "route": "coach-agenda",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 64
+ },
+ "p-coach-revenus": {
+  "route": "coach-revenus",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 59
+ },
+ "p-g-cockpit": {
+  "route": "cockpit",
+  "dev": "phone",
+  "dark": false,
+  "w": 390,
+  "h": 844,
+  "kb": 81
+ },
+ "p-adh-accueil-dark": {
+  "route": "adh-accueil",
+  "dev": "phone",
+  "dark": true,
+  "w": 390,
+  "h": 844,
+  "kb": 58
+ }
+}

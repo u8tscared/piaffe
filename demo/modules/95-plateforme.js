@@ -157,20 +157,20 @@ D.aiAutomations=D.aiAutomations||[
  {id:'au5',name:'Licences à renouveler',when:'Le 1er de chaque mois',what:'Adhérents sans licence FFE pour le millésime en cours, avec le message de rappel prêt à partir.',to:'Nadia Benali',ch:'E-mail',last:'dim. 1er nov. à 9 h 00',next:'mar. 1er déc.',on:true,ic:'members',q:'Quels adhérents n’ont pas encore leur licence 2027 ?'},
  {id:'au6',name:'Bilan du mois pour le cabinet comptable',when:'Le dernier jour du mois',what:'Export des écritures au format FEC et synthèse du chiffre d’affaires par activité.',to:'Cabinet Fidélis (comptable)',ch:'E-mail',last:'sam. 31 oct. à 18 h 00',next:'lun. 30 nov.',on:false,ic:'accounting',q:'Quel est mon chiffre d’affaires par activité ?'}];
 D.aiLog=D.aiLog||[
- {d:'Aujourd’hui',t:'9 h 32',src:'Assistant',who:'s01',tool:'impayes_lister',what:'A lu les factures en retard pour répondre à une question',kind:'L',st:'read'},
+ {d:'Aujourd’hui',t:'9 h 32',src:'Piaffe AI',who:'s01',tool:'impayes_lister',what:'A lu les factures en retard pour répondre à une question',kind:'L',st:'read'},
  {d:'Aujourd’hui',t:'9 h 14',src:'Claude (MCP)',who:'s01',tool:'cours_annuler_ou_reporter',what:'A reporté la reprise Galop 1-2 de 17 h à samedi 10 h',kind:'E',st:'ok',undo:true},
  {d:'Aujourd’hui',t:'9 h 14',src:'Claude (MCP)',who:'s01',tool:'message_envoyer',what:'A envoyé le message « Reprise reportée » à 9 familles',kind:'E',st:'ok'},
- {d:'Aujourd’hui',t:'8 h 15',src:'Assistant',who:'s01',tool:'sante_echeances',what:'A lu les échéances de soins des trois semaines à venir',kind:'L',st:'read'},
+ {d:'Aujourd’hui',t:'8 h 15',src:'Piaffe AI',who:'s01',tool:'sante_echeances',what:'A lu les échéances de soins des trois semaines à venir',kind:'L',st:'read'},
  {d:'Aujourd’hui',t:'7 h 00',src:'Automatisation',who:'s01',tool:'ecurie_tableau_de_bord',what:'A préparé le résumé du matin',kind:'L',st:'read'},
  {d:'Aujourd’hui',t:'6 h 12',src:'Automatisation',who:'s01',tool:'taches_lister_ou_creer',what:'A préparé une commande de 60 sacs de copeaux chez Litière Pro',kind:'E',st:'wait'},
- {d:'Hier',t:'18 h 47',src:'Assistant',who:'s09',tool:'cours_inscrire',what:'A inscrit Zoé Laurent au rattrapage de samedi 15 h',kind:'E',st:'ok',undo:true},
+ {d:'Hier',t:'18 h 47',src:'Piaffe AI',who:'s09',tool:'cours_inscrire',what:'A inscrit Zoé Laurent au rattrapage de samedi 15 h',kind:'E',st:'ok',undo:true},
  {d:'Hier',t:'16 h 20',src:'ChatGPT (MCP)',who:'s09',tool:'adherent_documents_manquants',what:'A lu la liste des pièces manquantes des adhérents',kind:'L',st:'read'},
- {d:'Hier',t:'11 h 05',src:'Assistant',who:'s01',tool:'facture_emettre',what:'Émission de 3 factures de coaching refusée par Claire à l’aperçu',kind:'E',st:'cancel'},
- {d:'Hier',t:'10 h 58',src:'Assistant',who:'s01',tool:'facture_creer_brouillon',what:'A préparé 3 factures de coaching en brouillon',kind:'E',st:'ok',undo:true},
+ {d:'Hier',t:'11 h 05',src:'Piaffe AI',who:'s01',tool:'facture_emettre',what:'Émission de 3 factures de coaching refusée par Claire à l’aperçu',kind:'E',st:'cancel'},
+ {d:'Hier',t:'10 h 58',src:'Piaffe AI',who:'s01',tool:'facture_creer_brouillon',what:'A préparé 3 factures de coaching en brouillon',kind:'E',st:'ok',undo:true},
  {d:'Lundi 16 novembre',t:'8 h 02',src:'Automatisation',who:'s01',tool:'relance_preparer',what:'A envoyé 6 relances d’impayés après validation',kind:'E',st:'ok'},
  {d:'Lundi 16 novembre',t:'8 h 00',src:'Automatisation',who:'s01',tool:'impayes_lister',what:'A préparé le point hebdomadaire sur les impayés',kind:'L',st:'read'},
- {d:'Lundi 16 novembre',t:'7 h 41',src:'Assistant',who:'s04',tool:'cheval_soin_enregistrer',what:'A ajouté un soin au registre de Tornado (boiterie, glace 20 min)',kind:'E',st:'ok'}];
-function logAI(what,tool,kind,st,undo){D.aiLog.unshift({d:'Aujourd’hui',t:'9 h 41',src:'Assistant',who:'s01',tool:tool,what:what,kind:kind||'E',st:st||'ok',undo:undo,fresh:true})}
+ {d:'Lundi 16 novembre',t:'7 h 41',src:'Piaffe AI',who:'s04',tool:'cheval_soin_enregistrer',what:'A ajouté un soin au registre de Tornado (boiterie, glace 20 min)',kind:'E',st:'ok'}];
+function logAI(what,tool,kind,st,undo){D.aiLog.unshift({d:'Aujourd’hui',t:'9 h 41',src:'Piaffe AI',who:'s01',tool:tool,what:what,kind:kind||'E',st:st||'ok',undo:undo,fresh:true})}
 P.pf.logAI=logAI;
 
 /* =====================================================================
@@ -399,7 +399,7 @@ function histHTML(){var h='',g=null;CONVS.forEach(function(c){if(c.grp!==g){g=c.
 
 function renderChat(el,ctx,seg){
   var c=conv();
-  el.innerHTML='<div class="pfa-root"><div class="pfa-head"><div><h1>Assistant</h1><div class="sub hide-s">Il cherche dans tout Piaffe et vous montre chaque action avant de la faire.</div></div>'+seg+'</div>'+
+  el.innerHTML='<div class="pfa-root"><div class="pfa-head"><div><h1>Piaffe AI</h1><div class="sub hide-s">Il cherche dans tout Piaffe et vous montre chaque action avant de la faire.</div></div>'+seg+'</div>'+
    '<div class="pfa-main"><aside class="card pfa-hist"><div style="padding:12px 12px 4px" class="stack"><button class="btn block" data-new>'+ICON('plus','sm')+'Nouvelle conversation</button><div class="search"><span>'+ICON('search','sm')+'</span><input class="in" data-hs placeholder="Chercher dans l’historique" style="height:34px;font-size:13px"></div></div><div class="pfa-hl">'+histHTML()+'</div></aside>'+
    '<section class="card pfa-chat"><div class="pfa-bar"><button class="btn ghost icon sm pfa-hbtn" data-hist title="Historique des conversations">'+ICON('list')+'</button><b class="ellip grow" data-title></b><span class="chip acc hide-s">'+ICON('shield','sm')+'Droits de gérante</span><button class="btn ghost icon sm pfa-hbtn" data-new title="Nouvelle conversation">'+ICON('plus')+'</button><button class="btn ghost icon sm" data-more-c title="Options de la conversation">'+ICON('more')+'</button></div>'+
    '<div class="pfa-thread"></div>'+
@@ -459,7 +459,7 @@ function renderChat(el,ctx,seg){
 
 function renderAuto(el,ctx,seg){
   var L=D.aiAutomations,act=L.filter(function(a){return a.on}).length;
-  el.innerHTML='<div class="pfa-head"><div><h1>Assistant</h1><div class="sub hide-s">'+act+' automatisations actives travaillent pour vous en arrière-plan.</div></div>'+seg+'</div>'+
+  el.innerHTML='<div class="pfa-head"><div><h1>Piaffe AI</h1><div class="sub hide-s">'+act+' automatisations actives travaillent pour vous en arrière-plan.</div></div>'+seg+'</div>'+
    '<div class="stack rise" style="--g:14px"><div class="card pad hrow wrap" style="--g:14px"><span class="av sq lg" style="--c:var(--acc-pale);color:var(--acc)">'+ICON('repeat','lg')+'</span><div class="grow" style="min-width:220px"><div class="b" style="font-size:15px">Dites-le une fois, l’assistant s’en souvient</div><div class="s mut">« Chaque lundi, envoie-moi le point sur les impayés ». Une automatisation lit et prépare. Elle n’écrit jamais sans votre accord.</div></div><button class="btn pri" data-do="newauto">'+ICON('plus','sm')+'Créer une automatisation</button></div>'+
    '<div class="g2">'+L.map(function(a,i){return '<div class="card pfa-auto'+(a.fresh?' pop':'')+'"><div class="hd"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON(a.ic)+'</span><div class="grow"><div class="b">'+a.name+'</div><div class="hrow wrap" style="--g:6px;margin-top:5px"><span class="chip acc">'+ICON('clock','sm')+a.when+'</span><span class="chip">'+ICON(a.ch==='E-mail'?'mail':'bell','sm')+a.ch+'</span></div></div><button class="tog" role="switch" aria-checked="'+a.on+'" data-manual data-tg="'+i+'" title="Activer ou mettre en pause"></button></div>'+
      '<div class="s mut">'+a.what+'</div><dl class="pf-kv" style="font-size:13px"><dt>Destinataire</dt><dd>'+a.to+'</dd><dt>Dernier envoi</dt><dd>'+a.last+'</dd><dt>Prochain</dt><dd>'+(a.on?a.next:'En pause')+'</dd></dl>'+
@@ -490,7 +490,7 @@ function renderJournal(el,ctx,seg){
     h+='<div class="pfa-jr'+(x.fresh?' pop':'')+'"><span class="tm">'+x.t+'</span><span class="av sq sm" style="--c:var(--'+(x.kind==='E'?'acc-pale':'bg-2')+');color:var(--'+(x.kind==='E'?'acc':'mut')+')">'+ICON(x.kind==='E'?'edit':'eye','sm')+'</span><div style="min-width:0"><div class="s b" style="font-size:13.5px">'+x.what+'</div><div class="xs mut hrow wrap" style="--g:6px;margin-top:2px"><span class="pf-mono" style="font-size:13px">'+x.tool+'</span><span>·</span><span>'+x.src+' pour '+p.first+' '+p.last+'</span></div></div>'+
      '<div class="r">'+U.chip(s[0]+(x.st==='ok'?p.first:''),s[1],true)+(x.st==='wait'?'<button class="btn sm pri" data-val="'+L.indexOf(x)+'">Voir et valider</button>':x.undo&&x.st==='ok'?'<button class="btn sm ghost" data-un="'+L.indexOf(x)+'">'+ICON('refresh','sm')+'Annuler</button>':'')+'</div></div>'});
   L.forEach(function(x){x.fresh=false});
-  el.innerHTML='<div class="pfa-head"><div><h1>Assistant</h1><div class="sub hide-s">Tout ce que l’IA a lu ou fait dans l’écurie, que ce soit ici ou depuis Claude et ChatGPT.</div></div>'+seg+'</div>'+
+  el.innerHTML='<div class="pfa-head"><div><h1>Piaffe AI</h1><div class="sub hide-s">Tout ce que l’IA a lu ou fait dans l’écurie, que ce soit ici ou depuis Claude et ChatGPT.</div></div>'+seg+'</div>'+
    '<div class="stack rise" style="--g:14px"><div class="g4">'+[[L.length,'demandes tracées','chat'],[w.filter(function(x){return x.st==='ok'}).length,'écritures confirmées','checkc'],[w.filter(function(x){return x.st==='cancel'}).length,'refusées ou annulées','xc'],[0,'écriture sans confirmation','shield']].map(function(k){return '<div class="card pad hrow" style="--g:12px;padding:14px 16px"><span class="av sq" style="--c:var(--surface-2);color:var(--mut);box-shadow:inset 0 0 0 1px var(--line)">'+ICON(k[2])+'</span><div><div class="disp num" style="font-size:22px;font-weight:700;line-height:1.1"><span data-count="'+k[0]+'">'+k[0]+'</span></div><div class="xs mut">'+k[1]+'</div></div></div>'}).join('')+'</div>'+
    '<div class="card"><div class="ch" style="padding-bottom:12px;flex-wrap:wrap"><h3>Journal des actions de l’IA</h3><div class="hrow wrap" style="--g:8px">'+U.seg([['all','Tout'],['E','Écritures'],['L','Lectures'],['mcp','Via MCP']],f,'data-jf')+'<button class="btn sm" data-exp>'+ICON('download','sm')+'Exporter</button></div></div>'+(h||U.empty('shield','Aucune action dans ce filtre'))+'</div>'+
    '<div class="note">'+ICON('shield','sm')+'<span>Chaque écriture porte la mention « via assistant » sur la fiche concernée. Le journal est conservé 12 mois et ne peut pas être modifié.</span></div></div>';
@@ -501,7 +501,7 @@ function renderJournal(el,ctx,seg){
   $('[data-exp]',el).onclick=function(){P.toast('Journal exporté au format CSV ('+list.length+' lignes)',{icon:'download'})};
 }
 
-P.mod({id:'assistant',role:'gerant',group:'Plateforme',title:'Assistant',icon:'assistant',n:10,phoneTitle:'Assistant',short:'Assistant',render:renderAssistant});
+P.mod({id:'assistant',role:'gerant',group:'Plateforme',title:'Piaffe AI',icon:'assistant',n:10,phoneTitle:'Piaffe AI',short:'Piaffe AI',render:renderAssistant});
 P.pf.AS=AS;
 })();
 
@@ -1418,7 +1418,7 @@ var CAT={gerant:[['cockpit','Aujourd’hui','today','Pilotage','Le résumé du m
   ['planning','Planning','planning','Club','Reprises, stages, montoir'],['adherents','Adhérents','members','Club','Familles, forfaits, licences'],['pensions','Pensions','owner','Club','Pensions et demi-pensions'],['coachs','Coachs','coach','Club','Coachs extérieurs réservables'],['competitions','Concours','compet','Club','Engagements, transport, résultats'],['boutique','Boutique','shop','Club','Vente en ligne et caisse'],['communication','Communication','chat','Club','Messages, e-mails, SMS'],
   ['facturation','Facturation','invoice','Argent','Factures, paiements, relances'],['compta','Comptabilité','accounting','Argent','Banque, rapprochement, exports'],['contrats','Contrats','contract','Argent','Signature électronique'],
   ['equipe','Équipe','team','Équipe','Plannings, pointages, congés'],
-  ['assistant','Assistant','assistant','Plateforme','L’IA qui lit et prépare pour vous'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
+  ['assistant','Piaffe AI','assistant','Plateforme','L’IA qui lit et prépare pour vous'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
  employe:[['emp-jour','Ma journée','today','Ma journée','Ce que je dois faire maintenant',1],['emp-tournee','Tournée','route','Ma journée','La tournée des boxes, dans l’ordre'],['emp-planning','Planning','planning','Ma journée','Mes reprises et mes horaires'],['emp-chevaux','Chevaux','horse','Écurie','Les fiches, en lecture rapide'],['emp-soins','Soins','care','Écurie','Soins à faire et à noter'],['emp-signaler','Signaler','alert','Écurie','Un problème, avec photo'],['emp-pointage','Pointage','clockin','Moi','Arrivée, départ, pauses'],['emp-messages','Messages','chat','Moi','L’équipe et les familles'],['emp-conges','Congés','holiday','Moi','Demandes et soldes']],
  adherent:[['adh-accueil','Accueil','today','Moi','Mes prochaines reprises',1],['adh-reserver','Réserver','planning','Équitation','Reprises, stages, rattrapages'],['adh-coachs','Coachs','coach','Équitation','Réserver un coach'],['adh-concours','Concours','compet','Équitation','Engagements et covoiturage'],['adh-progression','Progression','trend','Équitation','Galops et objectifs'],['adh-cheval','Mon cheval','horse','Cheval','Soins, journal, caméra'],['adh-demipension','Demi-pension','owner','Cheval','Offres et planning partagé'],['adh-paiements','Paiements','card','Compte','Factures et moyens de paiement'],['adh-contrats','Contrats','contract','Compte','Documents à signer'],['adh-messages','Messages','chat','Compte','Le club et mon moniteur'],['adh-profil','Profil','user','Compte','Mes informations']],
  coach:[['coach-agenda','Agenda','planning','Coaching','Mes cours et réservations',1],['coach-eleves','Élèves','members','Coaching','Suivi et notes de séance'],['coach-dispo','Disponibilités','clock','Coaching','Mes créneaux réservables'],['coach-concours','Concours','compet','Coaching','Mes élèves engagés'],['coach-revenus','Revenus','euro','Compte','Encaissements et factures'],['coach-profil','Profil','user','Compte','Ma page publique']]};

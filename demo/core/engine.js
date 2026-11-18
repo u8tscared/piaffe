@@ -209,7 +209,7 @@ P.renderShell=function(){
     '<div class="main"><header class="top"><div class="lft"><button class="btn ghost icon mback" data-back title="Retour">'+ICON('back')+'</button><button class="mlogo" data-go="'+R.home+'" title="Accueil">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</button><div class="crumb">'+crumbHTML(cur)+'</div></div>'+
     '<button class="cmdk" data-pal title="Rechercher (⌘K)">'+ICON('search')+'<span class="q">Rechercher un cheval, un cavalier, un écran…</span><kbd>⌘ K</kbd></button>'+
     '<div class="tools"><button class="btn ghost icon msearch" data-pal title="Rechercher">'+ICON('search')+'</button><button class="btn ghost icon bellb" data-notifs title="Notifications">'+ICON('bell')+'<i></i></button>'+
-    '<button class="ai" data-ai title="Assistant">'+ICON('assistant')+'<span class="lbl">Assistant</span></button></div><div class="mt">'+(cur.phoneTitle||cur.title||'')+'</div></header><div class="stw">'+secTabsHTML()+'</div><div class="view"></div></div>'+
+    '<button class="ai" data-ai title="Piaffe AI">'+ICON('assistant')+'<span class="lbl">Piaffe AI</span></button></div><div class="mt">'+(cur.phoneTitle||cur.title||'')+'</div></header><div class="stw">'+secTabsHTML()+'</div><div class="view"></div></div>'+
     '<nav class="tabbar">'+tabsHTML()+'</nav><div class="toasts"></div>';
   view=$('.view',app);setDom(cur);
   if(mobile)mbk(S.stack.length&&!R0(cur))
@@ -308,7 +308,7 @@ P.palette=function(){if($('.pal',app))return;var sc=document.createElement('div'
 P.brain=[];
 P.suggestions={gerant:['Qui n’a pas payé ce mois-ci ?','Prépare le planning de samedi','Combien me coûte Ulysse ?','Relance les impayés'],employe:['Qu’est-ce que je fais maintenant ?','Signale un problème au box 12','Qui sort au paddock ?'],adherent:['Réserve-moi un rattrapage samedi','Comment va Ulysse ?','Trouve un coach CSO jeudi'],coach:['Mes cours de la semaine','Qui a progressé ce mois-ci ?','Bloque mon vendredi']};
 P.assistant=function(first){var ex=$('.aip',app);if(ex){ex.remove();if(!first)return}
-  var w=document.createElement('div');w.className='aip';w.innerHTML='<div class="aih"><span class="orb">'+LOGO(24,'var(--navy-ink)','var(--strass)',true)+'</span><div class="grow"><b>Assistant Piaffe</b><div class="xs mut">Il agit dans '+D.club.short+' avec vos droits '+(function(l){l=l.toLowerCase();return (/^[aeéèiouh]/.test(l)?'d’':'de ')+l})(P.roles[S.role].label)+'</div></div><button class="btn ghost icon sm" data-x>'+ICON('x')+'</button></div>'+
+  var w=document.createElement('div');w.className='aip';w.innerHTML='<div class="aih"><span class="orb">'+LOGO(24,'var(--navy-ink)','var(--strass)',true)+'</span><div class="grow"><b>Piaffe AI</b><div class="xs mut">Il agit dans '+D.club.short+' avec vos droits '+(function(l){l=l.toLowerCase();return (/^[aeéèiouh]/.test(l)?'d’':'de ')+l})(P.roles[S.role].label)+'</div></div><button class="btn ghost icon sm" data-x>'+ICON('x')+'</button></div>'+
    '<div class="aib"><div class="msg a">Bonjour '+P.ctx().me.first+'. Posez une question ou demandez une action : je cherche dans tout Piaffe et je vous montre ce que je vais faire avant de le faire.</div></div>'+
    '<div class="aif"><div class="sugg">'+(P.suggestions[S.role]||[]).map(function(s){return '<button>'+s+'</button>'}).join('')+'</div><form class="comp"><input id="ai-q" placeholder="Demandez n’importe quoi…" autocomplete="off"><button class="btn icon sm pri" title="Envoyer">'+ICON('send','sm')+'</button></form></div>';
   app.appendChild(w);var body=$('.aib',w),inp=$('input',w);
