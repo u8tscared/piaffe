@@ -1,3 +1,4 @@
 node_modules/
 demo/shots/
 demo/dist/preview*.html
+_pages/

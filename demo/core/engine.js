@@ -154,19 +154,18 @@ function buildDemo(){
 P.app=function(){return app};
 P.isMobile=function(){return app.classList.contains('mobile')};
 
-/* rail : entrées à pastille ; au-delà de 11 écrans, les groupes se replient et seul celui de l'écran courant se déplie */
+/* menu latéral : sections nommées, chaque écran sur une ligne (icône, libellé, compteur) ; une section se replie d'un clic sur son titre */
 function curTab(){var m=P.mods[S.route];return m&&m.hidden&&m.tab&&P.mods[m.tab]?m.tab:S.route}
 function badgeOf(m){var b=typeof m.badge==='function'?m.badge():m.badge;if(!b||(b.v!=null&&!b.v))return null;return b}
 function bdgHTML(b){return b?'<span class="bdg'+(b.hot?' hot':'')+'">'+(b.v!=null?b.v:b)+'</span>':''}
-function nvHTML(m,home,sub){var cur=curTab();return '<a href="#'+m.id+'" class="nv d-'+P.domOf(m)+(home?' home':'')+'" data-go="'+m.id+'" title="'+F.esc(m.title)+'"'+(cur===m.id?' aria-current="page"':'')+'>'+(sub?'':'<span class="pl">'+ICON(m.icon)+'</span>')+'<span class="lb">'+m.title+'</span>'+bdgHTML(badgeOf(m))+'</a>'}
-function navHTML(){var role=S.role,mods=P.modsFor(role),R=P.roles[role],cur=P.mods[curTab()]||{},h='',groups=[],by={};
+function nvHTML(m){var cur=curTab();return '<a href="#'+m.id+'" class="nv d-'+P.domOf(m)+'" data-go="'+m.id+'"'+(cur===m.id?' aria-current="page"':'')+'><span class="pl">'+ICON(m.icon)+'</span><span class="lb">'+m.title+'</span>'+bdgHTML(badgeOf(m))+'</a>'}
+function navHTML(){var role=S.role,mods=P.modsFor(role),cur=P.mods[curTab()]||{},h='',groups=[],by={},shut=P.prefs.get('navshut:'+role,[]);
   mods.forEach(function(m){if(!by[m.group]){by[m.group]=[];groups.push(m.group)}by[m.group].push(m)});
-  if(mods.length<=11){groups.forEach(function(g,i){if(i)h+='<div class="sep"></div>';by[g].forEach(function(m){h+=nvHTML(m,m.id===R.home)})});return h}
-  groups.forEach(function(g){var l=by[g];if(l.length===1){h+=nvHTML(l[0],l[0].id===R.home);return}
-    var on=cur.group===g,dom=P.domGroups[g]||P.domOf(l[0]),hot=false,n=0;l.forEach(function(m){var b=badgeOf(m);if(b){if(b.hot)hot=true;if(typeof b.v==='number')n+=b.v}});
-    h+='<a href="#'+l[0].id+'" class="ng d-'+dom+(on?' on':'')+'" data-go="'+l[0].id+'" title="'+F.esc(g)+'"><span class="pl">'+ICON(GICON[g]||l[0].icon)+'</span><span class="lb">'+g+'</span>'+(!on&&n?bdgHTML({v:n,hot:hot}):'')+'</a>';
-    if(on)h+='<div class="sub">'+l.map(function(m){return nvHTML(m,false,true)}).join('')+'</div>'});
+  groups.forEach(function(g){var l=by[g],closed=shut.indexOf(g)>=0&&cur.group!==g,n=0,hot=false;
+    l.forEach(function(m){var b=badgeOf(m);if(b){if(b.hot)hot=true;if(typeof b.v==='number')n+=b.v}});
+    h+='<div class="grp d-'+(P.domGroups[g]||P.domOf(l[0]))+(closed?' shut':'')+'"><button class="gh" data-navgrp="'+F.esc(g)+'" aria-expanded="'+!closed+'"><span>'+g+'</span>'+(closed&&n?bdgHTML({v:n,hot:hot}):'')+ICON('down')+'</button><div class="gl">'+l.map(nvHTML).join('')+'</div></div>'});
   return h}
+P.toggleGroup=function(g){var k='navshut:'+S.role,l=P.prefs.get(k,[]),i=l.indexOf(g);if(i<0)l.push(g);else l.splice(i,1);P.prefs.set(k,l);P.renderBadges()};
 P.tabShort={cockpit:'Accueil'};
 function tabsHTML(){var role=S.role,R=P.roles[role],cur=curTab();var tabs=R.tabs.filter(function(t){return P.mods[t]&&P.prefs.off(role).indexOf(t)<0}).slice(0,4);
   return tabs.map(function(t){var m=P.mods[t],b=badgeOf(m);return '<button class="d-'+P.domOf(m)+'" data-go="'+t+'" aria-current="'+(cur===t?'page':'false')+'">'+ICON(m.icon)+'<span>'+(m.short||P.tabShort[t]||m.title)+'</span>'+(b&&b.hot?bdgHTML(b):'')+'</button>'}).join('')+'<button class="more" data-more title="Tous les écrans" aria-label="Tous les écrans">'+ICON('grid')+'</button>'}
@@ -178,8 +177,9 @@ P.renderShell=function(){
   var mobile=dev==='phone',rail=(dev==='tablet'||dev==='tablet-full');
   app.className='app'+(mobile?' mobile':'')+(rail?' rail':'');app.setAttribute('data-role',role);
   var cur=P.mods[S.route]||{};
-  app.innerHTML='<aside class="side"><div class="club" data-go="'+R.home+'" title="'+F.esc(role==='coach'?'Piaffe Coach':D.club.name)+'"><div class="lg">'+LOGO(28,'var(--navy-ink)','var(--strass)')+'</div></div>'+
-    '<nav>'+navHTML()+'</nav><div class="me" title="'+F.esc(me.first+' '+me.last)+'">'+P.ui.av(me)+'<span>'+me.first+'</span></div></aside>'+
+  var SPACE={gerant:'Espace gérant',employe:'Espace équipe',adherent:'Espace cavalier',coach:'Espace coach'};
+  app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Piaffe Coach':D.club.name)+'</b><small>'+SPACE[role]+'</small></span></button>'+
+    '<nav aria-label="Menu">'+navHTML()+'</nav><div class="me">'+P.ui.av(me)+'<span class="cn"><b>'+F.esc(me.first+' '+me.last)+'</b><small>'+F.esc(me.role||(me.galop?'Galop '+me.galop:me.spec?'Coach '+me.spec:R.label))+'</small></span></div></aside>'+
     '<div class="main"><header class="top"><div class="lft"><button class="btn ghost icon mback" data-back title="Retour">'+ICON('back')+'</button><button class="mlogo" data-go="'+R.home+'" title="Accueil">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</button><div class="crumb">'+crumbHTML(cur)+'</div></div>'+
     '<button class="cmdk" data-pal title="Rechercher (⌘K)">'+ICON('search')+'<span class="q">Rechercher un cheval, un cavalier, un écran…</span><kbd>⌘ K</kbd></button>'+
     '<div class="tools"><button class="btn ghost icon msearch" data-pal title="Rechercher">'+ICON('search')+'</button><button class="btn ghost icon bellb" data-notifs title="Notifications">'+ICON('bell')+'<i></i></button>'+
@@ -306,6 +306,7 @@ P.tour=function(){var i=0,box=document.createElement('div');box.className='tour'
 
 /* ---------- Gestion globale des clics ---------- */
 function onClick(e){var t=e.target;
+  var gh=t.closest('[data-navgrp]');if(gh&&app.contains(gh)){P.toggleGroup(gh.getAttribute('data-navgrp'));return}
   var g=t.closest('[data-go]');if(g&&app.contains(g)){e.preventDefault();var pr={};Array.prototype.forEach.call(g.attributes,function(a){if(a.name.indexOf('data-p-')===0)pr[a.name.slice(7)]=a.value});if(g.getAttribute('data-id'))pr.id=g.getAttribute('data-id');P.go(g.getAttribute('data-go'),pr);return}
   if(t.closest('[data-back]')){P.back();return}
   if(t.closest('[data-pal]')){P.palette();return}

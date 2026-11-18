@@ -8,7 +8,8 @@ const rd=f=>fs.readFileSync(f,'utf8');
 let html=rd(path.join(S,'landing.html'));
 const parts={'/*__CSS__*/':rd(path.join(S,'landing.css')),'/*__ICONS__*/':rd(path.join(CORE,'icons.js')),'/*__HORSE__*/':rd(path.join(CORE,'horse.inc.js')),'/*__JS__*/':rd(path.join(S,'landing.js'))};
 /* liens de démo : {{demo:ecran}} */
-const DEMO='https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN';
+/* PIAFFE_DEMO=pages : liens relatifs vers demo/ (GitHub Pages) ; sinon l'artifact claude.ai */
+const DEMO=process.env.PIAFFE_DEMO==='pages'?'demo/':'https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN';
 html=html.replace(/\{\{demo:([a-z0-9-]+)\}\}/g,(m,r)=>'href="'+DEMO+'#'+r+'" target="_blank" rel="noopener"');
 /* icônes : {{i:nom}} */
 const vm=require('vm');const ctx={window:{}};vm.runInNewContext(rd(path.join(CORE,'icons.js')),ctx);
