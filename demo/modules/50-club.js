@@ -163,9 +163,9 @@ P.css(`
 .cl-opt{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line-2);cursor:pointer;text-align:left;width:100%;transition:box-shadow var(--t-2),background var(--t-2)}
 .cl-opt:hover{background:var(--surface-2)}
 .cl-opt[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px var(--acc);background:var(--acc-pale)}
-.cl-sub{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:18px 0 8px}
+.cl-sub{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:18px 0 8px}
 .cl-sub:first-child{margin-top:0}
-.cl-bars{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center;font-size:12.5px}
+.cl-bars{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center;font-size:13px}
 .cl-row{display:flex;align-items:center;gap:12px;padding:11px 16px;min-width:0;position:relative;cursor:pointer;transition:background var(--t-1)}
 .cl-row:hover{background:var(--surface-2)}
 .cl-row+.cl-row{border-top:1px solid var(--line)}
@@ -191,7 +191,7 @@ P.css(`
 .cla-box .tbl td:first-child,.cla-box .tbl th:first-child{width:44px;padding-right:0}
 .cla-id{display:flex;align-items:center;gap:10px;min-width:0}
 .cla-id b{font-weight:600;display:block}
-.cla-id small{display:block;font-size:12px;color:var(--mut)}
+.cla-id small{display:block;font-size:13px;color:var(--mut)}
 .cla-d3{display:inline-flex;gap:4px}
 .cla-d3 i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center}
 .cla-d3 i.ok{color:var(--ok);background:var(--ok-pale)}
@@ -233,8 +233,8 @@ P.css(`
 .cla-rcb{display:flex;height:8px;border-radius:var(--r-pill);overflow:hidden;gap:2px}
 .cla-rcb i{display:block;height:100%;background:var(--c);min-width:4px;transition:flex-basis var(--t-3) var(--e-out)}
 .cla-steps{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
-.cla-steps span{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px 0 4px;border-radius:var(--r-pill);font-size:12.5px;font-weight:600;color:var(--mut);background:var(--bg-2);flex:none}
-.cla-steps i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-style:normal;font-size:11.5px}
+.cla-steps span{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px 0 4px;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--mut);background:var(--bg-2);flex:none}
+.cla-steps i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface);font-style:normal;font-size:13px}
 .cla-steps .on{color:var(--acc);background:var(--acc-pale)}
 .cla-steps .done{color:var(--ok)}
 .cla-steps .done i{background:var(--ok);color:var(--surface)}
@@ -243,7 +243,7 @@ P.css(`
 .clf-gok{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-md);background:var(--ok-pale);margin-top:14px}
 .clf-gok .strass{flex:none;margin-top:3px}
 .app.mobile .cl-pg .cla-pin{width:40px;height:40px}
-.clb-z{font:500 12px/1.65 var(--f-mono);padding:16px 18px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);color:var(--ink-2);min-width:0}
+.clb-z{font:500 13px/1.65 var(--f-mono);padding:16px 18px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);color:var(--ink-2);min-width:0}
 .clb-z>div{min-width:0;overflow-wrap:anywhere}
 .clb-z b{font-weight:600;color:var(--ink);white-space:nowrap}
 .clb-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 10px 22px}
@@ -252,14 +252,14 @@ P.css(`
 .clb-done h3{font-size:21px}
 .clb-done p{max-width:440px}
 .clb-att{padding:14px}
-.clb-fs{height:30px;padding:0 11px;border-radius:var(--r-pill);font-size:12px;font-weight:600;flex:none;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink-2);transition:background var(--t-1),color var(--t-1)}
+.clb-fs{height:30px;padding:0 11px;border-radius:var(--r-pill);font-size:13px;font-weight:600;flex:none;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink-2);transition:background var(--t-1),color var(--t-1)}
 .clb-fs.req{background:var(--acc-pale);color:var(--acc);box-shadow:none}
 .clb-fs.off{color:var(--mut-2);box-shadow:inset 0 0 0 1px var(--line)}
 .clb-fs:disabled{opacity:.7;cursor:default}
 .app.mobile .clb-fs{height:36px}
-.clb-code{margin:0;padding:12px 14px;border-radius:10px;background:var(--bg-2);font:500 12px/1.6 var(--f-mono);color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.clb-code{margin:0;padding:12px 14px;border-radius:10px;background:var(--bg-2);font:500 13px/1.6 var(--f-mono);color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
 .clb-ff{display:flex;flex-direction:column;gap:8px}
-.clb-ff>div{display:flex;flex-direction:column;gap:4px;font-size:12px}
+.clb-ff>div{display:flex;flex-direction:column;gap:4px;font-size:13px}
 .clb-ff>div i{height:30px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface)}
 @container main (max-width:1080px){.cla-h1{display:none}.cla-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container main (max-width:760px){.cla-grid{grid-template-columns:minmax(0,1fr);gap:0;padding:0}
@@ -280,7 +280,7 @@ P.css(`
 .clf-wk i.r{background:var(--c3)}
 .clf-wk i.e{background:var(--bg-2);box-shadow:inset 0 0 0 1px var(--line-2)}
 .clf-gal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;position:relative;margin:4px 0 2px}
-.clf-gal .g{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-size:11.5px;color:var(--mut)}
+.clf-gal .g{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-size:13px;color:var(--mut)}
 .clf-gal .g::before{content:"";position:absolute;top:15px;left:-50%;width:100%;height:2px;background:var(--line-2)}
 .clf-gal .g:first-child::before{display:none}
 .clf-gal .g.ok::before{background:var(--acc)}
@@ -290,9 +290,9 @@ P.css(`
 .clf-gal .g.next u{box-shadow:inset 0 0 0 1.5px var(--acc);color:var(--acc)}
 .clf-msg{max-width:84%;padding:9px 12px;border-radius:14px;font-size:13.5px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);align-self:flex-start}
 .clf-msg.me{align-self:flex-end;background:var(--acc);color:var(--acc-ink);box-shadow:none}
-.clf-msg small{display:block;font-size:11px;opacity:.7;margin-top:3px}
+.clf-msg small{display:block;font-size:13px;opacity:.7;margin-top:3px}
 .clf-note{padding:12px 14px;border-radius:var(--r-md);background:var(--warn-pale);font-size:13px;color:var(--ink-2)}
-.clf-note small{display:block;color:var(--mut);margin-top:4px;font-size:11.5px}
+.clf-note small{display:block;color:var(--mut);margin-top:4px;font-size:13px}
 @container main (max-width:900px){.clf-cols{grid-template-columns:minmax(0,1fr)}}
 @container main (max-width:760px){.clf-hero{padding:16px;gap:14px}.clf-hero h1{font-size:22px}.clf-hero .acts{margin-left:0;width:100%}.clf-hero .acts .btn{flex:1;height:44px}.clf-hero .acts .btn.icon{flex:none;width:44px}.clf-big{font-size:34px}}
 `);
@@ -489,17 +489,38 @@ function sheetWalkDetail(w){var sh=P.sheet({title:w.first+' '+w.last,icon:'user'
 
 function bulk(act,ids){if(act==='msg')sheetMessage(ids);else if(act==='inv')sheetInvoice(ids);else if(act==='enr')sheetEnroll(ids);else if(act==='lic')sheetLicences(ids);else if(act==='exp')sheetExport(ids.length)}
 
+function sheetAssid(){var L=D.members.filter(function(m){return m.forfait!=='f5'}).sort(function(a,b){return X(a).rate-X(b).rate||X(b).last-X(a).last}).slice(0,8);
+  var sh=P.sheet({title:'Cavaliers à surveiller',icon:'pulse',body:'<p class="s mut" style="margin-bottom:14px">Les cavaliers les moins présents sur les 12 dernières semaines. Un message bienveillant suffit souvent à éviter un départ en fin de saison.</p><div class="stack" style="--g:8px">'+L.map(function(m){var x=X(m);return '<button class="cl-opt" data-manual data-am="'+m.id+'">'+U.av(m)+'<div class="grow" style="min-width:0"><b class="s ellip" style="display:block">'+nm(m)+'</b><span class="xs mut">'+(m.galop?'Galop '+m.galop:'Débutant')+' · '+x.abs+' absences · '+(x.last===0?'venu'+fe(m)+' aujourd’hui':x.last===1?'venu'+fe(m)+' hier':'dernière venue il y a '+x.last+' j')+'</span></div><span class="chip '+(x.rate<70?'bad':x.rate<85?'warn':'ok')+'">'+x.rate+' %</span></button>'}).join('')+'</div>',
+   foot:'<button class="btn pri block" data-x="msg">'+ICON('chat','sm')+'Écrire à ces '+L.length+' cavaliers</button>'});
+  on(sh,'[data-am]',function(b){sh.close();P.go('adherent',{id:b.getAttribute('data-am')})});
+  on(sh,'[data-x="msg"]',function(){sh.close();sheetMessage(L.map(function(m){return m.id}),'Bonjour {prénom},\n\nOn ne vous a pas beaucoup vu ces dernières semaines, tout va bien ? Votre place vous attend, et nous pouvons déplacer votre créneau si l’horaire ne convient plus.\n\nÀ bientôt aux Tilleuls,\nClaire')})}
+/* tuile de synthèse générique (bento Paddock) */
+function hk(o){var tag=o.attr?'button':'div';return '<'+tag+' class="card cla-hk'+(o.dom?' d-'+o.dom:'')+(o.tint?' tint':'')+'"'+(o.attr||'')+'>'+(o.illu&&window.ILLU?ILLU[o.illu]({size:o.mob?64:84,cls:'cla-hk-illu'}):'')+'<span class="cla-hk-lab"><span class="ico sm">'+ICON(o.icon,'sm')+'</span>'+o.lab+'</span><span class="big num">'+o.val+'</span><span class="cla-hk-s">'+o.sub+(o.attr?ICON('right','sm'):'')+'</span></'+tag+'>'}
+function hks(tiles,mob){return '<div class="cla-hks k4'+(mob?' mob':'')+'">'+tiles.join('')+'</div>'}
+/* ---------- En-tête de synthèse des adhérents (bento) ---------- */
+function adhHero(M,nFam,pend,nLic,mob){
+  var mins=M.filter(function(m){return m.minor}).length,G=[0,0,0,0,0,0,0,0];M.forEach(function(m){G[Math.min(7,m.galop||0)]++});var gm=Math.max.apply(null,G);
+  var rate=Math.round(sum(M,function(m){return X(m).rate})/M.length),lt=D.invoices.filter(function(i){return i.status==='en retard'&&D.member(i.member)}),lf={};lt.forEach(function(i){lf[D.member(i.member).fam]=1});
+  var hero='<div class="card tint d-cavaliers cla-hk cla-hk-main"><div class="cla-hk-l"><span class="cla-hk-lab">'+ICON('members','sm')+'Cavaliers inscrits</span><span class="big num"><span data-count="'+M.length+'">'+M.length+'</span></span><span class="cla-hk-s">dans '+nFam+' familles · '+mins+' mineurs</span></div>'+
+    '<div class="cla-gh" aria-label="Répartition par galop">'+G.map(function(n,i){return '<button data-manual data-gq="'+i+'" title="'+(i?'Galop '+i+(i===7?' et plus':''):'Débutants')+' : '+n+'" style="--h:'+Math.max(6,Math.round(n/gm*100))+'%;--i:'+i+'"><i></i><b class="num">'+n+'</b><span>'+(i?'G'+i:'Déb.')+'</span></button>'}).join('')+'</div>'+(window.ILLU?ILLU.bombe({size:mob?64:92,cls:'cla-hk-illu'}):'')+'</div>';
+  var t=function(dom,icon,lab,val,sub,a,extra){return '<button class="card cla-hk '+(dom?'d-'+dom:'')+'" data-a="'+a+'"><span class="cla-hk-lab"><span class="ico sm">'+ICON(icon,'sm')+'</span>'+lab+'</span><span class="big num">'+val+'</span><span class="cla-hk-s">'+sub+ICON('right','sm')+'</span>'+(extra||'')+'</button>'};
+  var sig=t('cavaliers','onboarding','Inscriptions en ligne','<span data-count="'+pend.length+'">'+pend.length+'</span>',pend.length?'à valider':'tout est traité','signups');
+  var lic=t('cavaliers','shield','Licences FFE 2027','<span data-count="'+(M.length-nLic)+'">'+(M.length-nLic)+'</span><small>/'+M.length+'</small>',nLic?nLic+' à renouveler':'toutes à jour','lic');
+  var ass=t('cavaliers','pulse','Assiduité moyenne','<span data-count="'+rate+'">'+rate+'</span><small>%</small>','sur les 12 dernières semaines','assid','<span class="cla-hk-bar">'+U.bar(rate,'var(--d)')+'</span>');
+  var due=t('argent','euro','Impayés',F.eur(lateSum(lt)),lt.length?pl(lt.length,'facture')+' · '+pl(Object.keys(lf).length,'famille'):'aucun retard','due');
+  return '<div class="cla-hks'+(mob?' mob':'')+'">'+hero+(mob?sig+lic+due:ass+due)+'</div>'}
+function lateSum(l){return sum(l,function(i){return i.id===LI.id?LI.left:i.amount})}
+
 P.mod({id:'adherents',role:'gerant',group:'Club',title:'Adhérents',icon:'members',n:20,short:'Adhérents',
  badge:function(){var n=pending().length;return n?{v:n}:null},
  render:function(el,ctx){
   var M=D.members,nLic=M.filter(function(m){return !licOK(m)}).length,nH=M.filter(function(m){return !m.cert}).length,mins=M.filter(function(m){return m.minor}),nPar=mins.filter(function(m){return X(m).parental}).length,nImg=M.filter(function(m){return m.photo}).length;
   var fams={};M.forEach(function(m){fams[m.fam]=1});var pend=pending();
   var h=U.ph('Adhérents',M.length+' adhérents dans '+Object.keys(fams).length+' familles · '+(pend.length?pl(pend.length,'inscription en ligne','inscriptions en ligne')+' à valider':'aucune inscription en attente'),
-   '<button class="btn hide-s" data-a="export">'+ICON('download','sm')+'Exporter</button><button class="btn" data-a="lic">'+ICON('shield','sm')+'Licences FFE</button><button class="btn pri" data-a="new">'+ICON('plus','sm')+'Ajouter un adhérent</button>');
+   '<button class="btn hide-s" data-a="export">'+ICON('download','sm')+'Exporter</button><button class="btn" data-a="lic">'+ICON('shield','sm')+'Licences FFE</button><button class="btn pri" data-a="new">'+ICON('plus','sm')+'<span class="cla-lg">Ajouter un adhérent</span><span class="cla-sm">Ajouter</span></button>');
   h+='<div class="stack rise" style="--g:14px">';
-  if(ctx.mobile){h+='<div class="g2" style="--g:10px;grid-template-columns:repeat(2,minmax(0,1fr))"><button class="card cla-tile" data-a="signups"><span class="xs mut hrow" style="--g:6px">'+ICON('members','sm')+'Inscriptions en ligne</span><span class="v">'+pend.length+'</span><span class="xs acc b">À valider'+ICON('right','sm')+'</span></button>'+
-    '<button class="card cla-tile" data-a="lic"><span class="xs mut hrow" style="--g:6px">'+ICON('shield','sm')+'Licences FFE 2027</span><span class="v">'+(M.length-nLic)+'<small class="mut" style="font-size:14px;font-weight:600"> / '+M.length+'</small></span><span class="xs acc b">'+(nLic?nLic+' à renouveler':'Tout est à jour')+ICON('right','sm')+'</span></button></div>'}
-  else{h+='<div class="cl-top"><div class="card"><div class="ch"><h3>Inscriptions en ligne à valider</h3>'+(pend.length?'<span class="chip acc">'+pend.length+'</span>':U.chip('Tout est traité','ok',true))+'</div><div style="padding:8px 0 0">'+signupRows()+'</div>'+
+  h+=adhHero(M,Object.keys(fams).length,pend,nLic,ctx.mobile);
+  if(!ctx.mobile){h+='<div class="cl-top"><div class="card"><div class="ch"><h3>Inscriptions en ligne à valider</h3>'+(pend.length?'<span class="chip acc">'+pend.length+'</span>':U.chip('Tout est traité','ok',true))+'</div><div style="padding:8px 0 0">'+signupRows()+'</div>'+
      '<div class="cf"><span class="xs mut grow ellip">Formulaire public : tilleuls.piaffe.example/inscription</span><button class="btn ghost sm" data-a="link">'+ICON('copy','sm')+'Copier le lien</button></div></div>'+
     '<div class="card" style="display:flex;flex-direction:column"><div class="ch"><h3>Licences FFE et dossiers</h3><span class="chip line">'+ICON('link','sm')+'Via solution agréée FFE</span></div><div class="cb stack" style="--g:14px"><div class="cla-lic">'+U.ring(Math.round((M.length-nLic)/M.length*100),(M.length-nLic)+'','var(--acc)',64)+'<div class="grow"><b>'+(M.length-nLic)+' licences 2027 sur '+M.length+'</b><div class="s mut">'+(nLic?nLic+' à renouveler avant le 31 décembre':'Toutes les licences sont à jour')+'</div></div><button class="btn sm '+(nLic?'pri':'')+'" data-a="lic"'+(nLic?'':' disabled')+'>Préparer le lot</button></div>'+
      '<div>'+[['Certificat ou questionnaire de santé',M.length-nH,M.length,'cert'],['Autorisation parentale',nPar,mins.length,'min'],['Droit à l’image accordé',nImg,M.length,'all']].map(function(d){return '<div class="cla-doc" data-seg="'+d[3]+'"><b style="font-weight:500">'+d[0]+'</b>'+U.bar(d[1]/d[2]*100,d[1]===d[2]?'var(--ok)':'')+'<span class="num xs mut" style="min-width:52px;text-align:right">'+d[1]+' / '+d[2]+'</span></div>'}).join('')+'</div></div><div class="cf" style="margin-top:auto"><span class="xs mut grow">'+(nH+mins.length-nPar)+' pièces manquent, la relance part chez le payeur</span><button class="btn ghost sm" data-a="askall">'+ICON('send','sm')+'Relancer les dossiers</button></div></div></div>'}
@@ -538,6 +559,9 @@ P.mod({id:'adherents',role:'gerant',group:'Club',title:'Adhérents',icon:'member
   drawSegs();drawPins();draw();
   $('#cla-q',el).oninput=function(){AS.q=this.value;AS.limit=25;drawSegs();draw()};
   el.addEventListener('click',function(e){var t=e.target,b;
+    if(b=t.closest('[data-gq]')){var gq=+b.getAttribute('data-gq');AS.q='galop '+gq;AS.seg='all';AS.vw=null;AS.limit=25;$('#cla-q',el).value=AS.q;drawSegs();draw();$('.cla-box',el).scrollIntoView({behavior:P.RM?'auto':'smooth',block:'start'});P.toast((gq?'Galop '+gq:'Débutants')+' : '+aList().length+' cavaliers',{icon:'filter'});return}
+    if(b=t.closest('[data-a="due"]')){AS.seg='due';AS.vw=null;AS.q='';$('#cla-q',el).value='';AS.limit=25;drawSegs();draw();$('.cla-box',el).scrollIntoView({behavior:P.RM?'auto':'smooth',block:'start'});return}
+    if(b=t.closest('[data-a="assid"]')){sheetAssid();return}
     if(b=t.closest('[data-pin]')){e.stopPropagation();var pid=b.getAttribute('data-pin'),now=togglePin(pid),pm=D.member(pid);$$('[data-pin="'+pid+'"]',el).forEach(function(z){z.setAttribute('aria-pressed',now);z.title=now?'Retirer des épinglés':'Épingler'});drawPins();P.toast(now?nm(pm)+' est épinglé'+fe(pm)+' en tête de liste':nm(pm)+' n’est plus épinglé'+fe(pm),{icon:'star'});return}
     if(b=t.closest('[data-vw]')){var vv=views().filter(function(z){return z.id===b.getAttribute('data-vw')})[0];if(vv){AS.vw=vv.id;AS.seg=vv.seg;AS.q=vv.q||'';AS.sort=vv.sort;AS.dir=vv.dir;AS.hide=Object.assign({},vv.hide||{});AS.limit=25;if(!ctx.mobile&&AS.view==='fam')AS.view='table';$('#cla-q',el).value=AS.q;drawSegs();draw();P.toast('Vue « '+E(vv.name)+' » appliquée'+(vv.shared?', partagée par '+E(vv.by||'Claire Morel'):''),{icon:'layers'})}return}
     if(b=t.closest('[data-wk]')){sheetWalkDetail(D.walkins.filter(function(z){return z.id===b.getAttribute('data-wk')})[0]);return}
@@ -677,7 +701,7 @@ P.css(`
 .clp-plan:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
 .clp-plan .pr{font:700 26px/1 var(--f-display);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .clp-plan .pr small{font:600 13px var(--f-text);color:var(--mut);letter-spacing:0;margin-left:3px}
-.clp-plan ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:12.5px;color:var(--ink-2)}
+.clp-plan ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:13px;color:var(--ink-2)}
 .clp-plan li{display:flex;gap:7px;align-items:flex-start}
 .clp-plan li svg.i{color:var(--acc);width:14px;height:14px;margin-top:2px}
 .clp-cols{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;align-items:start}
@@ -688,10 +712,10 @@ P.css(`
 .clp-hb:hover{background:var(--surface-2)}
 .clp-hb[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px var(--acc);background:var(--acc-pale)}
 .clp-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.clp-cal .hd{font-size:11px;font-weight:600;color:var(--mut);text-align:center;padding-bottom:2px;letter-spacing:.04em;text-transform:uppercase}
-.clp-d{aspect-ratio:1/1;min-height:52px;border-radius:11px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:7px 8px;font-size:12px;font-weight:600;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-2);transition:transform var(--t-1) var(--e-out),background var(--t-2),color var(--t-2);position:relative}
+.clp-cal .hd{font-size:13px;font-weight:600;color:var(--mut);text-align:center;padding-bottom:2px;letter-spacing:.04em;text-transform:uppercase}
+.clp-d{aspect-ratio:1/1;min-height:52px;border-radius:11px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:7px 8px;font-size:13px;font-weight:600;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink-2);transition:transform var(--t-1) var(--e-out),background var(--t-2),color var(--t-2);position:relative}
 .clp-d:active{transform:scale(.95)}
-.clp-d small{font-size:10.5px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.clp-d small{font-size:13px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .clp-d.o{background:var(--navy);color:var(--navy-ink);box-shadow:none}
 .clp-d.r{background:var(--acc);color:var(--acc-ink);box-shadow:none}
 .clp-d.k{background:var(--acc-pale);color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc-line)}
@@ -705,12 +729,12 @@ P.css(`
 .clp-of.add:hover{background:var(--surface)}
 .clp-ap{padding:14px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-direction:column;gap:12px}
 .clp-ap.best{box-shadow:inset 0 0 0 1.5px var(--acc)}
-.clp-cr{display:grid;grid-template-columns:64px minmax(0,1fr) 46px;gap:6px 10px;align-items:center;font-size:12.5px}
+.clp-cr{display:grid;grid-template-columns:64px minmax(0,1fr) 46px;gap:6px 10px;align-items:center;font-size:13px}
 .clp-cr .bar>i{animation:clpgrow .9s var(--e-out) both}
 @keyframes clpgrow{from{width:0}}
-.clp-rk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--f-display);background:var(--bg-2);color:var(--ink-2);flex:none}
+.clp-rk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--f-display);background:var(--bg-2);color:var(--ink-2);flex:none}
 @container main (max-width:1100px){.clp-cols,.clp-cols.b{grid-template-columns:minmax(0,1fr)}}
-@container main (max-width:760px){.clp-plans{display:flex;overflow-x:auto;gap:10px;margin:0 -16px;padding:2px 16px}.clp-plans .clp-plan{flex:0 0 228px}.clp-d{min-height:46px;padding:5px 6px;border-radius:9px}.clp-d small{font-size:9.5px}.clp-cal{gap:4px}}
+@container main (max-width:760px){.clp-plans{display:flex;overflow-x:auto;gap:10px;margin:0 -16px;padding:2px 16px}.clp-plans .clp-plan{flex:0 0 228px}.clp-d{min-height:46px;padding:5px 6px;border-radius:9px}.clp-d small{font-size:13px}.clp-cal{gap:4px}}
 `);
 var PEN={},PS={tab:'pens',billed:false,dp:'dp1',cal:{},wait:{},trial:{},kept:{o1:'m019'},co:null};
 var NBOX=46;function freeBoxes(){return Math.max(0,NBOX-D.horses.length)}
@@ -776,6 +800,11 @@ P.mod({id:'pensions',role:'gerant',group:'Club',title:'Pensions',icon:'owner',n:
   var H=ownersH(),tot=sum(H,pTot),ex=sum(H,function(h){return xTot(pens(h))}),ows={};H.forEach(function(h){ows[h.owner]=1});var nOw=Object.keys(ows).length,nW=D.boxWait.filter(function(w){return PS.wait[w.id]!=='in'}).length;
   var h=U.ph('Pensions et demi-pensions',H.length+' chevaux de '+nOw+' propriétaires · '+D.halfboard.length+' demi-pensions en cours · '+pl(freeBoxes(),'box libre','boxes libres'),
     '<button class="btn" data-a="newct">'+ICON('contract','sm')+'Créer un contrat</button>'+(PS.billed?'<button class="btn" disabled>'+ICON('check','sm')+'Novembre facturé</button>':'<button class="btn pri" data-a="bill">'+ICON('invoice','sm')+'Facturer novembre</button>'));
+  var mob=ctx.mobile,nOff=(D.halfboardOffers||[]).length;
+  h+=hks([hk({dom:'argent',tint:true,illu:'foin',mob:mob,icon:'invoice',lab:'Pensions de novembre',val:F.eur(tot),sub:'dont '+F.eur(ex)+' à la carte · '+pl(nOw,'propriétaire'),attr:' data-pj="pens"'}),
+    hk({dom:'chevaux',icon:'stable',lab:'Boxes libres',val:'<span data-count="'+freeBoxes()+'">'+freeBoxes()+'</span><small>/'+NBOX+'</small>',sub:pl(nW,'demande','demandes')+' en attente',attr:' data-pj="wait"'}),
+    hk({dom:'cavaliers',icon:'family',lab:'Demi-pensions',val:'<span data-count="'+D.halfboard.length+'">'+D.halfboard.length+'</span>',sub:'en cours ce mois-ci',attr:' data-pj="demi"'}),
+    hk({dom:'cavaliers',icon:'horse',lab:'Chevaux en pension',val:'<span data-count="'+H.length+'">'+H.length+'</span>',sub:pl(nOff,'annonce publiée','annonces publiées'),attr:' data-pj="match"'})],mob);
   h+=U.tabs([['pens','Pensions du mois'],['demi','Demi-pensions'],['match','Annonces et candidats'],['wait','Liste d’attente · '+nW]],PS.tab,'data-pt')+'<div data-body style="margin-top:16px"></div>';
   el.innerHTML=h;el.classList.add('cl-pg');
   function tPens(){var by={};D.pensionExtras.forEach(function(e){by[e.id]=sum(H,function(hh){return pens(hh).x[e.id]})});var mx=Math.max.apply(null,D.pensionExtras.map(function(e){return by[e.id]*e.price}));
@@ -806,6 +835,7 @@ P.mod({id:'pensions',role:'gerant',group:'Club',title:'Pensions',icon:'owner',n:
   if(ctx.params.offer){var o0=D.halfboardOffers.filter(function(o){return o.id===ctx.params.offer})[0];if(o0)sheetMatch(o0)}
   el.addEventListener('click',function(e){var t=e.target,b;
     if(b=t.closest('[data-pt]')){PS.tab=b.getAttribute('data-pt');body();return}
+    if(b=t.closest('[data-pj]')){PS.tab=b.getAttribute('data-pj');P.$$('.tabs [data-pt]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-pt')===PS.tab)});body();var tb=P.$('.tabs',el);if(tb)tb.scrollIntoView({behavior:P.RM?'auto':'smooth',block:'start'});return}
     if(b=t.closest('[data-plan]')){sheetPlan(planOf(b.getAttribute('data-plan')));return}
     if(b=t.closest('[data-ph]')){sheetPension(D.horse(b.getAttribute('data-ph')));return}
     if(b=t.closest('[data-dp]')){PS.dp=b.getAttribute('data-dp');body();return}
@@ -839,24 +869,24 @@ P.css(`
 .clc-sheet{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}
 .clc-paper{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);border-radius:var(--r-md);padding:26px 28px;font-size:13px;line-height:1.6;color:var(--ink-2)}
 .clc-paper h4{font-size:18px;letter-spacing:-.02em;margin-bottom:4px}
-.clc-paper h5{font:700 12.5px var(--f-text);margin:14px 0 2px;color:var(--ink)}
+.clc-paper h5{font:700 13px var(--f-text);margin:14px 0 2px;color:var(--ink)}
 .clc-paper mark{background:var(--acc-pale);color:var(--ink);padding:1px 5px;border-radius:5px;font-weight:600}
 .clc-paper .pp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 4px}
-.clc-paper .pp div{padding:10px 12px;border-radius:10px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font-size:12px;line-height:1.45}
+.clc-paper .pp div{padding:10px 12px;border-radius:10px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font-size:13px;line-height:1.45}
 .clc-paper .pp b{display:block;color:var(--ink);font-size:13px}
 .clc-pad{position:relative;height:190px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line-2);overflow:hidden;touch-action:none;transition:box-shadow var(--t-2)}
 .clc-pad.sig{box-shadow:inset 0 0 0 1.5px var(--acc),var(--ring)}
 .clc-pad canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .clc-pad .base{position:absolute;left:24px;right:24px;bottom:46px;border-bottom:1.5px dashed var(--line-2);pointer-events:none}
 .clc-pad .base::before{content:"×";position:absolute;left:0;bottom:4px;font:500 18px var(--f-text);color:var(--mut-2)}
-.clc-pad .hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12.5px;color:var(--mut);pointer-events:none;transition:opacity var(--t-1)}
+.clc-pad .hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:13px;color:var(--mut);pointer-events:none;transition:opacity var(--t-1)}
 .clc-pad.sig .hint,.clc-pad.done .hint{opacity:0}
 .clc-pad .ul{position:absolute;left:24px;right:24px;bottom:45px;height:3px;border-radius:2px;background:var(--acc);transform:scaleX(0);transform-origin:left;pointer-events:none}
 .clc-pad.done{box-shadow:inset 0 0 0 1.5px var(--acc-line)}
 .clc-pad.done .base{opacity:0}
 .clc-pad.done .ul{transform:none;transition:transform var(--t-3) var(--e-out)}
 .clc-pad.done canvas{pointer-events:none}
-.clc-stamp{position:absolute;right:16px;bottom:10px;display:none;align-items:center;gap:8px;padding:6px 11px 6px 9px;border-radius:9px;background:var(--acc-pale);color:var(--acc);font-size:12px;font-weight:700;box-shadow:inset 0 0 0 1.5px var(--acc-line)}
+.clc-stamp{position:absolute;right:16px;bottom:10px;display:none;align-items:center;gap:8px;padding:6px 11px 6px 9px;border-radius:9px;background:var(--acc-pale);color:var(--acc);font-size:13px;font-weight:700;box-shadow:inset 0 0 0 1.5px var(--acc-line)}
 .clc-pad.done .clc-stamp{display:flex;animation:clcstamp 260ms var(--e-spring) 240ms both}
 @keyframes clcstamp{from{opacity:0;transform:scale(1.18)}}
 .clc-burst{position:absolute;right:22px;bottom:30px;width:0;height:0;pointer-events:none}
@@ -867,7 +897,7 @@ P.css(`
 @container main (max-width:1080px){.clc-ti{max-width:210px}}
 .clc-who{display:flex;gap:10px;align-items:center;padding:9px 0}
 .clc-who+.clc-who{border-top:1px solid var(--line)}
-.clc-lvl{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-md);background:var(--acc-pale);font-size:12.5px;color:var(--ink-2)}
+.clc-lvl{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-md);background:var(--acc-pale);font-size:13px;color:var(--ink-2)}
 .clc-lvl svg.i{color:var(--acc);margin-top:1px}
 @container main (max-width:760px){.clc-pend{padding:13px 14px}}
 .app.mobile .clc-sheet{grid-template-columns:minmax(0,1fr)}
@@ -931,14 +961,14 @@ function sigPad(box,o){box.innerHTML='<div class="clc-pad"><div class="base"></d
 function sheetContract(c){var m=cM(c),who=null;
   var sh=P.sheet({title:c.title,icon:'contract',wide:true,body:function(b){b.innerHTML='<div data-top></div><div class="clc-sheet" style="margin-top:14px"><div class="stack" style="--g:14px">'+cPaper(c)+'<div data-sign></div></div><div class="stack" style="--g:14px" data-side></div></div>';top();side();sign()},
    foot:'<span data-foot style="display:contents"></span>',onClose:function(){setTimeout(function(){if(P.state.route==='contrats')P.rerender()},300)}});
-  function top(){$('[data-top]',sh).innerHTML='<div class="hrow wrap" style="--g:6px">'+U.status(c.status)+lvlChip(c)+'<span class="chip line mono" style="font-size:11px">'+m.num+'</span>'+(c.horse?'<span class="chip">'+D.horse(c.horse).name+'</span>':'')+(c.amount?'<span class="chip num">'+F.eur(c.amount)+(/pension|box/i.test(c.title)?' / mois':'')+'</span>':'')+'</div>';
+  function top(){$('[data-top]',sh).innerHTML='<div class="hrow wrap" style="--g:6px">'+U.status(c.status)+lvlChip(c)+'<span class="chip line mono" style="font-size:13px">'+m.num+'</span>'+(c.horse?'<span class="chip">'+D.horse(c.horse).name+'</span>':'')+(c.amount?'<span class="chip num">'+F.eur(c.amount)+(/pension|box/i.test(c.title)?' / mois':'')+'</span>':'')+'</div>';
     $('[data-foot]',sh).innerHTML='<button class="btn" data-f="pdf">'+ICON('download','sm')+'PDF</button>'+(c.status==='brouillon'?'<button class="btn pri" data-f="send">'+ICON('send','sm')+'Envoyer en signature</button>':c.status==='à signer'?'<button class="btn" data-f="rem">'+ICON('bell','sm')+'Relancer '+pl(cPend(c).filter(function(s){return s.id!=='s01'}).length,'signataire').replace(/^1 /,'le ').replace(/^(\d+) /,'les $1 ')+'</button>':'<button class="btn" data-f="proof">'+ICON('shield','sm')+'Dossier de preuve</button>')}
   function side(){var ev=[['Contrat créé depuis le modèle',F.dateY(c.date)]];if(c.status!=='brouillon')ev.push(['Envoyé par e-mail et SMS',F.dateY(c.date)]);if(m.seen&&c.status==='à signer')ev.push(['Document ouvert par '+m.sg[0].name.split(' ')[0],'hier à 20 h 47']);for(var i=0;i<m.rem;i++)ev.push(['Relance envoyée','il y a 2 j']);if(m.remNow)ev.push(['Relance envoyée','à l’instant']);
     m.sg.filter(function(s){return s.done}).forEach(function(s){ev.push([s.name+' a signé',s.at])});if(c.status==='signé')ev.push(['Archivé à valeur probante',m.sg[m.sg.length-1].at||F.dateY(c.date)]);
     $('[data-side]',sh).innerHTML='<div><div class="cl-sub">Signataires</div>'+m.sg.map(function(s){return '<div class="clc-who">'+(D.person(s.id)&&!D.person(s.id).minor?U.av(s.id):ini(s.name.split(' ')[0],s.name.split(' ')[1]||'','c4'))+'<div class="grow"><div class="b s ellip">'+s.name+'</div><div class="xs mut">'+s.role+'</div><div class="xs '+(s.done?'okc':'warnc')+' b" style="margin-top:2px">'+(s.done?'Signé le '+s.at:c.status==='brouillon'?'Pas encore envoyé':'En attente')+'</div></div></div>'}).join('')+'</div>'+
      '<div class="clc-lvl">'+ICON('shield','sm')+'<span><b style="color:var(--ink)">Signature électronique '+m.lvl+' (eIDAS)</b><br>'+(m.lvl==='avancée'?'Identité vérifiée par pièce d’identité et code reçu par SMS.':'Code à usage unique reçu par SMS ou e-mail.')+' Prestataire de confiance de type Yousign.</span></div>'+
      '<div><div class="cl-sub">Journal de preuve</div><div class="tl">'+ev.map(function(e){return '<div class="ev" style="padding-bottom:12px"><div class="s b">'+e[0]+'</div><div class="xs mut">'+e[1]+'</div></div>'}).join('')+'</div></div>'+
-     (c.status==='signé'?'<div class="note ok">'+ICON('lock','sm')+'<span>Archivé 10 ans, horodatage qualifié.<br><span class="mono" style="font-size:11px">SHA-256 '+m.hash+'…</span></span></div>':'')}
+     (c.status==='signé'?'<div class="note ok">'+ICON('lock','sm')+'<span>Archivé 10 ans, horodatage qualifié.<br><span class="mono" style="font-size:13px">SHA-256 '+m.hash+'…</span></span></div>':'')}
   function sign(){var z=$('[data-sign]',sh),pend=cPend(c);if(c.status==='brouillon'){z.innerHTML='<div class="note">'+ICON('info','sm')+'<span>Ce contrat est un brouillon. Relisez les champs surlignés, repris des fiches de l’adhérent et du cheval, puis envoyez-le en signature.</span></div>';return}
     if(!pend.length){z.innerHTML='<div class="note ok pop">'+ICON('checkc','sm')+'<span><b>Contrat signé par toutes les parties.</b> Chaque signataire a reçu son exemplaire en PDF, l’original est archivé à valeur probante.</span></div>';return}
     if(!who||!pend.some(function(s){return s.id===who}))who=(pend.filter(function(s){return s.id==='s01'})[0]||pend[0]).id;var cur=pend.filter(function(s){return s.id===who})[0],me=who==='s01';
@@ -986,14 +1016,14 @@ P.mod({id:'contrats',role:'gerant',group:'Argent',title:'Contrats',icon:'contrac
     (pend.length?pend.slice(0,4).map(function(c){var m=cM(c),w=cPend(c),mine=w.some(function(s){return s.id==='s01'});return '<div class="clc-pend" data-ct="'+c.id+'">'+sq('acc',(TPL[Object.keys(TPL).filter(function(k){return TPL[k].t===c.title.split(',')[0]})[0]]||{i:'contract'}).i)+'<div style="min-width:0"><div class="b s ellip">'+c.title+'</div><div class="xs mut ellip">'+(c.horse?D.horse(c.horse).name+' · ':'')+'attend '+w.map(function(s){return s.id==='s01'?'vous':s.name.split(' ')[0]}).join(' et ')+' · envoyé '+F.rel(c.date)+'</div><div style="margin-top:6px">'+sgAv(c)+'</div></div><button class="btn sm '+(mine?'pri':'')+'" data-sgn="'+c.id+'">'+ICON('sign','sm')+(mine?'Signer':'Faire signer')+'</button></div>'}).join(''):U.empty('checkc','Aucune signature en attente','Les nouveaux contrats envoyés apparaissent ici.'))+'</div></div>'+
    '<div class="card" style="display:flex;flex-direction:column"><div class="ch"><h3>Signature et preuve</h3><span class="chip line">'+ICON('shield','sm')+'eIDAS simple et avancée</span></div><div class="cb stack" style="--g:12px"><div class="hrow" style="--g:18px;align-items:flex-end"><div><div class="xs mut">Délai moyen de signature</div><div class="clf-big" style="font-size:34px">1,8<small>jour</small></div></div><div class="grow">'+C.spark([4.2,3.6,3.9,3.1,2.8,2.9,2.4,2.2,2.0,1.8],'var(--acc)')+'</div></div>'+
     '<div>'+fact('Signés en moins de 48 heures','86 %')+fact('Contrats archivés, conservés 10 ans',(206+nS)+'')+fact('Prestataire de signature','De type Yousign, hébergé en France')+'</div></div><div class="cf" style="margin-top:auto"><span class="xs mut grow">Horodatage qualifié et empreinte SHA-256 pour chaque document</span><button class="btn ghost sm" data-a="proof">'+ICON('download','sm')+'Registre</button></div></div></div>'+
-   '<div class="card cla-box"><div class="cla-tool"><div class="scroll-x">'+U.seg([['all','Tous · '+L.length],['à signer','À signer · '+pend.length],['brouillon','Brouillons'],['signé','Signés'],['team','Équipe']],CS.f,'data-cf')+'</div><span class="grow"></span><div class="search hide-s" style="flex:0 1 260px">'+ICON('search','sm')+'<input class="in" id="clc-q" placeholder="Chercher un contrat…"></div></div><div id="clc-list"></div></div>'+
+   '<div class="card cla-box"><div class="cla-tool"><div class="scroll-x">'+'<div class="ar-chips2">'+[['all','Tous',L.length],['à signer','À signer',pend.length],['brouillon','Brouillons'],['signé','Signés'],['team','Équipe']].map(function(c){return '<button class="tag" data-manual data-cf="'+c[0]+'" aria-pressed="'+(CS.f===c[0])+'">'+c[1]+(c[2]!=null?' <b class="num">'+c[2]+'</b>':'')+'</button>'}).join('')+'</div>'+'</div><span class="grow"></span><div class="search hide-s" style="flex:0 1 260px">'+ICON('search','sm')+'<input class="in" id="clc-q" placeholder="Chercher un contrat…"></div></div><div id="clc-list"></div></div>'+
    '<div class="card" id="clc-tpls"><div class="ch"><div><h3>Modèles</h3><div class="xs mut">Un clic crée le contrat avec les champs déjà remplis</div></div><button class="btn sm" data-a="imp">'+ICON('upload','sm')+'Importer un modèle</button></div><div class="cb"><div class="g3" style="--g:8px">'+TPLN.map(function(t){var T=TPL[t];return '<button class="clc-tpl" data-tpl="'+E(t)+'">'+sq('acc',T.i)+'<div class="grow"><b class="s ellip" style="display:block">'+t+'</b><span class="xs mut">eIDAS '+T.l+' · '+T.n+' contrats</span></div></button>'}).join('')+'</div></div></div></div>';
   el.innerHTML=h;el.classList.add('cl-pg');var Q='';
   function list(){var l=L.filter(function(c){var m=cM(c);return (CS.f==='all'||(CS.f==='team'?m.staff:c.status===CS.f))&&(!Q||norm(c.title+' '+D.name(c.party)+' '+(c.horse?D.horse(c.horse).name:'')+' '+m.num).indexOf(Q)>=0)}).sort(function(a,b){var o={'à signer':0,'brouillon':1,'signé':2};return o[a.status]-o[b.status]||(a.date<b.date?1:-1)}),box=$('#clc-list',el);
     if(!l.length){box.innerHTML=U.empty('contract','Aucun contrat dans cette vue','Créez un contrat depuis un modèle, il part en signature en deux gestes.','<button class="btn sm pri" data-a="new">Créer un contrat</button>');return}
     var team=CS.f==='team'?'<div class="note" style="margin:0 16px 14px">'+ICON('team','sm')+'<span class="grow">Les contrats de travail se signent ici. Les avenants, les heures et les documents des salariés se gèrent aussi dans l’écran Équipe.</span><button class="btn sm" data-go="equipe" style="flex:none">Ouvrir Équipe</button></div>':'';
     if(ctx.mobile){box.innerHTML=team+'<div style="border-top:1px solid var(--line)">'+l.map(function(c){return '<div class="cl-row" data-ct="'+c.id+'"><div class="grow"><div class="b s ellip">'+c.title+'</div><div class="xs mut ellip">'+D.name(c.party)+(c.horse?' · '+D.horse(c.horse).name:'')+' · '+F.rel(c.date)+'</div><div class="hrow" style="--g:8px;margin-top:6px">'+U.status(c.status)+sgAv(c,3)+'</div></div>'+ICON('right','sm')+'</div>'}).join('')+'</div>';return}
-    box.innerHTML=team+'<div class="tw"><table class="tbl"><thead><tr><th>Contrat</th><th>Partie</th><th>Signatures</th><th class="cla-h1">Niveau</th><th>État</th><th>Date</th><th class="n">Montant</th><th></th></tr></thead><tbody>'+l.map(function(c){var m=cM(c),p=D.person(c.party);return '<tr class="click" data-ct="'+c.id+'"><td style="padding-left:16px"><div class="cla-id"><div><b class="ellip clc-ti">'+c.title+'</b><small><span class="mono" style="font-size:11px">'+m.num+'</span>'+(c.horse?' · '+D.horse(c.horse).name:'')+'</small></div></div></td><td><span class="hrow" style="--g:8px">'+U.av(p,'sm')+D.name(c.party)+'</span></td><td>'+sgAv(c)+'</td><td class="cla-h1">'+lvlChip(c)+'</td><td>'+U.status(c.status)+'</td><td class="mut">'+(F.days(c.date)<-6?F.dateY(c.date):F.rel(c.date))+'</td><td class="n">'+(c.amount?F.eur(c.amount):'<span class="mut2">·</span>')+'</td><td class="n">'+(c.status==='à signer'?'<button class="btn sm" data-rem="'+c.id+'">Relancer</button>':c.status==='brouillon'?'<button class="btn sm" data-snd="'+c.id+'">Envoyer</button>':'<button class="btn sm ghost icon" data-pdf="'+c.id+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button>')+'</td></tr>'}).join('')+'</tbody></table></div>'}
+    box.innerHTML=team+'<div class="tw"><table class="tbl"><thead><tr><th>Contrat</th><th>Partie</th><th>Signatures</th><th class="cla-h1">Niveau</th><th>État</th><th>Date</th><th class="n">Montant</th><th></th></tr></thead><tbody>'+l.map(function(c){var m=cM(c),p=D.person(c.party);return '<tr class="click" data-ct="'+c.id+'"><td style="padding-left:16px"><div class="cla-id"><div><b class="ellip clc-ti">'+c.title+'</b><small><span class="mono" style="font-size:13px">'+m.num+'</span>'+(c.horse?' · '+D.horse(c.horse).name:'')+'</small></div></div></td><td><span class="hrow" style="--g:8px">'+U.av(p,'sm')+D.name(c.party)+'</span></td><td>'+sgAv(c)+'</td><td class="cla-h1">'+lvlChip(c)+'</td><td>'+U.status(c.status)+'</td><td class="mut">'+(F.days(c.date)<-6?F.dateY(c.date):F.rel(c.date))+'</td><td class="n">'+(c.amount?F.eur(c.amount):'<span class="mut2">·</span>')+'</td><td class="n">'+(c.status==='à signer'?'<button class="btn sm" data-rem="'+c.id+'">Relancer</button>':c.status==='brouillon'?'<button class="btn sm" data-snd="'+c.id+'">Envoyer</button>':'<button class="btn sm ghost icon" data-pdf="'+c.id+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button>')+'</td></tr>'}).join('')+'</tbody></table></div>'}
   list();var qi=$('#clc-q',el);if(qi)qi.oninput=function(){Q=norm(this.value.trim());list()};
   var byId=function(id){return L.filter(function(c){return c.id===id})[0]};
   if(ctx.params.new){var pr={party:ctx.params.party,horse:ctx.params.horse,tpl:ctx.params.tpl,amount:ctx.params.amount};ctx.params.new=null;setTimeout(function(){sheetNewContract(pr)},60)}
@@ -1004,7 +1034,7 @@ P.mod({id:'contrats',role:'gerant',group:'Argent',title:'Contrats',icon:'contrac
     if(b=t.closest('[data-pdf]')){P.toast('« '+byId(b.getAttribute('data-pdf')).title+' » téléchargé en PDF',{icon:'download'});return}
     if(b=t.closest('[data-sgn]')){sheetContract(byId(b.getAttribute('data-sgn')));return}
     if(b=t.closest('[data-ct]')){sheetContract(byId(b.getAttribute('data-ct')));return}
-    if(b=t.closest('[data-cf]')){CS.f=b.getAttribute('data-cf');list();return}
+    if(b=t.closest('[data-cf]')){CS.f=b.getAttribute('data-cf');P.$$('[data-cf]',el).forEach(function(x){x.setAttribute('aria-pressed',x.getAttribute('data-cf')===CS.f)});list();return}
     if(b=t.closest('[data-tpl]')){sheetNewContract({tpl:b.getAttribute('data-tpl')});return}
     if(b=t.closest('[data-a]')){var a=b.getAttribute('data-a');
       if(a==='new')sheetNewContract();else if(a==='tpls')$('#clc-tpls',el).scrollIntoView({behavior:P.RM?'auto':'smooth',block:'start'});
@@ -1019,7 +1049,7 @@ P.css(`
 .clb-st{display:flex;flex-direction:column;gap:12px;padding:16px;cursor:pointer;text-align:left;transition:box-shadow var(--t-2),transform var(--t-2) var(--e-out)}
 .clb-st:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
 .clb-dt{width:54px;border-radius:12px;background:var(--acc-pale);color:var(--acc);text-align:center;padding:7px 0 6px;flex:none;font:700 19px/1 var(--f-display);letter-spacing:-.03em}
-.clb-dt small{display:block;font:600 10.5px var(--f-text);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.clb-dt small{display:block;font:600 13px var(--f-text);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
 .clb-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:170px;border-radius:var(--r-lg);box-shadow:inset 0 0 0 1.5px var(--line-2);color:var(--mut);text-align:center;cursor:pointer;transition:background var(--t-2);padding:16px}
 .clb-add:hover{background:var(--surface)}
 .clb-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
@@ -1029,7 +1059,7 @@ P.css(`
 .clb-gc{position:relative;border-radius:18px;background:var(--navy);color:var(--navy-ink);padding:20px 22px;aspect-ratio:1.62/1;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:var(--shadow-2);max-width:380px;width:100%}
 .clb-gc::after{content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--strass) 45%,transparent),transparent 66%);pointer-events:none}
 .clb-gc .amt{font:700 44px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.clb-gc .code{font:500 12px var(--f-mono);letter-spacing:.08em;opacity:.75}
+.clb-gc .code{font:500 13px var(--f-mono);letter-spacing:.08em;opacity:.75}
 .clb-gc .strass{background:var(--strass);width:14px;height:14px}
 .clb-pos{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);gap:14px;align-items:start}
 .clb-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
@@ -1038,11 +1068,11 @@ P.css(`
 .clb-tile:active{transform:scale(.96)}
 .clb-tile b{font-size:13px;font-weight:600;line-height:1.25;padding-right:24px}
 .clb-tile span{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
-.clb-tile em{position:absolute;top:8px;right:8px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--acc);color:var(--acc-ink);font:700 11px var(--f-text);display:grid;place-items:center;animation:pop var(--t-3) var(--e-spring) both}
+.clb-tile em{position:absolute;top:8px;right:8px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--acc);color:var(--acc-ink);font:700 13px var(--f-text);display:grid;place-items:center;animation:pop var(--t-3) var(--e-spring) both}
 .clb-tk{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 16px}
 .clb-tk+.clb-tk{border-top:1px solid var(--line)}
 .clb-pm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.clb-pm button{height:44px;border-radius:10px;font-size:12.5px;font-weight:600;box-shadow:inset 0 0 0 1px var(--line-2);display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink-2);transition:all var(--t-2)}
+.clb-pm button{height:44px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:inset 0 0 0 1px var(--line-2);display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink-2);transition:all var(--t-2)}
 .clb-pm button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);box-shadow:none}
 .clb-tpe{width:190px;margin:8px auto 0;border-radius:26px;background:var(--navy);padding:14px 14px 22px;box-shadow:var(--shadow-3);display:flex;flex-direction:column;gap:14px;align-items:center}
 .clb-tpe .scr{width:100%;border-radius:14px;background:var(--surface);color:var(--ink);padding:16px 10px;text-align:center;min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
@@ -1059,7 +1089,7 @@ P.css(`
 .clb-web{border-radius:var(--r-lg);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line),var(--shadow-2);background:var(--surface)}
 .clb-web .bar2{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--bg-2);border-bottom:1px solid var(--line)}
 .clb-web .bar2 i{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
-.clb-web .bar2 span{flex:1;margin-left:8px;height:24px;border-radius:7px;background:var(--surface);font:500 11.5px var(--f-mono);color:var(--mut);display:flex;align-items:center;gap:6px;padding:0 10px;min-width:0;white-space:nowrap;overflow:hidden}
+.clb-web .bar2 span{flex:1;margin-left:8px;height:24px;border-radius:7px;background:var(--surface);font:500 13px var(--f-mono);color:var(--mut);display:flex;align-items:center;gap:6px;padding:0 10px;min-width:0;white-space:nowrap;overflow:hidden}
 .clb-web .hero{background:var(--navy);color:var(--navy-ink);padding:26px 24px;position:relative;overflow:hidden}
 .clb-web .hero h4{color:var(--navy-ink);font-size:24px;letter-spacing:-.03em}
 .clb-web .sec{padding:18px 24px;border-top:1px solid var(--line);animation:fade var(--t-3) var(--e-out) both}
@@ -1141,7 +1171,7 @@ P.mod({id:'boutique',role:'gerant',group:'Club',title:'Boutique et stages',icon:
    U.tabs([['stages','Stages et vacances'],['events','Anniversaires et événements'],['gift','Cartes cadeaux'],['shop','Sellerie'],['pos','Caisse'],['web','Page publique']],BS.tab,'data-bt')+'<div data-body style="margin-top:16px"></div>';
   el.classList.add('cl-pg');
   function tStages(){var cap=sum(camps,function(c){return c.cap}),rev=sum(camps,function(c){return c.taken*c.price});
-    return '<div class="stack rise" style="--g:14px"><div class="card clb-sum"><div><span class="xs mut">Inscrits</span><b>'+ins+' <span class="mut" style="font-size:14px;font-weight:600">/ '+cap+'</span></b></div><div><span class="xs mut">Recette prévue</span><b>'+F.eur(rev)+'</b></div><div><span class="xs mut">Réservés en ligne</span><b>78 %</b></div></div>'+
+    return '<div class="stack rise" style="--g:14px"><div class="cla-hks k3'+(ctx.mobile?' mob':'')+'">'+hk({dom:'argent',tint:true,illu:'trophee',mob:ctx.mobile,icon:'euro',lab:'Recette prévue des stages',val:F.eur(rev),sub:camps.length+' stages ouverts aux vacances'})+hk({dom:'cavaliers',icon:'members',lab:'Inscrits',val:'<span data-count="'+ins+'">'+ins+'</span><small>/'+cap+'</small>',sub:(cap-ins)+' places encore libres'})+hk({dom:'cavaliers',icon:'globe',lab:'Réservés en ligne',val:'78<small> %</small>',sub:'sans passer par l’accueil'})+'</div>'+
      '<div class="g3">'+camps.map(function(c){var a=new Date(c.from+'T12:00:00'),full=c.taken>=c.cap,co=D.staffer(c.coach);return '<button class="card clb-st" data-camp="'+c.id+'"><div class="hrow" style="--g:12px;align-items:flex-start"><div class="clb-dt">'+a.getDate()+'<small>'+F.date(c.from).split(' ')[1]+'</small></div><div class="grow"><b style="display:block;line-height:1.25">'+c.title+'</b><span class="xs mut">'+pl(Math.round((new Date(c.to)-new Date(c.from))/864e5)+1,'jour')+' · '+c.level+'</span></div></div>'+
        '<div class="stack" style="--g:6px"><div class="hrow sp s"><span><b class="num">'+c.taken+'</b> <span class="mut">inscrits sur '+c.cap+'</span></span>'+(full?U.chip('Complet · '+c.wait+' en attente','warn'):c.online?U.chip((c.cap-c.taken)+' places','ok'):U.chip('Brouillon','line'))+'</div>'+U.bar(c.taken/c.cap*100,full?'var(--warn)':'')+'</div>'+
        '<div class="hrow sp"><span class="hrow" style="--g:8px">'+U.av(co,'sm')+'<span class="s mut">'+co.first+'</span></span><b class="num">'+F.eur(c.price)+'</b></div></button>'}).join('')+
@@ -1154,7 +1184,7 @@ P.mod({id:'boutique',role:'gerant',group:'Club',title:'Boutique et stages',icon:
     return '<div class="clp-cols b rise"><div class="card"><div class="ch"><h3>Créer une carte cadeau</h3></div><div class="cb stack" style="--g:14px"><div class="clb-gc" style="align-self:center"><div class="hrow sp"><span class="hrow" style="--g:8px">'+LOGO(20,'var(--navy-ink)','var(--strass)')+'<b>Écurie des Tilleuls</b></span><span class="strass"></span></div><div><div class="amt" data-gca>'+BS.gc+' €</div><div class="s" style="opacity:.8;margin-top:4px">Carte cadeau · valable 1 an</div></div><div class="code">TIL-7H5R-26</div></div>'+
       '<div class="field"><span>Montant</span><div class="hrow wrap" style="--g:6px">'+[30,50,100,150,290].map(function(v){return '<button class="tag" data-manual data-gc="'+v+'" aria-pressed="'+(v===BS.gc)+'">'+(v===290?'Carte 10 séances':v+' €')+'</button>'}).join('')+'</div></div>'+
       '<div class="g2" style="--g:10px"><div class="field"><span>Offerte par</span><input class="in" placeholder="Nom de l’acheteur"></div><div class="field"><span>Pour</span><input class="in" placeholder="Prénom du cavalier"></div></div><button class="btn pri" data-a="gcnew">'+ICON('gift','sm')+'Encaisser et envoyer la carte</button><span class="xs mut" style="text-align:center">Envoyée par e-mail en PDF, ou imprimée à l’accueil. Utilisable en ligne et à la caisse.</span></div></div>'+
-     '<div class="card"><div class="ch" style="padding-bottom:10px"><div><h3>Cartes en circulation</h3><div class="xs mut">'+F.eur(out)+' restent à utiliser</div></div><span class="chip">'+G.length+' cartes</span></div><div style="border-top:1px solid var(--line)">'+G.map(function(g){return '<div class="cl-row" data-gcd="'+g.code+'">'+sq(g.rest?'acc':'ok','gift')+'<div class="grow"><div class="b s ellip">'+(g.to==='À attribuer'?'À attribuer':'Pour '+g.to)+' <span class="mut" style="font-weight:500">· '+(g.to==='À attribuer'?'achetée par ':'de ')+g.buyer+'</span></div><div class="xs mut"><span class="mono" style="font-size:11px">'+g.code+'</span> · '+F.date(g.date)+' · '+g.msg+'</div><div style="margin-top:7px;max-width:220px">'+U.bar(g.rest/g.amount*100,g.rest?'':'var(--ok)')+'</div></div><div style="text-align:right;flex:none"><b class="num s">'+F.eur(g.rest)+'</b><div class="xs mut num">sur '+F.eur(g.amount)+'</div></div></div>'}).join('')+'</div></div></div>'}
+     '<div class="card"><div class="ch" style="padding-bottom:10px"><div><h3>Cartes en circulation</h3><div class="xs mut">'+F.eur(out)+' restent à utiliser</div></div><span class="chip">'+G.length+' cartes</span></div><div style="border-top:1px solid var(--line)">'+G.map(function(g){return '<div class="cl-row" data-gcd="'+g.code+'">'+sq(g.rest?'acc':'ok','gift')+'<div class="grow"><div class="b s ellip">'+(g.to==='À attribuer'?'À attribuer':'Pour '+g.to)+' <span class="mut" style="font-weight:500">· '+(g.to==='À attribuer'?'achetée par ':'de ')+g.buyer+'</span></div><div class="xs mut"><span class="mono" style="font-size:13px">'+g.code+'</span> · '+F.date(g.date)+' · '+g.msg+'</div><div style="margin-top:7px;max-width:220px">'+U.bar(g.rest/g.amount*100,g.rest?'':'var(--ok)')+'</div></div><div style="text-align:right;flex:none"><b class="num s">'+F.eur(g.rest)+'</b><div class="xs mut num">sur '+F.eur(g.amount)+'</div></div></div>'}).join('')+'</div></div></div>'}
   function tShop(){var I=D.shopItems.filter(function(p){return BS.scat==='Tout'||p.cat===BS.scat}),low=D.shopItems.filter(function(p){return p.stock!=null&&p.stock<p.min});
     return '<div class="stack rise" style="--g:14px">'+(low.length?'<div class="note warn">'+ICON('stock','sm')+'<span class="grow"><b>'+pl(low.length,'article')+' sous le seuil</b> : '+low.map(function(p){return p.name.toLowerCase()+' ('+p.stock+')'}).join(', ')+'.</span><button class="btn sm" data-a="order" style="flex:none">Préparer la commande</button></div>':'')+
      '<div class="card cla-box"><div class="cla-tool"><div class="scroll-x">'+U.seg(['Tout','Sellerie','Séances','Club-house'],BS.scat,'data-sc')+'</div><span class="grow"></span><button class="btn sm" data-a="addp">'+ICON('plus','sm')+'Ajouter un article</button></div>'+
@@ -1242,4 +1272,104 @@ P.brain.push(
  {role:'gerant',re:/pension|box libre|liste d.attente/i,reply:function(){var H=ownersH();return {text:H.length+' chevaux sont en pension. Novembre représente '+F.eur(sum(H,pTot))+', dont '+F.eur(sum(H,function(h){return xTot(pens(h))}))+' de prestations à la carte. '+pl(freeBoxes(),'box est libre','boxes sont libres')+' et '+D.boxWait.length+' demandes attendent.',actions:[{label:'Facturer novembre',run:function(){PS.tab='pens';P.go('pensions');setTimeout(sheetBill,80);return 'Facturation ouverte'}},{label:'Voir la liste d’attente',run:function(){PS.tab='wait';P.go('pensions');return 'Ouvert'}}]}}},
  {role:'gerant',re:/stage|anniversaire|boutique|caisse|carte cadeau/i,reply:function(){var c=D.camps;return {text:sum(c,function(x){return x.taken})+' cavaliers sont inscrits aux '+c.length+' stages. « '+c[1].title+' » est complet avec '+c[1].wait+' cavaliers en attente, « '+c[4].title+' » n’est pas encore en vente.',card:c.slice(0,4).map(function(x){return '<div class="hrow sp"><span class="s ellip">'+x.title+'</span><b class="s num" style="flex:none">'+x.taken+' / '+x.cap+'</b></div>'}).join(''),actions:[{label:'Voir les stages',run:function(){P.go('boutique',{tab:'stages'});return 'Ouvert'}},{label:'Ouvrir la caisse',run:function(){P.go('boutique',{tab:'pos'});return 'Caisse ouverte'}}]}}});
 P.tourSteps.push({route:'contrats',title:'Un contrat signé au doigt, archivé pour dix ans',text:'Choisissez un modèle : les champs se remplissent seuls depuis les fiches. Le signataire reçoit un lien ou signe sur la tablette de l’accueil, et l’original part en archivage à valeur probante.'});
+
+/* =====================================================================
+   Couche Paddock (manche 3) : hiérarchie, tailles, cartes au téléphone
+   ===================================================================== */
+P.css(`
+/* bento de synthèse des adhérents */
+.cla-hks{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:14px}
+.cla-hks.k3{grid-template-columns:minmax(0,1.5fr) repeat(2,minmax(0,1fr))}
+.cla-hks.k3>.cla-hk:first-child .cla-hk-lab{padding-right:70px}.cla-hks.k3 .cla-hk-illu{right:10px;top:8px}
+.ar-chips2{display:flex;gap:8px}.ar-chips2 .tag{flex:none}.ar-chips2 .tag b{opacity:.6;font-weight:600}
+.cla-hks.k4{grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));margin-bottom:22px}
+.cla-hks.mob{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cla-hks.k4>.cla-hk:first-child .cla-hk-lab{padding-right:70px}
+.cla-hks.k4 .cla-hk-illu{right:10px;top:8px}
+.cla-hks.mob .cla-hk-main,.cla-hks.mob>.cla-hk:first-child{grid-column:1/-1}.cla-hks.mob:not(.k3)>.cla-hk:last-child{grid-column:1/-1}
+.cla-hk{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:22px 24px;text-align:left;min-width:0;position:relative;overflow:hidden;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+button.cla-hk:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
+.cla-hk-lab{display:flex;align-items:center;gap:10px;font:600 15px/1.3 var(--f-text);color:var(--mut)}
+.cla-hk.tint .cla-hk-lab{color:inherit;opacity:.85}
+.cla-hk .big{font-size:52px;line-height:.95}
+.cla-hk .big small{font:700 22px var(--f-display);color:var(--mut);margin-left:3px;letter-spacing:-.01em}
+.cla-hk-s{display:flex;align-items:center;gap:4px;font-size:14.5px;font-weight:600;color:var(--d-ink,var(--acc-deep));margin-top:auto}
+.cla-hk.tint .cla-hk-s{font-weight:500;color:inherit;opacity:.85}
+.cla-hk-s svg.i{width:18px;height:18px;transition:transform var(--t-2) var(--e-out)}
+button.cla-hk:hover .cla-hk-s svg.i{transform:translateX(3px)}
+.cla-hk-bar{width:100%}.cla-hk-bar .bar{height:8px}
+.cla-hk-main{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:26px;padding-right:118px}
+.cla-hk-l{display:flex;flex-direction:column;gap:10px;min-width:0}
+.cla-hk-main .big{font-size:76px}
+.cla-hk-illu{position:absolute;right:14px;top:12px}
+.cla-gh{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;align-items:end;height:128px;min-width:0}
+.cla-gh button{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;min-width:0;border-radius:10px;color:inherit;padding:0}
+.cla-gh i{display:block;width:100%;max-width:30px;height:var(--h);min-height:6px;border-radius:8px 8px 4px 4px;background:var(--d);opacity:.85;transform-origin:bottom;animation:clagh var(--t-4) var(--e-spring) both;animation-delay:calc(var(--i)*45ms + 120ms);transition:opacity var(--t-1),transform var(--t-2) var(--e-out)}
+.cla-gh button:hover i{opacity:1;transform:scaleY(1.04)}
+.cla-gh b{font:700 13px/1 var(--f-text);order:-1;opacity:.8}
+.cla-gh span{font-size:13px;font-weight:600;opacity:.75;white-space:nowrap}
+@keyframes clagh{from{transform:scaleY(0)}}
+@container main (max-width:1180px){.cla-hks.k4:not(.mob){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container main (max-width:1080px){.cla-hks:not(.mob){grid-template-columns:repeat(2,minmax(0,1fr))}.cla-hks:not(.mob) .cla-hk-main{grid-column:1/-1}}
+@container main (max-width:760px){.cla-hk{padding:18px}.cla-hk .big{font-size:40px}
+ .cla-hk-main{grid-template-columns:minmax(0,1fr);gap:16px;padding-right:18px}.cla-hk-main .big{font-size:56px}.cla-gh{height:96px;gap:4px}.cla-hk-illu{right:10px;top:10px}
+ .cla-hk-lab{font-size:14px;gap:8px}.cla-hk-lab .ico{display:none}}
+
+/* liste des adhérents : aérée, lisible */
+.cla-box{overflow:visible}
+.cla-tool{padding:20px 22px 14px;gap:12px}
+.cla-tool .search .in{height:48px;font-size:15px}
+.cla-segs{padding:0 22px 16px;gap:8px}
+.cla-segs .tag{height:auto;min-height:40px}
+.cla-segs .tag b{font-size:13.5px}
+.cla-pins{padding:0 22px 16px}
+.cla-pc{height:40px;font-size:14px}
+.cla-box .tbl td{height:68px;padding-top:10px;padding-bottom:10px}
+.cla-box .tbl td,.cla-box .tbl th{padding-left:12px;padding-right:12px}.cla-box .tbl td:first-child,.cla-box .tbl th:first-child{padding-left:22px}.cla-box .tbl td:last-child,.cla-box .tbl th:last-child{padding-right:22px}
+.cla-box .tbl td:first-child,.cla-box .tbl th:first-child{width:52px}
+.cla-box .tbl th svg.i{width:16px;height:16px}
+.cla-id{gap:14px}.cla-id .av{width:42px;height:42px;font-size:14.5px}
+.cla-id b{font-size:15.5px}
+.cla-id small{font-size:13.5px;margin-top:2px}
+.cla-d3{gap:6px}.cla-d3 i{width:32px;height:32px;border-radius:10px}.cla-d3 svg.i{width:18px;height:18px}
+.cla-rest{gap:7px;min-width:150px}.cla-rest .bar{height:6px}
+.cla-pin{width:38px;height:38px;border-radius:11px}.cla-pin svg.i{width:19px;height:19px}
+.cla-c{padding:16px;border-radius:20px;gap:14px}
+.cla-c .mt2{margin-top:8px;gap:8px}
+.cla-grid{gap:12px;padding:6px 22px 22px}
+.cla-fam{padding:18px;border-radius:20px}
+.cl-bulk{padding:8px 8px 8px 18px;border-radius:18px;gap:4px}
+.cl-bulk b{font-size:14.5px}
+.cl-bulk button{height:42px;padding:0 14px;border-radius:12px;font-size:14px}
+.cl-bulk button svg.i{width:19px;height:19px}
+.cla-in{padding:14px 22px}
+.cla-doc{padding:12px 0;font-size:14.5px}
+.cl-f{font-size:14.5px;padding:10px 0}
+.cl-sub{font-size:13px}
+.cl-qty button{width:38px;height:38px}
+.cl-qty b{font-size:15px}
+.cl-opt{padding:14px 16px;border-radius:16px}
+.cl-row{padding:14px 22px}
+@container main (max-width:760px){
+ .cla-tool{padding:14px 14px 10px}.cla-segs{padding:0 14px 12px}.cla-pins{padding:0 14px 12px}
+ .cla-grid{gap:10px;padding:4px 12px 12px}
+ .cla-c{box-shadow:inset 0 0 0 1px var(--line);border-radius:20px;padding:14px;min-height:84px;background:var(--surface)}.cla-c+.cla-c{border-top:0}
+ .cla-c .av.lg{width:52px;height:52px}
+ .cla-fam{box-shadow:inset 0 0 0 1px var(--line);border-radius:20px;border-top:0;padding:16px}
+ .cla-box{background:var(--surface-2);box-shadow:none}
+ .cla-box .cf{background:transparent}
+ .cl-bulk{border-radius:18px}}
+
+/* fiche adhérent : en-tête teinté cavaliers */
+.clf-hero.card{background:var(--rd-bg);box-shadow:none;padding:26px 28px;gap:22px}
+.clf-hero h1{font-size:38px}
+.clf-hero .av.xl{width:84px;height:84px;font-size:28px;box-shadow:0 0 0 4px var(--surface)}
+.clf-hero .s.mut{color:color-mix(in srgb,var(--rd-ink) 75%,transparent)}
+@container main (max-width:760px){.clf-hero.card{padding:18px;gap:14px}.clf-hero h1{font-size:28px}.clf-hero .av.xl{width:64px;height:64px;font-size:22px}}
+/* téléphone : actions d'en-tête côte à côte, sous-titres des cartes sur deux lignes */
+.app.mobile .cl-pg .ph .acts{flex-wrap:nowrap}
+.cla-sm{display:none}.app.mobile .cla-sm{display:inline}.app.mobile .cla-lg{display:none}
+.app.mobile .cl-pg .ph .acts .btn{flex:1 1 0;min-width:0}
+@container main (max-width:760px){.cla-c .xs.mut.ellip{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}}
+`);
 })();

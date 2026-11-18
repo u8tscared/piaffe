@@ -250,7 +250,7 @@ svg.i.xl{width:32px;height:32px;stroke-width:1.7}
 
 /* ---------- Avatars ---------- */
 .av{width:38px;height:38px;border-radius:50%;display:inline-grid;place-items:center;font:700 13.5px/1 var(--f-text);letter-spacing:.01em;flex:none;color:#fff;background:var(--c,var(--acc));overflow:hidden;position:relative}
-.av.sm{width:30px;height:30px;font-size:12px}.av.lg{width:48px;height:48px;font-size:16px}.av.xl{width:68px;height:68px;font-size:22px}
+.av.sm{width:32px;height:32px;font-size:13px}.av.lg{width:48px;height:48px;font-size:16px}.av.xl{width:68px;height:68px;font-size:22px}
 .av.sq{border-radius:13px}.av.sq.sm{border-radius:10px}.av.sq.lg{border-radius:16px}
 .av svg.i{width:20px;height:20px}.av.sm svg.i{width:17px;height:17px}.av.lg svg.i{width:24px;height:24px}
 .av.horse{background:color-mix(in srgb,var(--c,var(--coat)) 16%,var(--surface));box-shadow:none;color:var(--c,var(--ink))}
@@ -415,3 +415,4 @@ svg.illu{display:block;overflow:visible;flex:none}
 .app.mobile .chk{width:26px;height:26px}
 .app.mobile .tag{min-height:42px}
 .app.mobile .sheet .sf{flex-wrap:wrap}.app.mobile .sheet .sf .btn{min-width:0}.app.mobile .sheet .sf .btn.pri{flex:1 1 auto}
+.card.tint .ico{background:color-mix(in srgb,var(--surface) 72%,transparent)}

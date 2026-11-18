@@ -72,14 +72,16 @@ function toSign(){return CONTRACTS().filter(function(c){return c.status==='à si
 
 /* ---------- Styles communs ---------- */
 P.css(`
+/* Pastille « 410 € » de l’onglet Paiements : elle reste dans son onglet au lieu de toucher le bouton « Tous les écrans » */
+.app[data-role="adherent"] .tabbar button[data-go="adh-paiements"] .bdg{left:auto;right:2px;top:3px;max-width:calc(100% - 4px);overflow:hidden;text-overflow:ellipsis}
 .ad-pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 10px 0 4px;border-radius:var(--r-pill);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-1);font-weight:600;font-size:13.5px;transition:background var(--t-2)}
 .ad-pill:hover{background:var(--surface-2)}
-.ad-pill .av{width:28px;height:28px;font-size:10.5px}
+.ad-pill .av{width:28px;height:28px;font-size:13px}
 .ad-pill svg.i{width:14px;height:14px;color:var(--mut)}
 .ad-b{display:flex;flex-direction:column}
 .ad-b>.cb{flex:1;display:flex;flex-direction:column;gap:12px}
 .ad-b .end{margin-top:auto}
-.ad-big{font:700 34px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.ad-big{font:800 34px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .ad-big small{font-size:16px;color:var(--mut);font-weight:600;margin-left:4px;letter-spacing:-.01em}
 .ad-row{display:flex;align-items:center;gap:12px;min-width:0}
 .ad-row .t{font-weight:600;font-size:13.5px}
@@ -113,7 +115,7 @@ P.css(`
 .ad-ticket .tk2{padding:14px 18px 16px;border-top:1.5px dashed var(--line-2);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;position:relative}
 .ad-ticket .tk2::before,.ad-ticket .tk2::after{content:"";position:absolute;top:-9px;width:18px;height:18px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
 .ad-ticket .tk2::before{left:-9px;clip-path:inset(0 0 0 50%)}.ad-ticket .tk2::after{right:-9px;clip-path:inset(0 50% 0 0)}
-.ad-ticket .k{font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.ad-ticket .k{font-size:13px;color:var(--mut);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .ad-ticket .v{font-weight:600;font-size:13.5px;margin-top:2px}
 /* choix (radio en cartes) */
 .ad-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface);width:100%;text-align:left;min-height:56px;transition:box-shadow var(--t-2),background var(--t-2)}
@@ -121,7 +123,7 @@ P.css(`
 .ad-opt .rd{width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 1.6px var(--line-2);flex:none;display:grid;place-items:center;transition:all var(--t-2)}
 .ad-opt[aria-checked="true"] .rd{box-shadow:inset 0 0 0 6px var(--acc)}
 .ad-opt[disabled]{opacity:.5;pointer-events:none}
-.ad-lbl{font-size:12.5px;font-weight:600;color:var(--ink-2);margin:16px 0 8px}
+.ad-lbl{font-size:13px;font-weight:600;color:var(--ink-2);margin:16px 0 8px}
 .ad-lbl:first-child{margin-top:0}
 .ad-sum{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:13.5px}
 .ad-sum+.ad-sum{border-top:1px solid var(--line)}
@@ -130,9 +132,9 @@ P.css(`
 .ad-cam{position:relative;border-radius:var(--r-md);overflow:hidden;background:#17120d;aspect-ratio:16/9;color:#fff;isolation:isolate}
 .ad-cam canvas{display:block;width:100%;height:100%}
 .ad-cam::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.5)),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);z-index:1}
-.ad-cam .o{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600}
+.ad-cam .o{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
 .ad-cam .c1{top:10px;left:10px}.ad-cam .c2{top:10px;right:10px;background:rgba(0,0,0,.45);padding:3px 8px;border-radius:5px;backdrop-filter:blur(6px)}
-.ad-cam .c3{bottom:10px;left:10px;font:500 11px var(--f-mono);background:rgba(0,0,0,.45);padding:3px 7px;border-radius:5px}
+.ad-cam .c3{bottom:10px;left:10px;font:500 13px var(--f-mono);background:rgba(0,0,0,.45);padding:3px 7px;border-radius:5px}
 .ad-cam .c4{bottom:8px;right:8px}
 .ad-cam .c4 button{width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;backdrop-filter:blur(6px)}
 .ad-cam .fb{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.5)}
@@ -187,6 +189,12 @@ function success(sh,o){var b=$('.sb',sh),f=$('.sf',sh);
 function opts(list,sel,name){return '<div class="stack" style="--g:8px" role="radiogroup" data-rg="'+name+'">'+list.map(function(x){return '<button class="ad-opt" role="radio" aria-checked="'+(x[0]===sel)+'" data-v="'+x[0]+'"'+(x[4]?' disabled':'')+'><span class="rd"></span>'+(x[3]||'')+'<span class="grow"><span class="t b" style="display:block;font-size:13.5px">'+x[1]+'</span>'+(x[2]?'<span class="s mut" style="display:block">'+x[2]+'</span>':'')+'</span></button>'}).join('')+'</div>'}
 function bindOpts(root,cb){$$('[data-rg]',root).forEach(function(g){g.onclick=function(e){var b=e.target.closest('.ad-opt');if(!b)return;$$('.ad-opt',g).forEach(function(x){x.setAttribute('aria-checked',x===b)});if(cb)cb(g.getAttribute('data-rg'),b.getAttribute('data-v'))}})}
 function optVal(root,name){var b=$('[data-rg="'+name+'"] .ad-opt[aria-checked="true"]',root);return b?b.getAttribute('data-v'):null}
+function DWL(i){return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][dowOff(i)]}
+function ringSVG(pct,size,sw,col,center){var r=(size-sw)/2,c=2*Math.PI*r,o=c*(1-Math.min(100,pct)/100);
+  return '<span class="ad-rg" style="width:'+size+'px;height:'+size+'px;color:'+col+'"><svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true"><circle class="tr" cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke-width="'+sw+'"/><circle class="vl" cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke-width="'+sw+'" stroke="'+col+'" stroke-dasharray="'+c.toFixed(1)+'" style="--o:'+o.toFixed(1)+';--c0:'+c.toFixed(1)+'"/></svg><span class="ct"><span>'+center+'</span></span></span>'}
+function rings(list,size){var sw=Math.round(size*.085),gap=Math.round(sw*.35),c=size/2,out='';
+  list.forEach(function(x,i){var r=c-sw/2-i*(sw+gap),L=2*Math.PI*r,o=L*(1-Math.min(100,x.p)/100);out+='<circle class="tr" cx="'+c+'" cy="'+c+'" r="'+r.toFixed(1)+'" stroke-width="'+sw+'" style="stroke:'+x.c+'"/><circle class="vl" cx="'+c+'" cy="'+c+'" r="'+r.toFixed(1)+'" stroke-width="'+sw+'" stroke="'+x.c+'" stroke-dasharray="'+L.toFixed(1)+'" style="--o:'+o.toFixed(1)+';--c0:'+L.toFixed(1)+';animation-delay:'+(.15+i*.15)+'s"/>'});
+  return '<span class="ad-rg ad-rgs" style="width:'+size+'px;height:'+size+'px"><svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true">'+out+'</svg></span>'}
 function profPill(){var p=prof();return '<button class="ad-pill" data-prof title="Changer de profil familial">'+U.av(p)+'<span>'+p.first+'</span>'+ICON('down')+'</button>'}
 function bindProf(el){var b=$('[data-prof]',el);if(!b)return;b.onclick=function(){var cur=prof().id;
   var sh=P.sheet({title:'Famille Martin',icon:'family',body:'<p class="s mut" style="margin-bottom:14px">Un seul compte pour toute la famille. Choisissez le cavalier dont vous voulez voir le planning, la progression et les documents.</p>'+
@@ -200,52 +208,93 @@ function payMethods(amount,extra){return (extra||[]).concat([['cb','Carte Visa s
    1. ACCUEIL personnalisable
    ===================================================================== */
 P.css(`
-.ad-home{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;grid-auto-flow:dense}
-.ad-home>.w2{grid-column:span 2}.ad-home>.w3{grid-column:1/-1}
-@container main (max-width:980px){.ad-home{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-home>.w2{grid-column:1/-1}}
-@container main (max-width:620px){.ad-home{grid-template-columns:minmax(0,1fr);gap:12px}.ad-home>*{grid-column:auto!important}}
+/* Accueil façon app premium : grille de tuiles (widgets) teintées par domaine */
+.ad-home{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;grid-auto-flow:dense}
+.ad-home>.w1{grid-column:span 1}.ad-home>.w2{grid-column:span 2}.ad-home>.w3,.ad-home>.w4{grid-column:1/-1}
+@container main (max-width:1100px){.ad-home{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-home>.w2{grid-column:1/-1}}
+@container main (max-width:620px){.ad-home{gap:12px}.ad-home>.pw2{grid-column:1/-1}}
+.ad-t{padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;position:relative;overflow:hidden;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+.ad-t[data-go]{cursor:pointer}
+.ad-t[data-go]:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.ad-t[data-go]:active{transform:scale(.98)}
+.ad-tt{display:flex;align-items:center;gap:10px;min-width:0}
+.ad-tt h3{font-size:17px;flex:1;min-width:0}
+.ad-tt .lk{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:14px;color:inherit;opacity:.8;height:40px;padding:0 4px;border-radius:12px}
+.ad-tt .lk:hover{opacity:1}
+.ad-t .sub{font-size:14.5px;line-height:1.45}
+.ad-t .big{font-size:48px}
+.ad-t .big small{font-size:22px;margin-left:4px;letter-spacing:-.02em;opacity:.75}
+.ad-t .end{margin-top:auto}
+.ad-t .illu.corner{position:absolute;right:-6px;top:-4px;width:108px;height:108px;pointer-events:none}
+.ad-t.has-illu .ad-tt{padding-right:84px}
+@container main (max-width:620px){.ad-t{padding:18px;gap:12px}.ad-t .big{font-size:42px}.ad-t .illu.corner{width:92px;height:92px}}
+.ad-t.sq .big{font-size:40px}
+.ad-t.tint .ico{background:color-mix(in srgb,var(--surface) 72%,transparent)}
+.ad-t svg.spark{height:52px;width:100%;display:block}
+.ad-ng .v{line-height:1.25}
+@container main (max-width:620px){.ad-pgr{flex-direction:column;align-items:flex-start}.ad-pgr .ad-rg{width:72px!important;height:72px!important}.ad-pgr .ad-rg svg{width:72px;height:72px}}
+@container main (max-width:620px){.ad-t.sq{min-height:196px}.ad-t.sq .big{font-size:34px}.ad-t.sq .ad-tt h3{font-size:15px}}
+/* raccourcis : pastilles façon icônes d'app */
 .ad-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.ad-q{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);text-align:left;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2);min-width:0}
+.ad-q{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);text-align:left;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2);min-width:0;min-height:72px}
 .ad-q:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
-.ad-q:active{transform:scale(.97)}
-.ad-q .ic{width:40px;height:40px;border-radius:12px;background:var(--acc-pale);color:var(--acc);display:grid;place-items:center;flex:none;position:relative}
-.ad-q .ic em{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad);color:var(--acc-ink);font:700 10.5px/18px var(--f-text);text-align:center;box-shadow:0 0 0 2px var(--surface)}
-.ad-q b{display:block;font-size:13.5px}.ad-q small{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@container main (max-width:620px){.ad-quick{gap:6px}.ad-q{flex-direction:column;gap:7px;padding:4px 0;background:none;box-shadow:none;text-align:center}.ad-q:hover{transform:none;box-shadow:none}.ad-q .ic{width:54px;height:54px;border-radius:18px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1)}.ad-q .ic svg.i{width:22px;height:22px}.ad-q small{display:none}.ad-q b{font-size:12px;font-weight:600}}
-.ad-next{padding:22px;overflow:hidden;display:flex;flex-direction:column;gap:14px}
-.ad-next .glow{position:absolute;right:-70px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 55%,transparent),transparent 65%);pointer-events:none}
+.ad-q:active{transform:scale(.96)}
+.ad-q .ico{width:46px;height:46px;border-radius:15px;position:relative}
+.ad-q .ico em{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--bad);color:var(--on-acc);font:700 13px/22px var(--f-text);text-align:center;box-shadow:0 0 0 2.5px var(--surface)}
+.ad-q b{display:block;font-size:15px}.ad-q small{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@container main (max-width:620px){.ad-quick{gap:4px}.ad-q{flex-direction:column;gap:8px;padding:2px 0;min-height:0;background:none;box-shadow:none;text-align:center}.ad-q:hover{transform:none;box-shadow:none}.ad-q .ico{width:62px;height:62px;border-radius:20px}.ad-q .ico svg.i{width:26px;height:26px}.ad-q small{display:none}.ad-q b{font-size:13px;font-weight:600}}
+/* tuile « prochaine séance » (héros) */
+.ad-next{padding:24px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
+.ad-next .glow{position:absolute;right:-70px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 55%,transparent),transparent 65%);pointer-events:none;animation:ad-glow 6s ease-in-out infinite alternate}
+@keyframes ad-glow{to{transform:translate(-30px,24px) scale(1.15)}}
 .ad-next .eyebrow{color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc))}
-.ad-next h2{font-size:28px;line-height:1.05;letter-spacing:-.035em;color:var(--navy-ink)}
-.ad-next .wh{font-size:14.5px;font-weight:500;color:color-mix(in srgb,var(--navy-ink) 80%,transparent);margin-top:6px}
-.ad-cd{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:99px;background:color-mix(in srgb,var(--navy-ink) 14%,transparent);font-size:12px;font-weight:600;color:var(--navy-ink);position:relative}
+.ad-next h2{font-size:34px;line-height:1.02;letter-spacing:-.04em;color:var(--navy-ink)}
+.ad-next .wh{font-size:15.5px;font-weight:500;color:color-mix(in srgb,var(--navy-ink) 80%,transparent);margin-top:8px}
+.ad-cd{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:99px;background:color-mix(in srgb,var(--navy-ink) 14%,transparent);font-size:14px;font-weight:600;color:var(--navy-ink);position:relative}
+.ad-cd svg.i{width:18px;height:18px}
 .ad-ng{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.ad-ng>div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);background:color-mix(in srgb,var(--navy-ink) 8%,transparent);min-width:0}
-.ad-ng .k{font-size:11px;color:color-mix(in srgb,var(--navy-ink) 60%,transparent);font-weight:600}
-.ad-ng .v{font-weight:600;font-size:13.5px;color:var(--navy-ink)}
-.ad-ng .wi{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--navy-ink) 12%,transparent);color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc));flex:none}
-
-.ad-th{display:flex;flex-direction:column;gap:3px;font-size:13.5px;color:color-mix(in srgb,var(--navy-ink) 84%,transparent);max-width:60ch}
-.ad-th .k{font-size:11px;color:color-mix(in srgb,var(--navy-ink) 60%,transparent);font-weight:600}
+.ad-ng>div{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);background:color-mix(in srgb,var(--navy-ink) 8%,transparent);min-width:0}
+.ad-ng .k{font-size:13px;color:color-mix(in srgb,var(--navy-ink) 64%,transparent);font-weight:600}
+.ad-ng .v{font-weight:600;font-size:15px;color:var(--navy-ink)}
+.ad-ng .wi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--navy-ink) 12%,transparent);color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc));flex:none}
+.ad-th{display:flex;flex-direction:column;gap:4px;font-size:15px;line-height:1.5;color:color-mix(in srgb,var(--navy-ink) 86%,transparent);max-width:62ch}
+.ad-th .k{font-size:13px;color:color-mix(in srgb,var(--navy-ink) 62%,transparent);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .ad-next .avs .av{box-shadow:0 0 0 2px var(--navy)}
 @container main (max-width:620px){.ad-ph.ad-ph .ph.ph{flex-direction:column;align-items:stretch;gap:12px}.ad-ph .ph .sub{margin-top:0}.ad-ph .ph .acts{justify-content:space-between}.ad-ph .ph .acts>:only-child{margin-right:auto}.ad-filt{flex-basis:100%}}
 .ad-nb{background:color-mix(in srgb,var(--navy-ink) 12%,transparent)!important;color:var(--navy-ink)!important;box-shadow:none!important}
 .ad-nb.on{background:var(--navy-ink)!important;color:var(--navy)!important}
-@container main (max-width:620px){.ad-next{padding:18px}.ad-next h2{font-size:25px}.ad-ng{grid-template-columns:minmax(0,1fr);gap:0;border-radius:var(--r-md);background:color-mix(in srgb,var(--navy-ink) 8%,transparent)}.ad-ng>div{background:none;border-radius:0}.ad-ng>div+div{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--navy-ink) 10%,transparent)}.ad-next .acts .btn{flex:1;height:40px}}
-.ad-wx{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-.ad-wx div{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border-radius:10px;font-size:12px}
-.ad-wx div.on{background:var(--acc-pale)}
-.ad-wx b{font-size:14px}
-.ad-news{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;cursor:pointer;transition:background var(--t-1);position:relative}
-.ad-news+.ad-news::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
+@container main (max-width:620px){.ad-next{padding:20px}.ad-next h2{font-size:29px}.ad-ng{grid-template-columns:minmax(0,1fr);gap:0;border-radius:var(--r-md);background:color-mix(in srgb,var(--navy-ink) 8%,transparent)}.ad-ng>div{background:none;border-radius:0}.ad-ng>div+div{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--navy-ink) 10%,transparent)}.ad-next .acts .btn{flex:1;height:46px}}
+/* tuile cheval en direct */
+.ad-t .ad-cam{border-radius:18px}
+.ad-camw{position:relative}
+.ad-camw .nm{position:absolute;left:12px;bottom:12px;z-index:3;color:#fff;font:800 22px/1 var(--f-display);letter-spacing:-.03em;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+/* tuile progression : anneau */
+.ad-rg{position:relative;display:grid;place-items:center;flex:none}
+.ad-rg svg{display:block;transform:rotate(-90deg)}
+.ad-rg .tr{fill:none;stroke:color-mix(in srgb,currentColor 14%,transparent)}
+.ad-rg .vl{fill:none;stroke-linecap:round;stroke-dashoffset:var(--o);animation:ad-ring 1.2s var(--e-out) .15s both}
+@keyframes ad-ring{from{stroke-dashoffset:var(--c0)}}
+.ad-rg .ct{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1}
+.ad-rg .ct b{font:800 26px/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ad-rg .ct small{display:block;font-size:13px;font-weight:600;opacity:.75;margin-top:3px}
+/* météo */
+.ad-wx{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.ad-wx div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:14px;font-size:13px;font-weight:600;min-width:0}
+.ad-wx div.on{background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.ad-wx div.rn{background:color-mix(in srgb,var(--d,var(--acc)) 18%,transparent)}
+.ad-wx b{font-size:15px}
+.ad-wx svg.i{width:22px;height:22px}
+.ad-news{display:flex;gap:14px;align-items:flex-start;padding:14px 20px;cursor:pointer;transition:background var(--t-1);position:relative;min-height:64px}
+.ad-news+.ad-news::before{content:"";position:absolute;left:20px;right:20px;top:0;height:1px;background:var(--line)}
 .ad-news:hover{background:var(--surface-2)}
-.ad-news .t{font-weight:600;font-size:13.5px;line-height:1.3}
-.ad-signers{display:flex;flex-direction:column;gap:8px}
-.ad-ed{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 4px;background:var(--surface);border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);min-height:60px;transition:box-shadow var(--t-2),opacity var(--t-2),transform var(--t-2) var(--e-out)}
-.ad-ed.off .grow,.ad-ed.off .av{opacity:.45}
+.ad-news .t{font-weight:600;font-size:15px;line-height:1.35}
+.ad-signers{display:flex;flex-direction:column;gap:10px}
+.ad-ed{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 4px;background:var(--surface);border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);min-height:64px;transition:box-shadow var(--t-2),opacity var(--t-2),transform var(--t-2) var(--e-out)}
+.ad-ed.off .grow,.ad-ed.off .av,.ad-ed.off .ico{opacity:.45}
 .ad-ed.drag{box-shadow:inset 0 0 0 2px var(--acc),var(--shadow-3);transform:scale(1.02);z-index:2;position:relative}
 .ad-ed .grip{width:32px;height:44px;display:grid;place-items:center;color:var(--mut-2);cursor:grab;touch-action:none;flex:none}
 .ad-ed .mv{display:flex;gap:2px}
-.ad-ed .mv .btn{width:30px;height:30px}
+.ad-ed .mv .btn{width:40px;height:40px}
 `);
 
 var BLOCKS=[
@@ -297,49 +346,55 @@ function editHome(){var list=blocks();
 P.mod({id:'adh-accueil',role:'adherent',group:'Moi',title:'Accueil',icon:'today',n:10,short:'Accueil',phoneTitle:'Bonjour Léa',
  render:function(el,ctx){var p=prof(),kid=isKid(),rs=resFor(p),r=rs[0],l=r&&lesson(r.les),h=r&&r.horse&&D.horse(r.horse),ts=toSign(),dueV=due(),k1=D.competitions[0];
   var B={};
-  B.quick='<div class="ad-quick w3" data-b="quick">'+[['adh-reserver','calendar_add','Réserver','Reprise, stage, cours',0],['adh-reserver','ticket','Rattraper',A.credits+' crédits à utiliser',0,'rattrapage'],['adh-paiements','card','Payer',dueV?F.eur(dueV)+' à régler':'Tout est réglé',0],['adh-messages','chat','Messages','2 conversations non lues',2]].map(function(q){
-    return '<button class="ad-q" data-go="'+q[0]+'"'+(q[5]?' data-p-mode="'+q[5]+'"':'')+'><span class="ic">'+ICON(q[1])+(q[4]?'<em>'+q[4]+'</em>':'')+'</span><span class="grow" style="min-width:0"><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'}).join('')+'</div>';
+  function ico(i,d){return '<span class="ico d-'+d+'">'+ICON(i)+'</span>'}
+  function lk(go,txt,extra){return '<button class="lk" data-go="'+go+'"'+(extra||'')+'>'+(txt||'')+ICON('arrow','sm')+'</button>'}
+  B.quick='<div class="ad-quick w4" data-b="quick">'+[['adh-reserver','calendar_add','Réserver','Reprise, stage, cours',0,'','cavaliers'],['adh-reserver','ticket','Rattraper',A.credits+' crédit'+(A.credits>1?'s':'')+' à utiliser',0,'rattrapage','acc'],['adh-paiements','card','Payer',dueV?F.eur(dueV)+' à régler':'Tout est réglé',0,'','argent'],['adh-messages','chat','Messages','2 conversations non lues',2,'','equipe']].map(function(q){
+    return '<button class="ad-q" data-go="'+q[0]+'"'+(q[5]?' data-p-mode="'+q[5]+'"':'')+'><span class="ico d-'+q[6]+'">'+ICON(q[1])+(q[4]?'<em>'+q[4]+'</em>':'')+'</span><span class="grow" style="min-width:0"><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'}).join('')+'</div>';
   var cToday=!kid&&A.coachRes.some(function(c){return c.id==='c01'&&c.w==='auj.'});
   if(cToday){var w0=D.weather[0],mn=minsTo(COURS.start);
-   B.next='<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp"><span class="hrow" style="--g:8px"><span class="strass" style="background:var(--strass)"></span><span class="eyebrow">Aujourd’hui</span></span><span class="ad-cd">'+ICON('clock','sm')+'Dans '+dur(mn)+'</span></div>'+
-    '<div><h2>'+COURS.title+'</h2><div class="wh">Aujourd’hui · '+COURS.start+' – '+endT(COURS)+' · '+arena(COURS)+'</div></div>'+
-    '<div class="ad-ng"><div>'+U.hav(UL)+'<div class="grow"><div class="k">Cheval</div><div class="v ellip">'+UL.name+'</div></div></div>'+
-    '<div>'+U.av('c01')+'<div class="grow"><div class="k">Coach CSO</div><div class="v ellip">Pauline Arnaud</div></div></div>'+
-    '<div><span class="wi">'+ICON(w0.i)+'</span><div class="grow"><div class="k">Météo prévue</div><div class="v ellip">'+w0.t+' °C, '+(w0.r>50?'pluie':w0.r>15?'nuageux':'temps sec')+'</div></div></div></div>'+
+   B.next='<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp" style="position:relative"><span class="hrow" style="--g:8px"><span class="strass" style="background:var(--strass)"></span><span class="eyebrow">Aujourd’hui</span></span><span class="ad-cd">'+ICON('clock','sm')+'Dans '+dur(mn)+'</span></div>'+
+    '<div style="position:relative"><h2>'+COURS.title+'</h2><div class="wh">'+COURS.start.replace(':',' h ')+' à '+hm(endT(COURS))+' · '+arena(COURS)+'</div></div>'+
+    '<div class="ad-ng"><div>'+U.hav(UL)+'<div class="grow" style="min-width:0"><div class="k">Cheval</div><div class="v">'+UL.name+'</div></div></div>'+
+    '<div>'+U.av('c01')+'<div class="grow" style="min-width:0"><div class="k">Coach CSO</div><div class="v">Pauline Arnaud</div></div></div>'+
+    '<div><span class="wi">'+ICON(w0.i)+'</span><div class="grow" style="min-width:0"><div class="k">Météo prévue</div><div class="v">'+w0.t+' °C, '+(w0.r>50?'pluie':w0.r>15?'nuageux':'temps sec')+'</div></div></div></div>'+
     '<div class="ad-th"><span class="k">Objectif de la séance</span><span>Abords et contrat de foulées en ligne courbe, puis le triple de Rambouillet monté à 1,10 m. La carrière d’honneur vous est réservée jusqu’à '+hm(endT(COURS))+'.</span></div>'+
-    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn sm ad-nb on" data-coursc>Voir la séance</button><button class="btn sm ad-nb" data-go="adh-messages" data-id="t-coach">'+ICON('chat','sm')+'Écrire à Pauline</button>'+(l?'<button class="btn sm ad-nb hide-s" data-les>Reprise suivante : '+dayL(r.off).toLowerCase()+' à '+hm(l.start)+'</button>':'')+'</div></div>'}
+    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn ad-nb on" data-coursc>Voir la séance</button><button class="btn ad-nb" data-go="adh-messages" data-id="t-coach">'+ICON('chat','sm')+'Écrire à Pauline</button>'+(l?'<button class="btn ad-nb hide-s" data-les>Reprise suivante : '+dayL(r.off).toLowerCase()+' à '+hm(l.start)+'</button>':'')+'</div></div>'}
   else if(l){var w=D.weather[Math.min(6,r.off)],hrs=Math.round(r.off*24+(+l.start.slice(0,2))+(+l.start.slice(3,5))/60-9.68);
-   B.next='<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp"><span class="hrow" style="--g:8px"><span class="strass" style="background:var(--strass)"></span><span class="eyebrow">Prochaine reprise'+(kid?' de '+p.first:'')+'</span></span><span class="ad-cd">'+ICON('clock','sm')+(r.off===0?'Dans '+hrs+' h':r.off===1?'Demain, dans '+hrs+' h':'Dans '+r.off+' jours')+'</span></div>'+
-    '<div><h2>'+l.title+'</h2><div class="wh">'+cap(F.dateL(D.day(r.off)))+' · '+l.start+' – '+endT(l)+' · '+arena(l)+'</div></div>'+
-    '<div class="ad-ng"><div>'+(h?U.hav(h):'<span class="wi">'+ICON('horse')+'</span>')+'<div class="grow"><div class="k">'+(kid?'Poney attribué':'Cheval')+'</div><div class="v ellip">'+(h?h.name:'Attribué la veille')+'</div></div>'+(kid&&h?'<span class="chip acc">Nouveau</span>':'')+'</div>'+
-    '<div>'+U.av(l.coach)+'<div class="grow"><div class="k">'+(D.staffer(l.coach).role)+'</div><div class="v ellip">'+D.name(l.coach)+'</div></div></div>'+
-    '<div><span class="wi">'+ICON(w.i)+'</span><div class="grow"><div class="k">Météo prévue</div><div class="v ellip">'+w.t+' °C, '+(w.r>50?'pluie':w.r>15?'nuageux':'temps sec')+'</div></div></div></div>'+
-    '<div class="ad-th"><span class="k">Thème de la séance</span><span>'+(kid?'Trot enlevé sur le bon diagonal et premiers départs au galop sur le cercle.':'Enchaînement de huit obstacles à 1,10 m et contrat de foulées, en vue de Rambouillet dimanche.')+'</span><span class="hrow" style="--g:8px;margin-top:6px">'+U.avs(l.riders,5)+'<span class="k">'+count(l)+' cavaliers sur '+l.cap+'</span></span></div>'+
-    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn sm ad-nb on" data-les>Voir la séance</button><button class="btn sm ad-nb" data-abs>Signaler une absence</button><button class="btn sm ad-nb hide-s" data-go="adh-reserver">Toutes mes réservations'+ICON('arrow','sm')+'</button></div></div>'}
+   B.next='<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp" style="position:relative"><span class="hrow" style="--g:8px"><span class="strass" style="background:var(--strass)"></span><span class="eyebrow">Prochaine reprise'+(kid?' de '+p.first:'')+'</span></span><span class="ad-cd">'+ICON('clock','sm')+(r.off===0?'Dans '+hrs+' h':r.off===1?'Demain, dans '+hrs+' h':'Dans '+r.off+' jours')+'</span></div>'+
+    '<div style="position:relative"><h2>'+l.title+'</h2><div class="wh">'+cap(F.dateL(D.day(r.off)))+' · '+hm(l.start)+' à '+hm(endT(l))+' · '+arena(l)+'</div></div>'+
+    '<div class="ad-ng"><div>'+(h?U.hav(h):'<span class="wi">'+ICON('horse')+'</span>')+'<div class="grow" style="min-width:0"><div class="k">'+(kid?'Poney attribué':'Cheval')+'</div><div class="v ellip">'+(h?h.name:'Attribué la veille')+'</div></div>'+(kid&&h?'<span class="chip acc">Nouveau</span>':'')+'</div>'+
+    '<div>'+U.av(l.coach)+'<div class="grow" style="min-width:0"><div class="k">'+(D.staffer(l.coach).role)+'</div><div class="v ellip">'+D.name(l.coach)+'</div></div></div>'+
+    '<div><span class="wi">'+ICON(w.i)+'</span><div class="grow" style="min-width:0"><div class="k">Météo prévue</div><div class="v">'+w.t+' °C, '+(w.r>50?'pluie':w.r>15?'nuageux':'temps sec')+'</div></div></div></div>'+
+    '<div class="ad-th"><span class="k">Thème de la séance</span><span>'+(kid?'Trot enlevé sur le bon diagonal et premiers départs au galop sur le cercle.':'Enchaînement de huit obstacles à 1,10 m et contrat de foulées, en vue de Rambouillet dimanche.')+'</span><span class="hrow" style="--g:8px;margin-top:8px">'+U.avs(l.riders,5)+'<span class="s" style="opacity:.8">'+count(l)+' cavaliers sur '+l.cap+'</span></span></div>'+
+    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn ad-nb on" data-les>Voir la séance</button><button class="btn ad-nb" data-abs>Signaler une absence</button><button class="btn ad-nb hide-s" data-go="adh-reserver">Toutes mes réservations'+ICON('arrow','sm')+'</button></div></div>'}
   else B.next='<div class="card w2" data-b="next">'+U.empty('planning','Aucune reprise réservée','Choisissez un créneau, il reste des places cette semaine.','<button class="btn pri" data-go="adh-reserver">Réserver une reprise</button>')+'</div>';
-  if(!kid)B.horse='<div class="card ad-b" data-b="horse"><div class="ch"><h3>'+UL.name.split(' ')[0]+' en direct</h3><button class="btn ghost sm" data-go="adh-cheval">Sa fiche'+ICON('arrow','sm')+'</button></div><div class="cb"><div data-cam data-go="adh-cheval" style="cursor:pointer"></div>'+
-    '<div class="ad-row">'+U.hav(UL)+'<div class="grow"><div class="t">Au box B01, calme</div><div class="s ellip">A tout mangé ce matin · cours avec Pauline à '+hm(COURS.start)+'</div></div></div>'+
-    '<div class="hrow wrap end" style="--g:6px">'+U.chip('Ferrure jeudi à 9 h','warn',true)+U.chip('Couverture 150 g','',false)+'</div></div></div>';
-  B.money='<div class="card ad-b" data-b="money"><div class="ch"><h3>Solde</h3><button class="btn ghost sm" data-go="adh-paiements">Détail'+ICON('arrow','sm')+'</button></div><div class="cb">'+
-    (dueV?'<div><div class="ad-big"><span data-count="'+dueV+'" data-fmt="eur">'+F.eur(dueV)+'</span></div><div class="s mut" style="margin-top:6px">à régler, dont la pension de novembre échue depuis 2 jours</div></div><div class="note warn">'+ICON('alert','sm')+'<span>Le prélèvement du 15 novembre a été rejeté par votre banque. Les 180 € de demi-pension sont déjà déduits.</span></div>':
-     '<div><div class="ad-big okc">0 €</div><div class="s mut" style="margin-top:6px">Tout est réglé. Merci Léa.</div></div>')+
-    '<div class="ad-row"><span class="av sq sm" style="--c:var(--bg-2);color:var(--ink-2)">'+ICON('calendar_add','sm')+'</span><div class="grow"><div class="t s">Prochaine échéance le 1er décembre</div><div class="xs mut">Pension de décembre, 340 € par prélèvement</div></div></div>'+
-    (dueV?'<button class="btn pri block end" data-go="adh-paiements" data-p-pay="1">'+ICON('card','sm')+'Payer '+F.eur(dueV)+'</button>':'')+'</div></div>';
-  B.sign='<div class="card ad-b" data-b="sign"><div class="ch"><h3>À signer</h3>'+(ts.length?'<span class="chip acc">'+ts.length+'</span>':'<span class="chip ok dot">À jour</span>')+'</div><div class="cb">'+
-    (ts.length?'<div class="ad-row">'+sq('contract')+'<div class="grow"><div class="t">'+ts[0].title+'</div><div class="s">'+ts[0].sub+'</div></div></div>'+
-     '<div class="ad-signers">'+ts[0].signers.map(function(s){var ok=ts[0].signed.indexOf(s)>=0,me=s==='m001';return '<div class="hrow s" style="--g:8px">'+U.av(s,'sm')+'<span class="grow ellip">'+(me?'Vous':D.name(s))+'</span>'+(ok?'<span class="okc hrow" style="--g:4px">'+ICON('check','sm')+'Signé</span>':'<span class="mut">En attente</span>')+'</div>'}).join('')+'</div>'+
-     (ts.length>1?'<div class="xs mut">et '+(ts.length-1)+' autre'+(ts.length>2?'s':'')+' document'+(ts.length>2?'s':'')+' en attente</div>':'')+
-     '<button class="btn block end" data-go="adh-contrats" data-id="'+ts[0].id+'">'+ICON('sign','sm')+'Signer au doigt</button>':
-     '<div class="ad-row">'+sq('checkc','ok')+'<div class="grow"><div class="t">Tous vos documents sont signés</div><div class="s">Retrouvez-les dans Contrats.</div></div></div><button class="btn block end" data-go="adh-contrats">Voir mes documents</button>')+'</div></div>';
-  if(!kid)B.compet='<div class="card ad-b" data-b="compet"><div class="ch"><h3>Concours</h3><span class="chip acc dot">Dimanche</span></div><div class="cb"><div class="ad-row">'+sq('trophy')+'<div class="grow"><div class="t">'+k1.name+'</div><div class="s ellip">'+k1.place.split(',')[0]+' · '+RB.classe.replace(' · ',' ')+'</div></div></div>'+
-    '<div class="g2" style="--g:8px;grid-template-columns:repeat(2,minmax(0,1fr))"><div class="card soft" style="padding:10px 12px"><div class="xs mut">Départ du van</div><div class="disp bb num" style="font-size:20px">07:15</div></div><div class="card soft" style="padding:10px 12px"><div class="xs mut">Votre passage</div><div class="disp bb num" style="font-size:20px">'+RB.passage+'</div></div></div>'+
-    '<div class="ad-row">'+U.av('c01')+'<div class="grow"><div class="t s">Pauline Arnaud vous coache sur place</div><div class="xs mut">Reconnaissance du parcours à '+hm(RB.recon)+'</div></div></div><button class="btn block end" data-go="adh-concours">Voir le transport et les horaires</button></div></div>';
-  var pg=kid?{pct:68,l:'68 %',t:'Galop 3 en préparation',s:'11 compétences validées sur 16 par Inès',sp:[1,1,2,1,1,2,1,1]}:{pct:73,l:'8 h 45',t:'8 h 45 en selle en novembre',s:'Objectif de 12 heures · 9 semaines d’affilée',sp:[2.5,3,2,3.5,3,4,3.5,2.75]};
-  B.progress='<div class="card ad-b" data-b="progress"><div class="ch"><h3>Progression'+(kid?' de '+p.first:'')+'</h3><button class="btn ghost sm" data-go="adh-progression">Tout voir'+ICON('arrow','sm')+'</button></div><div class="cb"><div class="hrow" style="--g:14px">'+U.ring(pg.pct,kid?pg.l:'73 %','var(--acc)',68)+'<div class="grow"><div class="b">'+pg.t+'</div><div class="s mut">'+pg.s+'</div></div></div>'+
-    '<div class="end">'+C.spark(pg.sp)+'<div class="hrow sp xs mut" style="margin-top:4px"><span>8 dernières semaines</span><span>'+(kid?'1 séance par semaine':'3 h 05 en moyenne')+'</span></div></div></div></div>';
-  B.weather='<div class="card ad-b" data-b="weather"><div class="ch"><h3>Météo du club</h3><span class="xs mut">Saint-Arnoult</span></div><div class="cb"><div class="ad-wx">'+D.weather.map(function(w,i){return '<div class="'+(i===0?'on':'')+'"><span class="xs mut">'+w.d+'</span>'+ICON(w.i)+'<b class="num">'+w.t+'°</b><span class="xs '+(w.r>50?'acc b':'mut')+' num">'+w.r+' %</span></div>'}).join('')+'</div>'+
-    '<div class="note end">'+ICON('rain','sm')+'<span>Pluie jeudi : '+(kid?'les reprises de poney restent au manège, rien ne change pour '+p.first+'.':'votre reprise de dressage passe au Grand manège. Rien à faire de votre côté.')+'</span></div></div></div>';
-  B.news='<div class="card ad-b" data-b="news"><div class="ch"><h3>Annonces du club</h3><span class="xs mut">'+D.club.short+'</span></div><div style="padding:6px 0 8px">'+D.adhNews.map(function(n){return '<div class="ad-news" data-news="'+n.id+'">'+sq(n.icon)+'<div class="grow"><div class="t">'+n.title+'</div><div class="xs mut" style="margin-top:3px">'+n.tag+' · '+n.when+'</div></div></div>'}).join('')+'</div></div>';
+  if(!kid)B.horse='<div class="card tint d-chevaux ad-t w2" data-b="horse"><div class="ad-tt">'+ico('horse','chevaux')+'<h3>'+UL.name.split(' ')[0]+' en direct</h3>'+lk('adh-cheval','Sa fiche')+'</div><div class="ad-camw"><div data-cam data-go="adh-cheval" style="cursor:pointer"></div></div>'+
+    '<div class="ad-row"><span class="sub grow"><b>Au box B01, calme.</b> A tout mangé ce matin, cours avec Pauline à '+hm(COURS.start)+'.</span></div>'+
+    '<div class="hrow wrap end" style="--g:8px">'+U.chip(ICON('hoof','sm')+'Ferrure jeudi à 9 h','warn')+U.chip(ICON('layers','sm')+'Couverture 150 g','d')+U.chip(ICON('heart','sm')+'En forme','ok')+'</div></div>';
+  B.money='<div class="card tint d-argent ad-t has-illu w1 pw2" data-b="money">'+ILLU.pieces({size:null,cls:'corner'})+'<div class="ad-tt">'+ico('wallet','argent')+'<h3>'+(dueV?'À régler':'Solde')+'</h3></div>'+
+    (dueV?'<div><div class="big num"><span data-count="'+dueV+'" data-fmt="eur">'+F.eur(dueV)+'</span></div><div class="sub" style="margin-top:8px">dont la pension de novembre, échue depuis 2 jours. Les 180 € de demi-pension sont déjà déduits.</div></div>':
+     '<div><div class="big num">0 €</div><div class="sub" style="margin-top:8px">Tout est réglé. Merci Léa.</div></div>')+
+    '<div class="hrow s" style="--g:8px;opacity:.85">'+ICON('calendar_add','sm')+'<span>1er décembre : 340 € prélevés</span></div>'+
+    (dueV?'<div class="hrow end" style="--g:8px"><button class="btn pri grow" data-go="adh-paiements" data-p-pay="1">'+ICON('card','sm')+'Payer '+F.eur(dueV)+'</button><button class="btn icon" data-go="adh-paiements" title="Voir le détail des factures">'+ICON('arrow','sm')+'</button></div>':'<button class="btn block end" data-go="adh-paiements">Voir mes factures</button>')+'</div>';
+  B.sign='<div class="card ad-t w1 pw2" data-b="sign"><div class="ad-tt">'+ico('sign','plateforme')+'<h3>À signer</h3>'+(ts.length?'<span class="chip acc lg">'+ts.length+'</span>':'<span class="chip ok dot">À jour</span>')+'</div>'+
+    (ts.length?'<div><div class="b" style="font-size:15.5px;line-height:1.3">'+ts[0].title+'</div><div class="s mut" style="margin-top:4px">'+ts[0].sub+'</div></div>'+
+     '<div class="ad-signers">'+ts[0].signers.map(function(s){var ok=ts[0].signed.indexOf(s)>=0,me=s==='m001';return '<div class="hrow" style="--g:10px">'+U.av(s,'sm')+'<span class="grow ellip s b">'+(me?'Vous':D.name(s))+'</span>'+(ok?'<span class="chip ok">'+ICON('check','sm')+'Signé</span>':'<span class="chip line">En attente</span>')+'</div>'}).join('')+'</div>'+
+     (ts.length>1?'<div class="s mut">et '+(ts.length-1)+' autre'+(ts.length>2?'s':'')+' document'+(ts.length>2?'s':'')+' en attente</div>':'')+
+     '<button class="btn dark block end" data-go="adh-contrats" data-id="'+ts[0].id+'">'+ICON('sign','sm')+'Signer au doigt</button>':
+     '<div class="ad-row">'+sq('checkc','ok')+'<div class="grow"><div class="t">Tous vos documents sont signés</div><div class="s">Retrouvez-les dans Contrats.</div></div></div><button class="btn block end" data-go="adh-contrats">Voir mes documents</button>')+'</div>';
+  if(!kid)B.compet='<div class="card tint d-cavaliers ad-t sq w1" data-b="compet" data-go="adh-concours"><div class="ad-tt">'+ico('trophy','cavaliers')+'<h3>Dimanche</h3></div>'+
+    '<div><div class="big num">'+RB.passage.replace(':',' h ')+'</div><div class="sub" style="margin-top:6px">Votre passage à Rambouillet, dans 5 jours</div><div class="hrow wrap" style="--g:6px;margin-top:10px"><span class="chip d">Dossard '+RB.bib+'</span><span class="chip d hide-s">'+RB.order+'</span></div></div>'+
+    '<div class="hrow end s" style="--g:8px;opacity:.85">'+ICON('van','sm')+'<span>Départ du van à 7 h 15</span></div></div>';
+  var pg=kid?{pct:68,l:'68 %',t:'Galop 3 en préparation',s:'11 compétences sur 16',sp:[1,1,2,1,1,2,1,1]}:{pct:73,l:'73 %',t:'8 h 45 en selle',s:'sur 12 heures en novembre',sp:[2.5,3,2,3.5,3,4,3.5,2.75]};
+  B.progress='<div class="card tint d-acc ad-t sq w1" data-b="progress" data-go="adh-progression"><div class="ad-tt">'+ico('trend','acc')+'<h3>Progression</h3></div>'+
+    '<div class="hrow ad-pgr" style="--g:14px">'+ringSVG(pg.pct,84,10,'var(--acc)','<b>'+pg.pct+'</b><small>%</small>')+'<div class="grow" style="min-width:0"><div class="b" style="font-size:16px;line-height:1.25">'+pg.t+'</div><div class="s mut" style="margin-top:4px">'+pg.s+'</div></div></div>'+
+    '<div class="end">'+C.spark(pg.sp,'var(--acc)')+'<div class="s mut" style="margin-top:2px">'+(kid?'1 séance par semaine':'9 semaines d’affilée')+'</div></div></div>';
+  var rainD=D.weather.findIndex(function(w,i){return i>0&&w.r>50});
+  B.weather='<div class="card tint d-equipe ad-t w2" data-b="weather"><div class="ad-tt">'+ico(D.weather[0].i,'equipe')+'<h3>Météo du club</h3><span class="s" style="opacity:.8">Saint-Arnoult</span></div>'+
+    '<div class="hrow" style="--g:14px;align-items:flex-end"><div class="big num">'+D.weather[0].t+'<small>°C</small></div><div class="sub" style="padding-bottom:6px">'+(D.weather[0].r>50?'Pluie attendue aujourd’hui':'Temps sec ce matin')+', '+D.weather[0].r+' % de risque de pluie</div></div>'+
+    '<div class="ad-wx">'+D.weather.map(function(w,i){return '<div class="'+(i===0?'on':w.r>50?'rn':'')+'"><span>'+(i===0?'Auj.':w.d)+'</span>'+ICON(w.i)+'<b class="num">'+w.t+'°</b><span class="num" style="opacity:.75">'+w.r+' %</span></div>'}).join('')+'</div>'+
+    '<div class="note end" style="background:color-mix(in srgb,var(--surface) 70%,transparent)">'+ICON('rain','sm')+'<span>Pluie '+(rainD>0?DWL(rainD):'jeudi')+' : '+(kid?'les reprises de poney restent au manège, rien ne change pour '+p.first+'.':'votre reprise de dressage passe au Grand manège. Rien à faire de votre côté.')+'</span></div></div>';
+  B.news='<div class="card ad-t w2" data-b="news" style="padding:20px 0 8px"><div class="ad-tt" style="padding:0 20px">'+ico('bell','acc')+'<h3>Annonces du club</h3><span class="s mut">'+D.club.short+'</span></div><div>'+D.adhNews.map(function(n){return '<div class="ad-news" data-news="'+n.id+'"><span class="ico">'+ICON(n.icon)+'</span><div class="grow"><div class="t">'+n.title+'</div><div class="s mut" style="margin-top:4px">'+n.tag+' · '+n.when+'</div></div>'+ICON('right','sm')+'</div>'}).join('')+'</div></div>';
 
   var list=blocks().filter(function(s){return s.on&&B[s.id]});
   el.innerHTML='<div class="ad-ph">'+U.ph('Bonjour Léa',kid?'Vous suivez '+p.first+', 9 ans, Galop 2. Sa prochaine reprise est demain à 14 h.':'Mardi 17 novembre · Ulysse va bien, votre cours avec Pauline est aujourd’hui à '+hm(COURS.start)+'.',profPill()+'<button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button>')+'</div>'+orgBanner()+(ctx.mobile&&!kid?lockHTML():'')+
@@ -361,27 +416,37 @@ P.css(`
 .ad-rsv{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
 @container main (max-width:980px){.ad-rsv{grid-template-columns:minmax(0,1fr)}}
 .ad-wal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
-.ad-wt{display:flex;align-items:center;gap:12px;padding:12px 14px;min-width:0;text-align:left}
-.ad-wt .n{font:700 22px/1 var(--f-display);letter-spacing:-.03em}
-.ad-punch{display:flex;gap:3px;margin-top:5px}
-.ad-punch i{width:9px;height:9px;border-radius:50%;background:var(--acc)}
-.ad-punch i.u{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-2)}
-@container main (max-width:620px){.ad-wal{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:2px 16px;gap:10px}.ad-wal::-webkit-scrollbar{display:none}.ad-wt{flex:none;min-width:200px}}
+.ad-wt{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;min-width:0;text-align:left;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+.ad-wt:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.ad-wt:active{transform:scale(.97)}
+.ad-wt .ico{background:color-mix(in srgb,var(--surface) 72%,transparent)}
+.ad-wt .k{display:block;font-size:14px;font-weight:600;opacity:.8}
+.ad-wt .n{display:block;font:800 40px/1 var(--f-display);letter-spacing:-.04em;margin-top:6px}
+.ad-wt .n small{font-size:20px;opacity:.65;letter-spacing:-.02em}
+.ad-wt .u{display:block;font-size:13.5px;opacity:.75;margin-top:4px}
+.ad-punch{display:flex;gap:4px;margin-top:8px}
+.ad-punch i{width:12px;height:12px;border-radius:50%;background:var(--d)}
+.ad-punch i.u{background:transparent;box-shadow:inset 0 0 0 1.6px color-mix(in srgb,var(--d) 50%,transparent)}
+@container main (max-width:620px){.ad-wal{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:2px 16px;gap:10px;scroll-snap-type:x mandatory}.ad-wal::-webkit-scrollbar{display:none}.ad-wt{flex:none;width:236px;scroll-snap-align:start;padding:16px 18px}.ad-wt .n{font-size:34px}}
+.ad-day{width:60px!important;height:78px!important;border-radius:18px!important}
+.ad-day .d{font-size:22px!important}
+.ad-slot .ti{font-size:16px!important}
+.ad-slot .tm{font-size:19px!important}
 .ad-days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px;margin:14px -2px 4px;scroll-snap-type:x proximity}
 .ad-days::-webkit-scrollbar{display:none}
 .ad-day{flex:none;width:54px;height:72px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);position:relative;scroll-snap-align:start;transition:background var(--t-2),color var(--t-2),transform var(--t-1) var(--e-out)}
 .ad-day:active{transform:scale(.95)}
-.ad-day .w{font-size:11px;font-weight:600;color:var(--mut);text-transform:capitalize}
-.ad-day .d{font:700 19px/1 var(--f-display);letter-spacing:-.03em}
-.ad-day .c{font-size:10px;color:var(--mut);font-weight:600}
+.ad-day .w{font-size:13px;font-weight:600;color:var(--mut);text-transform:capitalize}
+.ad-day .d{font:800 19px/1 var(--f-display);letter-spacing:-.03em}
+.ad-day .c{font-size:13px;color:var(--mut);font-weight:600}
 .ad-day[aria-selected="true"]{background:var(--navy);box-shadow:var(--shadow-2);color:var(--navy-ink)}
 .ad-day[aria-selected="true"] .w,.ad-day[aria-selected="true"] .c{color:color-mix(in srgb,var(--navy-ink) 65%,transparent)}
 .ad-day.mine::after{content:"";position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px var(--surface)}
 .ad-day[aria-selected="true"].mine::after{box-shadow:0 0 0 2px var(--navy);background:var(--strass)}
 .ad-slot{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;position:relative;animation:rise var(--t-3) var(--e-out) both;animation-delay:calc(var(--i,0)*35ms)}
 .ad-slot+.ad-slot::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
-.ad-slot .tm{font:700 16px/1.1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.ad-slot .tm small{display:block;font:500 11.5px var(--f-text);color:var(--mut);margin-top:3px;letter-spacing:0}
+.ad-slot .tm{font:800 16px/1.1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ad-slot .tm small{display:block;font:500 13px var(--f-text);color:var(--mut);margin-top:3px;letter-spacing:0}
 .ad-slot .ti{font-weight:600;font-size:14.5px}
 .ad-slot .me{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
 .ad-slot .rt{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
@@ -394,8 +459,8 @@ P.css(`
 @container main (max-width:760px){.ad-stg{grid-template-columns:minmax(0,1fr)}}
 .ad-st{padding:16px;display:flex;flex-direction:column;gap:12px}
 .ad-date{width:52px;height:56px;border-radius:12px;background:var(--acc-pale);color:var(--acc);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
-.ad-date b{font:700 20px/1 var(--f-display);letter-spacing:-.03em}
-.ad-date span{font-size:11px;font-weight:600;margin-top:2px}
+.ad-date b{font:800 20px/1 var(--f-display);letter-spacing:-.03em}
+.ad-date span{font-size:13px;font-weight:600;margin-top:2px}
 .ad-date.g{background:var(--bg-2);color:var(--ink)}
 .ad-mine{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;position:relative;transition:background var(--t-1)}
 .ad-mine:hover{background:var(--surface-2)}
@@ -450,9 +515,9 @@ P.mod({id:'adh-reserver',role:'adherent',group:'Équitation',title:'Réserver',i
   if(kid&&RS.mode==='pistes')RS.mode='reprise';
   bindProf(el);
   function wal(){$('[data-wal]',el).innerHTML='<div class="ad-wal scroll-x">'+
-    '<button class="card ad-wt" data-wm="rattrapage">'+sq('ticket')+'<span class="grow"><span class="xs mut" style="display:block">Crédits de rattrapage</span><span class="n num">'+A.credits+'</span></span><span class="xs mut hide-s">jusqu’au 15 janv.</span></button>'+
-    '<button class="card ad-wt" data-go="adh-paiements">'+sq('wallet')+'<span class="grow"><span class="xs mut" style="display:block">Carte 10 séances</span><span class="ad-punch">'+Array.apply(null,Array(A.card.total)).map(function(_,i){return '<i class="'+(i<A.card.total-A.card.left?'u':'')+'"></i>'}).join('')+'</span></span><span class="b s num">'+A.card.left+' / '+A.card.total+'</span></button>'+
-    '<button class="card ad-wt" data-wm="reprise">'+sq('planning')+'<span class="grow"><span class="xs mut" style="display:block">'+(kid?'Forfait de '+p.first:'Vos réservations')+'</span><span class="n num">'+(kid?'1 h':resFor(p).length)+'</span></span><span class="xs mut hide-s">'+(kid?'par semaine':'à venir')+'</span></button></div>';
+    '<button class="card tint d-acc ad-wt" data-wm="rattrapage"><span class="ico">'+ICON('ticket')+'</span><span class="grow"><span class="k">Crédits de rattrapage</span><span class="n num">'+A.credits+'</span><span class="u">à utiliser avant le 15 janvier</span></span></button>'+
+    '<button class="card tint d-argent ad-wt" data-go="adh-paiements"><span class="ico">'+ICON('wallet')+'</span><span class="grow"><span class="k">Carte 10 séances</span><span class="n num">'+A.card.left+'<small> / '+A.card.total+'</small></span><span class="ad-punch">'+Array.apply(null,Array(A.card.total)).map(function(_,i){return '<i class="'+(i<A.card.total-A.card.left?'u':'')+'"></i>'}).join('')+'</span></span></button>'+
+    '<button class="card tint d-cavaliers ad-wt" data-wm="reprise"><span class="ico">'+ICON('planning')+'</span><span class="grow"><span class="k">'+(kid?'Forfait de '+p.first:'Vos réservations')+'</span><span class="n num">'+(kid?'1 h':resFor(p).length)+'</span><span class="u">'+(kid?'par semaine':'à venir')+'</span></span></button></div>';
     $$('[data-wm]',el).forEach(function(b){b.onclick=function(){if(RS.mode===b.getAttribute('data-wm')){var sd=$('[data-side] .card',el);if(sd)sd.scrollIntoView({behavior:'smooth',block:'center'});P.toast(RS.mode==='reprise'?'Vos réservations sont listées dans « Mes réservations »':'Les créneaux de rattrapage sont affichés',{icon:'check'});return}RS.mode=b.getAttribute('data-wm');$$('[data-mode]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-mode')===RS.mode)});main()}})}
   function side(){var rs=resFor(p),st=D.adhStages.filter(function(s){return A.stages[s.id]===p.id}),cr=A.coachRes;
    $('[data-side]',el).innerHTML='<div class="card"><div class="ch"><h3>'+(kid?'Réservations de '+p.first:'Mes réservations')+'</h3><span class="chip">'+(rs.length+st.length+(kid?0:cr.length))+'</span></div><div style="padding:8px 0">'+
@@ -507,16 +572,36 @@ P.mod({id:'adh-reserver',role:'adherent',group:'Équitation',title:'Réserver',i
    3. COACHS : trouver et réserver en trois gestes
    ===================================================================== */
 P.css(`
-.ad-cg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ad-cg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 @container main (max-width:860px){.ad-cg{grid-template-columns:minmax(0,1fr)}}
-.ad-co{padding:18px;display:flex;flex-direction:column;gap:14px}
-.ad-co .nm{font:700 18px/1.15 var(--f-display);letter-spacing:-.02em}
+.ad-co{padding:0 20px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+.ad-co:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.ad-co .nm{font:800 18px/1.15 var(--f-display);letter-spacing:-.02em}
+.ad-cob{margin:0 -20px;height:96px;background:radial-gradient(120% 140% at 80% 0%,color-mix(in srgb,var(--d) 30%,var(--d-bg)),var(--d-bg));display:flex;align-items:flex-start;justify-content:space-between;padding:14px 14px 0 20px;flex-direction:row-reverse}
+.ad-cob .chip{background:color-mix(in srgb,var(--surface) 72%,transparent)}
+.ad-cob .ad-fav{background:color-mix(in srgb,var(--surface) 72%,transparent);width:40px;height:40px}
+.ad-coa{margin:-62px auto 0;border-radius:50%;box-shadow:0 0 0 5px var(--surface);line-height:0}
+.ad-coa .av{width:96px;height:96px;font-size:30px}
+.ad-coh{text-align:center;margin-top:-4px}
+.ad-coh .nm{font-size:23px;letter-spacing:-.03em}
+.ad-coh .s{margin-top:4px}
+.ad-cok{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ad-cok>div{padding:12px 10px;border-radius:16px;background:var(--surface-2);text-align:center}
+.ad-cok b{display:block;font:800 20px/1.1 var(--f-display);letter-spacing:-.02em}
+.ad-cok span{font-size:13px;color:var(--mut)}
+.ad-quote{margin:0;padding:14px 16px;border-radius:16px;background:var(--d-bg);color:var(--d-ink)}
+.ad-quote blockquote{margin:0;font-size:14.5px;line-height:1.5}
+.ad-quote figcaption{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;font-weight:600}
+.ad-quote figcaption .ad-rate{margin-left:auto}
+.ad-co .ad-slots{margin:0 -20px;padding:2px 20px}
+.ad-co .ad-sl{min-width:84px;height:58px;border-radius:16px}
+.ad-co .ad-sl b{font-size:16px}
 .ad-rate{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:13px}
 .ad-rate svg.i{width:14px;height:14px;color:var(--c4);fill:var(--c4)}
 .ad-slots{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:2px 18px}
 .ad-slots::-webkit-scrollbar{display:none}
-.ad-sl{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:76px;height:52px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);font-size:12px;color:var(--mut);font-weight:600;transition:all var(--t-2) var(--e-out)}
-.ad-sl b{font:700 15px/1.1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.ad-sl{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:76px;height:52px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);font-size:13px;color:var(--mut);font-weight:600;transition:all var(--t-2) var(--e-out)}
+.ad-sl b{font:800 15px/1.1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
 .ad-sl:hover{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
 .ad-sl:active{transform:scale(.95)}
 .ad-sl[aria-pressed="true"]{background:var(--navy);box-shadow:none;color:color-mix(in srgb,var(--navy-ink) 70%,transparent)}
@@ -524,9 +609,9 @@ P.css(`
 .ad-fav{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--mut);transition:transform var(--t-3) var(--e-spring),color var(--t-2)}
 .ad-fav[aria-pressed="true"]{color:var(--c6)}.ad-fav[aria-pressed="true"] svg{fill:currentColor}
 .ad-fav:active{transform:scale(1.3)}
-.ad-steps{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12px;font-weight:600;color:var(--mut)}
+.ad-steps{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;font-weight:600;color:var(--mut)}
 .ad-steps span{display:inline-flex;align-items:center;gap:6px}
-.ad-steps i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-style:normal;font-size:11px}
+.ad-steps i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-style:normal;font-size:13px}
 .ad-steps .on{color:var(--ink)}.ad-steps .on i{background:var(--acc);color:var(--acc-ink)}
 .ad-steps .ok i{background:var(--ok-pale);color:var(--ok)}
 .ad-steps hr{flex:1;border:0;height:1px;background:var(--line-2);margin:0}
@@ -539,6 +624,7 @@ D.adhReviews=D.adhReviews||[
  {who:'m044',n:5,when:'Il y a 1 mois',text:'Très pédagogue, elle filme les parcours et on débriefe ensemble. Je recommande pour préparer un concours.'},
  {who:'m052',n:4,when:'Il y a 2 mois',text:'Séance exigeante mais on repart avec des exercices clairs à refaire seul dans la semaine.'}];
 var CS={disc:'Tous',sort:'note'};
+function coDom(c){return {CSO:'cavaliers','Dressage':'acc','Éthologie':'chevaux','Concours complet':'argent'}[c.spec]||'equipe'}
 function slotDate(s){var idx=DWC.indexOf(s.split(' ')[0]),off=(idx-2+7)%7;return {off:off,d:D.day(off).getDate(),w:DW[idx],time:s.split(' ')[1]}}
 function slotBtns(c,sel){return c.slots.slice().sort(function(a,b){return slotDate(a).off-slotDate(b).off}).map(function(s){var x=slotDate(s);return '<button class="ad-sl" data-slot="'+c.id+'|'+s+'" aria-pressed="'+(s===sel)+'"><span>'+x.w+' '+x.d+'</span><b>'+x.time.replace(/^0/,'').replace(':00',' h').replace(':',' h ')+'</b></button>'}).join('')}
 function stars(n){var h='<span class="ad-rate">';for(var i=0;i<5;i++)h+='<svg class="i" viewBox="0 0 24 24" style="'+(i<n?'':'fill:none;color:var(--line-2)')+'"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9 6.8 19.7l1-5.9L3.5 9.700l5.9-.8z"/></svg>';return h+'</span>'}
@@ -574,13 +660,14 @@ function coachProfile(c,after){var sh=P.sheet({title:c.first+' '+c.last,icon:'co
 P.mod({id:'adh-coachs',role:'adherent',group:'Équitation',title:'Coachs',icon:'coach',n:20,
  render:function(el){
   el.innerHTML=U.ph('Coachs','Moniteurs du club et coachs indépendants vérifiés. Touchez un créneau pour réserver : séance, paiement, c’est fait.','')+
-   '<div class="card navy" style="padding:16px 18px;margin-bottom:16px"><div class="hrow" style="--g:12px">'+U.av('c01','lg')+'<div class="grow"><div class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc))">Votre coach de concours</div><div class="b" style="color:var(--navy-ink);font-size:15px;margin-top:2px">Pauline Arnaud vous accompagne dimanche à Rambouillet</div><div class="s mut">Reconnaissance du parcours à '+hm(RB.recon)+', détente à '+hm(RB.warmup)+'</div></div><button class="btn sm ad-nb hide-s" data-go="adh-concours">Voir le concours</button></div></div>'+
+   '<div class="card tint d-cavaliers ad-cobn" style="padding:20px 22px;margin-bottom:18px"><div class="hrow" style="--g:14px">'+U.av('c01','lg')+'<div class="grow"><div class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc))">Votre coach de concours</div><div class="b" style="color:var(--navy-ink);font-size:15px;margin-top:2px">Pauline Arnaud vous accompagne dimanche à Rambouillet</div><div class="s mut">Reconnaissance du parcours à '+hm(RB.recon)+', détente à '+hm(RB.warmup)+'</div></div><button class="btn sm ad-nb hide-s" data-go="adh-concours">Voir le concours</button></div></div>'+
    '<div class="hrow sp wrap" style="--g:10px;margin-bottom:14px"><div class="ad-filt scroll-x grow">'+['Tous','CSO','Dressage','Éthologie','Concours complet','Enseignement'].map(function(t){return '<button class="tag" data-manual data-disc="'+t+'" aria-pressed="'+(t===CS.disc)+'">'+t+'</button>'}).join('')+'</div>'+U.seg([['note','Mieux notés'],['prix','Moins chers']],CS.sort,'data-sort')+'</div><div data-list></div>';
   function draw(){var ls=D.coaches.filter(function(c){return CS.disc==='Tous'||c.spec===CS.disc}).sort(function(a,b){return CS.sort==='prix'?a.rate-b.rate:b.rating-a.rating});
-   var box=$('[data-list]',el);box.innerHTML='<div class="ad-cg rise">'+ls.map(function(c){return '<div class="card ad-co"><div class="hrow" style="--g:14px;align-items:flex-start">'+U.av(c,'xl')+'<div class="grow"><div class="nm">'+c.first+' '+c.last+'</div><div class="s mut" style="margin-top:2px">'+c.level+'</div><div class="hrow wrap" style="--g:6px;margin-top:8px">'+U.chip(c.spec,'acc')+U.chip(c.ext?(/^(Pauline|Sophie)$/.test(c.first)?'Indépendante':'Indépendant'):'Moniteur du club','line')+'<span class="ad-rate">'+ICON('star')+String(c.rating.toFixed(1)).replace('.',',')+'<span class="mut" style="font-weight:500">('+c.reviews+' avis)</span></span></div></div>'+
-     '<button class="ad-fav" data-manual data-fav="'+c.id+'" aria-pressed="'+(!!A.likes[c.id]||c.id==='c01')+'" title="Ajouter à mes coachs favoris">'+ICON('heart')+'</button></div>'+
-     '<p class="s" style="color:var(--ink-2)">'+(c.bio||'Enseigne au club du Galop 1 à la compétition. Connaît déjà Ulysse et votre niveau.')+'</p>'+
-     '<div><div class="hrow sp" style="margin-bottom:8px"><span class="xs mut b">Prochaines disponibilités</span><span class="s"><b class="num" style="font-size:15px">'+F.eur(c.rate)+'</b> <span class="mut">l’heure</span></span></div><div class="ad-slots scroll-x">'+slotBtns(c)+'</div></div>'+
+   var box=$('[data-list]',el);box.innerHTML='<div class="ad-cg rise">'+ls.map(function(c,ci){var dm=coDom(c),rv=D.adhReviews[ci%D.adhReviews.length],rm=D.member(rv.who);return '<div class="card ad-co d-'+dm+'"><div class="ad-cob"><button class="ad-fav" data-manual data-fav="'+c.id+'" aria-pressed="'+(!!A.likes[c.id]||c.id==='c01')+'" title="Ajouter à mes coachs favoris">'+ICON('heart')+'</button><span class="chip d">'+c.spec+'</span></div>'+
+     '<div class="ad-coa">'+U.av(c,'xl')+'</div><div class="ad-coh"><div class="nm">'+c.first+' '+c.last+'</div><div class="s mut">'+c.level+'</div><div class="hrow" style="--g:8px;justify-content:center;margin-top:8px">'+stars(Math.round(c.rating))+'<b class="s num">'+String(c.rating.toFixed(1)).replace('.',',')+'</b><span class="s mut">'+c.reviews+' avis</span></div></div>'+
+     '<div class="ad-cok"><div><b class="num">'+F.eur(c.rate)+'</b><span>l’heure</span></div><div><b class="num">'+c.slots.length+'</b><span>créneaux</span></div><div><b>'+(c.ext?'Indép.':'Club')+'</b><span>'+(c.ext?'vérifié':'moniteur')+'</span></div></div>'+
+     '<div><div class="ad-lbl" style="margin:0 0 8px">Prochains créneaux</div><div class="ad-slots scroll-x">'+slotBtns(c)+'</div></div>'+
+     '<figure class="ad-quote"><blockquote>« '+rv.text+' »</blockquote><figcaption>'+U.av(rv.who,'sm')+'<span>'+rm.first+' '+rm.last.charAt(0)+'.</span>'+stars(rv.n)+'</figcaption></figure>'+
      '<div class="hrow" style="--g:8px;margin-top:auto"><button class="btn grow" data-prof2="'+c.id+'">Profil et avis</button><button class="btn dark grow" data-bk="'+c.id+'">Réserver</button></div></div>'}).join('')+'</div>';
    P.animate(box);
    $$('[data-slot]',box).forEach(function(b){b.onclick=function(){var x=b.getAttribute('data-slot').split('|');coachBook(D.coach(x[0]),x[1])}});
@@ -596,15 +683,34 @@ P.mod({id:'adh-coachs',role:'adherent',group:'Équitation',title:'Coachs',icon:'
    4. MON CHEVAL : 3D, caméra, journal, soins, ration, prestations, partage
    ===================================================================== */
 P.css(`
+.ad-hh{display:grid;grid-template-columns:200px minmax(0,1fr) auto;gap:8px 28px;align-items:center;padding:24px 28px;margin-bottom:16px;overflow:hidden;position:relative}
+.ad-hhi{width:200px;height:200px;margin:-10px 0 -24px -12px;align-self:end}
+.ad-hhi .illu{width:100%;height:100%}
+.ad-hht{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ad-hn{font:800 46px/1 var(--f-display);letter-spacing:-.045em;color:var(--d-ink)}
+.ad-hh .sub{font-size:15.5px;opacity:.85}
+.ad-hh .acts{margin-top:4px}
+.ad-hh .chip{background:color-mix(in srgb,var(--surface) 72%,transparent)}
+.ad-hh .chip.warn{background:var(--warn-pale);color:var(--warn)}
+.ad-hhr{display:flex;align-items:center;gap:22px;padding:18px 20px;border-radius:22px;background:color-mix(in srgb,var(--surface) 62%,transparent)}
+.ad-rgs .tr{stroke-opacity:.18}
+.ad-hhl{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ad-hhl>div{display:flex;gap:10px;align-items:flex-start}
+.ad-hhl i{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none}
+.ad-hhl .k{display:block;font-size:13px;font-weight:600;opacity:.75}
+.ad-hhl b{font:800 24px/1.1 var(--f-display);letter-spacing:-.03em}
+.ad-hhl .u{font-size:13.5px;opacity:.75}
+@container main (max-width:1180px){.ad-hh{grid-template-columns:160px minmax(0,1fr)}.ad-hhi{width:160px;height:160px}.ad-hhr{grid-column:1/-1}}
+@container main (max-width:620px){.ad-hh{grid-template-columns:minmax(0,1fr);padding:20px;gap:14px}.ad-hhi{position:absolute;right:-18px;top:-6px;width:150px;height:150px;margin:0;opacity:.95}.ad-hht{padding-right:0}.ad-hht .eyebrow,.ad-hn,.ad-hh .sub{padding-right:110px}.ad-hn{font-size:36px}.ad-hh .acts .btn{flex:1 1 40%;padding:0 12px}.ad-hh .acts .btn.pri{flex-basis:100%}.ad-hhr{padding:16px;gap:16px}.ad-hhr .ad-rgs{width:120px!important;height:120px!important}.ad-hhr .ad-rgs svg{width:120px;height:120px}.ad-hhl b{font-size:21px}}
 .ad-hv{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px}
 .ad-3d{height:100%;min-height:360px;border-radius:var(--r-lg);overflow:hidden;background:radial-gradient(120% 90% at 50% 100%,var(--acc-pale),var(--surface) 70%);position:relative}
 .ad-3d .gl{position:absolute!important;inset:0}
 .ad-3d .tp{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap;z-index:3;pointer-events:none}
-.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:3;font-size:11.5px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none}
+.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:3;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none}
 .ad-3d .st{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:3}
 .ad-3d .st div{padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px var(--line)}
-.ad-3d .st b{display:block;font:700 15px/1.2 var(--f-display);letter-spacing:-.02em}
-.ad-3d .st span{font-size:11px;color:var(--mut)}
+.ad-3d .st b{display:block;font:800 15px/1.2 var(--f-display);letter-spacing:-.02em}
+.ad-3d .st span{font-size:13px;color:var(--mut)}
 .ad-live{display:flex;flex-direction:column}
 .ad-live .ad-cam{border-radius:var(--r-lg) var(--r-lg) 0 0;aspect-ratio:16/9}
 .ad-dayl{display:flex;flex-direction:column;padding:6px 0}
@@ -614,26 +720,27 @@ P.css(`
 .ad-dayl .nx .d{background:transparent;box-shadow:inset 0 0 0 2px var(--acc)}
 .ad-hvseg{display:none;margin-bottom:10px}
 @container main (max-width:860px){.ad-hv{grid-template-columns:minmax(0,1fr)}.ad-hvseg{display:flex}.ad-hvseg .seg{width:100%}.ad-hvseg .seg button{flex:1;justify-content:center;height:36px}.ad-hv[data-v="cam"] .ad-hv3{display:none}.ad-hv[data-v="3d"] .ad-live{display:none}.ad-3d{height:340px;min-height:0}}
-@container main (max-width:620px){.ad-3d .st{gap:5px;left:10px;right:10px;bottom:10px}.ad-3d .st div{padding:7px 8px}.ad-3d .st b{font-size:13.5px}.ad-3d .st span{font-size:10.5px}.ad-3d .hint{bottom:66px}}
+@container main (max-width:620px){.ad-3d .st{gap:5px;left:10px;right:10px;bottom:10px}.ad-3d .st div{padding:7px 8px}.ad-3d .st b{font-size:13.5px}.ad-3d .st span{font-size:13px}.ad-3d .hint{bottom:66px}}
 .ad-ps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 18px}
 .ad-pb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);text-align:left;min-width:0;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
 .ad-pb:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--acc-line),var(--shadow-2)}
 .ad-pb:active{transform:scale(.97)}
-.ad-pb b{display:block;font-size:13px}.ad-pb small{display:block;font-size:11.5px;color:var(--mut)}
-@container main (max-width:620px){.ad-ps{gap:6px}.ad-pb{flex-direction:column;text-align:center;gap:6px;padding:10px 2px;box-shadow:none;background:none}.ad-pb .av{width:52px;height:52px;border-radius:17px;background:var(--surface)!important;box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1)}.ad-pb b{font-size:12px;font-weight:600}.ad-pb:hover{transform:none;box-shadow:none}}
+.ad-pb b{display:block;font-size:13px}.ad-pb small{display:block;font-size:13px;color:var(--mut)}
+@container main (max-width:620px){.ad-ps{gap:6px}.ad-pb{flex-direction:column;text-align:center;gap:6px;padding:10px 2px;box-shadow:none;background:none}.ad-pb .av{width:52px;height:52px;border-radius:17px;background:var(--surface)!important;box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1)}.ad-pb b{font-size:13px;font-weight:600}.ad-pb:hover{transform:none;box-shadow:none}}
 .ad-j{padding:16px;display:flex;gap:12px;position:relative}
 .ad-j+.ad-j::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
 .ad-j.new{animation:rise var(--t-4) var(--e-out) both}
 .ad-j p{color:var(--ink-2);margin-top:6px;line-height:1.5}
 .ad-photo{margin-top:10px;height:150px;border-radius:var(--r-md);background:linear-gradient(160deg,color-mix(in srgb,var(--c4) 45%,var(--surface)),color-mix(in srgb,var(--acc) 35%,var(--surface)));display:grid;place-items:center;color:color-mix(in srgb,var(--ink) 55%,transparent);position:relative;overflow:hidden}
 .ad-photo svg{width:72px;height:72px}
-.ad-photo span{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:600;background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 7px;border-radius:5px;color:var(--ink)}
+.ad-photo span{position:absolute;left:10px;bottom:8px;font-size:13px;font-weight:600;background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 7px;border-radius:5px;color:var(--ink)}
 .ad-mood{display:inline-flex;gap:2px}
 .ad-mood button,.ad-mood span{width:30px;height:30px;display:grid;place-items:center;color:var(--line-2);transition:transform var(--t-2) var(--e-spring),color var(--t-2)}
 .ad-mood .on{color:var(--c6)}.ad-mood .on svg{fill:currentColor}
 .ad-mood button:active{transform:scale(1.3)}
 .ad-mood.ro span{width:16px;height:16px}.ad-mood.ro svg{width:13px;height:13px}
-.ad-like{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--mut);height:30px;padding:0 8px;margin-left:-8px;border-radius:8px}
+.ad-j .chip{flex:none}
+.ad-like{white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--mut);height:30px;padding:0 8px;margin-left:-8px;border-radius:8px}
 .ad-like[aria-pressed="true"]{color:var(--c6)}.ad-like[aria-pressed="true"] svg{fill:currentColor}
 .ad-care{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px 16px;position:relative}
 .ad-care+.ad-care::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
@@ -646,12 +753,12 @@ P.css(`
 .ad-wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .ad-wd{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 4px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);min-width:0;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
 .ad-wd:hover{box-shadow:inset 0 0 0 1px var(--acc-line),var(--shadow-2);transform:translateY(-2px)}
-.ad-wd .w{font-size:11.5px;font-weight:600;color:var(--mut)}
-.ad-wd .n{font-size:12px;font-weight:600;max-width:100%}
+.ad-wd .w{font-size:13px;font-weight:600;color:var(--mut)}
+.ad-wd .n{font-size:13px;font-weight:600;max-width:100%}
 .ad-wd.dp{background:color-mix(in srgb,var(--c4) 12%,var(--surface))}
 .ad-wd.today{box-shadow:inset 0 0 0 2px var(--acc)}
 .ad-wd .rest{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);color:var(--mut)}
-@container main (max-width:620px){.ad-wk{gap:4px}.ad-wd{padding:10px 0}.ad-wd .n{font-size:10.5px}.ad-wd .av,.ad-wd .rest{width:30px;height:30px}}
+@container main (max-width:620px){.ad-wk{gap:4px}.ad-wd{padding:10px 0}.ad-wd .n{font-size:13px}.ad-wd .av,.ad-wd .rest{width:30px;height:30px}}
 `);
 var SERVICES=[['paddock','paddock','Sortie au paddock','2 heures en Prairie du bas, avec ses copains',6],['couverture','layers','Couverture','Pose le soir et retrait le matin selon la météo',2],['travail','whistle','Travail par un moniteur','45 minutes montées ou à la longe, compte rendu dans le journal',35],['douche','drop','Douche','Douche tiède et séchage au solarium',10],
  ['marcheur','rotate','Marcheur','30 minutes au pas, idéal les jours de repos',5],['pansage','brush','Pansage complet','Brossage, pieds graissés, crins démêlés',12],['tonte','bolt','Tonte','Tonte de chasse ou complète, couverture adaptée ensuite',70],['soins','care','Soin quotidien','Application d’un traitement prescrit, matin et soir',4]];
@@ -685,9 +792,14 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
  render:function(el,ctx){
   if(ctx.params.tab&&CH.last!==ctx.params){CH.tab=ctx.params.tab;CH.last=ctx.params}
   var pts=[{id:'pied',label:'Ferrure jeudi à 9 h',pos:[.09,.05,.33],c:'var(--warn)'},{id:'dos',label:'Dos : ostéopathe en janvier',pos:[0,.74,-.1],c:'var(--acc)'},{id:'vacc',label:'Vaccins à jour',pos:[0,.74,.4],c:'var(--ok)'},{id:'dent',label:'Dents : contrôle en avril',pos:[0,.68,.72],c:'var(--ok)'}];
-  el.innerHTML=hselHTML()+U.ph(UL.name,UL.breed+' · '+UL.sex.toLowerCase()+' '+UL.coat.toLowerCase()+' · '+UL.age+' ans · 1,68 m · box '+UL.box,'<button class="btn" data-ride>'+ICON('route','sm')+'Partir en balade</button><button class="btn hide-s" data-share>'+ICON('link','sm')+'Inviter un proche</button><button class="btn pri hide-s" data-allp>'+ICON('plus','sm')+'Demander une prestation</button>')+
+  var wp=Math.round(UL.work/UL.workMax*100),bc=parseFloat(bcs().replace(',','.'));
+  el.innerHTML=hselHTML()+'<div class="card tint d-chevaux ad-hh rise"><div class="ad-hhi">'+ILLU.cheval({size:null})+'</div><div class="ad-hht"><span class="eyebrow">Votre cheval · box '+UL.box+'</span><h1 class="ad-hn">'+UL.name+'</h1><div class="sub">'+UL.breed+' · '+UL.sex.toLowerCase()+' '+UL.coat.toLowerCase()+' · '+UL.age+' ans · 1,68 m</div>'+
+   '<div class="hrow wrap" style="--g:8px">'+U.chip(ICON('heart','sm')+'En forme','ok')+U.chip(ICON('spark','sm')+'Humeur : '+UL.mood.toLowerCase(),'d')+U.chip(ICON('hoof','sm')+'Maréchal jeudi','warn')+'</div>'+
+   '<div class="hrow wrap acts" style="--g:8px"><button class="btn pri" data-allp>'+ICON('plus','sm')+'Demander une prestation</button><button class="btn" data-ride>'+ICON('route','sm')+'Partir en balade</button><button class="btn" data-share>'+ICON('link','sm')+'Inviter un proche</button></div></div>'+
+   '<div class="ad-hhr">'+rings([{p:wp,c:'var(--hz)'},{p:80,c:'var(--acc)'},{p:bc/5*100,c:'var(--rd)'}],164)+'<div class="ad-hhl">'+
+    [['var(--hz)','Travail sur 7 jours',UL.work+' h','sur '+UL.workMax+' h conseillées'],['var(--acc)','Soins à jour','4','sur 5 rendez-vous'],['var(--rd)','État corporel',bcs(),'sur 5, idéal']].map(function(x){return '<div><i style="background:'+x[0]+'"></i><span class="grow"><span class="k">'+x[1]+'</span><b class="num">'+x[2]+'</b> <span class="u">'+x[3]+'</span></span></div>'}).join('')+'</div></div></div>'+
    '<div class="ad-hvseg">'+U.seg([['cam',ICON('camera','sm')+'Caméra du box'],['3d',ICON('cube','sm')+'Vue 3D et santé']],CH.view,'data-hv')+'</div>'+
-   '<div class="ad-hv" data-v="'+CH.view+'"><div class="card ad-hv3"><div class="ad-3d"><div class="gl"></div><div class="tp">'+U.chip('En forme','ok',true)+U.chip('Humeur : '+UL.mood.toLowerCase(),'',false)+'</div><div class="hint">'+ICON('rotate','sm')+'Faites tourner, touchez un point</div>'+
+   '<div class="ad-hv" data-v="'+CH.view+'"><div class="card ad-hv3"><div class="ad-3d"><div class="gl"></div><div class="tp"></div><div class="hint">'+ICON('rotate','sm')+'Faites tourner, touchez un point</div>'+
     '<div class="st"><div><b class="num">'+UL.weight+' kg</b><span>Poids</span></div><div><b class="num">'+bcs()+' / 5</b><span>État</span></div><div><b class="num">'+UL.work+' h</b><span>Sur 7 jours</span></div><div><b class="num">38 bpm</b><span>Au repos</span></div></div></div></div>'+
    '<div class="card ad-live"><div data-cam></div><div class="ch" style="padding-top:12px"><h3>Sa journée</h3><span class="chip ok dot">Au box, calme</span></div><div class="ad-dayl">'+
     [['07:10','A tout mangé, crottins normaux',0],['08:30','Paddock, Prairie du bas, 2 heures',0],[COURS.start,'Cours avec Pauline, '+arena(COURS).toLowerCase(),1],['17:00','Pansage et marcheur avec '+DPR.first,1]].map(function(e){return '<div class="'+(e[2]?'nx':'')+'"><span class="h">'+e[0]+'</span><span class="d"></span><span class="ellip'+(e[2]?' mut':'')+'">'+e[1]+'</span></div>'}).join('')+'</div></div></div>'+
@@ -772,23 +884,32 @@ P.tourSteps.push({route:'adh-cheval',title:'Son cheval dans la poche',text:'Léa
    5. DEMI-PENSION : côté propriétaire et côté cavalier
    ===================================================================== */
 P.css(`
-.ad-an{padding:18px;display:flex;flex-direction:column;gap:14px}
-.ad-an .hd{display:flex;gap:14px;align-items:flex-start}
-.ad-an h3{font-size:19px;line-height:1.2}
-.ad-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.ad-kv>div{padding:10px 12px;border-radius:var(--r-md);background:var(--surface-2)}
-.ad-kv b{display:block;font:700 18px/1.2 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.ad-kv span{font-size:11.5px;color:var(--mut)}
+.ad-an{padding:24px;display:flex;flex-direction:column;gap:16px}
+.ad-an .hd{display:flex;gap:16px;align-items:flex-start}
+.ad-an h3{font-size:26px;line-height:1.1;letter-spacing:-.03em;color:var(--d-ink)}
+.ad-an .chip{background:color-mix(in srgb,var(--surface) 72%,transparent)}
+.ad-an .chip.ok{background:var(--ok-pale)}
+.ad-an p{color:inherit!important;opacity:.9}
+.ad-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ad-kv>div{padding:14px 16px;border-radius:18px;background:var(--surface-2)}
+.ad-an .ad-kv>div{background:color-mix(in srgb,var(--surface) 66%,transparent)}
+.ad-kv b{display:block;font:800 30px/1.1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ad-kv span{font-size:13.5px!important}
+.ad-kv span{font-size:13px;color:var(--mut)}
 .ad-cand{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:16px;position:relative;cursor:pointer;transition:background var(--t-1)}
 .ad-cand:hover{background:var(--surface-2)}
 .ad-cand+.ad-cand::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
+.ad-earn{position:relative;overflow:hidden}
+.ad-earn .illu.corner{position:absolute;right:4px;top:4px;width:100px;height:92px;pointer-events:none}
+.ad-earn .ch{padding-right:100px}
+.ad-earn .sub{font-size:14.5px;line-height:1.45;opacity:.85}
 .ad-stars{display:inline-flex}
 .ad-stars button{width:30px;height:30px;display:grid;place-items:center;color:var(--line-2);transition:transform var(--t-2) var(--e-spring)}
 .ad-stars button.on{color:var(--c4)}.ad-stars button.on svg{fill:currentColor}
 .ad-stars button:active{transform:scale(1.3)}
 .ad-of{padding:16px;display:flex;flex-direction:column;gap:12px}
 .ad-rng{width:100%;accent-color:var(--acc);height:28px}
-.ad-wkm{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:11px;color:var(--mut);font-weight:600}
+.ad-wkm{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px;color:var(--mut);font-weight:600}
 .ad-wkm i{display:block;height:28px;border-radius:8px;background:color-mix(in srgb,var(--acc) 30%,var(--surface));margin-bottom:4px}
 .ad-wkm i.dp{background:color-mix(in srgb,var(--c4) 55%,var(--surface))}.ad-wkm i.rest{background:var(--bg-2)}
 `);
@@ -825,7 +946,7 @@ P.mod({id:'adh-demipension',role:'adherent',group:'Cheval',title:'Demi-pension',
   $$('[data-side]',el).forEach(function(b){b.addEventListener('click',function(){DS.side=b.getAttribute('data-side');body()})});
   function body(){var b=$('[data-body]',el),h='',o=D.halfboardOffers[0];
    if(DS.side==='owner'){
-    h='<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:14px">'+A.myOffers.map(function(x){return offerCard(x)}).join('')+'<div class="card ad-an"><div class="hd">'+U.hav(UL,'xl')+'<div class="grow"><div class="hrow wrap" style="--g:6px;margin-bottom:6px">'+U.chip(DS.online?'En ligne':'Suspendue',DS.online?'ok':'',true)+'<span class="xs mut">Publiée il y a 12 jours, visible des adhérents du club</span></div><h3>Ulysse de la Roche cherche son cavalier</h3></div><div class="hrow" style="--g:8px"><span class="xs mut hide-s">'+(DS.online?'Visible':'Masquée')+'</span>'+U.tog(DS.online,'ad-online')+'</div></div>'+
+    h='<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:14px">'+A.myOffers.map(function(x){return offerCard(x)}).join('')+'<div class="card tint d-chevaux ad-an"><div class="hd">'+U.hav(UL,'xl')+'<div class="grow"><div class="hrow wrap" style="--g:6px;margin-bottom:6px">'+U.chip(DS.online?'En ligne':'Suspendue',DS.online?'ok':'',true)+'<span class="xs mut">Publiée il y a 12 jours, visible des adhérents du club</span></div><h3>Ulysse de la Roche cherche son cavalier</h3></div><div class="hrow" style="--g:8px"><span class="xs mut hide-s">'+(DS.online?'Visible':'Masquée')+'</span>'+U.tog(DS.online,'ad-online')+'</div></div>'+
       '<div class="hrow wrap" style="--g:6px">'+U.chip(ICON('planning','sm')+' '+o.days,'lg')+U.chip(ICON('medal','sm')+' '+o.level,'lg')+U.chip(ICON('euro','sm')+' '+F.eur(o.price)+' par mois','lg')+U.chip(ICON('jump','sm')+' CSO et plat','lg')+'</div>'+
       '<p style="color:var(--ink-2);line-height:1.55">'+o.note+' Hongre Selle Français de 11 ans, 1,68 m, sorti en Club Élite. Reprises encadrées le mardi, travail libre le samedi.</p>'+
       '<div class="ad-kv"><div><b data-count="124">124</b><span>vues de l’annonce</span></div><div><b>'+CANDS.length+'</b><span>candidatures</span></div><div><b>'+CANDS.filter(function(c){return c.st==='Nouvelle'}).length+'</b><span>à étudier</span></div></div>'+
@@ -834,7 +955,7 @@ P.mod({id:'adh-demipension',role:'adherent',group:'Cheval',title:'Demi-pension',
      '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Avenant de renouvellement</h3>'+(toSign().length?U.chip('À signer','acc',true):U.chip('Signé','ok',true))+'</div><div class="cb"><div class="ad-row">'+U.av(DP.rider)+'<div class="grow"><div class="t">'+DPR.first+' '+DPR.last+'</div><div class="s">Mardi et samedi · 180 € par mois</div></div></div>'+
        '<div class="s mut">Demi-pension en place depuis le 1er septembre. L’avenant la renouvelle aux mêmes conditions : assurance, frais vétérinaires, préavis d’un mois.</div><button class="btn block end" data-go="adh-contrats" data-id="ct2">'+ICON('sign','sm')+(toSign().length?'Signer l’avenant':'Voir l’avenant signé')+'</button></div></div>'+
       '<div class="card ad-b"><div class="ch"><h3>Planning partagé</h3><span class="xs mut">Cette semaine</span></div><div class="cb"><div class="ad-wkm">'+A.week.map(function(w,i){return '<div><i class="'+(w==='dp'?'dp':w==='rest'?'rest':'')+'"></i>'+'LMMJVSD'.charAt(i)+'</div>'}).join('')+'</div>'+C.legend([['Vous','var(--acc-pale)'],[DPR.first,'color-mix(in srgb,var(--c4) 55%,var(--surface))'],['Repos','var(--bg-2)']])+'<button class="btn block end" data-go="adh-cheval" data-p-tab="partage">Ouvrir le planning partagé</button></div></div>'+
-      '<div class="card ad-b"><div class="ch"><h3>Ce que ça vous rapporte</h3></div><div class="cb"><div><div class="ad-big okc">540 €</div><div class="s mut" style="margin-top:6px">déduits de votre pension depuis septembre, soit 180 € par mois sans rien avoir à réclamer.</div></div></div></div></div></div>'}
+      '<div class="card tint d-argent ad-b ad-earn">'+ILLU.selle({size:null,cls:'corner'})+'<div class="ch"><h3>Ce que ça vous rapporte</h3></div><div class="cb"><div><div class="big num" data-count="540" data-fmt="eur">540 €</div><div class="sub" style="margin-top:8px">déduits de votre pension depuis septembre, soit 180 € par mois sans rien avoir à réclamer.</div></div></div></div></div></div>'}
    else{var all=D.halfboardOffers.slice(1).map(function(x,i){return Object.assign({disc:i?'Balade':'CSO'},x)}).concat(D.adhOffers),ls=all.filter(function(x){return (DS.disc==='Tous'||x.disc===DS.disc)&&x.price<=DS.max&&(!DS.mine||parseInt(x.level.replace(/\D/g,''),10)<=prof().galop)});
     h='<div class="card" style="padding:14px 16px;margin-bottom:14px"><div class="hrow wrap" style="--g:12px 20px"><div class="ad-filt scroll-x grow" style="margin:0;padding:2px">'+['Tous','CSO','Dressage','Balade','Concours complet'].map(function(t){return '<button class="tag" data-manual data-dd="'+t+'" aria-pressed="'+(t===DS.disc)+'">'+t+'</button>'}).join('')+'</div>'+
       '<label class="hrow" style="--g:10px;min-width:220px;flex:1"><span class="s mut" style="white-space:nowrap">Budget max</span><input type="range" class="ad-rng" min="100" max="250" step="10" value="'+DS.max+'" data-max><b class="s num" data-maxv style="width:48px;text-align:right">'+F.eur(DS.max)+'</b></label>'+
@@ -869,19 +990,22 @@ P.mod({id:'adh-demipension',role:'adherent',group:'Cheval',title:'Demi-pension',
    6. CONCOURS : engagements, transport, horaires, résultats
    ===================================================================== */
 P.css(`
-.ad-kh{padding:22px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
-.ad-kh h2{font-size:26px;line-height:1.1;color:var(--navy-ink);letter-spacing:-.03em}
-.ad-kt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.ad-kt>div{padding:12px 14px;border-radius:var(--r-md);background:color-mix(in srgb,var(--navy-ink) 8%,transparent)}
-.ad-kt b{display:block;font:700 24px/1.1 var(--f-display);letter-spacing:-.03em;color:var(--navy-ink);font-variant-numeric:tabular-nums}
-.ad-kt span{font-size:11.5px;color:color-mix(in srgb,var(--navy-ink) 62%,transparent)}
-.ad-kt .hi{background:var(--acc)}.ad-kt .hi b,.ad-kt .hi span{color:var(--acc-ink)}
-@container main (max-width:620px){.ad-kh{padding:18px}.ad-kt{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-kh h2{font-size:23px}}
+.ad-kh{--navy-ink:var(--d-ink);--navy:var(--d-bg);padding:28px;overflow:hidden;display:flex;flex-direction:column;gap:18px;position:relative}
+.ad-kh .illu.corner{position:absolute;right:10px;top:8px;width:128px;height:128px;pointer-events:none}
+.ad-kh h2{font-size:38px;line-height:1.05;color:var(--navy-ink);letter-spacing:-.04em;padding-right:120px}
+.ad-kt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ad-kt>div{padding:16px 18px;border-radius:20px;background:color-mix(in srgb,var(--surface) 66%,transparent)}
+.ad-kt b{display:block;font:800 34px/1.05 var(--f-display);letter-spacing:-.04em;color:var(--navy-ink);font-variant-numeric:tabular-nums;margin-bottom:4px}
+.ad-kt span{font-size:14px!important}
+.ad-kt .hi{background:var(--d)!important}.ad-kt .hi b,.ad-kt .hi span{color:var(--on-acc)!important}
+.ad-kt span{font-size:13px;color:color-mix(in srgb,var(--navy-ink) 62%,transparent)}
+
+@container main (max-width:620px){.ad-kh{padding:20px}.ad-kt{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-kh h2{font-size:29px;padding-right:72px}.ad-kh .illu.corner{width:92px;height:92px;right:0;top:0}.ad-kh>.hrow:first-of-type{padding-right:76px!important}.ad-kt b{font-size:28px}}
 .ad-van{border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
 .ad-van+.ad-van{margin-top:12px}
 .ad-van .vh{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-2)}
 .ad-van .vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:12px 14px}
-.ad-seat{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line);min-width:0;font-size:12.5px}
+.ad-seat{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line);min-width:0;font-size:13px}
 .ad-seat.me{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
 .ad-seat.free{box-shadow:inset 0 0 0 1.5px var(--line-2);border-style:dashed;color:var(--mut);justify-content:center;min-height:48px;background:none;width:100%}
 .ad-cp{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px;position:relative}
@@ -889,7 +1013,7 @@ P.css(`
 @container main (max-width:620px){.ad-cp{grid-template-columns:52px minmax(0,1fr)}.ad-cp .cta{grid-column:1/-1}.ad-cp .cta .btn{width:100%;height:42px}}
 .ad-res{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px;position:relative}
 .ad-res+.ad-res::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
-.ad-rk{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--bg-2);font:700 16px var(--f-display);position:relative}
+.ad-rk{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--bg-2);font:800 16px var(--f-display);position:relative}
 .ad-rk.top{background:var(--acc-pale);color:var(--acc)}
 .ad-rk .strass{position:absolute;top:-3px;right:-3px}
 `);
@@ -922,7 +1046,7 @@ P.mod({id:'adh-concours',role:'adherent',group:'Équitation',title:'Concours',ic
   function body(){var b=$('[data-body]',el),h='';
    if(KS.tab==='mine'){if(!A.engaged.k1){h='<div class="card">'+U.empty('trophy','Vous n’êtes plus engagée à Rambouillet','Votre place dans le van a été libérée et l’engagement remboursé.','<button class="btn pri" data-re>Me réengager</button>')+'</div>'}else{
     var vans=D.vans.map(function(v){var es=D.entries.filter(function(e){return e.comp==='k1'&&e.transport===v.id});return {v:v,es:es.slice(0,v.horses),free:Math.max(0,(v.id==='v1'?v.seats:v.horses)-Math.min(es.length,v.horses))}});
-    h='<div class="stack" style="--g:16px"><div class="card navy ad-kh"><div class="glow" style="position:absolute;right:-70px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 55%,transparent),transparent 65%);pointer-events:none"></div><div class="hrow sp wrap" style="--g:8px"><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc))">Dimanche 22 novembre · dans 5 jours</span><span class="ad-cd">'+ICON('checkc','sm')+'Engagement saisi par le club</span></div>'+
+    h='<div class="stack" style="--g:16px"><div class="card tint d-cavaliers ad-kh">'+ILLU.trophee({size:null,cls:'corner'})+'<div class="hrow wrap" style="--g:8px;padding-right:120px"><span class="eyebrow" style="color:inherit;opacity:.8">Dimanche 22 novembre · dans 5 jours</span><span class="ad-cd">'+ICON('checkc','sm')+'Engagement saisi par le club</span></div>'+
       '<div><h2>'+k1.name+', Rambouillet</h2><div class="wh" style="font-size:14.5px;margin-top:6px;color:color-mix(in srgb,var(--navy-ink) 80%,transparent)">Épreuve 7 · '+RB.classe.replace(' · ',' ')+' · avec Ulysse de la Roche · coachée par Pauline Arnaud</div></div>'+
       '<div class="ad-kt"><div><b>07:15</b><span>Départ du van, cour principale</span></div><div><b>'+RB.recon+'</b><span>Reconnaissance du parcours</span></div><div class="hi"><b>'+RB.passage+'</b><span>Votre passage, '+RB.order+'</span></div><div><b>'+RB.bib+'</b><span>Numéro de dossard</span></div></div>'+
       '<div class="hrow wrap" style="--g:8px"><button class="btn sm ad-nb on" data-route>'+ICON('route','sm')+'Itinéraire, 24 km</button><button class="btn sm ad-nb" data-go="adh-messages" data-id="t-grp">'+ICON('chat','sm')+'Groupe concours</button><button class="btn sm ad-nb" data-out>Me désengager</button></div></div>'+
@@ -939,8 +1063,8 @@ P.mod({id:'adh-concours',role:'adherent',group:'Équitation',title:'Concours',ic
      return '<div class="ad-cp"><div class="ad-date'+(en?'':' g')+'"><b>'+dt.getDate()+'</b><span>'+F.date(k.date).split(' ')[1]+'</span></div><div style="min-width:0"><div class="hrow wrap" style="--g:6px"><b style="font-size:14.5px">'+k.name+'</b>'+(en?U.chip('Engagée','ok',true):'')+'</div><div class="s mut ellip">'+k.place+(k.km?' · '+k.km+' km':'')+'</div><div class="hrow wrap" style="--g:6px;margin-top:7px">'+U.chip(k.disc,'acc')+U.chip(k.level,'line')+U.chip(cl<=1?'Clôture '+F.rel(k.closes):'Clôture le '+F.date(k.closes),cl<=1?'warn':'',cl<=1)+'<span class="xs mut">'+k.entries+' cavaliers du club</span></div></div>'+
       '<div class="cta">'+(en?'<button class="btn" data-see="'+k.id+'">Voir mon engagement</button>':'<button class="btn dark" data-eng="'+k.id+'">S’engager</button>')+'</div></div>'}).join('')+'</div><div class="note" style="margin-top:14px">'+ICON('info','sm')+'<span>Les engagements passent par le compte FFE du club : pas de ressaisie, la facture arrive dans Paiements et votre place de transport est réservée en même temps.</span></div>'}
    else{var R=D.adhResults,sf=R.filter(function(r){return r.pen===0}).length;
-    h='<div class="g4" style="margin-bottom:16px">'+U.kpi({label:'Parcours cette saison',count:R.length,icon:'jump'})+U.kpi({label:'Sans-faute',count:sf,unit:'sur '+R.length,icon:'checkc'})+U.kpi({label:'Classements',count:3,icon:'medal'})+U.kpi({label:'Meilleure place',value:'1<small>re</small>',icon:'trophy'})+'</div>'+
-     '<div class="g3" style="--g:16px"><div class="span2 card"><div class="ch"><h3>Mes parcours avec Ulysse</h3><button class="btn ghost sm" data-ffe>Fiche FFE'+ICON('ext','sm')+'</button></div><div style="padding:6px 0">'+R.map(function(r,i){return '<div class="ad-res ad-tap" data-rr="'+i+'"><div class="ad-rk'+(r.rank<=3?' top':'')+'"><span class="num">'+r.rank+'<small style="font-size:10px">'+(r.rank===1?'re':'e')+'</small></span>'+(r.rank<=3?'<span class="strass"></span>':'')+'</div><div style="min-width:0"><div class="b s ellip">'+r.comp+'</div><div class="xs mut ellip">'+F.dateY(r.date)+' · '+r.cls+' · '+r.of+' partants</div></div><div style="text-align:right">'+U.chip(r.pen===0?'Sans-faute':r.pen+' points',r.pen===0?'ok':'warn',true)+'<div class="xs mut num" style="margin-top:4px">'+r.time+'</div></div></div>'}).join('')+'</div></div>'+
+    h='<div class="g4" style="margin-bottom:16px">'+U.kpi({label:'Parcours cette saison',count:R.length,icon:'jump',dom:'cavaliers',tint:true})+U.kpi({label:'Sans-faute',count:sf,unit:'sur '+R.length,icon:'checkc',dom:'chevaux',tint:true})+U.kpi({label:'Classements',count:3,icon:'medal',dom:'argent',tint:true})+U.kpi({label:'Meilleure place',value:'1<small>re</small>',icon:'trophy',dom:'acc',tint:true})+'</div>'+
+     '<div class="g3" style="--g:16px"><div class="span2 card"><div class="ch"><h3>Mes parcours avec Ulysse</h3><button class="btn ghost sm" data-ffe>Fiche FFE'+ICON('ext','sm')+'</button></div><div style="padding:6px 0">'+R.map(function(r,i){return '<div class="ad-res ad-tap" data-rr="'+i+'"><div class="ad-rk'+(r.rank<=3?' top':'')+'"><span class="num">'+r.rank+'<small style="font-size:13px">'+(r.rank===1?'re':'e')+'</small></span>'+(r.rank<=3?'<span class="strass"></span>':'')+'</div><div style="min-width:0"><div class="b s ellip">'+r.comp+'</div><div class="xs mut ellip">'+F.dateY(r.date)+' · '+r.cls+' · '+r.of+' partants</div></div><div style="text-align:right">'+U.chip(r.pen===0?'Sans-faute':r.pen+' points',r.pen===0?'ok':'warn',true)+'<div class="xs mut num" style="margin-top:4px">'+r.time+'</div></div></div>'}).join('')+'</div></div>'+
      '<div class="card ad-b"><div class="ch"><h3>Points de pénalité</h3><span class="xs mut">5 derniers parcours</span></div><div class="cb">'+bars(R.slice().reverse().map(function(r){return r.pen+.4}),['Juin','Sept','Oct','Oct','Nov'],{h:150,max:10,fmt:function(v){return Math.round(v)+''}})+'<div class="note ok end">'+ICON('trend','sm')+'<span>Trois sans-faute sur vos quatre derniers parcours. Pauline note des abords plus réguliers depuis octobre.</span></div></div></div></div>'}
    b.innerHTML=h;P.animate(b);
    var re=$('[data-re]',b);if(re)re.onclick=function(){A.engaged.k1=true;body();P.toast('Vous êtes de nouveau engagée à Rambouillet')};
@@ -963,8 +1087,16 @@ P.mod({id:'adh-concours',role:'adherent',group:'Équitation',title:'Concours',ic
 P.css(`
 .ad-pg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
 @container main (max-width:900px){.ad-pg{grid-template-columns:minmax(0,1fr)}}
-.ad-gal{padding:20px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
-.ad-gal .ring::after{font:700 26px var(--f-display);letter-spacing:-.03em}
+.ad-gal{padding:26px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center;position:relative;overflow:hidden}
+.ad-gal .illu.corner{position:absolute;right:6px;top:6px;width:110px;height:110px;pointer-events:none}
+.ad-gal .big{font-size:52px;padding-right:100px}
+.ad-gal .sub{font-size:15px;line-height:1.5;opacity:.85}
+.ad-gal .ad-rg .ct b{font-size:36px}
+.ad-gs i{background:color-mix(in srgb,var(--d) 18%,transparent)!important}
+.ad-gs i.on{background:var(--d)!important}
+.ad-gs i.cur{background:linear-gradient(90deg,var(--d) var(--p),color-mix(in srgb,var(--d) 18%,transparent) var(--p))!important}
+@container main (max-width:620px){.ad-gal{grid-template-columns:minmax(0,1fr);padding:20px;gap:16px}.ad-gal .big{font-size:44px}.ad-gal .illu.corner{width:96px;height:96px}}
+.ad-gal .ring::after{font:800 26px var(--f-display);letter-spacing:-.03em}
 .ad-gs{display:flex;gap:4px;margin-top:12px}
 .ad-gs i{flex:1;height:6px;border-radius:3px;background:var(--bg-2)}
 .ad-gs i.on{background:var(--acc)}.ad-gs i.cur{background:linear-gradient(90deg,var(--acc) var(--p),var(--bg-2) var(--p))}
@@ -973,7 +1105,7 @@ P.css(`
 .ad-radar .ax{stroke:var(--line);stroke-width:1}
 .ad-radar .ar{fill:var(--acc);fill-opacity:.16;stroke:var(--acc);stroke-width:2;stroke-linejoin:round;transform-origin:150px 130px;animation:ad-rad .8s var(--e-out) both}
 .ad-radar .pt{fill:var(--surface);stroke:var(--acc);stroke-width:2;animation:fade .4s var(--e-out) .5s both}
-.ad-radar text{font:600 11px var(--f-text);fill:var(--mut)}
+.ad-radar text{font:600 14.5px var(--f-text);fill:var(--mut)}
 .ad-radar text.v{fill:var(--ink);font-weight:700}
 @keyframes ad-rad{from{transform:scale(.2);opacity:0}}
 .ad-skill{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:4px 12px;align-items:center;padding:11px 16px;position:relative}
@@ -1011,7 +1143,7 @@ function radar(sk){var cx=150,cy=130,R=92,n=sk.length,pt=function(i,v){var a=-Ma
 P.mod({id:'adh-progression',role:'adherent',group:'Équitation',title:'Progression',icon:'trend',n:40,
  render:function(el){var p=prof(),kid=p.minor,G=PG[p.id];
   var h='<div class="ad-ph">'+U.ph('Progression',kid?'Le parcours de '+p.first+' : galops, compétences validées par ses moniteurs et séances.':'Vos galops, vos compétences validées par les moniteurs et vos statistiques en selle.',profPill())+'</div>';
-  h+='<div class="stack rise" style="--g:16px"><div class="ad-pg"><div class="card ad-gal"><div>'+U.ring(G.np,'G'+G.g,'var(--acc)',112)+'</div><div><div class="eyebrow">Niveau fédéral</div><h2 style="font-size:24px;margin-top:4px">Galop '+G.g+(kid?'':' <span class="strass" style="vertical-align:middle"></span>')+'</h2><p class="s mut" style="margin-top:6px">'+G.sub+'</p>'+
+  h+='<div class="stack rise" style="--g:16px"><div class="ad-pg"><div class="card tint d-cavaliers ad-gal">'+ILLU.bombe({size:null,cls:'corner'})+'<div>'+ringSVG(G.np,132,14,'var(--rd)','<b>'+G.np+'</b><small>%</small>')+'</div><div style="min-width:0"><div class="eyebrow" style="color:inherit;opacity:.8">Niveau fédéral</div><h2 class="big" style="margin-top:6px;color:var(--d-ink)">Galop '+G.g+(kid?'':' <span class="strass" style="vertical-align:middle"></span>')+'</h2><p class="sub" style="margin-top:8px">'+G.sub+'</p>'+
      '<div class="ad-gs">'+[1,2,3,4,5,6,7].map(function(i){return '<i class="'+(i<=G.g?'on':i===G.g+1?'cur':'')+'" style="--p:'+G.np+'%" title="Galop '+i+'"></i>'}).join('')+'</div><div class="hrow sp xs mut" style="margin-top:6px"><span>Galop 1</span><span class="b" style="color:var(--ink)">'+G.next+' : '+G.np+' %</span><span>Galop 7</span></div>'+
      '<div class="hrow wrap" style="--g:8px;margin-top:14px"><button class="btn sm pri" data-quiz>'+ICON('bulb','sm')+'Réviser la théorie</button>'+(A.quiz[p.id]!=null?U.chip('Meilleur score : '+A.quiz[p.id]+' sur 10',A.quiz[p.id]===10?'ok':'',true):'')+'<button class="btn sm" data-prog>'+ICON('list','sm')+'Programme du '+G.next+'</button><button class="btn sm" data-dip>'+ICON('download','sm')+'Mes diplômes</button></div></div></div>'+
     '<div class="g2" style="--g:12px;grid-template-columns:repeat(2,minmax(0,1fr))">'+G.kp.map(function(k){return U.kpi({label:k[0],value:k[1],delta:k[2],spark:k[3],icon:k[4]})}).join('')+'</div></div>';
@@ -1048,27 +1180,33 @@ P.mod({id:'adh-progression',role:'adherent',group:'Équitation',title:'Progressi
 P.css(`
 .ad-pay{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-bottom:18px}
 @container main (max-width:900px){.ad-pay{grid-template-columns:minmax(0,1fr)}}
-.ad-bal{padding:22px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
-.ad-bal .amt{font:700 52px/1 var(--f-display);letter-spacing:-.045em;color:var(--navy-ink);font-variant-numeric:tabular-nums}
+.ad-bal{--navy-ink:var(--d-ink);--navy:var(--d-bg);padding:28px;overflow:hidden;display:flex;flex-direction:column;gap:18px;position:relative}
+.ad-bal .illu.corner{position:absolute;right:8px;top:6px;width:140px;height:140px;pointer-events:none}
+.ad-bal .amt{font:800 80px/.95 var(--f-display);letter-spacing:-.05em;color:var(--navy-ink);font-variant-numeric:tabular-nums}
+.ad-bal .ln .chip.bad{background:var(--bad);color:var(--on-acc)}
 .ad-bal .ln{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:13.5px;color:color-mix(in srgb,var(--navy-ink) 82%,transparent)}
 .ad-bal .ln+.ln{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--navy-ink) 12%,transparent)}
 .ad-bal .ln b{color:var(--navy-ink);font-variant-numeric:tabular-nums}
 .ad-bal .btn.go{background:var(--acc);color:var(--acc-ink);box-shadow:none;height:44px;padding:0 18px;font-size:14.5px}
-@container main (max-width:620px){.ad-bal{padding:18px}.ad-bal .amt{font-size:44px}.ad-bal .btn{flex:1}}
+@container main (max-width:620px){.ad-bal{padding:20px}.ad-bal .amt{font-size:60px}.ad-bal .btn{flex:1}.ad-bal .illu.corner{width:104px;height:104px;right:0;top:0}.ad-bal>.hrow:first-of-type{padding-right:96px!important}}
+.ad-pass{padding:20px 22px!important}
+.ad-pass .disp{font-size:26px!important}
 .ad-pass{padding:16px 18px;border-radius:var(--r-lg);background:linear-gradient(135deg,var(--acc),var(--acc-2));color:var(--acc-ink);position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow-2)}
 .ad-pass::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:color-mix(in srgb,var(--acc-ink) 10%,transparent)}
 .ad-pass .pn{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;position:relative;z-index:1}
 .ad-pass .pn i{aspect-ratio:1;border-radius:50%;background:color-mix(in srgb,var(--acc-ink) 95%,transparent);display:grid;place-items:center;color:var(--acc)}
 .ad-pass .pn i.u{background:transparent;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,currentColor 50%,transparent);color:color-mix(in srgb,currentColor 70%,transparent)}
 .ad-pass .pn svg{width:60%;height:60%}
-.ad-inv{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 16px;position:relative;cursor:pointer;transition:background var(--t-1)}
+.ad-inv{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:16px 20px;min-height:72px;position:relative;cursor:pointer;transition:background var(--t-1)}
 .ad-inv:hover{background:var(--surface-2)}
 .ad-inv+.ad-inv::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
-.ad-inv .am{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.ad-inv .am{text-align:right;font:800 18px/1.1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ad-inv .am .chip{font-family:var(--f-text);letter-spacing:0}
+@container main (max-width:620px){.ad-inv>div>.b.ellip,.ad-pay .li .t.ellip{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}}
 @container main (max-width:620px){.ad-inv{grid-template-columns:auto minmax(0,1fr) auto}.ad-inv .dl{display:none}}
 .ad-pm{display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative}
 .ad-pm+.ad-pm::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
-.ad-cardv{width:54px;height:36px;border-radius:7px;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;font:700 10px var(--f-text);letter-spacing:.04em;flex:none}
+.ad-cardv{width:54px;height:36px;border-radius:7px;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;font:700 13px var(--f-text);letter-spacing:.04em;flex:none}
 .ad-cardv.b{background:var(--acc-pale);color:var(--acc)}
 `);
 var PS={tab:'fact',filt:'all',last:null,methods:[['cb','VISA','Carte Visa se terminant par 4242','Expire en août 2028 · paiements en ligne'],['sepa','SEPA','Mandat de prélèvement SEPA','FR76 •••• •••• 1234 · pension et forfaits'],['ancv','ANCV','Chèques-vacances Connect','120 € disponibles jusqu’en décembre 2027']],def:'sepa'};
@@ -1105,7 +1243,7 @@ P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:
   $$('[data-pt]',el).forEach(function(b){b.addEventListener('click',function(){PS.tab=b.getAttribute('data-pt');body()})});
   function refresh(prev){top(prev);body();P.renderBadges&&P.renderBadges()}
   function top(prev){var d=due(),open=D.adhInvoices.filter(function(i){return i.status!=='payée'}),t=$('[data-top]',el);
-   t.innerHTML='<div class="ad-pay"><div class="card navy ad-bal"><div class="glow" style="position:absolute;right:-70px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 55%,transparent),transparent 65%);pointer-events:none"></div><div class="hrow sp"><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 62%,var(--acc))">'+(d?'À régler':'Solde du compte')+'</span>'+(d?'<span class="ad-cd">'+ICON('alert','sm')+'Pension échue depuis 2 jours</span>':'<span class="ad-cd">'+ICON('checkc','sm')+'Compte à jour</span>')+'</div>'+
+   t.innerHTML='<div class="ad-pay"><div class="card tint d-argent ad-bal">'+ILLU.pieces({size:null,cls:'corner'})+'<div class="hrow sp wrap" style="--g:8px;padding-right:120px"><span class="eyebrow" style="color:inherit;opacity:.8">'+(d?'À régler':'Solde du compte')+'</span>'+(d?'<span class="ad-cd">'+ICON('alert','sm')+'Pension échue depuis 2 jours</span>':'<span class="ad-cd">'+ICON('checkc','sm')+'Compte à jour</span>')+'</div>'+
      '<div class="hrow" style="--g:12px;align-items:baseline"><div class="amt" data-amt>'+F.eur(d)+'</div>'+(d?'':'<span class="strass" style="background:var(--strass);width:16px;height:16px"></span>')+'</div>'+
      (d?'<div>'+open.map(function(i){return '<div class="ln"><span class="ellip">'+i.label.split(',')[0]+(i.status==='en retard'?' <span class="chip bad" style="margin-left:6px">Échue</span>':'')+'</span><b>'+F.eur(i.amount)+'</b></div>'}).join('')+'</div><div class="hrow wrap" style="--g:8px;margin-top:auto"><button class="btn go" data-payall>'+ICON('card','sm')+'Payer '+F.eur(d)+'</button><button class="btn ad-nb" style="height:44px" data-pay3>En 3 fois sans frais</button></div>':
       '<p style="color:color-mix(in srgb,var(--navy-ink) 80%,transparent);max-width:46ch">Toutes vos factures sont réglées. La pension de décembre sera prélevée le 1er décembre, demi-pension déduite.</p><div class="hrow wrap" style="--g:8px"><button class="btn ad-nb" style="height:44px" data-rc>'+ICON('download','sm')+'Télécharger le reçu</button></div>')+'</div>'+
@@ -1120,7 +1258,7 @@ P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:
      ok.onclick=function(){var n=+optVal(sh,'card');spin(ok,function(){A.card.left+=n;A.card.total=Math.max(10,Math.ceil(A.card.left/10)*10);success(sh,{title:'Carte rechargée',text:n+' séances ajoutées. Vous pouvez réserver tout de suite.'});top()})}}}
   function body(){var b=$('[data-body]',el),h='';
    if(PS.tab==='fact'){var ls=D.adhInvoices.filter(function(i){return PS.filt==='all'||(PS.filt==='open'?i.status!=='payée':i.status==='payée')});
-    h='<div class="hrow sp wrap" style="--g:10px;margin-bottom:12px">'+U.seg([['all','Toutes'],['open','À régler'],['paid','Payées']],PS.filt,'data-pf')+'<button class="btn sm" data-exp>'+ICON('download','sm')+'Tout télécharger, année 2026</button></div><div class="card">'+(ls.length?ls.map(function(i){return '<div class="ad-inv" data-inv="'+i.id+'">'+sq(i.amount<0?'swap':/Pension/.test(i.label)?'stable':/Licence/.test(i.label)?'medal':/Coaching/.test(i.label)?'coach':/Ferrure/.test(i.label)?'hoof':/Transport/.test(i.label)?'van':/Engagement/.test(i.label)?'trophy':'invoice',i.status==='en retard'?'bad':'acc')+'<div style="min-width:0"><div class="b s ellip">'+i.label+'</div><div class="xs mut ellip"><span class="mono" style="font-size:11px">'+i.id+'</span> · '+F.dateY(i.date)+' · '+i.method+'</div></div><div class="am"><div>'+F.eur(i.amount)+'</div><div style="margin-top:3px">'+U.status(i.status)+'</div></div><button class="btn ghost icon sm dl" data-dl="'+i.id+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button></div>'}).join(''):U.empty('checkc','Rien à régler','Toutes vos factures sont payées.'))+'</div>'}
+    h='<div class="hrow sp wrap" style="--g:10px;margin-bottom:12px">'+U.seg([['all','Toutes'],['open','À régler'],['paid','Payées']],PS.filt,'data-pf')+'<button class="btn sm" data-exp>'+ICON('download','sm')+'Tout télécharger, année 2026</button></div><div class="card">'+(ls.length?ls.map(function(i){return '<div class="ad-inv" data-inv="'+i.id+'">'+sq(i.amount<0?'swap':/Pension/.test(i.label)?'stable':/Licence/.test(i.label)?'medal':/Coaching/.test(i.label)?'coach':/Ferrure/.test(i.label)?'hoof':/Transport/.test(i.label)?'van':/Engagement/.test(i.label)?'trophy':'invoice',i.status==='en retard'?'bad':'acc')+'<div style="min-width:0"><div class="b s ellip">'+i.label+'</div><div class="xs mut ellip"><span class="mono" style="font-size:13px">'+i.id+'</span> · '+F.dateY(i.date)+' · '+i.method+'</div></div><div class="am"><div>'+F.eur(i.amount)+'</div><div style="margin-top:3px">'+U.status(i.status)+'</div></div><button class="btn ghost icon sm dl" data-dl="'+i.id+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button></div>'}).join(''):U.empty('checkc','Rien à régler','Toutes vos factures sont payées.'))+'</div>'}
    else if(PS.tab==='moy'){h='<div class="g3" style="--g:16px"><div class="span2 card"><div class="ch"><h3>Moyens enregistrés</h3><button class="btn sm" data-addm>'+ICON('plus','sm')+'Ajouter</button></div><div style="padding:6px 0">'+PS.methods.map(function(m){return '<div class="ad-pm"><span class="ad-cardv'+(m[0]==='cb'?'':' b')+'">'+m[1]+'</span><div class="grow"><div class="b s">'+m[2]+'</div><div class="xs mut">'+m[3]+'</div></div>'+(PS.def===m[0]?U.chip('Par défaut','acc'):'<button class="btn ghost sm hide-s" data-def="'+m[0]+'">Utiliser par défaut</button>')+'<button class="btn ghost icon sm" data-rm="'+m[0]+'" title="Retirer ce moyen de paiement">'+ICON('trash','sm')+'</button></div>'}).join('')+'</div></div>'+
      '<div class="card"><div class="ch"><h3>Préférences</h3></div><div class="list" style="padding:6px 0">'+[['Prélèvement automatique','Pension et forfaits, le 1er du mois',1],['Reçu par e-mail','Après chaque paiement',1],['Rappel 3 jours avant','Notification avant chaque échéance',1],['Paiement en un geste','Sans ressaisir la carte, avec Face ID',0]].map(function(x){return '<div class="li"><div class="grow"><div class="t">'+x[0]+'</div><div class="s">'+x[1]+'</div></div>'+U.tog(!!x[2])+'</div>'}).join('')+'</div></div></div>'}
    else{h='<div class="g2" style="--g:14px">'+[['doc','Attestation de paiement pour votre CSE','Forfait de Jules et licences, saison 2026-2027, tamponnée par le club','CSE'],['family','Attestation d’inscription de Jules','Pour la CAF, la mairie ou le Pass’Sport','Inscription'],['report','Récapitulatif annuel 2026','Toutes vos dépenses par mois et par catégorie, pour votre déclaration ou votre comptable','Annuel'],['invoice','Factures acquittées','Un PDF par facture, avec la mention « acquittée »','Acquittées'],['medal','Attestation de licence FFE 2027','Léa et Jules, avec numéro de licence et assurance','Licence'],['shield','Attestation d’assurance du cheval','Responsabilité civile d’Ulysse, exigée en concours','Assurance']].map(function(a){return '<div class="card" style="padding:16px"><div class="hrow" style="--g:12px;align-items:flex-start">'+sq(a[0])+'<div class="grow"><div class="b">'+a[1]+'</div><div class="s mut" style="margin-top:2px">'+a[2]+'</div><div class="hrow" style="--g:8px;margin-top:12px"><button class="btn sm" data-att="'+a[3]+'">'+ICON('download','sm')+'Télécharger</button><button class="btn ghost sm" data-attm="'+a[3]+'">'+ICON('mail','sm')+'Recevoir par e-mail</button></div></div></div></div>'}).join('')+'</div>'}
@@ -1142,11 +1280,46 @@ P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:
    9. CONTRATS : lire et signer au doigt
    ===================================================================== */
 P.css(`
+.ad-cth{position:relative;overflow:hidden;padding:26px 28px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.ad-cth .illu.corner{position:absolute;right:12px;top:8px;width:132px;height:132px;pointer-events:none}
+.ad-cth .big{font-size:60px}.ad-cth .sub{font-size:15px;opacity:.85;margin-top:4px}
+@container main (max-width:620px){.ad-cth{padding:20px}.ad-cth .illu.corner{width:96px;height:96px;right:0;top:0}.ad-cth .big{font-size:48px}}
+.ad-doc{padding:22px;display:flex;gap:22px;align-items:flex-start}
+.ad-doc .t2{font-size:20px;line-height:1.2;letter-spacing:-.02em;margin:8px 0 4px}
+.ad-doc>.grow{display:flex;flex-direction:column;gap:12px}
+@container main (max-width:620px){.ad-doc{flex-direction:column;padding:20px 18px 18px;gap:14px}.ad-doc .ad-pth{width:72px;height:92px;padding:18px 9px 0;gap:6px}.ad-doc .btn{flex:1}}
+.ad-pth{position:relative;flex:none;width:96px;height:124px;border-radius:10px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2),0 10px 24px -12px rgba(10,22,54,.35);padding:22px 12px 0;display:flex;flex-direction:column;gap:7px;transform:rotate(-3deg);transition:transform var(--t-3) var(--e-spring)}
+.ad-doc:hover .ad-pth,.ad-dt:hover .ad-pth{transform:rotate(0) translateY(-3px)}
+.ad-pth i{display:block;height:5px;border-radius:3px;background:var(--line-2)}
+.ad-pth i.h{width:62%}
+.ad-pth .pi{position:absolute;left:10px;top:-10px;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--pf-bg);color:var(--pf-ink)}
+.ad-pth .pi svg.i{width:17px;height:17px}
+.ad-pth .sg{position:absolute;left:10px;right:10px;bottom:10px;height:24px;border-bottom:1.5px dashed var(--acc);color:var(--acc);display:flex;align-items:center}
+.ad-pth .sg svg.i{width:18px;height:18px}
+.ad-pth .seal{position:absolute;right:-10px;bottom:-8px;width:40px;height:40px;border-radius:50%;background:var(--ok);color:var(--on-acc);display:grid;place-items:center;box-shadow:0 0 0 3px var(--surface);animation:ad-st .4s var(--e-spring) both}
+.ad-pth .seal svg.i{width:22px;height:22px;stroke-width:2.6}
+.ad-trk2{display:flex;align-items:flex-start;margin-top:2px}
+.ad-trk2 .sg{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;flex:none;width:72px;text-align:center;font-size:13px;font-weight:600;color:var(--mut)}
+.ad-trk2 .sg .av{width:40px;height:40px;opacity:.55}
+.ad-trk2 .sg.on{color:var(--ink)}.ad-trk2 .sg.on .av{opacity:1}
+.ad-trk2 .sg em{position:absolute;top:24px;left:calc(50% + 8px);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface-3);color:var(--mut);box-shadow:0 0 0 2.5px var(--surface)}
+.ad-trk2 .sg.on em{background:var(--ok);color:var(--on-acc)}
+.ad-trk2 em svg.i{width:13px;height:13px;stroke-width:2.6}
+.ad-trk2 .ln{flex:1;min-width:12px;height:3px;border-radius:2px;margin-top:19px;background:var(--line-2)}
+.ad-trk2 .ln.on{background:var(--ok)}
+.ad-dts{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.ad-dt{padding:22px 16px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+.ad-dt:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.ad-dt .ad-pth{width:70px;height:90px;padding:18px 9px 0;gap:6px;margin-bottom:8px}
+.ad-dt .ad-pth .seal{width:32px;height:32px}.ad-dt .ad-pth .seal svg.i{width:18px;height:18px}
+.ad-dt .t3{font-weight:600;font-size:15px;line-height:1.3}
+@container main (max-width:620px){.ad-dts{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ad-dt{padding:18px 12px 12px}}
+.ad-cobn{--navy-ink:var(--d-ink);--navy:var(--d-bg)}
 .ad-ct{padding:18px;display:flex;gap:14px;align-items:flex-start}
 .ad-ct+.ad-ct{border-top:1px solid var(--line)}
 .ad-paper{background:var(--surface-2);border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);padding:20px;font-size:13px;line-height:1.6;color:var(--ink-2);max-height:260px;overflow-y:auto}
 .ad-paper h4{font-size:15px;margin-bottom:4px}
-.ad-paper h5{font:700 12.5px var(--f-text);color:var(--ink);margin:14px 0 2px}
+.ad-paper h5{font:700 13px var(--f-text);color:var(--ink);margin:14px 0 2px}
 .ad-pad{position:relative;height:170px;border-radius:var(--r-md);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line-2);overflow:hidden;touch-action:none;transition:box-shadow var(--t-2)}
 .ad-pad.act{box-shadow:inset 0 0 0 2px var(--acc)}
 .ad-pad canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
@@ -1157,7 +1330,7 @@ P.css(`
 .ad-pad .ul{position:absolute;left:18px;bottom:43px;height:2.5px;border-radius:2px;background:var(--acc);width:0;pointer-events:none}
 .ad-pad.done .ul{width:calc(100% - 36px);transition:width var(--t-3) var(--e-out)}
 .ad-pad.done canvas{pointer-events:none}
-.ad-stamp{position:absolute;right:12px;bottom:8px;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9px;background:var(--ok-pale);color:var(--ok);font-size:12px;font-weight:700;animation:ad-st .24s var(--e-spring) both}
+.ad-stamp{position:absolute;right:12px;bottom:8px;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:9px;background:var(--ok-pale);color:var(--ok);font-size:13px;font-weight:700;animation:ad-st .24s var(--e-spring) both}
 .ad-stamp .strass{background:var(--acc);animation:ad-spark .6s var(--e-out) .15s both}
 @keyframes ad-st{from{opacity:0;transform:scale(1.15)}}
 `);
@@ -1213,14 +1386,21 @@ P.mod({id:'adh-contrats',role:'adherent',group:'Compte',title:'Contrats',icon:'c
  render:function(el,ctx){
   el.innerHTML='<div class="ad-ph">'+U.ph('Contrats et documents','Lisez, signez au doigt et retrouvez tous vos documents signés. Plus rien à imprimer ni à rapporter à l’accueil.',profPill())+'</div><div data-body></div>';bindProf(el);
   function body(){var L=CONTRACTS(),todo=L.filter(function(c){return !A.signed[c.id]}),mine=L.filter(function(c){return A.signed[c.id]});
-   $('[data-body]',el).innerHTML='<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:16px"><div class="card"><div class="ch"><h3>À signer</h3>'+(todo.length?'<span class="chip acc">'+todo.length+'</span>':'<span class="chip ok dot">Tout est signé</span>')+'</div><div style="padding-top:6px">'+
-     (todo.length?todo.map(function(c){return '<div class="ad-ct">'+sq(c.icon)+'<div class="grow"><div class="b" style="font-size:15px">'+c.title+'</div><div class="s mut">'+c.sub+'</div><div class="hrow wrap" style="--g:10px;margin-top:10px">'+U.avs(c.signers,4)+'<span class="xs mut">'+c.signed.length+' signature'+(c.signed.length>1?'s':'')+' sur '+c.signers.length+' · reçu '+F.rel(c.date)+'</span></div><div class="hrow wrap" style="--g:8px;margin-top:12px"><button class="btn dark" data-sign="'+c.id+'">'+ICON('sign','sm')+'Lire et signer</button><button class="btn ghost hide-s" data-later>Me le rappeler demain</button></div></div></div>'}).join(''):
-      '<div class="ad-ok" style="padding:26px 16px"><span class="strass" style="width:22px;height:22px"></span><h3 style="font-size:18px;animation:none">Vous êtes à jour</h3><p style="animation:none">Tous vos documents sont signés et rangés ci-dessous.</p></div>')+'</div></div>'+
-    '<div class="card"><div class="ch"><h3>Documents signés</h3><span class="xs mut">'+(mine.length+SIGNED.length)+' documents</span></div><div class="list" style="padding:6px 0">'+
-     mine.map(function(c){return '<div class="li click" data-sign="'+c.id+'">'+sq(c.icon,'ok')+'<div class="grow"><div class="t ellip">'+c.title+'</div><div class="s ellip">Signé aujourd’hui à 9 h 41'+(c.signed.length<c.signers.length?' · en attente de '+(c.signers.length-c.signed.length)+' signature':'')+'</div></div>'+U.chip(c.signed.length<c.signers.length?'En cours':'Signé',c.signed.length<c.signers.length?'warn':'ok',true)+'</div>'}).join('')+
-     SIGNED.map(function(d){return '<div class="li click" data-doc="'+d[1]+'">'+sq(d[4])+'<div class="grow"><div class="t ellip">'+d[1]+'</div><div class="s ellip">'+d[2]+' · signé le '+F.dateY(d[3])+'</div></div><button class="btn ghost icon sm" title="Télécharger">'+ICON('download','sm')+'</button></div>'}).join('')+'</div></div></div>'+
-    '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Comment ça marche</h3></div><div class="cb">'+[['eye','Lisez','Le document s’ouvre en entier, article par article.'],['sign','Signez au doigt','Sur votre téléphone, ou à la souris sur ordinateur.'],['lock','C’est archivé','Chaque partie reçoit sa copie, horodatée et infalsifiable.']].map(function(x){return '<div class="ad-row" style="align-items:flex-start">'+sq(x[0])+'<div class="grow"><div class="t">'+x[1]+'</div><div class="s">'+x[2]+'</div></div></div>'}).join('')+'</div></div>'+
-     '<div class="card ad-b"><div class="ch"><h3>Mes pièces</h3></div><div class="list" style="padding:6px 0"><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Certificat médical</div><div class="s">Valable jusqu’en septembre 2027</div></div></div><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Assurance d’Ulysse</div><div class="s">Responsabilité civile, échéance en mars</div></div></div></div><div class="cf"><button class="btn sm grow" data-up>'+ICON('upload','sm')+'Déposer un document</button></div></div></div></div>';
+   function paper(ic,ok){return '<span class="ad-pth'+(ok?' ok':'')+'"><i></i><i></i><i></i><i class="h"></i><i></i><i class="h"></i><span class="pi">'+ICON(ic)+'</span>'+(ok?'<span class="seal">'+ICON('check')+'</span>':'<span class="sg">'+ICON('sign')+'</span>')+'</span>'}
+   function track(c){return '<div class="ad-trk2">'+c.signers.map(function(sg,i){var y=c.signed.indexOf(sg)>=0;return (i?'<span class="ln'+(y?' on':'')+'"></span>':'')+'<span class="sg'+(y?' on':'')+'">'+U.av(sg,'sm')+'<em>'+ICON(y?'check':'clock')+'</em><span>'+(sg==='m001'?'Vous':D.person(sg).first)+'</span></span>'}).join('')+'</div>'}
+   var all=mine.length+SIGNED.length;
+   $('[data-body]',el).innerHTML='<div class="card tint d-plateforme ad-cth">'+ILLU.contrat({size:null,cls:'corner'})+'<span class="eyebrow" style="color:inherit;opacity:.8">Vos documents</span><div class="hrow wrap" style="--g:28px;align-items:flex-end">'+
+     '<div><div class="big num">'+todo.length+'</div><div class="sub">'+(todo.length?'document'+(todo.length>1?'s':'')+' à signer':'rien à signer, tout est à jour')+'</div></div><div><div class="big num" style="opacity:.55">'+all+'</div><div class="sub">documents signés et archivés</div></div></div></div>'+
+    '<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:16px">'+
+     (todo.length?todo.map(function(c){var n=c.signed.length;return '<div class="card ad-doc">'+paper(c.icon)+'<div class="grow" style="min-width:0"><div class="hrow wrap" style="--g:8px">'+U.chip('À signer','acc',true)+'<span class="s mut">reçu '+F.rel(c.date)+'</span></div><h3 class="t2">'+c.title+'</h3><div class="s mut">'+c.sub+'</div>'+
+       track(c)+'<div class="hrow" style="--g:10px;margin-top:2px"><span class="grow">'+U.bar(n/c.signers.length*100,'var(--ok)')+'</span><span class="s b num">'+n+' sur '+c.signers.length+'</span></div>'+
+       '<div class="hrow wrap" style="--g:8px"><button class="btn dark" data-sign="'+c.id+'">'+ICON('sign','sm')+'Lire et signer</button><button class="btn ghost" data-later>'+ICON('bell','sm')+'Me le rappeler demain</button></div></div></div>'}).join(''):
+      '<div class="card">'+U.empty('checkc','Vous êtes à jour','Tous vos documents sont signés et rangés ci-dessous.')+'</div>')+
+    '<div><div class="hrow sp" style="margin:6px 0 12px"><h3 style="font-size:19px">Documents signés</h3><span class="s mut">'+all+' documents</span></div><div class="ad-dts">'+
+     mine.map(function(c){var pend=c.signed.length<c.signers.length;return '<button class="card ad-dt" data-sign="'+c.id+'">'+paper(c.icon,!pend)+'<span class="t3">'+c.title+'</span><span class="s mut">Signé aujourd’hui à 9 h 41</span>'+U.chip(pend?'En attente de '+(c.signers.length-c.signed.length):'Signé par tous',pend?'warn':'ok',true)+'</button>'}).join('')+
+     SIGNED.map(function(d){return '<button class="card ad-dt" data-doc="'+d[1]+'">'+paper(d[4],true)+'<span class="t3">'+d[1]+'</span><span class="s mut">'+d[2]+'</span><span class="hrow s" style="--g:6px;color:var(--ok);font-weight:600">'+ICON('download','sm')+'Signé le '+F.dateY(d[3])+'</span></button>'}).join('')+'</div></div></div>'+
+    '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Comment ça marche</h3></div><div class="cb">'+[['eye','Lisez','Le document s’ouvre en entier, article par article.','acc'],['sign','Signez au doigt','Sur votre téléphone, ou à la souris sur ordinateur.','plateforme'],['lock','C’est archivé','Chaque partie reçoit sa copie, horodatée et infalsifiable.','chevaux']].map(function(x,i){return '<div class="ad-row" style="align-items:flex-start"><span class="ico d-'+x[3]+'">'+ICON(x[0])+'</span><div class="grow"><div class="t" style="font-size:15px">'+(i+1)+'. '+x[1]+'</div><div class="s mut">'+x[2]+'</div></div></div>'}).join('')+'</div></div>'+
+     '<div class="card ad-b"><div class="ch"><h3>Mes pièces</h3></div><div class="list" style="padding:6px 0"><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Certificat médical</div><div class="s">Valable jusqu’en septembre 2027</div></div></div><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Assurance d’Ulysse</div><div class="s">Responsabilité civile, échéance en mars</div></div></div></div><div class="cf"><button class="btn grow" data-up>'+ICON('upload','sm')+'Déposer un document</button></div></div></div></div>';
    $$('[data-sign]',el).forEach(function(x){x.onclick=function(){signSheet(CONTRACTS().find(function(c){return c.id===x.getAttribute('data-sign')}),body)}});
    $$('[data-later]',el).forEach(function(x){x.onclick=function(){x.innerHTML=ICON('check','sm')+'Rappel demain à 9 h';x.disabled=true;P.toast('Rappel programmé demain à 9 h',{icon:'bell'})}});
    $$('[data-doc]',el).forEach(function(x){x.onclick=function(){P.toast(x.getAttribute('data-doc')+' téléchargé',{icon:'download'})}});
@@ -1240,22 +1420,63 @@ P.css(`
 .ad-th2{display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;position:relative;transition:background var(--t-1);width:100%;text-align:left;min-height:64px}
 .ad-th2:hover{background:var(--surface-2)}
 .ad-th2[aria-current="true"]{background:var(--acc-pale)}
-.ad-th2 .un{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--acc);color:var(--acc-ink);font:700 10.5px/18px var(--f-text);text-align:center}
+.ad-th2 .un{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--acc);color:var(--acc-ink);font:700 13px/18px var(--f-text);text-align:center}
 .ad-gav{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;flex:none}
 .ad-cv{display:flex;flex-direction:column;min-height:0;min-width:0}
 .ad-cvh{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .ad-cvb{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:0;background:var(--surface-2)}
 .ad-cvb .msg.a{background:var(--surface)}
-.ad-cvb .who{font-size:11px;font-weight:600;color:var(--mut);margin:4px 0 -6px 4px}
-.ad-cvb .dv{align-self:center;font-size:11px;color:var(--mut);font-weight:600;padding:2px 10px;border-radius:99px;background:var(--bg-2)}
+.ad-cvb .who{font-size:13px;font-weight:600;color:var(--mut);margin:4px 0 -6px 4px}
+.ad-cvb .dv{align-self:center;font-size:13px;color:var(--mut);font-weight:600;padding:2px 10px;border-radius:99px;background:var(--bg-2)}
 .ad-cvf{padding:10px 12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
 .ad-comp{display:flex;gap:6px;align-items:center;padding:4px 4px 4px 6px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface)}
 .ad-comp input{flex:1;border:0;outline:0;background:none;min-width:0;height:38px}
 .ad-qr{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
-.ad-qr button{flex:none;font-size:12.5px;padding:6px 10px;border-radius:99px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap}
+.ad-qr button{flex:none;font-size:13px;padding:6px 10px;border-radius:99px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap}
 @container main (max-width:760px){.ad-msg{grid-template-columns:minmax(0,1fr);height:auto;min-height:0}.ad-msg .ad-cv{display:none}.ad-tl{border-right:0}.ad-th2[aria-current="true"]{background:none}}
 .sheet .ad-cvb{margin:-18px;padding:16px;min-height:100%;background:var(--surface-2)}
 .sheet .sf.ad-cvf{flex-direction:column;gap:8px}
+/* Messages façon iMessage */
+.ad-msg{border-radius:28px}
+.ad-tl .hd{padding:16px}
+.ad-pin{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:14px 10px 10px;border-bottom:1px solid var(--line)}
+.ad-pin button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 2px;border-radius:16px;font-size:13px;font-weight:600;position:relative;min-width:0;transition:background var(--t-1),transform var(--t-2) var(--e-spring)}
+.ad-pin button:hover{background:var(--surface-2)}.ad-pin button:active{transform:scale(.94)}
+.ad-pin button>span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ad-pin .av,.ad-pin .ad-gav{width:60px;height:60px;font-size:19px}
+.ad-pin em{position:absolute;top:2px;right:calc(50% - 34px);min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--acc);color:var(--on-acc);font:700 13px/22px var(--f-text);box-shadow:0 0 0 2.5px var(--surface)}
+.ad-th2{padding:12px 16px 12px 22px;min-height:76px;gap:14px}
+.ad-th2 .av,.ad-th2 .ad-gav{width:52px;height:52px}
+.ad-th2 b.s{font-size:15.5px}
+.ad-th2 .ud{position:absolute;left:7px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--acc)}
+.ad-th2+.ad-th2::before{content:"";position:absolute;left:88px;right:0;top:0;height:1px;background:var(--line)}
+.ad-th2 .un{min-width:22px;height:22px;border-radius:11px;font:700 13px/22px var(--f-text);padding:0 6px}
+.ad-cvh{flex-direction:column;gap:6px;padding:14px 16px 12px;position:relative;text-align:center;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px)}
+.ad-cvh .av,.ad-cvh .ad-gav{width:52px;height:52px}
+.ad-cvh .acts{position:absolute;right:12px;top:14px;display:flex;gap:4px}
+.ad-cvb{background:var(--surface);gap:4px;padding:18px 18px 12px}
+.ad-cvb .msg{position:relative;max-width:min(78%,520px);padding:10px 15px;border-radius:21px;font-size:15.5px;line-height:1.4;margin-top:2px}
+.ad-cvb .msg.u{background:var(--acc);color:var(--on-acc);border-bottom-right-radius:21px;margin-right:6px}
+.ad-cvb .msg.a{background:var(--surface-3);color:var(--ink);border-bottom-left-radius:21px;margin-left:6px}
+.ad-cvb .msg.u::before,.ad-cvb .msg.a::before{content:"";position:absolute;bottom:0;width:18px;height:20px}
+.ad-cvb .msg.u::before{right:-7px;background:var(--acc);border-bottom-left-radius:16px 14px}
+.ad-cvb .msg.a::before{left:-7px;background:var(--surface-3);border-bottom-right-radius:16px 14px}
+.ad-cvb .msg.u::after,.ad-cvb .msg.a::after{content:"";position:absolute;bottom:0;width:26px;height:20px;background:var(--surface)}
+.ad-cvb .msg.u::after{right:-26px;border-bottom-left-radius:10px}
+.ad-cvb .msg.a::after{left:-26px;border-bottom-right-radius:10px}
+.ad-cvb .msg.typing::before,.ad-cvb .msg.typing::after{display:none}
+.ad-cvb .who{margin:10px 0 0 22px;font-size:13px}
+.ad-cvb .dv{background:none;padding:6px 10px 10px;text-align:center;max-width:36ch;line-height:1.4}
+.ad-cvb .msg.u+.msg.u,.ad-cvb .msg.a+.msg.a{margin-top:0}
+.ad-cvb .msg.u+.msg.a,.ad-cvb .msg.a+.msg.u{margin-top:10px}
+.ad-cvb .msg b{font-weight:700}
+.ad-cvf{padding:10px 14px 14px;border-top:0;background:var(--surface)}
+.ad-comp{border-radius:24px;padding:4px 4px 4px 6px;min-height:48px}
+.ad-comp .btn.icon.sm{width:40px;height:40px;border-radius:50%}
+.ad-comp .btn{flex:none!important;width:40px!important;min-width:40px;height:40px!important;padding:0!important}
+.ad-comp .btn.pri{border-radius:50%}
+.ad-qr button{font-size:14px;padding:8px 14px;border-radius:99px;background:var(--acc-bg);color:var(--acc-deep);box-shadow:none;font-weight:600;min-height:38px}
+.sheet .ad-cvb{background:var(--surface)}
 `);
 var TH=[
  {id:'t-grp',grp:true,cat:'groupe',title:'Groupe Concours Rambouillet',sub:'9 cavaliers, Thomas et Pauline',when:'08:47',un:4,qr:['Je serai là à 6 h 30','J’ai une place pour une selle','Merci Thomas'],
@@ -1289,10 +1510,11 @@ P.mod({id:'adh-messages',role:'adherent',group:'Compte',title:'Messages',icon:'c
   if(ctx.params.id&&MS.last!==ctx.params){MS.last=ctx.params;MS.cur=ctx.params.id;MS.auto=true}
   el.innerHTML='<div class="ad-ph">'+U.ph('Messages','Le club, vos moniteurs, votre coach et le groupe concours, au même endroit.','<button class="btn pri" data-new>'+ICON('edit','sm')+'Nouveau message</button>')+'</div>'+'<div class="card ad-msg"><div class="ad-tl"><div class="hd"><div class="search">'+ICON('search','sm')+'<input class="in" placeholder="Chercher une conversation" data-q></div>'+U.seg([['all','Tout'],['club','Club'],['moniteur','Moniteurs'],['groupe','Groupes']],MS.cat,'data-mc')+'</div><div class="ad-tls" data-tls></div></div><div class="ad-cv" data-cv></div></div>';
   function list(){var ls=TH.filter(function(t){return (MS.cat==='all'||t.cat===MS.cat)&&(!MS.q||(t.title+' '+t.m.map(function(m){return m[1]}).join(' ')).toLowerCase().indexOf(MS.q)>=0)});
-   $('[data-tls]',el).innerHTML=ls.length?ls.map(function(t){var last=t.m[t.m.length-1];return '<button class="ad-th2" data-th="'+t.id+'" aria-current="'+(t.id===MS.cur)+'">'+thAv(t)+'<span class="grow" style="min-width:0"><span class="hrow sp" style="--g:8px"><b class="s ellip">'+t.title+'</b><span class="xs mut" style="flex:none">'+t.when+'</span></span><span class="hrow sp" style="--g:8px;margin-top:2px"><span class="s ellip '+(t.un?'b':'mut')+'">'+(last[0]==='me'?'Vous : ':t.grp?D.person(last[0]).first+' : ':'')+last[1].replace(/<[^>]+>/g,' ')+'</span>'+(t.un?'<span class="un">'+t.un+'</span>':'')+'</span></span></button>'}).join(''):U.empty('search','Aucune conversation','Essayez un autre mot.');
+   var pin=(MS.cat==='all'&&!MS.q)?'<div class="ad-pin">'+['t-coach','t-grp','t-dp','t-club'].map(function(id){var t=TH.find(function(x){return x.id===id});return '<button data-th="'+id+'" title="'+t.title+'">'+thAv(t)+(t.un?'<em>'+t.un+'</em>':'')+'<span>'+(t.grp?'Concours':t.title.split(' ')[0].replace('Écurie','Le club'))+'</span></button>'}).join('')+'</div>':'';
+   $('[data-tls]',el).innerHTML=pin+(ls.length?ls.map(function(t){var last=t.m[t.m.length-1];return '<button class="ad-th2" data-th="'+t.id+'" aria-current="'+(t.id===MS.cur)+'">'+(t.un?'<span class="ud"></span>':'')+thAv(t)+'<span class="grow" style="min-width:0"><span class="hrow sp" style="--g:8px"><b class="s ellip">'+t.title+'</b><span class="xs mut" style="flex:none">'+t.when+'</span></span><span class="hrow sp" style="--g:8px;margin-top:2px"><span class="s ellip '+(t.un?'b':'mut')+'">'+(last[0]==='me'?'Vous : ':t.grp?D.person(last[0]).first+' : ':'')+last[1].replace(/<[^>]+>/g,' ')+'</span>'+(t.un?'<span class="un">'+t.un+'</span>':'')+'</span></span></button>'}).join(''):U.empty('search','Aucune conversation','Essayez un autre mot.'));
    $$('[data-th]',el).forEach(function(b){b.onclick=function(){openT(b.getAttribute('data-th'),true)}})}
   function conv(){var t=TH.find(function(x){return x.id===MS.cur}),cv=$('[data-cv]',el);t.un=0;
-   cv.innerHTML='<div class="ad-cvh">'+thAv(t)+'<div class="grow"><div class="b">'+t.title+'</div><div class="xs mut">'+t.sub+'</div></div>'+(t.ro?'':'<button class="btn ghost icon sm" data-call title="Appeler">'+ICON('phone','sm')+'</button>')+'<button class="btn ghost icon sm tog2" data-mute title="Couper les notifications de cette conversation">'+ICON('bell','sm')+'</button></div><div class="ad-cvb">'+convHTML(t)+'</div><div class="ad-cvf">'+compHTML(t)+'</div>';
+   cv.innerHTML='<div class="ad-cvh">'+thAv(t)+'<div><div class="b" style="font-size:16px">'+t.title+'</div><div class="s mut">'+t.sub+'</div></div><span class="acts">'+(t.ro?'':'<button class="btn ghost icon" data-call title="Appeler">'+ICON('phone')+'</button>')+'<button class="btn ghost icon tog2" data-mute title="Couper les notifications de cette conversation">'+ICON('bell')+'</button></span></div><div class="ad-cvb">'+convHTML(t)+'</div><div class="ad-cvf">'+compHTML(t)+'</div>';
    var box=$('.ad-cvb',cv);box.scrollTop=1e6;bindComp(cv,t,box,list);
    var c=$('[data-call]',cv);if(c)c.onclick=function(){P.toast('Appel vers '+t.title+'…',{icon:'phone'})};
    $('[data-mute]',cv).onclick=function(e){t.mute=!t.mute;e.target.closest('button').innerHTML=ICON(t.mute?'eye_off':'bell','sm');P.toast(t.mute?'Notifications coupées pour cette conversation':'Notifications réactivées',{icon:'bell'})}}
@@ -1314,10 +1536,40 @@ P.mod({id:'adh-messages',role:'adherent',group:'Compte',title:'Messages',icon:'c
    ===================================================================== */
 P.css(`
 .ad-id{padding:20px;display:flex;gap:16px;align-items:center}
+/* Profil façon réglages iOS */
+.ad-pfh{padding:26px 28px;margin-bottom:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:center;background:radial-gradient(120% 140% at 0% 0%,var(--rd-bg),var(--surface) 60%)}
+.ad-pfm{display:flex;gap:20px;align-items:center;min-width:0}
+.ad-pfa{position:relative;flex:none}
+.ad-pfa .av{width:104px;height:104px;font-size:34px;box-shadow:0 0 0 5px var(--surface),0 14px 30px -14px rgba(10,22,54,.4)}
+.ad-pfc{position:absolute;right:-2px;bottom:-2px;width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--navy-ink);display:grid;place-items:center;box-shadow:0 0 0 3px var(--surface);transition:transform var(--t-2) var(--e-spring)}
+.ad-pfc:hover{transform:scale(1.1)}
+.ad-pfn{font:800 40px/1.02 var(--f-display);letter-spacing:-.04em;margin:6px 0 6px}
+.ad-pfh .sub{font-size:15px;color:var(--mut)}
+.ad-fam{display:flex;flex-direction:column;gap:10px}
+.ad-famr{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:4px}
+.ad-famr::-webkit-scrollbar{display:none}
+.ad-fm{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;padding:10px 4px;border-radius:20px;transition:background var(--t-2),transform var(--t-2) var(--e-spring)}
+.ad-fm:hover{background:var(--surface-2)}.ad-fm:active{transform:scale(.94)}
+.ad-fm .av{width:60px;height:60px;font-size:20px;transition:box-shadow var(--t-2)}
+.ad-fm.on .av{box-shadow:0 0 0 3px var(--surface),0 0 0 5.5px var(--acc)}
+.ad-fm b{font-size:14.5px;margin-top:4px}.ad-fm span:last-child{font-size:13px;color:var(--mut)}
+.ad-fm.add .av{background:none;box-shadow:inset 0 0 0 2px var(--line-2);color:var(--acc);border:0}
+.ad-fm.add .av svg.i{width:26px;height:26px}
+@container main (max-width:900px){.ad-pfh{grid-template-columns:minmax(0,1fr)}}
+@container main (max-width:620px){.ad-pfh{padding:22px 18px;text-align:center}.ad-pfm{flex-direction:column;gap:12px}.ad-pfm .hrow{justify-content:center}.ad-pfn{font-size:32px}.ad-fam{align-items:center}.ad-fam .eyebrow{align-self:center}.ad-famr{justify-content:center;max-width:100%}}
+.ad-prf .card .list .li,.ad-prf .card>.li{min-height:62px;padding:10px 20px}
+.ad-prf .li .av.sq{--rc:var(--acc);width:36px;height:36px;border-radius:11px;background:var(--rc)!important}
+.ad-prf .li .av.sq svg.i{color:var(--on-acc);width:20px;height:20px}
+.ad-prf .list .li:nth-child(6n+2) .av.sq{--rc:var(--hz)}.ad-prf .list .li:nth-child(6n+3) .av.sq{--rc:var(--mo)}.ad-prf .list .li:nth-child(6n+4) .av.sq{--rc:var(--rd)}.ad-prf .list .li:nth-child(6n+5) .av.sq{--rc:var(--tm)}.ad-prf .list .li:nth-child(6n) .av.sq{--rc:var(--cr)}
+.ad-prf .li .av.sq[style*="ok-pale"]{--rc:var(--ok)!important}
+.ad-prf .li.click::after{content:"";width:9px;height:9px;border-right:2px solid var(--mut-2);border-top:2px solid var(--mut-2);transform:rotate(45deg);margin-left:4px;flex:none}
+.ad-prf .li.click>svg.i:last-child{display:none}
+.ad-prf .card>.ch h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-family:var(--f-text);font-weight:700}
+.ad-prf .li .t{font-size:15.5px}
 .ad-lic{padding:20px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
-.ad-lic .ln{font:700 22px/1.1 var(--f-display);letter-spacing:-.02em;color:var(--navy-ink)}
+.ad-lic .ln{font:800 22px/1.1 var(--f-display);letter-spacing:-.02em;color:var(--navy-ink)}
 .ad-lic .kv{display:grid;grid-template-columns:repeat(3,auto);gap:4px 22px;justify-content:start;margin-top:14px}
-.ad-lic .kv span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:color-mix(in srgb,var(--navy-ink) 58%,transparent)}
+.ad-lic .kv span{font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:color-mix(in srgb,var(--navy-ink) 58%,transparent)}
 .ad-lic .kv b{font-size:13.5px;color:var(--navy-ink);font-variant-numeric:tabular-nums}
 .ad-qrc{width:96px;height:96px;border-radius:12px;background:var(--navy-ink);padding:8px}
 .ad-qrc svg{width:100%;height:100%;display:block}
@@ -1326,12 +1578,12 @@ P.css(`
 .ad-nt{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,56px);align-items:center;padding:10px 16px;position:relative;min-height:54px}
 .ad-nt+.ad-nt::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
 .ad-nt>span{display:grid;place-items:center}
-.ad-nt.hd{min-height:0;padding:10px 16px 4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.ad-nt.hd{min-height:0;padding:10px 16px 4px;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
 @container main (max-width:520px){.ad-nt{grid-template-columns:minmax(0,1fr) repeat(3,48px)}}
 .ad-mod{display:flex;align-items:center;gap:12px;padding:10px 16px;position:relative;min-height:56px}
 .ad-mod+.ad-mod::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
 .ad-thm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.ad-thm button{padding:10px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line-2);display:flex;flex-direction:column;gap:8px;align-items:center;font-size:12.5px;font-weight:600;transition:box-shadow var(--t-2)}
+.ad-thm button{padding:10px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line-2);display:flex;flex-direction:column;gap:8px;align-items:center;font-size:13px;font-weight:600;transition:box-shadow var(--t-2)}
 .ad-thm button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acc)}
 .ad-thm i{display:block;width:100%;height:44px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--line);--tl:var(--navy-ink);--td:var(--navy)}\n:root[data-theme="dark"] .ad-thm i{--tl:var(--navy);--td:var(--navy-ink)}\n@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ad-thm i{--tl:var(--navy);--td:var(--navy-ink)}}\n.ad-thm i.l{background:var(--tl)}.ad-thm i.d{background:var(--td)}.ad-thm i.s{background:linear-gradient(90deg,var(--tl) 50%,var(--td) 50%)}
 `);
@@ -1341,10 +1593,19 @@ function qr(){var s=41,g='';function r(){s=(s*16807)%2147483647;return s/2147483
 P.mod({id:'adh-profil',role:'adherent',group:'Compte',title:'Profil',icon:'user',n:40,
  render:function(el,ctx){
   if(ctx.params.tab&&PF.last!==ctx.params){PF.last=ctx.params;PF.tab=ctx.params.tab}
-  el.innerHTML=U.ph('Profil et réglages','Votre compte, votre famille et vos préférences. Tout ce que vous réglez ici vous suit sur tous vos appareils.','')+U.tabs([['profil','Profil'],['famille','Famille'],['docs','Licence et santé'],['notifs','Notifications'],['perso','Personnalisation'],['conf','Confidentialité']],PF.tab,'data-ft')+'<div data-body style="margin-top:16px"></div>';
+  var pp=prof();
+  el.innerHTML='<div class="card ad-pfh"><div class="ad-pfm"><span class="ad-pfa">'+U.av(pp.ref||pp,'xl')+'<button class="ad-pfc" data-photo title="Changer la photo">'+ICON('image','sm')+'</button></span><div style="min-width:0"><span class="eyebrow">Profil et réglages</span><h1 class="ad-pfn">'+pp.first+' '+pp.last+'</h1><div class="sub">'+(pp.minor?pp.role+' · Galop '+pp.galop+' · forfait 1 h par semaine':'Propriétaire d’Ulysse de la Roche · au club depuis '+pp.since)+'</div><div class="hrow wrap" style="--g:6px;margin-top:10px">'+U.chip('Galop '+pp.galop,'acc')+U.chip('Licence FFE 2027','ok',true)+(pp.minor?'':U.chip('Compétition Club','line'))+'</div></div></div>'+
+   '<div class="ad-fam"><span class="eyebrow">Famille Martin</span><div class="ad-famr">'+D.adhFamily.map(function(f){return '<button class="ad-fm'+(f.id===pp.id?' on':'')+'" data-famsel="'+f.id+'" title="Voir l’espace de '+f.first+'">'+U.av(f,'lg')+'<b>'+f.first+'</b><span>'+(f.minor?f.age+' ans':'Vous')+'</span></button>'}).join('')+
+   PF.extra.map(function(x){return '<button class="ad-fm" data-famx><span class="av lg" style="--c:var(--surface-3);color:var(--mut)">'+F.esc(x.charAt(0).toUpperCase())+'</span><b>'+F.esc(x)+'</b><span>À compléter</span></button>'}).join('')+
+   '<button class="ad-fm add" data-famadd title="Ajouter un membre de la famille"><span class="av lg">'+ICON('plus')+'</span><b>Ajouter</b><span>un membre</span></button></div></div></div>'+U.tabs([['profil','Profil'],['famille','Famille'],['docs','Licence et santé'],['notifs','Notifications'],['perso','Personnalisation'],['conf','Confidentialité']],PF.tab,'data-ft')+'<div data-body class="ad-prf" style="margin-top:16px"></div>';
   $$('[data-ft]',el).forEach(function(b){b.addEventListener('click',function(){PF.tab=b.getAttribute('data-ft');body()})});
+  $('[data-photo]',el).onclick=function(){P.toast('Photo de profil mise à jour',{icon:'image'})};
+  $$('[data-famsel]',el).forEach(function(x){x.onclick=function(){var id=x.getAttribute('data-famsel');if(id===prof().id){PF.tab='famille';P.rerender();return}P.prefs.set('adh:profile',id);P.rerender();P.toast(prof().minor?'Vous voyez l’espace de '+prof().first+' en tant que parent':'Vous voyez votre espace',{icon:prof().minor?'child':'user'})}});
+  function famTab(){PF.tab='famille';$$('[data-ft]',el).forEach(function(y){y.setAttribute('aria-selected',y.getAttribute('data-ft')==='famille')});body()}
+  $$('[data-famx]',el).forEach(function(x){x.onclick=famTab});
+  $('[data-famadd]',el).onclick=function(){famTab();var a=$('[data-addf]',el);if(a)a.click()};
   function body(){var b=$('[data-body]',el),h='',p=prof();
-   if(PF.tab==='profil'){h='<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:14px"><div class="card ad-id">'+U.av('m001','xl')+'<div class="grow"><h2 style="font-size:22px">Léa Martin</h2><div class="s mut" style="margin-top:2px">Propriétaire d’Ulysse de la Roche · au club depuis 2019</div><div class="hrow wrap" style="--g:6px;margin-top:8px">'+U.chip('Galop 7','acc')+U.chip('Licence FFE 2027','ok',true)+U.chip('Compétition Club','line')+'</div></div><button class="btn sm hide-s" data-photo>'+ICON('image','sm')+'Changer la photo</button></div>'+
+   if(PF.tab==='profil'){h='<div class="g3" style="--g:16px"><div class="span2 stack" style="--g:14px">'+
      '<div class="card"><div class="ch"><h3>Coordonnées</h3></div><div class="list" style="padding:6px 0">'+PF.fields.map(function(f,i){return '<div class="li click" data-fld="'+i+'">'+sq(f[0])+'<div class="grow"><div class="s">'+f[1]+'</div><div class="t ellip">'+F.esc(f[2])+'</div></div>'+ICON('edit','sm')+'</div>'}).join('')+'</div></div>'+
      '<div class="card"><div class="ch"><h3>Mes chevaux</h3><span class="chip">'+(1+myDecl().length)+'</span></div><div class="list" style="padding:6px 0"><div class="li click" data-go="adh-cheval">'+U.hav(UL)+'<div class="grow"><div class="t">'+UL.name+'</div><div class="s">Propriétaire · box '+UL.box+' · demi-pension avec '+DPR.first+'</div></div>'+U.chip('Validé','ok',true)+'</div>'+myDecl().map(function(d){return '<div class="li click" data-dec="'+d.id+'">'+U.hav(dHorse(d))+'<div class="grow"><div class="t">'+F.esc(d.name)+'</div><div class="s">'+d.link+' · '+(d.stay==='pension'?'pension demandée':'de passage')+'</div></div>'+U.chip('En attente de validation','warn',true)+'</div>'}).join('')+'</div><div class="cf"><button class="btn sm grow" data-decl>'+ICON('plus','sm')+'Déclarer un cheval</button></div></div></div>'+
      '<div class="stack" style="--g:14px">'+orgCard()+'<div class="card ad-b"><div class="ch"><h3>Mon arrivée au club</h3>'+U.chip('Terminée','ok',true)+'</div><div class="cb"><p class="s mut">Invitation, compte, famille, cheval, licence, mandat SEPA, règlement et préférences : revoyez les sept étapes.</p><button class="btn" data-go="adh-bienvenue">'+ICON('onboarding','sm')+'Revoir mon arrivée</button></div></div><div class="card"><div class="ch"><h3>Sécurité</h3></div><div class="list" style="padding:6px 0"><div class="li"><div class="grow"><div class="t">Déverrouiller avec Face ID</div><div class="s">Sur ce téléphone</div></div>'+U.tog(true)+'</div><div class="li"><div class="grow"><div class="t">Validation en deux étapes</div><div class="s">Code par SMS à chaque nouvel appareil</div></div>'+U.tog(false)+'</div><div class="li click" data-pw><div class="grow"><div class="t">Changer mon mot de passe</div><div class="s">Modifié il y a 4 mois</div></div>'+ICON('right','sm')+'</div></div></div>'+
@@ -1373,7 +1634,7 @@ P.mod({id:'adh-profil',role:'adherent',group:'Compte',title:'Profil',icon:'user'
     h='<div class="g3" style="--g:16px"><div class="span2 card"><div class="ch"><h3>Mes consentements</h3><span class="xs mut">Modifiables à tout moment</span></div><div class="list" style="padding:6px 0">'+[['Droit à l’image','Le club peut publier des photos de vous et de Jules, sans nom de famille'],['Partager le journal d’Ulysse','Avec '+DPR.first+', votre demi-pensionnaire, et l’équipe du club'],['Apparaître dans l’annuaire des cavaliers','Les autres adhérents peuvent vous écrire'],['Partager ma progression avec mes coachs','Notes de séance, objectifs et statistiques'],['Recevoir les offres des partenaires','Selleries et assureurs partenaires du club']].map(function(c,i){return '<div class="li"><div class="grow"><div class="t">'+c[0]+'</div><div class="s">'+c[1]+'</div></div>'+U.tog(!!cs[i]).replace('class="tog"','class="tog" data-cs="'+i+'"')+'</div>'}).join('')+'</div></div>'+
      '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Mes données</h3></div><div class="cb"><p class="s mut">Vos données restent hébergées en France. Vous pouvez les récupérer ou les effacer quand vous voulez.</p><button class="btn" data-exp>'+ICON('download','sm')+'Télécharger toutes mes données</button><button class="btn" data-acc>'+ICON('eye','sm')+'Voir qui a accès à mon compte</button><button class="btn danger" data-del>'+ICON('trash','sm')+'Supprimer mon compte</button></div></div></div></div>'}
    b.innerHTML=h;P.animate(b);var q=function(s){return $(s,b)},on=function(s,f){var x=q(s);if(x)x.onclick=f};
-   on('[data-photo]',function(){P.toast('Photo de profil mise à jour',{icon:'image'})});
+
    if(PF.tab==='profil'){bindHsel(b,body);bindOrgCard(b,body)}
    $$('[data-fld]',b).forEach(function(x){x.onclick=function(){var f=PF.fields[+x.getAttribute('data-fld')];var sh=P.sheet({title:f[1],icon:f[0],body:'<label class="field"><span>'+f[1]+'</span><input class="in" id="ad-fv" value="'+F.esc(f[2])+'"></label><p class="xs mut" style="margin-top:10px">Le club est prévenu du changement. Vos factures et vos rappels utilisent cette information.</p>',foot:'<button class="btn pri ad-full" data-ok>Enregistrer</button>'});$('[data-ok]',sh).onclick=function(){f[2]=$('#ad-fv',sh).value;sh.close();body();P.toast(f[1]+' mise à jour')}}});
    on('[data-pw]',function(){var sh=P.sheet({title:'Changer mon mot de passe',icon:'key',body:'<div class="stack" style="--g:12px"><label class="field"><span>Mot de passe actuel</span><input class="in" type="password" value="motdepasse"></label><label class="field"><span>Nouveau mot de passe</span><input class="in" type="password" placeholder="12 caractères au minimum"></label></div>',foot:'<button class="btn pri ad-full" data-ok>Changer le mot de passe</button>'});$('[data-ok]',sh).onclick=function(){sh.close();P.toast('Mot de passe modifié, les autres appareils sont déconnectés',{icon:'key'})}});
@@ -1454,26 +1715,26 @@ P.css(`
 .ad-hp .av{width:36px;height:36px}
 .ad-hp[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
 .ad-hp.add{padding:0 16px;color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc-line);border-style:dashed}
-.ad-hp .chip{height:22px;font-size:11px}
-.ad-wzp{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:12px;font-weight:600;color:var(--mut)}
+.ad-hp .chip{height:22px;font-size:13px}
+.ad-wzp{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;font-weight:600;color:var(--mut)}
 .ad-wzp .bar{flex:1}
 .ad-ifce{border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--ok-line,var(--line));background:color-mix(in srgb,var(--ok-pale) 45%,var(--surface));padding:14px;margin-top:14px;animation:rise var(--t-3) var(--e-out) both}
 .ad-fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.ad-fg .field span{font-size:11.5px}
+.ad-fg .field span{font-size:13px}
 @container main (max-width:420px){.ad-fg{grid-template-columns:minmax(0,1fr)}}
 .ad-srch{display:flex;gap:8px}.ad-srch .in{flex:1;min-width:0}
 /* pistes */
-.ad-trk{display:grid;grid-template-columns:48px repeat(4,minmax(0,1fr));gap:3px;font-size:11px}
-.ad-trk .hd{font-weight:700;font-size:11.5px;text-align:center;padding:6px 2px;color:var(--ink-2);position:sticky;top:0;background:var(--surface);z-index:1;line-height:1.2}
-.ad-trk .hd small{display:block;font-weight:500;color:var(--mut);font-size:10.5px}
-.ad-trk .tm{font:600 11px var(--f-text);color:var(--mut);font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;height:30px}
+.ad-trk{display:grid;grid-template-columns:48px repeat(4,minmax(0,1fr));gap:3px;font-size:13px}
+.ad-trk .hd{font-weight:700;font-size:13px;text-align:center;padding:6px 2px;color:var(--ink-2);position:sticky;top:0;background:var(--surface);z-index:1;line-height:1.2}
+.ad-trk .hd small{display:block;font-weight:500;color:var(--mut);font-size:13px}
+.ad-trk .tm{font:600 13px var(--f-text);color:var(--mut);font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;height:30px}
 .ad-trk .tm.h{color:var(--ink-2)}
 .ad-c{height:30px;border-radius:6px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);display:flex;align-items:center;justify-content:center;gap:4px;color:var(--mut);font-weight:600;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 4px;transition:background var(--t-1),box-shadow var(--t-1)}
 .ad-c.free:hover{background:var(--acc-pale);box-shadow:inset 0 0 0 1.5px var(--acc);color:var(--acc)}
 .ad-c.free:hover::before{content:"+";font-size:14px}
 .ad-c.sh{background:color-mix(in srgb,var(--c4) 16%,var(--surface));color:var(--ink-2)}
 .ad-c.les,.ad-c.cours{justify-content:flex-start}
-.ad-c .ellip{min-width:0;font-size:10.5px}
+.ad-c .ellip{min-width:0;font-size:13px}
 .ad-c.les{background:var(--bg-2);box-shadow:none;color:var(--mut);cursor:not-allowed;background-image:repeating-linear-gradient(135deg,transparent 0 6px,color-mix(in srgb,var(--line-2) 60%,transparent) 6px 7px)}
 .ad-c.mine{background:var(--acc);color:var(--acc-ink);box-shadow:none}
 .ad-c.cours{background:var(--navy);color:var(--navy-ink);box-shadow:none}
@@ -1482,28 +1743,31 @@ P.css(`
 .ad-c.pop2{animation:ad-pop2 .45s var(--e-spring)}
 @keyframes ad-pop2{0%{transform:scale(.7)}100%{transform:scale(1)}}
 /* écran verrouillé */
-.ad-lock{border-radius:var(--r-xl,22px);padding:16px 14px 14px;background:radial-gradient(120% 90% at 30% 0%,color-mix(in srgb,var(--acc) 38%,var(--navy)),var(--navy) 70%);color:var(--navy-ink);display:flex;flex-direction:column;gap:12px;margin-bottom:14px;position:relative;overflow:hidden}
-.ad-lock .lt{text-align:center;font:600 13px var(--f-text);color:color-mix(in srgb,var(--navy-ink) 75%,transparent)}
-.ad-lock .lc{text-align:center;font:700 48px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.ad-lock{--navy:var(--hero);--navy-ink:var(--hero-ink);border-radius:28px;padding:20px 16px 16px;background:radial-gradient(120% 90% at 30% 0%,color-mix(in srgb,var(--strass) 34%,var(--hero)),var(--hero) 72%);color:var(--hero-ink);box-shadow:var(--shadow-2);display:flex;flex-direction:column;gap:12px;margin-bottom:14px;position:relative;overflow:hidden}
+.ad-lock .lt{text-align:center;font:600 14px var(--f-text);color:color-mix(in srgb,var(--navy-ink) 75%,transparent)}
+.ad-lock .lc{text-align:center;font:800 64px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .ad-la{border-radius:18px;background:color-mix(in srgb,var(--navy-ink) 14%,transparent);backdrop-filter:blur(10px);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .ad-la .r{display:flex;align-items:center;gap:10px}
 .ad-la .lg{width:36px;height:36px;border-radius:10px;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;flex:none}
 .ad-la .lg svg{width:22px;height:22px}
-.ad-la b{font-size:14.5px;display:block}.ad-la small{font-size:12px;color:color-mix(in srgb,var(--navy-ink) 70%,transparent)}
+.ad-la b{font-size:14.5px;display:block}.ad-la small{font-size:13px;color:color-mix(in srgb,var(--navy-ink) 70%,transparent)}
 .ad-la .pb{height:5px;border-radius:3px;background:color-mix(in srgb,var(--navy-ink) 18%,transparent);overflow:hidden}
 .ad-la .pb i{display:block;height:100%;width:72%;background:var(--strass);border-radius:3px}
-.ad-lock .ft{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:color-mix(in srgb,var(--navy-ink) 78%,transparent)}
+.ad-lock .ft{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:color-mix(in srgb,var(--navy-ink) 78%,transparent)}
 /* boutique */
 .ad-shop{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
 @container main (max-width:980px){.ad-shop{grid-template-columns:minmax(0,1fr)}}
 .ad-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 @container main (max-width:1180px){.ad-items{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container main (max-width:430px){.ad-items{gap:10px}}
-.ad-it{padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.ad-it .ph2{height:84px;border-radius:var(--r-md);background:linear-gradient(150deg,var(--acc-pale),var(--surface-2));display:grid;place-items:center;color:var(--acc)}
-.ad-it .ph2 svg{width:34px;height:34px}
-.ad-it .nm{font-weight:600;font-size:13.5px;line-height:1.3}
-.ad-it .pr{font:700 17px var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ad-it{padding:14px 14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
+.ad-it:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.ad-it .ph2{height:116px;border-radius:18px;background:radial-gradient(120% 100% at 30% 20%,color-mix(in srgb,var(--surface) 55%,var(--d-bg,var(--acc-bg))),var(--d-bg,var(--acc-bg)));display:grid;place-items:center;color:var(--d-ink,var(--acc-deep))}
+.ad-it .ph2 svg{width:44px;height:44px;transition:transform .5s var(--e-spring)}
+.ad-it:hover .ph2 svg{transform:scale(1.15) rotate(-6deg)}
+.ad-it .nm{font-weight:600;font-size:15px;line-height:1.3}
+.ad-it .pr{font:800 22px var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+@container main (max-width:430px){.ad-it .ph2{height:92px}.ad-it .btn{padding:0 10px}}
 .ad-it .btn{margin-top:auto}
 .ad-cl{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 16px;position:relative}
 .ad-cl+.ad-cl::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;background:var(--line)}
@@ -1513,13 +1777,14 @@ P.css(`
 .ad-cbar{position:sticky;bottom:0;z-index:3;margin:14px -16px 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);box-shadow:0 -1px 0 var(--line);display:none;align-items:center;gap:12px}
 @container main (max-width:980px){.ad-cbar.on{display:flex}}
 .ad-gift{border-radius:var(--r-lg);padding:18px;background:linear-gradient(135deg,var(--navy),color-mix(in srgb,var(--acc) 45%,var(--navy)));color:var(--navy-ink);display:flex;flex-direction:column;gap:8px;min-height:150px;position:relative;overflow:hidden}
-.ad-gift .am{font:700 34px/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ad-gift{--navy:var(--hero);--navy-ink:var(--hero-ink);background:linear-gradient(135deg,var(--hero),color-mix(in srgb,var(--strass) 40%,var(--hero)))!important;color:var(--hero-ink)!important}
+.ad-gift .am{font:800 44px/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .ad-gift .strass{position:absolute;right:18px;top:18px}
 /* quiz */
-.ad-qz .q{font:700 19px/1.3 var(--f-display);letter-spacing:-.02em;margin:6px 0 14px}
+.ad-qz .q{font:800 19px/1.3 var(--f-display);letter-spacing:-.02em;margin:6px 0 14px}
 .ad-qa{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line-2);background:var(--surface);min-height:52px;font-weight:500;transition:box-shadow var(--t-2),background var(--t-2)}
 .ad-qa+.ad-qa{margin-top:8px}
-.ad-qa .l{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-weight:700;font-size:12px;flex:none}
+.ad-qa .l{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-weight:700;font-size:13px;flex:none}
 .ad-qa.ok{box-shadow:inset 0 0 0 2px var(--ok);background:var(--ok-pale)}.ad-qa.ok .l{background:var(--ok);color:var(--acc-ink)}
 .ad-qa.ko{box-shadow:inset 0 0 0 2px var(--bad);background:var(--bad-pale)}.ad-qa.ko .l{background:var(--bad);color:var(--acc-ink)}
 .ad-qa[disabled]{cursor:default}
@@ -1536,24 +1801,49 @@ P.css(`
 .ad-map .halo{fill:var(--acc);opacity:.25;transform-box:fill-box;transform-origin:center;animation:ad-halo 1.6s var(--e-out) infinite}
 .ad-map.alert .me,.ad-map.alert .halo{fill:var(--bad)}
 @keyframes ad-halo{from{transform:scale(.6);opacity:.45}to{transform:scale(2.4);opacity:0}}
-.ad-map .lb{position:absolute;left:10px;top:10px;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:6px;background:color-mix(in srgb,var(--surface) 85%,transparent)}
+.ad-map .lb{position:absolute;left:10px;top:10px;font-size:13px;font-weight:600;padding:3px 8px;border-radius:6px;background:color-mix(in srgb,var(--surface) 85%,transparent)}
 .ad-rst{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
 .ad-rst>div{padding:10px 12px;border-radius:var(--r-md);background:var(--surface-2);min-width:0}
-.ad-rst b{display:block;font:700 18px/1.15 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.ad-rst span{font-size:11px;color:var(--mut)}
+.ad-rst b{display:block;font:800 18px/1.15 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ad-rst span{font-size:13px;color:var(--mut)}
 @container main (max-width:520px){.ad-rst{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* arrivée */
 .ad-wb{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;align-items:start}
 @container main (max-width:860px){.ad-wb{grid-template-columns:minmax(0,1fr)}.ad-wbl{display:none}}
 .ad-wbs{display:flex;align-items:center;gap:12px;padding:10px 14px;width:100%;text-align:left;position:relative;transition:background var(--t-1)}
 .ad-wbs:hover{background:var(--surface-2)}
-.ad-wbs .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-weight:700;font-size:12px;flex:none;color:var(--mut)}
+.ad-wbs .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--bg-2);font-weight:700;font-size:13px;flex:none;color:var(--mut)}
 .ad-wbs.ok .n{background:var(--ok-pale);color:var(--ok)}
 .ad-wbs[aria-current="true"]{background:var(--acc-pale)}.ad-wbs[aria-current="true"] .n{background:var(--acc);color:var(--acc-ink)}
-.ad-wbc{padding:22px;display:flex;flex-direction:column;gap:14px}
-.ad-wbc h2{font-size:24px;line-height:1.15;letter-spacing:-.03em}
+.ad-wbc{padding:34px 36px;display:flex;flex-direction:column;gap:16px;min-width:0;animation:ad-wzin var(--t-4) var(--e-out) both}
+@keyframes ad-wzin{from{opacity:0;transform:translateX(24px)}}
+.ad-wbc h2{font-size:32px;line-height:1.1;letter-spacing:-.04em}
+.ad-wbc>.av.sq:first-child{display:none}
+.ad-wbc .btn.lg{align-self:flex-start;min-height:52px;height:auto;white-space:normal;line-height:1.3;padding-top:12px;padding-bottom:12px}
+@container main (max-width:620px){.ad-wsd{width:40px!important}.ad-wst .ln{min-width:6px}}
+/* parcours d'arrivée illustré */
+.ad-wst{display:flex;align-items:flex-start;margin:0 0 18px;overflow-x:auto;scrollbar-width:none;padding:4px 2px}
+.ad-wst::-webkit-scrollbar{display:none}
+.ad-wsd{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:96px;text-align:center;border-radius:16px;padding:4px 0}
+.ad-wsd .n{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);box-shadow:inset 0 0 0 2px var(--line-2);font:800 16px var(--f-display);color:var(--mut);transition:all var(--t-3) var(--e-spring)}
+.ad-wsd .l{font-size:13px;font-weight:600;color:var(--mut);line-height:1.25}
+.ad-wsd.ok .n{background:var(--ok);color:var(--on-acc);box-shadow:none}
+.ad-wsd[aria-current="true"] .n{background:var(--acc);color:var(--on-acc);box-shadow:0 0 0 5px var(--acc-bg);transform:scale(1.08)}
+.ad-wsd[aria-current="true"] .l{color:var(--ink)}
+.ad-wst .ln{flex:1;min-width:14px;height:3px;border-radius:2px;background:var(--line-2);margin-top:23px}
+.ad-wst .ln.on{background:var(--ok)}
+.ad-wz{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);overflow:hidden;min-height:560px}
+.ad-wzi{background:radial-gradient(120% 100% at 30% 20%,color-mix(in srgb,var(--surface) 40%,var(--d-bg)),var(--d-bg));color:var(--d-ink);display:flex;flex-direction:column;justify-content:space-between;padding:30px;gap:20px;position:relative}
+.ad-wzi .illu{width:100%;max-width:300px;height:auto;aspect-ratio:1;align-self:center;margin-top:10px}
+.ad-wzt{display:flex;flex-direction:column;gap:6px}
+.ad-wzt .eyebrow{color:inherit;opacity:.75}
+.ad-wzt b{font:800 30px/1.05 var(--f-display);letter-spacing:-.035em}
+.ad-wzt .s{opacity:.8}
+.ad-wzb{display:block;height:8px;border-radius:4px;background:color-mix(in srgb,var(--d) 22%,transparent);overflow:hidden;margin-top:8px}
+.ad-wzb i{display:block;height:100%;border-radius:4px;background:var(--d);transition:width var(--t-4) var(--e-out)}
+@container main (max-width:860px){.ad-wz{grid-template-columns:minmax(0,1fr);min-height:0}.ad-wzi{flex-direction:row;align-items:center;padding:20px}.ad-wzi .illu{width:120px;max-width:none;flex:none;order:2;margin:0}.ad-wzt b{font-size:24px}.ad-wbc{padding:22px 20px}.ad-wbc h2{font-size:26px}.ad-wsd{width:56px}.ad-wsd .l{display:none}.ad-wsd[aria-current="true"] .l{display:none}.ad-wbc .btn.lg{align-self:stretch}}
 .ad-mail{border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
-.ad-mail .mh{padding:10px 14px;background:var(--surface-2);font-size:12.5px;color:var(--mut);display:flex;gap:10px;align-items:center}
+.ad-mail .mh{padding:10px 14px;background:var(--surface-2);font-size:13px;color:var(--mut);display:flex;gap:10px;align-items:center}
 .ad-mail .mb{padding:14px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
 .ad-mic.on{background:var(--bad)!important;color:var(--acc-ink)!important;animation:ad-mic 1s var(--e-out) infinite}
 @keyframes ad-mic{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 50%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
@@ -1840,12 +2130,13 @@ function offerCard(o,preview){var WD={Lun:'lundi',Mar:'mardi',Mer:'mercredi',Jeu
 
 /* ---------- 4. Écran caché : mon arrivée au club en 7 étapes ---------- */
 var WB={i:0,done:[],kid:false,lic:false,cert:false};
+var WILL=[['contrat','acc'],['selle','cavaliers'],['cheval','chevaux'],['bombe','acc'],['pieces','argent'],['contrat','plateforme'],['seau','equipe']];
 var WSTEPS=[['mail','Invitation et compte'],['family','Famille'],['horse','Cheval'],['medal','Licence et certificat'],['bank','Mandat SEPA'],['sign','Règlement intérieur'],['bell','Écrans et notifications']];
 P.mod({id:'adh-bienvenue',role:'adherent',group:'Compte',title:'Mon arrivée',icon:'onboarding',n:90,hidden:true,tab:'adh-accueil',phoneTitle:'Mon arrivée',
  render:function(el,ctx){var n=WB.done.filter(Boolean).length,fin=WB.i<0,i=fin?6:WB.i;
   el.innerHTML=U.ph('Mon arrivée aux Tilleuls','Revivez votre inscription comme la vit un nouvel adhérent : sept étapes, tout depuis le téléphone, sans papier.','<button class="btn" data-go="adh-profil">'+ICON('back','sm')+'Mon profil</button><button class="btn ghost" data-wr>'+ICON('refresh','sm')+'Recommencer</button>')+
-   '<div class="card" style="padding:14px 18px;margin-bottom:16px"><div class="hrow sp" style="margin-bottom:8px"><b class="s">'+(fin?'Arrivée terminée':'Étape '+(i+1)+' sur 7 · '+WSTEPS[i][1])+'</b><span class="xs mut num">'+n+' sur 7 validées</span></div>'+U.bar(n/7*100,fin?'var(--ok)':'var(--acc)')+'</div>'+
-   '<div class="ad-wb"><div class="card ad-wbl" style="padding:6px 0">'+WSTEPS.map(function(s,k){return '<button class="ad-wbs'+(WB.done[k]?' ok':'')+'" data-ws="'+k+'" aria-current="'+(k===i&&!fin)+'"><span class="n">'+(WB.done[k]?ICON('check','sm'):k+1)+'</span><span class="grow"><b class="s" style="display:block">'+s[1]+'</b><span class="xs mut">'+(WB.done[k]?'Validée':k===i?'En cours':'À faire')+'</span></span></button>'}).join('')+'</div><div class="card ad-wbc" data-wc></div></div>';
+   '<div class="ad-wst scroll-x" role="list">'+WSTEPS.map(function(s,k){return (k?'<span class="ln'+(WB.done[k-1]?' on':'')+'"></span>':'')+'<button class="ad-wsd'+(WB.done[k]?' ok':'')+'" role="listitem" data-ws="'+k+'" aria-current="'+(k===i&&!fin)+'" title="'+s[1]+'"><span class="n">'+(WB.done[k]?ICON('check','sm'):k+1)+'</span><span class="l">'+s[1]+'</span></button>'}).join('')+'</div>'+
+   '<div class="card ad-wz"><div class="ad-wzi d-'+(fin?'cavaliers':WILL[i][1])+'">'+ILLU[fin?'trophee':WILL[i][0]]({size:null})+'<div class="ad-wzt"><span class="eyebrow">'+(fin?'Arrivée terminée':'Étape '+(i+1)+' sur 7')+'</span><b>'+(fin?'Bienvenue aux Tilleuls':WSTEPS[i][1])+'</b><span class="s">'+n+' étape'+(n>1?'s':'')+' validée'+(n>1?'s':'')+' sur 7</span><span class="ad-wzb"><i style="width:'+Math.round(n/7*100)+'%"></i></span></div></div><div class="ad-wbc" data-wc></div></div>';
   var c=$('[data-wc]',el);
   function ok(msg,icon){WB.done[i]=true;var nx=-1;for(var k=0;k<7;k++)if(!WB.done[k]){nx=k;break}WB.i=nx;P.toast(msg,{icon:icon||'checkc'});P.rerender();var v=P.$('.view',P.app());if(v)v.scrollTop=0}
   if(fin){c.innerHTML='<div class="ad-ok" style="padding:20px 0"><div class="ad-okc"><svg viewBox="0 0 80 80"><circle class="r" cx="40" cy="40" r="34"/><path class="k" d="M26 41l10 10 19-21"/></svg><span class="strass s1"></span><span class="strass s2"></span><span class="strass s3"></span></div><h3>Bienvenue aux Tilleuls, Léa</h3><p>Compte créé, famille ajoutée, documents signés et prélèvement en place. Claire a reçu votre dossier complet.</p></div><div class="hrow wrap" style="--g:8px;justify-content:center"><button class="btn pri" data-go="adh-accueil">Ouvrir mon accueil</button><button class="btn" data-wr2>'+ICON('refresh','sm')+'Revoir depuis le début</button></div>';
@@ -1890,14 +2181,14 @@ P.mod({id:'adh-boutique',role:'adherent',group:'Compte',title:'Boutique',icon:'s
   el.innerHTML=U.ph('Boutique du club','Forfaits, cartes de séances, cartes cadeaux et sellerie du club. Payez en un geste, retirez à l’accueil.','<button class="btn pri" data-gift>'+ICON('gift','sm')+'Offrir une carte cadeau</button>')+
    U.seg([['cartes','Forfaits et cartes'],['cadeaux','Cartes cadeaux'],['sellerie','Sellerie du club']],BQ.tab,'data-bt')+'<div class="ad-shop" style="margin-top:14px"><div data-items style="min-width:0"></div><div data-cart></div></div><div class="ad-cbar" data-cbar></div>';
   function itemCard(it){var low=it.stock!=null&&it.stock<(it.min||0),out=it.stock===0;
-   return '<div class="card ad-it"><div class="ph2">'+ICON(it.icon||'bag')+'</div><div class="nm">'+it.name+'</div>'+(it.note?'<div class="xs mut">'+it.note+'</div>':'')+
+   return '<div class="card ad-it d-'+(it.cat==='Sellerie'?'chevaux':/forfait|annuel|trimestre/i.test(it.name)?'cavaliers':'acc')+'"><div class="ph2">'+ICON(it.icon||'bag')+'</div><div class="nm">'+it.name+'</div>'+(it.note?'<div class="xs mut">'+it.note+'</div>':'')+
     '<div class="hrow sp"><span class="pr">'+F.eur(it.price)+'</span>'+(it.full&&it.full!==it.price?'<span class="xs mut" style="text-decoration:line-through">'+F.eur(it.full)+'</span>':low?U.chip('Plus que '+it.stock,'warn'):'')+'</div><button class="btn'+(out?'':' dark')+'" data-add="'+it.id+'"'+(out?' disabled':'')+'>'+(out?'Épuisé':ICON('plus','sm')+'Ajouter')+'</button></div>'}
   function items(){var b=$('[data-items]',el),h='';
    if(BQ.tab==='cartes'){var S=shopItems().filter(function(x){return x.cat==='Séances'&&!/cadeau/i.test(x.name)});
     h='<div class="ad-lbl" style="margin-top:0">Cartes et séances</div><div class="ad-items rise">'+S.map(itemCard).join('')+'</div><div class="ad-lbl">Forfaits pour la fin de saison</div><div class="ad-items rise">'+forfaits().map(itemCard).join('')+'</div>'}
    else if(BQ.tab==='cadeaux'){var g=shopItems().filter(function(x){return /cadeau/i.test(x.name)});
     h='<div class="g2" style="--g:12px"><button class="ad-gift" data-gift style="text-align:left"><span class="strass"></span><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 70%,var(--acc))">Montant libre</span><span class="am">30 à 150 €</span><span class="s" style="color:color-mix(in srgb,var(--navy-ink) 80%,transparent)">Avec votre message, par e-mail ou imprimée</span></button>'+
-     g.map(function(it){return '<div class="card ad-it"><div class="ph2">'+ICON('gift')+'</div><div class="nm">'+it.name+'</div><div class="xs mut">Prête à offrir, valable un an</div><div class="hrow sp"><span class="pr">'+F.eur(it.price)+'</span></div><button class="btn dark" data-giftq="'+it.id+'">'+ICON('gift','sm')+'Choisir le destinataire</button></div>'}).join('')+'</div>'+
+     g.map(function(it){return '<div class="card ad-it d-argent"><div class="ph2">'+ICON('gift')+'</div><div class="nm">'+it.name+'</div><div class="xs mut">Prête à offrir, valable un an</div><div class="hrow sp"><span class="pr">'+F.eur(it.price)+'</span></div><button class="btn dark" data-giftq="'+it.id+'">'+ICON('gift','sm')+'Choisir le destinataire</button></div>'}).join('')+'</div>'+
      '<div class="note" style="margin-top:14px">'+ICON('info','sm')+'<span>Les cartes cadeaux se règlent sur les séances, les stages, les cours particuliers et la boutique. Le destinataire n’a pas besoin d’être adhérent.</span></div>'}
    else{var Se=shopItems().filter(function(x){return x.cat==='Sellerie'});h='<div class="ad-items rise">'+Se.map(itemCard).join('')+'</div>'}
    b.innerHTML=h;P.animate(b);
