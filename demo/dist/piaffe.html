@@ -1512,7 +1512,7 @@ function sumB(l){var n=0,hot=false;l.forEach(function(m){var b=badgeOf(m);if(b){
 function gdom(g,l){return P.domGroups[g]||P.domOf(l[0])}
 /* cinq dispositions du menu, à comparer : sections, accordeon, colonnes, survol, onglets */
 P.navModes=[['sections','Sections ouvertes','Tout est visible, rangé par section. Un clic sur un titre replie la section.'],['accordeon','Accordéon','Une seule section ouverte à la fois : un clic sur Écurie déplie ses écrans et referme les autres.'],['colonnes','Deux colonnes','À gauche les sections en grandes pastilles, à côté les écrans de la section choisie, comme Slack ou Notion.'],['survol','Menu flottant','Un menu court, une ligne par section. Au survol ou au clic, une carte s’ouvre à côté avec ses écrans.'],['onglets','Sections et onglets','Le menu ne montre que les sections. Les écrans de la section s’affichent en onglets en haut de la page.']];
-P.navMode=function(){var m=P.store.get('navmode','sections');return P.navModes.some(function(x){return x[0]===m})?m:'sections'};
+P.navMode=function(){var m=P.store.get('navmode','accordeon');return P.navModes.some(function(x){return x[0]===m})?m:'accordeon'};
 function secRow(g,l,on,attr,extra){var b=sumB(l);return '<button class="sec d-'+gdom(g,l)+(on?' on':'')+'" '+attr+'><span class="pl">'+ICON(GICON[g]||l[0].icon)+'</span><span class="lb">'+g+'</span>'+bdgHTML(b)+(extra||'')+'</button>'}
 function navHTML(){var role=S.role,cur=P.mods[curTab()]||{},h='',G=navGroupsOf(),groups=G.groups,by=G.by,mode=P.navMode();
   if(mode==='accordeon'){var open=S.navOpen?S.navOpen:cur.group;
