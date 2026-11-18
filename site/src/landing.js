@@ -1,4 +1,4 @@
-/* Piaffe · landing v3. Rendu des sections répétitives, onglets, chat Piaffe AI, apparitions. */
+/* Piaffe · landing v4. Rendu des sections répétitives, onglets, chat Piaffe AI, apparitions. */
 (function(){
 'use strict';
 var D=document,R=D.documentElement,$=function(s,c){return (c||D).querySelector(s)},$$=function(s,c){return [].slice.call((c||D).querySelectorAll(s))};
@@ -10,6 +10,7 @@ function demo(r){return 'href="'+BASE+'#'+r+'" target="_blank" rel="noopener"'}
 /* espaces insécables, comme le build */
 function nb(h){return ('>'+h+'<').replace(/>([^<]+)</g,function(m,t){return '>'+t.replace(/ ([:;?!%€»])/g,' $1').replace(/« /g,'« ')+'<'}).slice(1,-1)}
 function put(el,h){el.innerHTML=nb(h)}
+function fr(n){return n.toLocaleString('fr-FR')}
 R.classList.add('js');
 
 /* ---------- Thème ---------- */
@@ -24,101 +25,132 @@ R.classList.add('js');
   b.addEventListener('click',function(){var o=n.classList.toggle('ouvert');b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Fermer le menu':'Ouvrir le menu')});
   $$('#navL a').forEach(function(a){a.addEventListener('click',function(){n.classList.remove('ouvert');b.setAttribute('aria-expanded','false')})})})();
 
-/* ---------- Captures ---------- */
+/* ---------- Captures et appareils ---------- */
 /* c : [x,y,l,h] en pixels de l’écran d’origine ; m : recadrage téléphone */
 function cropStyle(c,m,iw){var s='--dx:'+c[0]+';--dy:'+c[1]+';--dw:'+c[2]+';--dh:'+c[3];if(m)s+=';--mx:'+m[0]+';--my:'+m[1]+';--mw:'+m[2]+';--mh:'+m[3];if(iw)s+=';--iw:'+iw;return s}
 function img(n,alt,tab){return '<img src="'+SH+n+'.webp" width="'+(tab?1770:2160)+'" height="'+(tab?1230:1350)+'" loading="lazy" alt="'+(alt||'')+'">'}
-function tel(n,alt,k){return '<figure class="tel'+(k?' '+k:'')+'"><img src="'+SH+n+'.webp" width="780" height="1688" loading="lazy" alt="'+(alt||'')+'"></figure>'}
-function ecran(n,alt,c,m){return '<figure class="nav-frame"><div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.piaffe.fr/les-tilleuls</span></div><div class="crop" style="'+cropStyle(c||[0,0,1440,900],m)+'">'+img(n,alt)+'</div></figure>'}
+function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.piaffe.fr/les-tilleuls</span></div>'}
+/* iPhone : n = une capture ou une liste de captures empilées ; o.duo = capture sombre disponible */
+var IOS='<svg viewBox="0 0 78 13" aria-hidden="true"><rect x="0" y="8" width="3.2" height="4.6" rx=".9"/><rect x="4.9" y="5.6" width="3.2" height="7" rx=".9"/><rect x="9.8" y="3" width="3.2" height="9.6" rx=".9"/><rect x="14.7" y=".4" width="3.2" height="12.2" rx=".9"/><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M24.4 4.7a11.2 11.2 0 0 1 15.6 0"/><path d="M27.4 7.7a7 7 0 0 1 9.6 0"/></g><circle cx="32.2" cy="10.8" r="1.6"/><rect x="48.5" y=".9" width="24.5" height="11.6" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="50.2" y="2.6" width="21.1" height="8.2" rx="2.2"/><path d="M74.6 4.8v3.8c.8-.3 1.4-1 1.4-1.9s-.6-1.6-1.4-1.9z" opacity=".45"/></svg>';
+function tel(n,alt,o){o=o||{};var L=[].concat(n),ims=L.map(function(x,i){var lz=o.vite?'':' loading="lazy"';
+    if(o.duo)return '<img class="only-l" src="'+SH+x+'.webp" width="786" height="1704" alt="'+(alt||'')+'"'+lz+'><img class="only-d" src="'+SH+x+'-dark.webp" width="786" height="1704" alt="" loading="lazy">';
+    return '<img'+(L.length>1&&i===0?' class="on"':'')+' src="'+SH+x+'.webp" width="786" height="1704" alt="'+(i?'':(alt||''))+'"'+lz+'>'}).join('');
+  return '<figure class="ip'+(o.duo?' duo':'')+(o.k?' '+o.k:'')+'"><i class="ip-b b1"></i><i class="ip-b b2"></i><i class="ip-b b3"></i><i class="ip-b b4"></i><div class="ip-c"><div class="ip-f"><div class="ip-s">'+ims+'<div class="ip-st"><span>9:41</span>'+IOS+'</div><i class="ip-di"></i><i class="ip-h"></i><i class="ip-gl"></i></div></div></div>'+(o.cap?'<figcaption>'+o.cap+'</figcaption>':'')+'</figure>'}
+$$('[data-ip]').forEach(function(e){e.outerHTML=tel(e.dataset.ip,e.dataset.alt,{duo:e.dataset.duo,vite:e.dataset.vite,cap:e.dataset.cap})});
 
 /* ---------- Bento des fonctions ---------- */
+var ECG='<svg viewBox="0 0 200 38" preserveAspectRatio="none" aria-hidden="true"><polyline vector-effect="non-scaling-stroke" points="0,22 26,22 34,22 40,10 46,30 52,4 58,26 64,22 96,22 104,22 110,12 116,29 122,6 128,26 134,22 166,22 172,14 178,28 184,8 190,24 200,22"/></svg>';
+var SPK='<svg viewBox="0 0 200 38" preserveAspectRatio="none" aria-hidden="true"><polyline vector-effect="non-scaling-stroke" points="0,31 22,27 44,29 66,21 88,23 110,15 132,17 154,9 176,11 200,4"/></svg>';
+var BW={
+ rep:'<div class="bw bw-rep">'+[['Galop 3-4',7,10],['Baby poney',6,8],['Galop 5-6',5,8]].map(function(r){return '<div><em>'+r[0]+'</em><span><i style="--v:'+(r[1]/r[2])+'"></i></span><b>'+r[1]+'/'+r[2]+'</b></div>'}).join('')+'</div>',
+ ecg:'<div class="bw"><span class="vif"><i></i>En direct, box B23</span><span class="ecg">'+ECG+'<i></i></span></div>',
+ fac:'<div class="bw bw-fac">'+[['Léa Martin','520 €'],['Chloé Roux','640 €']].map(function(r){return '<div><span>'+r[0]+' · '+r[1]+'</span><span class="etat"><em>En attente</em><em>Payée</em></span></div>'}).join('')+'</div>',
+ pt:'<div class="bw bw-pt">'+['MD','HL','IG','KB'].map(function(a,k){return '<span class="av">'+a+'<i style="--k:'+(k+1)+'"></i></span>'}).join('')+'<small>6 sur 9 ont pointé ce matin</small></div>',
+ sp:'<div class="bw bw-sp"><span><b data-n="86">86</b> % de remplissage</span><span class="ecg lent">'+SPK+'<i></i></span></div>',
+ ia:'<div class="bw"><span class="mini-orb"></span><span>« Qui n’a pas payé ce mois-ci ? »</span><span class="pts-ia"><i></i><i></i><i></i></span></div>',
+ pf:'<div class="bw bw-pf"><span class="nd">Banque</span><span class="fil"><i></i></span><span class="nd c">Piaffe</span><span class="fil"><i></i></span><span class="nd">Comptable</span></div>'};
 var BENTO=[
- ['rd','members','Club','Reprises, cavaliers, familles, concours','#m-planning',7,[['planning','Planning'],['saddle','Montoir'],['members','Adhérents et familles'],['stable','Pensions'],['coach','Coachs'],['trophy','Compétitions'],['shop','Boutique et stages'],['chat','Communication']]],
- ['hz','horse','Écurie','Chaque cheval suivi, chaque box visible','#m-chevaux',5,[['horse','Chevaux'],['care','Soins'],['feed','Alimentation'],['cube','Plan 3D'],['camera','Caméras et capteurs'],['upkeep','Entretien et stocks']]],
- ['mo','euro','Argent','De la facture à la TVA','#m-facturation',5,[['invoice','Facturation'],['doc','Devis'],['accounting','Comptabilité'],['percent','TVA'],['bank','Banque'],['sign','Contrats signés']]],
- ['tm','team','Équipe','Une vraie RH d’écurie','#m-equipe',3,[['team','Planning'],['clockin','Pointage'],['holiday','Congés'],['wallet','Paie']]],
- ['acc','today','Pilotage','Tout voir en un coup d’œil','#espaces',4,[['today','Tableau de bord du matin'],['report','Rapports'],['search','Recherche partout']]],
- ['ia','spark','Piaffe AI','Posez la question, il lit vos chiffres','#ai',7,[['chat','Questions en français'],['checkc','Actions validées par vous'],['sun','Point du matin'],['repeat','Automatisations'],['plug','Dans Claude et ChatGPT']]],
- ['pf','plug','Plateforme','Ouverte et sous contrôle','#connecteurs',5,[['plug','72 connecteurs'],['import','Reprise des données'],['api','API publique'],['wifi','Hors ligne'],['settings','Réglages']]]
+ ['rd','members','Club','Reprises, cavaliers, familles, concours','#m-planning',7,[['planning','Planning'],['saddle','Montoir'],['members','Adhérents et familles'],['stable','Pensions'],['coach','Coachs'],['trophy','Compétitions'],['shop','Boutique et stages'],['chat','Communication']],'rep'],
+ ['hz','horse','Écurie','Chaque cheval suivi, chaque box visible','#m-chevaux',5,[['horse','Chevaux'],['care','Soins'],['feed','Alimentation'],['cube','Plan 3D'],['camera','Caméras et capteurs'],['upkeep','Entretien et stocks']],'ecg'],
+ ['mo','euro','Argent','De la facture à la TVA','#m-facturation',5,[['invoice','Facturation'],['doc','Devis'],['accounting','Comptabilité'],['percent','TVA'],['bank','Banque'],['sign','Contrats signés']],'fac'],
+ ['tm','team','Équipe','Une vraie RH d’écurie','#m-equipe',3,[['team','Planning'],['clockin','Pointage'],['holiday','Congés'],['wallet','Paie']],'pt'],
+ ['acc','today','Pilotage','Tout voir en un coup d’œil','#espaces',4,[['today','Tableau de bord du matin'],['report','Rapports'],['search','Recherche partout']],'sp'],
+ ['ia','spark','Piaffe AI','Posez la question, il lit vos chiffres','#ai',7,[['chat','Questions en français'],['checkc','Actions validées par vous'],['sun','Point du matin'],['repeat','Automatisations'],['plug','Dans Claude et ChatGPT']],'ia'],
+ ['pf','plug','Plateforme','Ouverte et sous contrôle','#connecteurs',5,[['plug','72 connecteurs'],['import','Reprise des données'],['api','API publique'],['wifi','Hors ligne'],['settings','Réglages']],'pf']
 ];
-put($('#bento'),BENTO.map(function(b,i){return '<a class="bt '+(b[0]==='ia'?'ia':'d-'+b[0])+'" href="'+b[4]+'" style="--s:'+b[5]+';--i:'+(i%3)+'" data-r><div class="bt-h"><span class="bt-i">'+I(b[1])+'</span><div><h3>'+b[2]+'</h3><small>'+b[3]+'</small></div><span class="bt-go">'+I('arrow')+'</span></div><div class="pil">'+b[6].map(function(p){return '<span>'+I(p[0])+p[1]+'</span>'}).join('')+'</div></a>'}).join(''));
+put($('#bento'),BENTO.map(function(b,i){return '<a class="bt '+(b[0]==='ia'?'ia':'d-'+b[0])+'" href="'+b[4]+'" style="--s:'+b[5]+';--i:'+(i%3)+'" data-r><div class="bt-h"><span class="bt-i">'+I(b[1])+'</span><div><h3>'+b[2]+'</h3><small>'+b[3]+'</small></div><span class="bt-go">'+I('arrow')+'</span></div><div class="pil">'+b[6].map(function(p){return '<span>'+I(p[0])+p[1]+'</span>'}).join('')+'</div>'+BW[b[7]]+'</a>'}).join(''));
 
-/* ---------- Quatre espaces ---------- */
+/* ---------- Quatre espaces : section épinglée ---------- */
+function vue(n,alt,c,iw){return '<div class="vue"><div class="crop" style="'+cropStyle(c,null,iw)+'">'+img(n,alt,iw)+'</div></div>'}
 var ESP=[
- {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',qui:'Claire Morel, gérante',t:'Toute l’écurie sous les yeux, chaque matin.',p:'Le tableau de bord dit ce qui demande une décision aujourd’hui. Les rapports répondent au reste : chiffre d’affaires, remplissage, rentabilité.',
-  l:['Résumé du matin et actions en un geste','Planning, chevaux, adhérents, facturation, équipe','Rapports clairs sur 12 mois','Piaffe AI sur chaque écran'],r:'cockpit',cta:'Ouvrir l’espace gérant dans la démo',
-  v:'<div class="esp-v v-g">'+ecran('g-rapports','Rapports du gérant : chiffre d’affaires, résultat, remplissage',null,[290,60,640,470])+tel('p-g-cockpit','Tableau de bord du gérant sur téléphone')+'</div>'},
- {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',qui:'Mamadou Diallo, palefrenier soigneur',t:'Sa journée, box après box.',p:'Palefreniers et moniteurs voient quoi faire maintenant, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.',
-  l:['Tournée des boxes, soins et rations du jour','Consignes de la gérante, lues et confirmées','Pointage par appui maintenu','Fonctionne hors ligne, synchronise ensuite'],r:'emp-jour',cta:'Ouvrir l’espace employé dans la démo',
-  v:'<div class="esp-v v-e"><figure class="tab"><div class="crop" style="'+cropStyle([0,0,1180,820],[240,56,700,500],1180)+'">'+img('e-jour-tab','Journée de Mamadou sur tablette : urgence Xanthos, tâches, consignes',1)+'</div></figure>'+tel('p-emp-tournee','Tournée des boxes sur téléphone')+'</div>'},
- {id:'adherent',d:'rd',ic:'user',n:'Adhérent',ap:'Téléphone',qui:'Léa Martin, propriétaire d’Ulysse',t:'Le club dans la poche des cavaliers.',p:'Réserver, rattraper un cours, payer, signer. Les propriétaires suivent leur cheval, les parents paient pour toute la famille.',
-  l:['Réservations, rattrapages et liste d’attente','Fiche et journal de son cheval','Paiement en ligne, en une ou trois fois','Galops, progression et concours'],r:'adh-accueil',cta:'Ouvrir l’espace adhérent dans la démo',
-  v:'<div class="esp-v v-a">'+tel('p-adh-accueil','Accueil de Léa : cours dans 25 minutes')+tel('p-adh-reserver','Réserver une reprise')+tel('p-adh-cheval','Fiche du cheval Ulysse de la Roche')+'</div>'},
- {id:'coach',d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',qui:'Pauline Arnaud, coach CSO indépendante',t:'Un agenda qui se remplit tout seul.',p:'Les coachs indépendants publient leurs disponibilités. Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part automatiquement.',
-  l:['Agenda sur plusieurs écuries, trajets compris','Réservation et paiement en ligne','Élèves, notes de séance, progression','Revenus et reversements clairs'],r:'coach-agenda',cta:'Ouvrir l’espace coach dans la démo',
-  v:'<div class="esp-v v-c">'+ecran('c-agenda','Agenda de Pauline : 5 cours dans 3 écuries',null,[290,60,640,470])+tel('p-coach-revenus','Revenus de la coach sur téléphone')+'</div>'}
+ {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',qui:'Claire Morel, gérante',t:'Toute l’écurie sous les yeux, chaque matin.',p:'Le tableau de bord dit ce qui demande une décision aujourd’hui. Les rapports répondent au reste : chiffre d’affaires, remplissage, rentabilité.',c:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',
+  l:['Résumé du matin et actions en un geste','Planning, chevaux, adhérents, facturation, équipe','Rapports clairs sur 12 mois','Piaffe AI sur chaque écran'],r:'cockpit',cta:'Ouvrir l’espace gérant',tel:'p-g-cockpit',
+  lab:['today','Le même tableau de bord, sur ordinateur'],v:vue('g-cockpit','Indicateurs du tableau de bord du gérant',[854,196,566,393])},
+ {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',qui:'Mamadou Diallo, palefrenier soigneur',t:'Sa journée, box après box.',p:'Palefreniers et moniteurs voient quoi faire maintenant, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.',c:'Quoi faire maintenant, box après box. Même sans réseau.',
+  l:['Tournée des boxes, soins et rations du jour','Consignes de la gérante, lues et confirmées','Pointage par appui maintenu','Fonctionne hors ligne, synchronise ensuite'],r:'emp-jour',cta:'Ouvrir l’espace employé',tel:'p-emp-tournee',
+  lab:['alert','L’urgence du matin, sur la tablette de la sellerie'],v:vue('e-jour-tab','Urgence Xanthos, box B23, sur la tablette de l’équipe',[296,178,517,283],1180)},
+ {id:'adherent',d:'rd',ic:'user',n:'Adhérent',ap:'Téléphone',qui:'Léa Martin, propriétaire d’Ulysse',t:'Le club dans la poche des cavaliers.',p:'Réserver, rattraper un cours, payer, signer. Les propriétaires suivent leur cheval, les parents paient pour toute la famille.',c:'Réserver, rattraper, payer, signer, et suivre son cheval.',
+  l:['Réservations, rattrapages et liste d’attente','Fiche et journal de son cheval','Paiement en ligne, en une ou trois fois','Galops, progression et concours'],r:'adh-accueil',cta:'Ouvrir l’espace adhérent',tel:'p-adh-accueil',
+  lab:['horse','La fiche de son cheval, Ulysse'],v:tel('p-adh-cheval','Fiche du cheval Ulysse de la Roche')},
+ {id:'coach',d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',qui:'Pauline Arnaud, coach CSO indépendante',t:'Un agenda qui se remplit tout seul.',p:'Les coachs indépendants publient leurs disponibilités. Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part automatiquement.',c:'Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part.',
+  l:['Agenda sur plusieurs écuries, trajets compris','Réservation et paiement en ligne','Élèves, notes de séance, progression','Revenus et reversements clairs'],r:'coach-agenda',cta:'Ouvrir l’espace coach',tel:'p-coach-agenda',
+  lab:['calendar_add','Sa journée en chiffres, sur ordinateur'],v:vue('c-agenda','Journée de la coach : 5 cours aujourd’hui, 46 km de route',[296,178,399,334])}
 ];
-put($('#esp'),'<div class="esp-tabs" role="tablist" aria-label="Les quatre espaces"><span class="esp-g"></span>'+ESP.map(function(e,i){return '<button type="button" role="tab" id="et-'+e.id+'" aria-controls="ep-'+e.id+'" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'" class="d-'+e.d+'"><span class="et-i">'+I(e.ic)+'</span><span><b>'+e.n+'</b><small>'+e.ap+'</small></span></button>'}).join('')+'</div><div class="esp-ps">'+
- ESP.map(function(e,i){return '<div class="esp-p d-'+e.d+(i===0?' on':'')+'" role="tabpanel" id="ep-'+e.id+'" aria-labelledby="et-'+e.id+'"><div><span class="esp-qui">'+I(e.ic)+e.qui+'</span><h3>'+e.t+'</h3><p>'+e.p+'</p><ul class="coches">'+e.l.map(function(x){return '<li>'+I('check')+x+'</li>'}).join('')+'</ul><a class="btn pri" '+demo(e.r)+'>'+e.cta+I('arrow')+'</a></div>'+e.v+'</div>'}).join('')+'</div>');
-(function(){var tabs=$$('.esp-tabs button'),ps=$$('.esp-p'),g=$('.esp-g'),cur=0;
-  function go(i,focus){if(i===cur)return;var dir=i>cur?1:-1;ps[cur].style.setProperty('--dir',-dir);ps[i].style.setProperty('--dir',dir);
+function coches(l,k){return '<ul class="coches'+(k?' '+k:'')+'">'+l.map(function(x,j){return '<li style="--k:'+j+'">'+I('check')+x+'</li>'}).join('')+'</ul>'}
+put($('#esp'),'<div class="esp-tabs" role="tablist" aria-label="Les quatre espaces"><span class="esp-g"></span>'+ESP.map(function(e,i){return '<button type="button" role="tab" id="et-'+e.id+'" aria-controls="ep-'+e.id+'" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'" class="d-'+e.d+'"><span class="et-i">'+I(e.ic)+'</span><span><b>'+e.n+'</b><small>'+e.ap+'</small></span></button>'}).join('')+'<span class="esp-pr"><i></i></span></div>'+
+ '<div class="pin-p"><div class="pin-bg" aria-hidden="true">'+ESP.map(function(e,i){return '<i class="d-'+e.d+(i?'':' on')+'"></i>'}).join('')+'</div><div class="pin-g">'+
+ '<div class="pin-tx">'+ESP.map(function(e,i){return '<div class="pin-t d-'+e.d+(i?'':' on')+'" role="tabpanel" id="ep-'+e.id+'" aria-labelledby="et-'+e.id+'"><span class="esp-qui">'+I(e.ic)+e.qui+'</span><h3>'+e.t+'</h3><p>'+e.p+'</p><p class="court">'+e.c+'</p>'+coches(e.l,'coches-m')+'<a class="btn pri" '+demo(e.r)+'>'+e.cta+I('arrow')+'</a></div>'}).join('')+'</div>'+
+ '<div class="pin-ph">'+tel(ESP.map(function(e){return e.tel}),'Les quatre espaces de Piaffe sur téléphone')+'</div>'+
+ '<div class="pin-dx">'+ESP.map(function(e,i){return '<div class="pin-d d-'+e.d+(i?'':' on')+'"'+(i?' aria-hidden="true"':'')+'><p class="pin-lab">'+I(e.lab[0])+e.lab[1]+'</p>'+e.v+coches(e.l)+'</div>'}).join('')+'</div></div></div>');
+(function(){var pin=$('#pin'),st=$('.pin-st'),tabs=$$('.esp-tabs button'),g=$('.esp-g'),pr=$('.esp-pr i'),L=[$$('.pin-t'),$$('.pin-d'),$$('.pin-ph .ip-s img'),$$('.pin-bg i')],cur=0,tick=false;
+  function set(i){if(i===cur)return;var dir=i>cur?1:-1;
+    L.forEach(function(l){l[cur].style.setProperty('--dir',-dir);l[i].style.setProperty('--dir',dir);l[i].getBoundingClientRect();l.forEach(function(e,k){e.classList.toggle('on',k===i)})});
+    L[1].forEach(function(e,k){if(k===i)e.removeAttribute('aria-hidden');else e.setAttribute('aria-hidden','true')});
     tabs.forEach(function(t,k){t.setAttribute('aria-selected',k===i);t.tabIndex=k===i?0:-1});
-    /* le panneau entrant part du bon côté avant d’être affiché */
-    ps[i].getBoundingClientRect();ps.forEach(function(p,k){p.classList.toggle('on',k===i)});
-    g.style.transform='translateX(calc('+i+' * (100% + 4px)))';cur=i;if(focus)tabs[i].focus()}
-  tabs.forEach(function(t,i){t.addEventListener('click',function(){go(i)});
-    t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go((i+1)%4,1)}else if(e.key==='ArrowLeft'){e.preventDefault();go((i+3)%4,1)}})})})();
+    g.style.transform='translateX(calc('+i+' * (100% + 4px)))';cur=i}
+  function course(){return pin.offsetHeight-st.offsetHeight}
+  function haut(){return parseFloat(getComputedStyle(st).top)||0}
+  function maj(){tick=false;var c=course();if(c<80){pr.style.transform='scaleX('+((cur+1)/4)+')';return}
+    var p=Math.max(0,Math.min(1,(haut()-pin.getBoundingClientRect().top)/c));pr.style.transform='scaleX('+p.toFixed(4)+')';set(Math.min(3,Math.floor(p*4)))}
+  function va(i,focus){var c=course();if(c<80){set(i);maj()}else scrollTo({top:scrollY+pin.getBoundingClientRect().top-haut()+c*(i+.5)/4,behavior:RM?'auto':'smooth'});if(focus)tabs[i].focus({preventScroll:true})}
+  tabs.forEach(function(t,i){t.addEventListener('click',function(){va(i)});
+    t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();va((i+1)%4,1)}else if(e.key==='ArrowLeft'){e.preventDefault();va((i+3)%4,1)}})});
+  addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(maj)}},{passive:true});addEventListener('resize',maj);maj()})();
 
 /* ---------- Tour des modules ---------- */
-/* an : [x, y, côté, libellé, visible au téléphone] dans les pixels de la capture */
+/* c : fenêtre montrée à l’ordinateur ; m : recadrage au téléphone ; mt : capture iPhone montrée à la place au téléphone ;
+   an : [x, y, l, h, libellé] d’un élément de l’écran, entouré ; ch : chiffres clés [valeur, unité, libellé] */
 var MODS=[
  {id:'planning',d:'rd',ic:'planning',n:'Planning et reprises',h:['Le planning se remplit,','et il ménage vos chevaux.'],
   p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes. Piaffe attribue les chevaux selon le niveau et la charge de chacun, et gère absences, rattrapages et liste d’attente.',
   u:[['Le montoir se compose tout seul','Chaque cavalier reçoit un cheval à son niveau, sans dépasser la charge de la semaine.'],['Rattrapages et liste d’attente','Une place se libère, le premier de la liste est prévenu et réserve en un geste.'],['L’appel sur le téléphone','Le moniteur pointe les présents en carrière, les séances se décomptent seules.']],
-  r:'planning',b:'23 reprises et 200 cavaliers cette semaine',shot:'g-planning',alt:'Planning de la semaine du 16 au 22 novembre',c:[288,130,1140,720],m:[296,222,610,500],
-  an:[[840,224,'r','Remplissage suivi en direct',1],[528,668,'r','Léa et Ulysse, cours avec Pauline',1]],sup:['tel','p-adh-reserver','Le cavalier réserve depuis son téléphone']},
+  r:'planning',shot:'g-planning',alt:'Planning de la semaine du 16 au 22 novembre',c:[276,0,1164,900],f:1,m:[300,340,518,560],
+  an:[[660,218,187,46,'Remplissage suivi en direct'],[521,646,147,84,'Léa et Ulysse, cours avec Pauline']],ch:[[23,'','reprises cette semaine'],[200,'','cavaliers en selle'],[85,' %','de remplissage']]},
  {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',h:['Chaque cheval suivi,','rien n’est oublié.'],
   p:'Une fiche par cheval : identité SIRE, soins, ferrure, vermifuges, travail de la semaine, ration, coûts et journal partagé avec le propriétaire.',
   u:[['Rappels de soins automatiques','Vaccins, vermifuges, maréchal, dentiste : les échéances se regroupent en tournées.'],['Charge de travail surveillée','Piaffe signale les chevaux au-dessus de leur seuil, avant la blessure.'],['Le propriétaire voit tout','Journal, soins et factures de son cheval, depuis son téléphone.']],
-  r:'chevaux',b:'44 chevaux et poneys suivis',shot:'g-chevaux',alt:'Liste des chevaux : 44 chevaux et poneys, 8 à surveiller',c:[288,110,1140,640],m:[850,178,570,560],
-  an:[[1010,428,'l','Xanthos, à surveiller',1],[1394,224,'l','Charge de travail par cheval',1]],sup:['tel','p-adh-cheval','La fiche d’Ulysse vue par sa propriétaire']},
+  r:'chevaux',shot:'g-chevaux',alt:'Chevaux : 44 chevaux et poneys, 8 à surveiller',c:[276,0,1164,734],m:[854,178,566,559],
+  an:[[866,190,263,279,'Tornado et Xanthos, à surveiller'],[1145,190,263,279,'Charge de travail par cheval']],ch:[[44,'','chevaux et poneys suivis'],[8,'','à surveiller cette semaine'],[415,' €','de coût moyen par mois']]},
  {id:'ecurie',d:'tm',ic:'camera',n:'Écurie connectée',h:['L’écurie en direct,','même la nuit.'],
   p:'Caméras de box, abreuvoirs, sondes et silo sont reliés. Piaffe croise les signaux et vous prévient quand quelque chose sort de l’habitude. Le plan 3D montre qui occupe chaque box.',
   u:[['Alerte avant la colique','Xanthos se couche souvent et boit 40 % de moins : l’équipe est prévenue aussitôt.'],['Rations et stocks reliés','44 rations individuelles, 16 jours de foin d’avance, la commande au bon moment.'],['Plan de l’écurie en 3D','Boxes occupés, paddocks, places libres : tout se lit d’un coup d’œil.']],
-  r:'cameras',b:'8 caméras et 6 capteurs en ligne',shot:'g-cameras',alt:'Caméras et capteurs : alerte sur Xanthos, box B23',c:[288,236,1140,664],m:[300,250,700,560],
-  an:[[345,300,'r','Caméra et abreuvoir, le même signal',1],[838,470,'r','Box B23 en direct',1]],sup:['inset','g-alimentation','Rations du jour : 374 kg de foin',[308,206,566,424]]},
+  r:'cameras',shot:'g-cameras',alt:'Caméras et capteurs : alerte sur Xanthos, box B23',c:[276,0,1164,892],m:[296,430,528,465],
+  an:[[308,255,1100,113,'Caméra et abreuvoir, le même signal'],[567,442,245,138,'Box B23 en direct']],ch:[[8,'','caméras en ligne'],[6,'','capteurs reliés'],[16,' jours','de foin d’avance']]},
  {id:'adherents',d:'rd',ic:'members',n:'Adhérents, pensions et contrats',h:['Une famille, un payeur,','tous les cavaliers.'],
   p:'Fiches complètes, inscriptions en ligne, licences FFE en lot, pensions et demi-pensions. Les contrats se signent au doigt et se rangent tout seuls.',
   u:[['Inscriptions validées en un geste','Le dossier arrive complet : certificat, autorisation parentale, droit à l’image.'],['Pensions et demi-pensions','25 chevaux en pension, 4 formules, la facture du mois préparée d’avance.'],['Contrats signés sur le téléphone','Le modèle se remplit, la signature a valeur probante, l’archive est gardée 10 ans.']],
-  r:'adherents',b:'148 adhérents dans 119 familles',shot:'g-adherents',alt:'Adhérents : 148 cavaliers inscrits, inscriptions à valider, licences FFE',c:[288,176,1140,640],m:[318,400,580,400],
-  an:[[1000,510,'l','138 licences prêtes en un lot',0],[700,447,'l','Inscriptions validées en un geste',1]],sup:['tel','p-adh-paiements','Léa règle la pension d’Ulysse depuis son téléphone']},
+  r:'adherents',shot:'g-adherents',alt:'Adhérents : 148 cavaliers inscrits, inscriptions à valider, licences FFE',c:[276,0,1164,822],m:[296,399,638,428],
+  an:[[308,411,614,404,'Inscriptions validées en un geste'],[936,411,472,404,'138 licences prêtes en un lot']],ch:[[148,'','adhérents'],[119,'','familles'],[25,'','chevaux en pension']]},
  {id:'facturation',d:'mo',ic:'invoice',n:'Facturation et comptabilité',h:['Les factures du mois,','en un seul geste.'],
   p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, prélèvement SEPA, chèques-vacances, espèces : chaque paiement retrouve sa facture, puis sa ligne de banque.',
   u:[['Facturation préparée par Piaffe','69 factures prêtes pour décembre : vous vérifiez, vous envoyez.'],['Relances automatiques','7 factures en retard, 7 relances prêtes. Le lien de paiement est dans le message.'],['Comptabilité sans double saisie','Banque rapprochée, TVA préparée, export FEC, accès pour votre expert-comptable.']],
-  r:'facturation',b:'31 846 € encaissés en novembre',shot:'g-facturation',alt:'Facturation : 69 factures prêtes pour 18 292 €',c:[288,196,1140,640],m:[300,205,600,460],
-  an:[[610,368,'r','69 factures, un seul envoi',1],[1040,505,'l','Relances déjà parties',0]],sup:['inset','g-compta','Comptabilité : 3 opérations à rapprocher',[306,516,620,330]]},
+  r:'facturation',shot:'g-facturation',alt:'Facturation : 69 factures prêtes pour 18 292 €',c:[276,0,1164,662],m:[638,415,526,248],
+  an:[[308,213,1100,200,'69 factures, un seul envoi'],[908,427,243,224,'Relances déjà parties']],ch:[[69,'','factures prêtes pour décembre'],[31846,' €','encaissés en novembre'],[93,' %','payés à l’échéance']]},
  {id:'equipe',d:'tm',ic:'team',n:'Équipe et pointage',h:['Plannings, pointage et paie,','enfin réunis.'],
   p:'Chacun pointe en maintenant le doigt sur son téléphone. Heures supplémentaires, congés, diplômes et convention collective des centres équestres sont suivis. La paie part vers votre logiciel.',
   u:[['Pointage au téléphone','Un appui long, la position est vérifiée. Fini les feuilles à recopier.'],['Échéances suivies','Carte professionnelle, PSC1, fin de CDD : Piaffe prévient et prépare la suite.'],['Export vers la paie','Les heures du mois partent vers PayFit ou Silae, sans ressaisie.']],
-  r:'equipe',b:'9 personnes, 262 h 30 planifiées',shot:'g-equipe',alt:'Équipe : 6 salariés sur 9 en poste ce matin, échéances à traiter',c:[288,196,1140,680],m:[300,205,600,440],
-  an:[[420,300,'r','6 sur 9 en poste, pointés au téléphone',1],[1170,627,'l','Renouvellement préparé',0]],sup:['tel','p-emp-pointage','Le pointage par appui maintenu']},
+  r:'equipe',shot:'g-equipe',alt:'Équipe : 6 salariés sur 9 en poste ce matin, échéances à traiter',c:[276,0,1164,885],m:[296,201,609,251],
+  an:[[308,213,328,227,'6 sur 9 en poste, pointés au téléphone'],[1181,608,205,38,'Renouvellement préparé']],ch:[[9,'','personnes dans l’équipe'],[262,' h 30','planifiées cette semaine'],[7,'','points à traiter']]},
  {id:'concours',d:'mo',ic:'trophy',n:'Compétitions et coachs',h:['Qui emmène qui ?','Réglé en glissant.'],
   p:'Engagements préparés pour FFE Compet, horaires de passage, vans et covoiturage. Les cavaliers voient leur heure, les coachs leur programme, l’écurie ses frais à refacturer.',
   u:[['Engagements en un envoi','9 cavaliers engagés à Rambouillet, la clôture est rappelée la veille.'],['Vans et places','Chaque cheval a sa place dans le camion, chaque famille son horaire de départ.'],['Coachs réservables en ligne','Un créneau, un paiement, c’est réservé. L’écurie perçoit sa part.']],
-  r:'competitions',b:'5 concours au calendrier',shot:'g-competitions',alt:'Compétitions : CSO Club et Poney à Rambouillet, 9 cavaliers engagés',c:[288,196,1140,680],m:[300,352,610,380],
-  an:[[772,594,'r','Prêt pour FFE Compet',1],[575,686,'r','Qui emmène qui',0]],sup:['tel','p-adh-concours','Le cavalier voit son heure de passage']},
+  r:'competitions',shot:'g-competitions',alt:'Compétitions : CSO Club et Poney à Rambouillet, 9 cavaliers engagés',c:[276,0,1164,826],mt:['p-adh-concours','Le concours vu par la cavalière : départ du van et heure de passage'],
+  an:[[523,590,247,44,'Prêt pour FFE Compet'],[439,678,146,46,'Qui emmène qui']],ch:[[5,'','concours au calendrier'],[9,'','cavaliers engagés dimanche'],[24,' km','jusqu’à Rambouillet']]},
  {id:'communication',d:'rd',ic:'chat',n:'Communication',h:['Le bon message,','à la bonne famille.'],
   p:'Une messagerie par famille, des envois groupés par reprise, des annonces et des sondages. Notification, SMS, e-mail ou WhatsApp : vous savez qui a lu.',
   u:[['Un seul fil par famille','Fini les groupes de discussion qui débordent : chaque échange est rangé.'],['Envois groupés ciblés','La reprise de 17 h est annulée ? Seuls les cavaliers concernés sont prévenus.'],['Modèles et automatismes','Rappel de cours, facture échue, licence à renouveler : les messages partent seuls.']],
-  r:'communication',b:'71 % d’ouverture ce mois-ci',shot:'g-communication',alt:'Communication : messagerie avec Léa Martin',c:[288,236,1140,664],m:[680,400,640,500],
-  an:[[440,470,'r','Chaque famille, un seul fil',0],[1010,828,'r','Appli, SMS, e-mail ou WhatsApp',1]]}
+  r:'communication',shot:'g-communication',alt:'Communication : messagerie avec Léa Martin',c:[276,0,1164,900],f:1,m:[300,287,346,520],
+  an:[[316,436,323,74,'Chaque famille, un seul fil'],[664,825,728,40,'Appli, SMS, e-mail ou WhatsApp']],ch:[[4,'','canaux au choix'],[71,' %','d’ouverture ce mois-ci'],[4,'','conversations non lues']]}
 ];
-put($('#ancIn'),MODS.map(function(m){return '<a href="#m-'+m.id+'" class="d-'+m.d+'" data-m="'+m.id+'">'+I(m.ic)+m.n.replace(/,? (et|pensions) .*/,'').replace('Chevaux','Chevaux et soins').replace('Écurie connectée','Écurie connectée')+'</a>'}).join(''));
-put($('#mods'),MODS.map(function(m,i){var n=('0'+(i+1)).slice(-2),k=0,ans=(m.an||[]).map(function(a){k++;return '<div class="an'+(a[4]?'':' md')+'" style="--ax:'+a[0]+';--ay:'+a[1]+'"><i>'+k+'</i></div>'}).join(''),
-   leg=(m.an||[]).map(function(a,j){return '<li'+(a[4]?'':' class="md"')+'><i>'+(j+1)+'</i>'+a[3]+'</li>'}).join(''),
-   sup=!m.sup?'':m.sup[0]==='tel'?tel(m.sup[1],m.sup[2],'sup'):'<figure class="inset"><div class="crop" style="'+cropStyle(m.sup[3])+'">'+img(m.sup[1],m.sup[2])+'</div></figure>';
-  return '<article class="mod d-'+m.d+(i%2?' inv':'')+(m.sup?' avec-'+m.sup[0]:'')+'" id="m-'+m.id+'"><div class="mod-t" data-r><p class="mod-n"><span>'+I(m.ic)+'</span>'+n+' · '+m.n+'</p><h3>'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p>'+m.p+'</p><ul class="puces">'+m.u.map(function(u){return '<li>'+I('check')+'<div><b>'+u[0]+'</b><small>'+u[1]+'</small></div></li>'}).join('')+'</ul><div class="mod-f"><a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a><span class="badge"><i></i>'+m.b+'</span></div></div>'+
-   '<div class="mod-v"><div class="stage"><div class="shot" style="'+cropStyle(m.c,m.m)+'"><div class="crop">'+img(m.shot,m.alt)+'</div>'+ans+'</div>'+sup+'</div><ul class="legendes">'+leg+'</ul></div></article>'}).join(''));
+function dedans(a,m){return m&&a[0]>=m[0]&&a[1]>=m[1]&&a[0]+a[2]<=m[0]+m[2]&&a[1]+a[3]<=m[1]+m[3]}
+put($('#ancIn'),MODS.map(function(m){return '<a href="#m-'+m.id+'" class="d-'+m.d+'" data-m="'+m.id+'">'+I(m.ic)+m.n.replace(/,? (et|pensions) .*/,'').replace('Chevaux','Chevaux et soins')+'</a>'}).join(''));
+put($('#mods'),MODS.map(function(m,i){var n=('0'+(i+1)).slice(-2),
+   ans=m.an.map(function(a,j){return '<div class="an'+(dedans(a,m.m)?'':' md')+'" style="--ax:'+a[0]+';--ay:'+a[1]+';--aw:'+a[2]+';--ah:'+a[3]+'"><i>'+(j+1)+'</i></div>'}).join(''),
+   leg=m.an.map(function(a,j){return '<li'+(dedans(a,m.m)?'':' class="md"')+'><i>'+(j+1)+'</i>'+a[4]+'</li>'}).join('');
+  return '<article class="mod d-'+m.d+(i%2?' inv':'')+(m.mt?' mt':'')+'" id="m-'+m.id+'"><div class="mod-t" data-r><p class="mod-n"><span>'+I(m.ic)+'</span>'+n+' · '+m.n+'</p><h3>'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p>'+m.p+'</p><ul class="puces">'+m.u.map(function(u){return '<li>'+I('check')+'<div><b>'+u[0]+'</b><small>'+u[1]+'</small></div></li>'}).join('')+'</ul>'+
+   '<ul class="chiffres">'+m.ch.map(function(c){return '<li><b><span data-n="'+c[0]+'">'+fr(c[0])+'</span>'+c[1]+'</b><small>'+c[2]+'</small></li>'}).join('')+'</ul>'+
+   '<div class="mod-f"><a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a></div></div>'+
+   '<div class="mod-v"><div class="stage"><figure class="nav-frame">'+barre()+'<div class="shot" style="'+cropStyle(m.c,m.m)+'"><div class="crop'+(m.f?' fade':'')+'">'+img(m.shot,m.alt)+'</div>'+ans+'</div></figure>'+(m.mt?tel(m.mt[0],m.mt[1],{k:'mod-ip'}):'')+'</div><ul class="legendes">'+leg+'</ul></div></article>'}).join(''));
 
 /* ---------- Piaffe AI : questions et réponses, chiffres de la démo ---------- */
 function tb(h,rows,plus){return '<div class="b-carte"><table><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(x){return '<td>'+x+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+(plus?'<div class="plus">'+plus+'</div>':'')+'</div>'}
@@ -232,18 +264,123 @@ $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q
 /* ---------- Illustration finale ---------- */
 if(window.ILLU&&window.ILLU.cheval)$('#finIllu').innerHTML=window.ILLU.cheval();
 
-/* ---------- Apparitions, ancres actives, profondeur ---------- */
-(function(){var els=$$('[data-r],.mod,.collage');
+/* ---------- Apparitions, ancres actives ---------- */
+(function(){var els=$$('[data-r],.mod-v,.rig,.vifs,.lineup');
   if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:.08});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -10% 0px',threshold:.1});
   els.forEach(function(e){io.observe(e)});
   var liens=$$('#ancIn a'),box=$('#ancIn');
   var io2=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var id=e.target.id.slice(2);liens.forEach(function(a){var on=a.dataset.m===id;a.classList.toggle('on',on);
     if(on&&box.scrollWidth>box.clientWidth)box.scrollTo({left:a.offsetLeft-box.clientWidth/2+a.offsetWidth/2,behavior:RM?'auto':'smooth'})})})},{rootMargin:'-45% 0px -50% 0px'});
-  $$('.mod').forEach(function(m){io2.observe(m)})})();
-(function(){var nav=$('#nav'),col=$('.col-tilt'),shots=$$('.stage>.tel,.stage>.inset'),tick=false;
-  function maj(){tick=false;var y=scrollY,H=innerHeight;nav.classList.toggle('sc',y>40);if(RM)return;
-    var r=col.getBoundingClientRect();col.style.setProperty('--p',Math.max(0,Math.min(1,1-(r.top-H*.28)/(H*.6))).toFixed(3));
-    shots.forEach(function(s){var b=s.parentNode.getBoundingClientRect();if(b.bottom<-80||b.top>H+80)return;var k=(b.top+b.height/2-H/2)/H;s.style.setProperty('--py',(k*-34).toFixed(1))})}
+  $$('.mod').forEach(function(m){io2.observe(m)});
+  /* les mini-scènes du bento ne tournent que lorsqu’elles sont à l’écran */
+  var io3=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('vu',e.isIntersecting)})},{threshold:.2});
+  $$('.bt').forEach(function(b){io3.observe(b)})})();
+
+/* ---------- Chiffres qui comptent ---------- */
+(function(){var ns=$$('[data-n]');if(RM||!('IntersectionObserver' in window))return;
+  function joue(el){var v=+el.dataset.n,t0=0,d=Math.min(1700,700+Math.log(v+1)*110);
+    function pas(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,4);el.textContent=fr(Math.round(v*e));if(k<1)requestAnimationFrame(pas)}
+    el.textContent='0';requestAnimationFrame(pas)}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);joue(e.target)}})},{rootMargin:'0px 0px -12% 0px',threshold:.6});
+  ns.forEach(function(n){io.observe(n)})})();
+
+/* ---------- Défilement : barre de lecture, appareils du hero, entrées de section ---------- */
+(function(){var nav=$('#nav'),prog=$('#prog'),rig=$('.rig-in'),hz=$('#hz3'),ai=$('#ai'),fin=$('.fin-c'),tick=false;
+  function k(el,H){var r=el.getBoundingClientRect();return Math.max(0,Math.min(1,(H-r.top)/(H*.55)))}
+  function maj(){tick=false;var y=scrollY,H=innerHeight,T=R.scrollHeight-H;nav.classList.toggle('sc',y>40);
+    prog.style.setProperty('--sp',(T>0?Math.min(1,y/T):0).toFixed(4));if(RM)return;
+    var r=rig.parentNode.getBoundingClientRect();rig.style.setProperty('--p',Math.max(0,Math.min(1,(H*.96-r.top)/(H*.5))).toFixed(3));
+    if(y<H*1.4)hz.style.setProperty('--hs',(y*.1).toFixed(1));
+    ai.style.setProperty('--k',k(ai,H).toFixed(3));fin.style.setProperty('--k',k(fin,H).toFixed(3))}
   addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(maj)}},{passive:true});addEventListener('resize',maj);maj()})();
+
+/* ---------- Boutons aimantés, tuiles qui s’inclinent ---------- */
+(function(){if(RM||!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('.mag').forEach(function(b){
+    b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();b.classList.add('suit');b.style.setProperty('--gx',((e.clientX-r.left-r.width/2)*.22).toFixed(1));b.style.setProperty('--gy',((e.clientY-r.top-r.height/2)*.3).toFixed(1))});
+    b.addEventListener('pointerleave',function(){b.classList.remove('suit');b.style.setProperty('--gx',0);b.style.setProperty('--gy',0)})});
+  $$('.bt').forEach(function(b){
+    b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;b.classList.add('tl');b.style.setProperty('--ry',(x*5).toFixed(2)+'deg');b.style.setProperty('--rx',(-y*5).toFixed(2)+'deg')});
+    b.addEventListener('pointerleave',function(){b.classList.remove('tl');b.style.setProperty('--rx','0deg');b.style.setProperty('--ry','0deg')})})})();
+
+/* ---------- Le cheval du hero : maillage low-poly au galop (three.js r128) ---------- */
+(function(){var box=$('#hz3'),cv=$('canvas',box);
+  function repli(){box.classList.add('sans3d');if(window.ILLU&&window.ILLU.cheval)$('.hz3-fb',box).innerHTML=window.ILLU.cheval()}
+  if(typeof THREE==='undefined'||typeof HORSE==='undefined'){repli();return}
+  var rd;try{rd=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true})}catch(e){repli();return}
+  if(!rd.getContext()){repli();return}
+  var T=THREE,scene=new T.Scene(),cam=new T.PerspectiveCamera(27,1,.1,40),N=HORSE.n,V=new Float32Array(N*3);
+  function sombre(){return R.getAttribute('data-theme')?R.getAttribute('data-theme')==='dark':matchMedia('(prefers-color-scheme:dark)').matches}
+  /* le cheval : facettes navy, arêtes et sommets strass */
+  var pos=new T.BufferAttribute(V,3);pos.setUsage(T.DynamicDrawUsage);
+  var geo=new T.BufferGeometry();geo.setAttribute('position',pos);geo.setIndex(new T.BufferAttribute(HORSE.idx,1));
+  var vu={},ar=[],ix=HORSE.idx;for(var i=0;i<ix.length;i+=3)for(var j=0;j<3;j++){var a=ix[i+j],b=ix[i+(j+1)%3],key=a<b?a*65536+b:b*65536+a;if(!vu[key]){vu[key]=1;ar.push(a,b)}}
+  var geoA=new T.BufferGeometry();geoA.setAttribute('position',pos);geoA.setIndex(new T.BufferAttribute(new Uint16Array(ar),1));
+  var geoP=new T.BufferGeometry();geoP.setAttribute('position',pos);
+  var mCorps=new T.MeshPhongMaterial({flatShading:true,side:T.DoubleSide,shininess:70,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1}),
+      mAr=new T.LineBasicMaterial({transparent:true}),mPt=new T.PointsMaterial({size:.016,sizeAttenuation:true,transparent:true,depthWrite:false}),
+      mRef=new T.MeshPhongMaterial({flatShading:true,side:T.DoubleSide,transparent:true,depthWrite:false,shininess:30}),mRefA=new T.LineBasicMaterial({transparent:true,depthWrite:false});
+  var corps=new T.Mesh(geo,mCorps),aretes=new T.LineSegments(geoA,mAr),strass=new T.Points(geoP,mPt),
+      reflet=new T.Group(),rC=new T.Mesh(geo,mRef),rA=new T.LineSegments(geoA,mRefA);
+  reflet.add(rC,rA);reflet.scale.y=-1;reflet.position.y=-.012;
+  [corps,aretes,strass,rC,rA].forEach(function(o){o.frustumCulled=false});
+  /* le sol : halo et anneaux */
+  function texSol(c){var s=256,k=document.createElement('canvas');k.width=k.height=s;var x=k.getContext('2d'),g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+    g.addColorStop(0,'rgba('+c+',.55)');g.addColorStop(.35,'rgba('+c+',.22)');g.addColorStop(1,'rgba('+c+',0)');x.fillStyle=g;x.fillRect(0,0,s,s);
+    x.strokeStyle='rgba('+c+',.4)';x.lineWidth=1;[.2,.31,.42].forEach(function(r,n){x.globalAlpha=1-n*.3;x.beginPath();x.arc(s/2,s/2,s*r,0,7);x.stroke()});return new T.CanvasTexture(k)}
+  var mSol=new T.MeshBasicMaterial({transparent:true,depthWrite:false}),sol=new T.Mesh(new T.CircleGeometry(1.75,64),mSol);sol.rotation.x=-Math.PI/2;sol.scale.set(.8,1.25,1);
+  reflet.renderOrder=0;rC.renderOrder=0;rA.renderOrder=0;sol.renderOrder=1;corps.renderOrder=2;aretes.renderOrder=3;strass.renderOrder=4;
+  /* poussière soulevée, étincelles et filets de vitesse */
+  var VS='attribute float aA;attribute float aS;uniform float uPx;varying float vA;void main(){vA=aA;vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=aS*uPx/-mv.z;gl_Position=projectionMatrix*mv;}',
+      FS='uniform vec3 uC;varying float vA;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.05,d);gl_FragColor=vec4(uC,a*vA);}',
+      FL='uniform vec3 uC;varying float vA;void main(){gl_FragColor=vec4(uC,vA);}';
+  var NP=260,pp=new Float32Array(NP*3),pa=new Float32Array(NP),ps=new Float32Array(NP),pv=new Float32Array(NP*3),pl=new Float32Array(NP),pd=new Float32Array(NP),seed=7;
+  function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+  function nait(i,pre){var sab=i<170;/* sabots ou air */
+    if(sab){pp[i*3]=(rnd()-.5)*.3;pp[i*3+1]=rnd()*.05;pp[i*3+2]=(rnd()-.5)*1.1;pv[i*3]=(rnd()-.5)*.35;pv[i*3+1]=.12+rnd()*.5;pv[i*3+2]=-(.7+rnd()*1.3);pd[i]=.7+rnd()*1.1;ps[i]=.02+rnd()*.05}
+    else{pp[i*3]=(rnd()-.5)*1.5;pp[i*3+1]=.05+rnd()*1.25;pp[i*3+2]=1.4+rnd()*.5;pv[i*3]=0;pv[i*3+1]=(rnd()-.5)*.05;pv[i*3+2]=-(.55+rnd()*.7);pd[i]=3.2+rnd()*2;ps[i]=.012+rnd()*.03}
+    pl[i]=pre?rnd():0}
+  for(i=0;i<NP;i++)nait(i,1);
+  var gP=new T.BufferGeometry();gP.setAttribute('position',new T.BufferAttribute(pp,3));gP.setAttribute('aA',new T.BufferAttribute(pa,1));gP.setAttribute('aS',new T.BufferAttribute(ps,1));
+  var mP=new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uC:{value:new T.Color()},uPx:{value:600}},vertexShader:VS,fragmentShader:FS}),pous=new T.Points(gP,mP);pous.frustumCulled=false;pous.renderOrder=5;
+  var NF=16,fp=new Float32Array(NF*6),fa=new Float32Array(NF*2),fx=[],fz=[],fl=[],fv=[];
+  for(i=0;i<NF;i++){var cote=i%2?1:-1;fx.push(cote*(.22+rnd()*.85));fz.push(-1.6+rnd()*3.2);fl.push(.18+rnd()*.4);fv.push(1.6+rnd()*1.2)}
+  var gF=new T.BufferGeometry();gF.setAttribute('position',new T.BufferAttribute(fp,3));gF.setAttribute('aA',new T.BufferAttribute(fa,1));gF.setAttribute('aS',new T.BufferAttribute(new Float32Array(NF*2),1));
+  var mF=new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uC:{value:new T.Color()},uPx:{value:1}},vertexShader:VS,fragmentShader:FL}),filets=new T.LineSegments(gF,mF);filets.frustumCulled=false;filets.renderOrder=1;
+  /* lumières */
+  var hemi=new T.HemisphereLight(0xffffff,0x0a1636,.85),cle=new T.DirectionalLight(0xffffff,.85),contre=new T.DirectionalLight(0x6d8bff,1.5),sabot=new T.PointLight(0x6d8bff,1.1,3.2);
+  cle.position.set(2.2,3,1.4);contre.position.set(-2.4,1.4,-1.8);sabot.position.set(.9,.25,.5);
+  scene.add(reflet,sol,filets,corps,aretes,strass,pous,hemi,cle,contre,sabot);
+  function couleurs(){var d=sombre();
+    mCorps.color.set(d?0x26357a:0x0c1a45);mCorps.specular.set(d?0xc4d0ff:0x8fa6ff);mCorps.emissive.set(d?0x0b1238:0x02040c);
+    mAr.color.set(d?0xa9bcff:0x6d8bff);mAr.opacity=d?.6:.55;mPt.color.set(d?0xdfe6ff:0x9db2ff);mPt.opacity=d?.95:.9;
+    mRef.color.set(d?0x26357a:0x0c1a45);mRef.specular.set(0x6d8bff);mRef.opacity=d?.2:.1;mRefA.color.set(d?0xa9bcff:0x6d8bff);mRefA.opacity=d?.16:.1;
+    var c=d?'169,188,255':'36,72,216';if(mSol.map)mSol.map.dispose();mSol.map=texSol(c);mSol.opacity=d?.55:.5;mSol.needsUpdate=true;
+    mP.uniforms.uC.value.set(d?0xcfd9ff:0x2448d8);mF.uniforms.uC.value.set(d?0xa9bcff:0x2448d8);contre.intensity=d?1.8:1.5}
+  couleurs();function theme(){couleurs();if(RM&&W)image(0)}
+  try{new MutationObserver(theme).observe(R,{attributes:true,attributeFilter:['data-theme']});matchMedia('(prefers-color-scheme:dark)').addEventListener('change',theme)}catch(e){}
+  var W=0,Hh=0;function taille(){var w=cv.clientWidth,h=cv.clientHeight;if(!w||!h||(w===W&&h===Hh))return;W=w;Hh=h;var dpr=Math.min(2,window.devicePixelRatio||1);rd.setPixelRatio(dpr);rd.setSize(w,h,false);cam.aspect=w/h;
+    /* cadrage : un écran étroit recule la caméra pour garder le cheval entier */
+    cam.fov=27;cam.updateProjectionMatrix();mP.uniforms.uPx.value=h*dpr*1.05}
+  var mx=0,my=0,sx=0,sy=0,t=0,dernier=0,vuH=true,actif=false;
+  addEventListener('pointermove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+  function image(dt){t+=dt;HORSE.lerp(t*1.18,V);pos.needsUpdate=true;
+    for(var i=0;i<NP;i++){pl[i]+=dt/pd[i];if(pl[i]>=1)nait(i,0);var q=i*3;pp[q]+=pv[q]*dt;pp[q+1]+=pv[q+1]*dt;pp[q+2]+=pv[q+2]*dt;if(i<170)pv[q+1]-=.5*dt;if(pp[q+1]<0)pp[q+1]=0;
+      pa[i]=Math.sin(Math.PI*pl[i])*(i<170?.5:.8)}
+    gP.attributes.position.needsUpdate=true;gP.attributes.aA.needsUpdate=true;
+    for(i=0;i<NF;i++){fz[i]-=fv[i]*dt;if(fz[i]<-1.9){fz[i]=1.7;fx[i]=(i%2?1:-1)*(.22+rnd()*.85)}var o=i*6,al=Math.max(0,1-Math.abs(fz[i])/1.7)*.5;
+      fp[o]=fx[i];fp[o+1]=.004;fp[o+2]=fz[i];fp[o+3]=fx[i];fp[o+4]=.004;fp[o+5]=fz[i]+fl[i];fa[i*2]=0;fa[i*2+1]=al}
+    gF.attributes.position.needsUpdate=true;gF.attributes.aA.needsUpdate=true;
+    sx+=(mx-sx)*Math.min(1,dt*3);sy+=(my-sy)*Math.min(1,dt*3);
+    var ang=Math.PI*.5+.4+sx*.34,dist=cam.aspect<1.05?4.5:3.75;cam.position.set(Math.sin(ang)*dist,.62-sy*.22,Math.cos(ang)*dist);cam.lookAt(0,.5,-.02);
+    strass.material.size=.015+Math.sin(t*3)*.003;rd.render(scene,cam)}
+  function boucle(ts){if(!actif)return;var dt=Math.min(.05,(ts-dernier)/1000||.016);dernier=ts;taille();image(dt);requestAnimationFrame(boucle)}
+  function etat(){var go=vuH&&!document.hidden&&!RM;if(go&&!actif){actif=true;dernier=performance.now();requestAnimationFrame(boucle)}else if(!go)actif=false}
+  taille();for(i=0;i<40;i++)image(.03);box.classList.add('pret');
+  if(RM){t=.31;image(0);addEventListener('resize',function(){taille();image(0)});return}
+  if('IntersectionObserver' in window)new IntersectionObserver(function(es){vuH=es[0].isIntersecting;etat()},{rootMargin:'80px'}).observe(box);
+  document.addEventListener('visibilitychange',etat);
+  cv.addEventListener('webglcontextlost',function(e){e.preventDefault();actif=false;repli()});
+  etat()})();
 })();

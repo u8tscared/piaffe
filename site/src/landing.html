@@ -21,6 +21,7 @@
     <a class="btn pri sm nav-cta" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
     <button class="ibtn nav-b" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navL">{{i:menu}}{{i:x}}</button>
   </div>
+  <span class="prog" id="prog" aria-hidden="true"></span>
 </header>
 
 <main>
@@ -28,38 +29,40 @@
 <!-- ================= HERO ================= -->
 <section class="hero" aria-labelledby="h-hero">
   <div class="hero-fond" aria-hidden="true"></div>
-  <div class="w hero-in">
-    <p class="sur"><span class="sur-dot"></span>Le logiciel des centres équestres et des écuries</p>
-    <h1 id="h-hero">Tout votre centre équestre dans une seule app.</h1>
-    <p class="chapo">Planning, chevaux et soins, adhérents, facturation et comptabilité, équipe, caméras, concours. Et Piaffe AI, qui répond avec vos chiffres. Un seul outil pour le gérant, l’équipe, les cavaliers et les coachs.</p>
-    <div class="hero-cta">
-      <a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-      <a class="btn sec lg" href="#fonctions">Voir les fonctionnalités</a>
+  <div class="w hero-g">
+    <div class="hero-t">
+      <p class="sur"><span class="sur-dot"></span>Le logiciel des centres équestres et des écuries</p>
+      <h1 id="h-hero">Tout votre centre équestre dans une seule app.</h1>
+      <p class="chapo">Planning, chevaux et soins, adhérents, facturation et comptabilité, équipe, caméras, concours. Et Piaffe AI, qui répond avec vos chiffres. Un seul outil pour le gérant, l’équipe, les cavaliers et les coachs.</p>
+      <div class="hero-cta">
+        <a class="btn pri lg mag" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+        <a class="btn sec lg" href="#fonctions">Voir les fonctionnalités</a>
+      </div>
+      <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
+      <ul class="confiance">
+        <li>{{i:check}}30 jours d’essai, sans carte</li><li>{{i:check}}Sans engagement</li><li>{{i:check}}Reprise de vos données incluse</li><li>{{i:check}}Hébergé en France</li>
+      </ul>
     </div>
-    <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
-    <ul class="confiance">
-      <li>{{i:check}}30 jours d’essai, sans carte</li><li>{{i:check}}Sans engagement</li><li>{{i:check}}Reprise de vos données incluse</li><li>{{i:check}}Hébergé en France</li>
-    </ul>
+    <div class="hz3" id="hz3" aria-hidden="true"><div class="hz3-halo"></div><canvas></canvas><div class="hz3-fb"></div></div>
   </div>
 
   <div class="w">
-    <div class="collage" id="collage">
-      <div class="col-tilt">
-        <figure class="nav-frame col-ecran">
-          <div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.piaffe.fr/les-tilleuls</span></div>
-          <div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900;--mx:290;--my:62;--mw:590;--mh:520">
-            <img class="only-l" src="shots/g-cockpit.webp" width="2160" height="1350" alt="Tableau de bord du gérant : résumé du matin, cavaliers en selle, remplissage, factures à encaisser" fetchpriority="high">
+    <div class="rig" id="rig">
+      <div class="rig-in">
+        <figure class="mb">
+          <div class="mb-lid"><div class="mb-scr"><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900">
+            <img class="only-l" src="shots/g-cockpit.webp" width="2160" height="1350" alt="Tableau de bord du gérant sur ordinateur : résumé du matin, cavaliers en selle, remplissage, factures à encaisser" fetchpriority="high">
             <img class="only-d" src="shots/g-cockpit-dark.webp" width="2160" height="1350" alt="" loading="lazy">
-          </div>
+          </div></div></div>
+          <div class="mb-base"></div>
         </figure>
-        <figure class="tel col-tel">
-          <img class="only-l" src="shots/p-adh-accueil.webp" width="780" height="1688" alt="Espace adhérent sur téléphone : le cours de Léa dans 25 minutes">
-          <img class="only-d" src="shots/p-adh-accueil-dark.webp" width="780" height="1688" alt="" loading="lazy">
-        </figure>
-        <div class="flot f1 d-mo"><span class="fl-i">{{i:send}}</span><div><b>7 relances prêtes</b><small>2 073 € à encaisser</small></div></div>
-        <div class="flot f2 d-cr"><span class="fl-i">{{i:drop}}</span><div><b>Xanthos, box B23</b><small>Boit 40 % de moins depuis hier soir</small></div></div>
-        <div class="flot f3 d-rd"><span class="fl-ring" style="--v:86"><b>86</b></span><div><b>Planning de la semaine</b><small>Rempli à 86 %</small></div></div>
+        <div data-ip="p-adh-accueil" data-duo="1" data-vite="1" data-alt="Espace adhérent sur téléphone : le cours de Léa dans 25 minutes"></div>
       </div>
+    </div>
+    <div class="vifs" id="vifs">
+      <div class="flot d-mo" style="--i:0"><span class="fl-i">{{i:send}}</span><div><b>7 relances prêtes</b><small>2 073 € à encaisser</small></div></div>
+      <div class="flot d-cr" style="--i:1"><span class="fl-i">{{i:drop}}</span><div><b>Xanthos, box B23</b><small>Boit 40 % de moins depuis hier soir</small></div></div>
+      <div class="flot d-rd" style="--i:2"><span class="fl-ring" style="--v:86"><b>86</b></span><div><b>Planning de la semaine</b><small>Rempli à 86 %</small></div></div>
     </div>
     <p class="col-note">Écrans réels de Piaffe, avec les données d’exemple de l’Écurie des Tilleuls.</p>
   </div>
@@ -69,8 +72,8 @@
 <section class="sec bande" id="apercu" aria-labelledby="h-bande">
   <div class="w">
     <div class="tete c" data-r>
-      <h2 id="h-bande"><span class="hl">55 écrans, 4 espaces,</span> une seule app.</h2>
-      <p>Tout ce qui fait tourner une écurie, rangé par métier. Les mêmes données partout, sans rien ressaisir.</p>
+      <h2 id="h-bande">Du box à la facture, <span class="hl">tout est au même endroit.</span></h2>
+      <p>Sept familles de fonctions, rangées par métier. Elles partagent les mêmes données : vous ne saisissez rien deux fois.</p>
     </div>
     <div class="bento" id="bento"></div>
   </div>
@@ -84,7 +87,11 @@
       <h2 id="h-esp">Chacun son espace, <span class="hl">les mêmes données.</span></h2>
       <p>Le gérant pilote, l’équipe fait sa journée, les cavaliers réservent et paient, les coachs remplissent leur agenda. Chacun ouvre Piaffe et n’y voit que ce qui le concerne.</p>
     </div>
-    <div class="esp" id="esp" data-r></div>
+  </div>
+  <div class="pin" id="pin">
+    <div class="pin-st">
+      <div class="w pin-in" id="esp"></div>
+    </div>
   </div>
 </section>
 
@@ -94,7 +101,7 @@
     <div class="tete c" data-r>
       <p class="sur2">Fonctionnalités</p>
       <h2 id="h-tour">Ce que fait Piaffe, <span class="hl">métier par métier.</span></h2>
-      <p>Huit familles de fonctions qui se parlent. Chaque capture vient de la démo : ouvrez-la pour toucher le vrai écran.</p>
+      <p>Huit familles de fonctions qui se parlent. Chaque fenêtre est un écran réel de la démo : ouvrez-la pour y toucher.</p>
     </div>
   </div>
   <nav class="ancres" id="ancres" aria-label="Familles de fonctions"><div class="w"><div class="anc-in" id="ancIn"></div></div></nav>
@@ -107,6 +114,7 @@
   <div class="w ai-in">
 
     <div class="ai-tete" data-r>
+      <div class="orb" aria-hidden="true"><i></i><i></i><i></i><span class="orb-c">{{logo:34}}</span></div>
       <p class="ai-sur">{{i:spark}}Piaffe AI</p>
       <h2 id="h-ai">Posez la question. Piaffe AI répond avec les chiffres de votre écurie.</h2>
       <p>Il lit vos factures, votre planning, vos chevaux et votre équipe. Il répond avec les vrais chiffres, repère ce qui cloche et prépare l’action. Rien ne part sans votre validation.</p>
@@ -187,7 +195,7 @@
         <li><span>{{i:list}}</span><b>Journal et annulation</b><small>Chaque action est notée, et se défait en un geste.</small></li>
         <li><span>{{i:lock}}</span><b>Coupure en un geste</b><small>Un assistant relié se débranche d’un bouton.</small></li>
       </ul>
-      <a class="btn blanc lg" {{demo:assistant}}>Essayer Piaffe AI dans la démo{{i:arrow}}</a>
+      <a class="btn blanc lg mag" {{demo:assistant}}>Essayer Piaffe AI dans la démo{{i:arrow}}</a>
     </div>
 
   </div>
@@ -195,22 +203,29 @@
 
 <!-- ================= MULTI-APPAREILS ================= -->
 <section class="sec multi" id="appareils" aria-labelledby="h-multi">
-  <div class="w multi-in">
-    <div class="multi-t" data-r>
+  <div class="w">
+    <div class="tete c" data-r>
       <p class="sur2">Partout avec vous</p>
       <h2 id="h-multi">Le téléphone à l’écurie, <span class="hl">l’ordinateur au bureau.</span></h2>
       <p>Piaffe s’adapte à l’écran et à la main qui le tient. De gros boutons pour la tournée, des tableaux complets pour la comptabilité.</p>
-      <ul class="pts">
-        <li><span class="pt-i d-tm">{{i:wifi}}</span><div><b>Sans réseau, ça continue</b><small>Tournée, soins, pointage et appel fonctionnent hors ligne, puis se synchronisent.</small></div></li>
-        <li><span class="pt-i d-hz">{{i:phone}}</span><div><b>Rien à installer, ou presque</b><small>Un lien suffit. L’application s’ajoute à l’écran d’accueil en un geste.</small></div></li>
-        <li><span class="pt-i d-rd">{{i:refresh}}</span><div><b>Une seule vérité</b><small>Ce qui est coché au box apparaît aussitôt au bureau et chez le propriétaire.</small></div></li>
-      </ul>
     </div>
-    <div class="multi-v" data-r aria-hidden="true">
-      <figure class="nav-frame mv-ecran"><div class="nf-bar"><i></i><i></i><i></i></div><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900"><img src="shots/g-planning-piste.webp" width="2160" height="1350" loading="lazy" alt=""></div></figure>
-      <figure class="tab mv-tab"><div class="crop" style="--iw:1180;--dx:0;--dy:0;--dw:1180;--dh:820"><img src="shots/e-tournee-tab.webp" width="1770" height="1230" loading="lazy" alt=""></div></figure>
-      <figure class="tel mv-tel"><img src="shots/p-emp-soins.webp" width="780" height="1688" loading="lazy" alt=""></figure>
+    <div class="lineup" id="lineup">
+      <figure class="mb">
+        <div class="mb-lid"><div class="mb-scr"><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900"><img src="shots/g-planning-piste.webp" width="2160" height="1350" loading="lazy" alt="Planning par piste sur ordinateur"></div></div></div>
+        <div class="mb-base"></div>
+        <figcaption>Au bureau : le planning par piste</figcaption>
+      </figure>
+      <figure class="tab">
+        <div class="tab-c"><div class="crop" style="--iw:1180;--dx:0;--dy:0;--dw:1180;--dh:820"><img src="shots/e-tournee-tab.webp" width="1770" height="1230" loading="lazy" alt="Tournée des boxes sur tablette"></div></div>
+        <figcaption>À la sellerie : la tournée</figcaption>
+      </figure>
+      <div data-ip="p-emp-soins" data-alt="Soins du jour sur téléphone" data-cap="Au box : les soins"></div>
     </div>
+    <ul class="pts" data-r>
+      <li><span class="pt-i d-tm">{{i:wifi}}</span><div><b>Sans réseau, ça continue</b><small>Tournée, soins, pointage et appel fonctionnent hors ligne, puis se synchronisent.</small></div></li>
+      <li><span class="pt-i d-hz">{{i:phone}}</span><div><b>Rien à installer, ou presque</b><small>Un lien suffit. L’application s’ajoute à l’écran d’accueil en un geste.</small></div></li>
+      <li><span class="pt-i d-rd">{{i:refresh}}</span><div><b>Une seule vérité</b><small>Ce qui est coché au box apparaît aussitôt au bureau et chez le propriétaire.</small></div></li>
+    </ul>
   </div>
 </section>
 
@@ -222,7 +237,7 @@
         <p class="sur2">La démo</p>
         <h2 id="h-demo">Essayez, <span class="hl">tout est déjà rempli.</span></h2>
         <p>L’Écurie des Tilleuls vous attend : 44 chevaux, 148 adhérents, une semaine de planning et des factures en cours. Cliquez partout, rien n’est enregistré.</p>
-        <a class="btn pri lg" {{demo:cockpit}}>Ouvrir la démo{{i:arrow}}</a>
+        <a class="btn pri lg mag" {{demo:cockpit}}>Ouvrir la démo{{i:arrow}}</a>
       </div>
       <div class="demo-l" id="demoL"></div>
     </div>
@@ -260,7 +275,7 @@
         <a class="lien" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a>
       </div>
       <figure class="rp-v">
-        <div class="shot"><div class="crop" style="--dx:296;--dy:256;--dw:1124;--dh:644;--mx:300;--my:258;--mw:560;--mh:470"><img src="shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>
+        <div class="nav-frame"><div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.piaffe.fr/les-tilleuls</span></div><div class="crop fade" style="--dx:276;--dy:0;--dw:1164;--dh:900;--mx:296;--my:246;--mw:780;--mh:654"><img src="shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>
       </figure>
     </div>
 
@@ -325,7 +340,7 @@
       <h2 id="h-fin">En selle.</h2>
       <p>Trente jours pour tout essayer, sans carte bancaire. Nous reprenons vos adhérents, vos chevaux et vos factures avec vous.</p>
       <div class="hero-cta">
-        <a class="btn blanc lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+        <a class="btn blanc lg mag" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
         <a class="btn fant lg" href="#tarifs">Voir les tarifs</a>
       </div>
       <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
@@ -350,7 +365,9 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /*__ICONS__*/
+/*__HORSE__*/
 /*__JS__*/
 </script>

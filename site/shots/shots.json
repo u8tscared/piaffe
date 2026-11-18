@@ -235,112 +235,112 @@
   "route": "adh-accueil",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 63
+  "w": 393,
+  "h": 852,
+  "kb": 57
  },
  "p-adh-reserver": {
   "route": "adh-reserver",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 62
+  "w": 393,
+  "h": 852,
+  "kb": 58
  },
  "p-adh-cheval": {
   "route": "adh-cheval",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 57
+  "w": 393,
+  "h": 852,
+  "kb": 52
  },
  "p-adh-paiements": {
   "route": "adh-paiements",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 57
+  "w": 393,
+  "h": 852,
+  "kb": 55
  },
  "p-adh-progression": {
   "route": "adh-progression",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 53
+  "w": 393,
+  "h": 852,
+  "kb": 51
  },
  "p-adh-concours": {
   "route": "adh-concours",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 64
+  "w": 393,
+  "h": 852,
+  "kb": 63
  },
  "p-emp-jour": {
   "route": "emp-jour",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 66
+  "w": 393,
+  "h": 852,
+  "kb": 63
  },
  "p-emp-tournee": {
   "route": "emp-tournee",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 50
+  "w": 393,
+  "h": 852,
+  "kb": 48
  },
  "p-emp-soins": {
   "route": "emp-soins",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
+  "w": 393,
+  "h": 852,
   "kb": 62
  },
  "p-emp-pointage": {
   "route": "emp-pointage",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 50
+  "w": 393,
+  "h": 852,
+  "kb": 47
  },
  "p-coach-agenda": {
   "route": "coach-agenda",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
+  "w": 393,
+  "h": 852,
   "kb": 64
  },
  "p-coach-revenus": {
   "route": "coach-revenus",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 59
+  "w": 393,
+  "h": 852,
+  "kb": 57
  },
  "p-g-cockpit": {
   "route": "cockpit",
   "dev": "phone",
   "dark": false,
-  "w": 390,
-  "h": 844,
-  "kb": 81
+  "w": 393,
+  "h": 852,
+  "kb": 78
  },
  "p-adh-accueil-dark": {
   "route": "adh-accueil",
   "dev": "phone",
   "dark": true,
-  "w": 390,
-  "h": 844,
-  "kb": 58
+  "w": 393,
+  "h": 852,
+  "kb": 53
  }
 }
