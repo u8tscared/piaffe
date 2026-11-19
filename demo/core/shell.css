@@ -40,11 +40,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .stage.full{padding:0!important;background:var(--bg)!important}
 
 /* ---------- Application ---------- */
-.app{position:absolute;inset:0;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);background:var(--bg)}
+.app{position:absolute;inset:0;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);background:var(--bg);transition:grid-template-columns .32s var(--e-out)}
 .app.mobile{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
 
 /* ---------- Menu latéral ---------- */
-.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--surface);padding:16px 14px 12px;overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--surface);padding:14px 12px 12px;overflow:hidden}
 .side .club{display:flex;align-items:center;gap:12px;width:100%;padding:8px;margin-bottom:10px;border-radius:16px;text-align:left;flex:none;transition:background var(--t-2)}
 .side .club:hover{background:var(--surface-2)}
 .side .club .lg{width:40px;height:40px;border-radius:13px;background:var(--navy);display:grid;place-items:center;color:var(--navy-ink);flex:none;transition:transform .5s var(--e-spring)}
@@ -52,7 +52,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .side .cn{display:flex;flex-direction:column;gap:2px;min-width:0}
 .side .cn b{font:700 15px/1.2 var(--f-text);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .side .cn small{font:500 13px/1.2 var(--f-text);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.side nav{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;display:flex;flex-direction:column;gap:6px;margin:0 -14px;padding:2px 14px 16px}
+.side nav{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;display:flex;flex-direction:column;gap:6px;margin:0 -12px;padding:2px 12px 16px}
 .side .grp{display:flex;flex-direction:column;min-width:0}
 .side .gh{display:flex;align-items:center;gap:8px;width:100%;min-height:34px;padding:0 8px 0 12px;border-radius:10px;color:var(--mut);font:700 13px/1 var(--f-text);letter-spacing:.06em;text-transform:uppercase;text-align:left;transition:color var(--t-2),background var(--t-2)}
 .side .gh>span:first-child{flex:1}
@@ -261,10 +261,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @keyframes hotp{50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--c) 10%,transparent)}}
 
 /* ---------- Dispositions du menu (comparateur) ---------- */
-.app.nav-colonnes{--sidebar:344px}.app.nav-accordeon{--sidebar:276px}.app.nav-survol,.app.nav-onglets{--sidebar:256px}
+.app.nav-colonnes{--sidebar:320px}.app.nav-accordeon{--sidebar:244px}.app.nav-survol,.app.nav-onglets{--sidebar:232px}
 .app.mobile .stw,.app.mobile .navfly{display:none}
 /* ligne de section commune : accordéon, survol, onglets */
-.side .sec{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 10px 0 6px;border-radius:14px;color:var(--ink);font:650 15.5px/1.2 var(--f-text);text-align:left;position:relative;transition:background var(--t-2),color var(--t-2)}
+.side .sec{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 10px 0 6px;border-radius:14px;color:var(--ink);font:650 15.5px/1.2 var(--f-text);text-align:left;position:relative;transition:background var(--t-2),color var(--t-2)}
 .side .sec .pl{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--d-bg);color:var(--d-ink);transition:transform .45s var(--e-spring),background var(--t-2),color var(--t-2)}
 .side .sec .pl svg.i{width:20px;height:20px}
 .side .sec .lb{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -278,7 +278,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* accordéon */
 .side .acc-g{display:flex;flex-direction:column;min-width:0}
 .side .acc-g.open>.sec>svg.i{transform:rotate(180deg)}
-.side .acc-g .gl{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;margin:4px 0 8px 22px;padding-left:6px;border-left:2px solid var(--d-bg);animation:accin .4s var(--e-out)}
+.side .acc-g .gl{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;margin:4px 0 8px 18px;padding-left:6px;border-left:2px solid var(--d-bg);animation:accin .4s var(--e-out)}
 @keyframes accin{from{opacity:0;transform:translateY(-8px)}}
 .side .acc-g .nv .pl{width:28px;height:28px}
 /* deux colonnes */
@@ -345,3 +345,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (max-width:1300px){.navsw{flex-direction:column;align-items:stretch;gap:10px;padding:14px;bottom:10px}.navsw .nsh{flex:none;max-width:none;min-width:0}.navsw .nsb{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.navsw .nsb button{flex:none}}
 @media (prefers-reduced-motion:reduce){.side .acc-g .gl,.side .c2,.sectabs,.navsw{animation:none!important}.navfly{transition:none}}
 #demo:has(.app.mobile) .navsw{display:none}
+
+/* ---------- Menu réduit (icônes + pastilles) et bouton réduire/agrandir ---------- */
+.navtog{position:absolute;z-index:35;top:32px;left:calc(var(--sidebar) - 14px);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--mut);box-shadow:0 0 0 1px var(--line-2),var(--shadow-1,0 1px 3px rgba(10,22,54,.12));transition:left .32s var(--e-out),color var(--t-2),background var(--t-2),transform .35s var(--e-spring)}
+.navtog svg.i{width:16px;height:16px;transition:transform .32s var(--e-out)}
+.navtog:hover{color:var(--ink);background:var(--surface-2);transform:scale(1.08)}
+.navtog:focus-visible{outline:2px solid var(--d,#3d63f2);outline-offset:2px}
+.app.mini .navtog svg.i{transform:rotate(180deg)}
+.app.mobile .navtog{display:none}
+.app.app.mini{--sidebar:76px}
+.app.app.mini .side{padding:14px 10px 12px}
+.app.mini .side .club{justify-content:center;padding:8px 0}
+.app.mini .side .cn{display:none}
+.app.app.mini .side nav{flex-direction:column;gap:6px;margin:0 -10px;padding:2px 10px 16px;overflow-x:visible}
+.app.mini .side .sec{justify-content:center;padding:0;min-height:52px;gap:0}
+.app.mini .side .sec .pl{width:40px;height:40px}
+.app.mini .side .sec .lb,.app.mini .side .sec>svg.i{display:none}
+.app.mini .side .sec .bdg{position:absolute;top:1px;right:3px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;font:700 12.5px/20px var(--f-text);box-shadow:0 0 0 2px var(--surface)}
+.app.mini .side .sec.on .bdg,.app.mini .side .sec.hov .bdg{box-shadow:0 0 0 2px var(--d-bg)}
+.app.mini .side .me{justify-content:center;padding:12px 0 0}
+@media (prefers-reduced-motion:reduce){.app,.navtog,.navtog svg.i{transition:none}}
