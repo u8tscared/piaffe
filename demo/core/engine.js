@@ -165,8 +165,13 @@ function gdom(g,l){return P.domGroups[g]||P.domOf(l[0])}
 /* cinq dispositions du menu, à comparer : sections, accordeon, colonnes, survol, onglets */
 P.navModes=[['sections','Sections ouvertes','Tout est visible, rangé par section. Un clic sur un titre replie la section.'],['accordeon','Accordéon','Une seule section ouverte à la fois : un clic sur Écurie déplie ses écrans et referme les autres.'],['colonnes','Deux colonnes','À gauche les sections en grandes pastilles, à côté les écrans de la section choisie, comme Slack ou Notion.'],['survol','Menu flottant','Un menu court, une ligne par section. Au survol ou au clic, une carte s’ouvre à côté avec ses écrans.'],['onglets','Sections et onglets','Le menu ne montre que les sections. Les écrans de la section s’affichent en onglets en haut de la page.']];
 P.navMode=function(){var m=P.store.get('navmode','accordeon');return P.navModes.some(function(x){return x[0]===m})?m:'accordeon'};
+/* menu réduit : icônes seules + pastilles ; choix mémorisé, réduit d'office sur tablette tant que rien n'est choisi */
+P.navMini=function(){if(!app||app.classList.contains('mobile'))return false;var v=P.store.get('navmini',null);return v===null?effDev()!=='desktop':!!v};
+function navTogHTML(){var m=P.navMini(),t=m?'Agrandir le menu':'Réduire le menu';return '<button class="navtog" data-navtog title="'+t+' ( [ )" aria-label="'+t+'" aria-expanded="'+!m+'">'+ICON('left')+'</button>'}
+P.toggleNav=function(){var m=!P.navMini();P.store.set('navmini',m);P.navFlyClose();app.classList.toggle('mini',m);var tg=$('.navtog',app);if(tg)tg.outerHTML=navTogHTML();P.renderBadges()};
 function secRow(g,l,on,attr,extra){var b=sumB(l);return '<button class="sec d-'+gdom(g,l)+(on?' on':'')+'" '+attr+'><span class="pl">'+ICON(GICON[g]||l[0].icon)+'</span><span class="lb">'+g+'</span>'+bdgHTML(b)+(extra||'')+'</button>'}
 function navHTML(){var role=S.role,cur=P.mods[curTab()]||{},h='',G=navGroupsOf(),groups=G.groups,by=G.by,mode=P.navMode();
+  if(P.navMini()){groups.forEach(function(g){var l=by[g];h+=secRow(g,l,cur.group===g,'data-navfly="'+F.esc(g)+'" aria-label="'+F.esc(g)+'"','')});return h}
   if(mode==='accordeon'){var open=S.navOpen?S.navOpen:cur.group;
     groups.forEach(function(g){var l=by[g],on=g===open&&l.length>1;h+='<div class="acc-g d-'+gdom(g,l)+(on?' open':'')+'">'+secRow(g,l,cur.group===g,'data-navopen="'+F.esc(g)+'" aria-expanded="'+on+'"',l.length>1?ICON('down'):'')+(on?'<div class="gl">'+l.map(nvHTML).join('')+'</div>':'')+'</div>'});return h}
   if(mode==='colonnes'){var sel=S.navSec&&by[S.navSec]?S.navSec:(by[cur.group]?cur.group:groups[0]),sl=by[sel]||[];
@@ -201,7 +206,7 @@ P.renderShell=function(){
   S.shellRole=S.role;var dev=effDev(),role=S.role,R=P.roles[role],me=D.person(R.who);
   stage.setAttribute('data-dev',dev==='tablet-full'?'desktop':dev);stage.classList.toggle('full',realPhone()||dev==='tablet-full'||dev==='desktop');
   var mobile=dev==='phone',rail=(dev==='tablet'||dev==='tablet-full');
-  app.className='app nav-'+P.navMode()+(mobile?' mobile':'')+(rail?' rail':'');app.setAttribute('data-role',role);
+  app.className='app nav-'+P.navMode()+(mobile?' mobile':'')+(rail?' rail':'');app.classList.toggle('mini',P.navMini());app.setAttribute('data-role',role);
   var cur=P.mods[S.route]||{};
   var SPACE={gerant:'Espace gérant',employe:'Espace équipe',adherent:'Espace cavalier',coach:'Espace coach'};
   app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Piaffe Coach':D.club.name)+'</b><small>'+SPACE[role]+'</small></span></button>'+
@@ -210,7 +215,7 @@ P.renderShell=function(){
     '<button class="cmdk" data-pal title="Rechercher (⌘K)">'+ICON('search')+'<span class="q">Rechercher un cheval, un cavalier, un écran…</span><kbd>⌘ K</kbd></button>'+
     '<div class="tools"><button class="btn ghost icon msearch" data-pal title="Rechercher">'+ICON('search')+'</button><button class="btn ghost icon bellb" data-notifs title="Notifications">'+ICON('bell')+'<i></i></button>'+
     '<button class="ai" data-ai title="Piaffe AI">'+ICON('assistant')+'<span class="lbl">Piaffe AI</span></button></div><div class="mt">'+(cur.phoneTitle||cur.title||'')+'</div></header><div class="stw">'+secTabsHTML()+'</div><div class="view"></div></div>'+
-    '<nav class="tabbar">'+tabsHTML()+'</nav><div class="toasts"></div>';
+    (mobile?'':navTogHTML())+'<nav class="tabbar">'+tabsHTML()+'</nav><div class="toasts"></div>';
   view=$('.view',app);setDom(cur);
   if(mobile)mbk(S.stack.length&&!R0(cur))
   renderView(false);
@@ -336,6 +341,7 @@ function onClick(e){var t=e.target;
   var no=t.closest('[data-navopen]');if(no&&app.contains(no)){var g0=no.getAttribute('data-navopen'),G0=navGroupsOf(),op=S.navOpen||(P.mods[curTab()]||{}).group;if(G0.by[g0].length===1){P.go(G0.by[g0][0].id);return}S.navOpen=op===g0?'-':g0;P.renderBadges();return}
   var ns=t.closest('[data-navsec]');if(ns&&app.contains(ns)){var g1=ns.getAttribute('data-navsec'),G1=navGroupsOf();if(G1.by[g1].length===1){P.go(G1.by[g1][0].id);return}S.navSec=g1;P.renderBadges();return}
   var nf=t.closest('[data-navfly]');if(nf&&app.contains(nf)){var g2=nf.getAttribute('data-navfly'),G2=navGroupsOf();if(G2.by[g2].length===1){P.go(G2.by[g2][0].id);return}var f0=$('.navfly.show',app);if(f0&&f0.getAttribute('data-g')===g2)P.navFlyClose();else P.navFly(g2,nf);return}
+  if(t.closest('[data-navtog]')){P.toggleNav();return}
   if(!t.closest('.navfly'))P.navFlyClose();
   var gh=t.closest('[data-navgrp]');if(gh&&app.contains(gh)){P.toggleGroup(gh.getAttribute('data-navgrp'));return}
   var g=t.closest('[data-go]');if(g&&app.contains(g)){e.preventDefault();var pr={};Array.prototype.forEach.call(g.attributes,function(a){if(a.name.indexOf('data-p-')===0)pr[a.name.slice(7)]=a.value});if(g.getAttribute('data-id'))pr.id=g.getAttribute('data-id');P.go(g.getAttribute('data-go'),pr);return}
@@ -355,7 +361,7 @@ function onClick(e){var t=e.target;
   var sg=t.closest('.seg button[role="tab"],.tabs button[role="tab"]');if(sg&&!sg.closest('.dbar')){$$('button',sg.parentNode).forEach(function(b){b.setAttribute('aria-selected',b===sg)})}
   var tag=t.closest('.tag');if(tag&&!tag.hasAttribute('data-manual')){tag.setAttribute('aria-pressed',tag.getAttribute('aria-pressed')!=='true')}
 }
-function onKey(e){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();P.palette()}else if(e.key==='Escape'){var s=$('.sheet',app);if(s&&s.close)s.close();else P.closeAll()}}
+function onKey(e){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();P.palette()}else if(e.key==='Escape'){var s=$('.sheet',app);if(s&&s.close)s.close();else P.closeAll()}else if(e.key==='['&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&app&&!P.isMobile()&&!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))&&!e.target.isContentEditable){P.toggleNav()}}
 
 /* ---------- Cheval 3D (three.js) ---------- */
 P.gl={};
@@ -399,8 +405,8 @@ P.start=function(){
   buildDemo();P.renderShell();
   document.addEventListener('click',onClick);
   if(window.PIAFFE_MENUS){demo.insertAdjacentHTML('beforeend',navSwitchHTML());demo.classList.add('has-navsw')}
-  document.addEventListener('mouseover',function(e){if(P.navMode()!=='survol'||!app||P.isMobile())return;var r=e.target.closest&&e.target.closest('[data-navfly]');if(r&&app.contains(r)){var g=r.getAttribute('data-navfly');if(navGroupsOf().by[g].length>1)P.navFly(g,r);else P.navFlyClose()}});
-  document.addEventListener('mouseout',function(e){if(P.navMode()!=='survol'||!app)return;var r=e.target.closest&&e.target.closest('.side');var to=e.relatedTarget;if(r&&!(to&&(r.contains(to)||(to.closest&&to.closest('.navfly'))))){clearTimeout(flyT);flyT=setTimeout(P.navFlyClose,220)}});document.addEventListener('keydown',onKey);
+  document.addEventListener('mouseover',function(e){if(!app||P.isMobile()||(P.navMode()!=='survol'&&!P.navMini()))return;var r=e.target.closest&&e.target.closest('[data-navfly]');if(r&&app.contains(r)){var g=r.getAttribute('data-navfly');if(navGroupsOf().by[g].length>1||P.navMini())P.navFly(g,r);else P.navFlyClose()}});
+  document.addEventListener('mouseout',function(e){if(!app||(P.navMode()!=='survol'&&!P.navMini()))return;var r=e.target.closest&&e.target.closest('.side');var to=e.relatedTarget;if(r&&!(to&&(r.contains(to)||(to.closest&&to.closest('.navfly'))))){clearTimeout(flyT);flyT=setTimeout(P.navFlyClose,220)}});document.addEventListener('keydown',onKey);
   var lastW=effDev();var rz=0;window.addEventListener('resize',function(){var d=effDev();if(d!==lastW){lastW=d;P.renderShell()}else{clearTimeout(rz);rz=setTimeout(function(){P.fitCharts()},150)}});
   window.addEventListener('hashchange',function(){var h=(location.hash||'').slice(1);if(h&&P.mods[h]&&h!==S.route)P.go(h)});
 };
