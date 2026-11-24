@@ -3,6 +3,8 @@
    Les puces de domaine réordonnent les tuiles (propriété CSS order + animation FLIP, sans rejouer les illustrations). */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,E=F.esc;
+/* prénom de la personne connectée (Claire dans la démo, la vraie gérante dans un club réel) */
+function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
 
 /* ---------- Cohérence : le hersage du jour suit D.facts (13 h 30), pas l'ancienne tâche de 11 h 30 ---------- */
 (function(){var hz=D.facts&&D.facts.hersage;if(!hz)return;var ar=(D.club.arenas.find(function(a){return a.id===hz.arena})||{}).name;
@@ -344,7 +346,7 @@ function flipFirst(root){var m={};P.$$('[data-flip]',root).forEach(function(e){m
 function flipPlay(root,m){if(P.RM)return;P.$$('[data-flip]',root).forEach(function(e){var a=m[e.getAttribute('data-flip')];if(!a)return;var b=e.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;
   if(Math.abs(dx)<1&&Math.abs(dy)<1)return;e.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:620,easing:'cubic-bezier(.2,.9,.25,1.05)'})})}
 
-P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour Claire',
+P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour'+(gFirst()?' '+gFirst():''),
  badge:function(){var n=D.horses.filter(function(h){return h.status==='bad'}).length+pending().length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){
   var on=P.prefs.get('cockpit:tiles',TK);on=on.filter(function(k){return TK.indexOf(k)>=0});
@@ -443,10 +445,10 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   T.rev=function(){return '<div class="ck-rh"><span class="ico">'+ICON('euro')+'</span><h3>Recettes et dépenses</h3>'+U.seg([['12','12 mois'],['3','Trimestre'],['1','Mois']],String(S.fin),'data-fin')+'</div><div data-finbody>'+fin(S.fin)+'</div>'};
   function fin(n){var rv,co,lb,per,cur=D.revenue[11],prev=D.revenue[10];
     if(n===1){var w=[.27,.24,.31,.18];rv=w.map(function(x){return Math.round(cur*x)});co=[.26,.25,.24,.25].map(function(x){return Math.round(D.costs[11]*x)});lb=['2 au 8','9 au 15','16 au 22','23 au 30'];per='Novembre, semaine par semaine'}
-    else{rv=D.revenue.slice(-n);co=D.costs.slice(-n);lb=D.months.slice(-n);per=n===12?'Novembre, au 17':'Septembre à novembre'}
+    else{rv=D.revenue.slice(-n);co=D.costs.slice(-n);lb=D.months.slice(-n);per=n===12?['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][D.today.getMonth()]+', au '+D.today.getDate():'Septembre à novembre'}
     var tot=rv.reduce(function(a,b){return a+b},0),res=tot-co.reduce(function(a,b){return a+b},0),mx=Math.max.apply(null,rv.concat(co));
     return '<div class="ck-rev"><div><div class="ck-lbl" style="color:var(--mut)">'+per+'</div><div class="ck-big"><span data-count="'+(n===12?cur:tot)+'" data-fmt="eur">'+F.eur(n===12?cur:tot)+'</span></div></div>'+
-      '<span class="ck-dl2'+(res<0?' neg':'')+'">'+(n===12?'+8,4'+NB+'% sur un an':'Marge '+(res<0?'−':'')+F.eur(Math.abs(res)))+'</span><span class="ck-dl2 mo" title="Encaissé aujourd’hui">'+ICON('card','sm')+F.eur(inSum)+' encaissés aujourd’hui</span></div>'+
+      '<span class="ck-dl2'+(res<0?' neg':'')+'">'+(n===12&&(D.me&&D.me.gerant==='s01'||!!(window.PL&&PL.sandbox))?'+8,4'+NB+'% sur un an':'Marge '+(res<0?'−':'')+F.eur(Math.abs(res)))+'</span><span class="ck-dl2 mo" title="Encaissé aujourd’hui">'+ICON('card','sm')+F.eur(inSum)+' encaissés aujourd’hui</span></div>'+
       '<div class="ck-bars'+(rv.length>8?' many':'')+'" style="--n:'+rv.length+'">'+rv.map(function(v,i){return '<div class="'+(i===rv.length-1?'cur':'')+'"><em>'+F.eur(v)+' · dépenses '+F.eur(co[i])+'</em><i style="--h:'+(v/mx*100).toFixed(1)+'%;--c:'+(co[i]/v*100).toFixed(1)+'%;--i:'+i+'"></i><span>'+lb[i]+'</span></div>'}).join('')+'</div>'+
       '<div class="ck-lg" style="margin-top:12px"><span><i></i>Recettes</span><span><i class="c"></i>Dépenses</span><span class="grow"></span><span>'+(res<0?'−':'+')+F.eur(Math.abs(res))+' de résultat '+(n===12?'sur 12 mois':n===3?'sur le trimestre':'en novembre')+'</span></div>'}
 
@@ -457,7 +459,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   function order(){var o=(mob?MOB:TK).filter(function(k){return on.indexOf(k)>=0});if(S.focus!=='all'){var a=o.filter(function(k){return TD[k]===S.focus}),b=o.filter(function(k){return TD[k]!==S.focus});o=a.concat(b)}return o}
 
   var dateTxt=cap(F.dateL(D.today));
-  var h='<div class="ck-ph"><div><div class="ck-eb">'+dateTxt+' · '+E(D.club.name)+'</div><h1>Bonjour Claire</h1></div><div class="ck-rt">'+
+  var h='<div class="ck-ph"><div><div class="ck-eb">'+dateTxt+' · '+E(D.club.name)+'</div><h1>Bonjour'+(gFirst()?' '+E(gFirst()):'')+'</h1></div><div class="ck-rt">'+
     '<div class="ck-acts"><button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Créer</button></div>'+
     '<div class="ck-chips scroll-x" role="group" aria-label="Mettre un domaine en avant">'+FOC.map(function(f){return '<button class="ck-chip'+(f[0]==='all'?'':' d-'+f[0])+'" data-focus="'+f[0]+'" aria-pressed="'+(S.focus===f[0])+'">'+(f[0]==='all'?ICON('grid','sm'):'<i></i>')+f[1]+'</button>'}).join('')+'</div></div></div>';
   var ord=order();

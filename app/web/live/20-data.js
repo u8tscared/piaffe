@@ -85,6 +85,9 @@ PL.preseed=function(data){data=data||{};
   PL.MODKEYS.A.forEach(function(k){D[k]=Array.isArray(data[k])?data[k].slice():[]});
   PL.MODKEYS.O.forEach(function(k){D[k]=data[k]&&typeof data[k]==='object'&&!Array.isArray(data[k])?data[k]:{}});
   D._lotB=true;
+  /* le planning de la démo « complète » les reprises avec des cavaliers pris au hasard la première fois (D.planInit) :
+     jamais sur les vraies reprises d'un club (et la boucle ne s'arrête pas quand il y a moins d'adhérents que de places) */
+  D.planInit=true;
   /* fiches RH et plannings par salarié : un salarié sans fiche reçoit une fiche vide au lieu de casser l'écran Équipe */
   var dflt={hr:function(){return {since:'',cls:'',gross:0,cp:[25,0],rec:0,ot:0,dip:[]}},shifts:function(){return []}};
   if(typeof Proxy==='function')Object.keys(dflt).forEach(function(k){var t=D[k];D[k]=new Proxy(t,{get:function(o,p){if(typeof p==='string'&&!(p in o)&&(D.staff||[]).some(function(x){return x.id===p}))o[p]=dflt[k]();return o[p]}})})};
@@ -135,9 +138,13 @@ PL.loadWeather=function(){var c=D.club,lat=+c.lat,lon=+c.lon;
     .catch(function(){return false})};
 
 /* ---------- Factures (API typée du lot C) → format de la démo ---------- */
-var IST={draft:'brouillon',issued:'envoyée',sent:'envoyée',paid:'payée',partially_paid:'envoyée',overdue:'en retard',canceled:'annulée',cancelled:'annulée',credited:'avoir',void:'annulée'};
-PL.invoiceToDemo=function(x){var total=x.total_cents!=null?x.total_cents:(x.amount_cents!=null?x.amount_cents:x.total_ttc_cents);
-  var paid=x.paid_cents||0,st=IST[x.status]||x.status||'brouillon',due=x.due_date||x.due||'',today=PL.isoDay();
+var IST={draft:'brouillon',issued:'envoyée',unpaid:'envoyée',sent:'envoyée',paid:'payée',partially_paid:'envoyée',overdue:'en retard',canceled:'annulée',cancelled:'annulée',credited:'avoir',void:'annulée'};
+PL.invoiceToDemo=function(x){var total=x.total_cents!=null?x.total_cents:(x.amount_cents!=null?x.amount_cents:x.total_ttc_cents!=null?x.total_ttc_cents:x.total_ttc);total=+total||0;
+  /* format de l'API des factures (lot C) : montants en centimes, client dans customer, reste dû dans amount_due */
+  var paid=x.paid_cents!=null?x.paid_cents:x.amount_due!=null?total-x.amount_due:(x.paid_amount||0);
+  if(!x.member_ref&&!x.customer_ref&&x.customer&&x.customer.ref)x.member_ref=x.customer.ref;
+  if(x.kind==='credit_note'){total=-Math.abs(total);paid=total}
+  var st=x.kind==='credit_note'?'avoir':IST[x.status]||x.status||'brouillon',due=x.due_date||x.due||'',today=PL.isoDay();
   if((st==='envoyée')&&due&&due<today&&paid<total)st='en retard';
   var lab=x.label||x.title||(x.lines&&x.lines[0]&&(x.lines[0].label||x.lines[0].description))||'Facture';
   return {id:x.number||x.id,_id:x.id,member:x.member_ref||x.customer_ref||x.member||'',label:lab,amount:(total||0)/100,left:Math.max(0,(total-paid)||0)/100,vat:x.vat_rate!=null?x.vat_rate:(x.lines&&x.lines[0]&&x.lines[0].vat_rate)||0,

@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Piaffe">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611241721">
+<meta name="piaffe-version" content="202611241804">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -1159,7 +1159,7 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Piaffe a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611241721",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611241804",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    PIAFFE · Marque
@@ -2628,6 +2628,8 @@ PL.modq.push({file:"10-cockpit.js",run:function(){
    Les puces de domaine réordonnent les tuiles (propriété CSS order + animation FLIP, sans rejouer les illustrations). */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,E=F.esc;
+/* prénom de la personne connectée (Claire dans la démo, la vraie gérante dans un club réel) */
+function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
 
 /* ---------- Cohérence : le hersage du jour suit D.facts (13 h 30), pas l'ancienne tâche de 11 h 30 ---------- */
 (function(){var hz=D.facts&&D.facts.hersage;if(!hz)return;var ar=(D.club.arenas.find(function(a){return a.id===hz.arena})||{}).name;
@@ -2969,7 +2971,7 @@ function flipFirst(root){var m={};P.$$('[data-flip]',root).forEach(function(e){m
 function flipPlay(root,m){if(P.RM)return;P.$$('[data-flip]',root).forEach(function(e){var a=m[e.getAttribute('data-flip')];if(!a)return;var b=e.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;
   if(Math.abs(dx)<1&&Math.abs(dy)<1)return;e.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:620,easing:'cubic-bezier(.2,.9,.25,1.05)'})})}
 
-P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour Claire',
+P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',icon:'today',phoneTitle:'Bonjour'+(gFirst()?' '+gFirst():''),
  badge:function(){var n=D.horses.filter(function(h){return h.status==='bad'}).length+pending().length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){
   var on=P.prefs.get('cockpit:tiles',TK);on=on.filter(function(k){return TK.indexOf(k)>=0});
@@ -3068,10 +3070,10 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   T.rev=function(){return '<div class="ck-rh"><span class="ico">'+ICON('euro')+'</span><h3>Recettes et dépenses</h3>'+U.seg([['12','12 mois'],['3','Trimestre'],['1','Mois']],String(S.fin),'data-fin')+'</div><div data-finbody>'+fin(S.fin)+'</div>'};
   function fin(n){var rv,co,lb,per,cur=D.revenue[11],prev=D.revenue[10];
     if(n===1){var w=[.27,.24,.31,.18];rv=w.map(function(x){return Math.round(cur*x)});co=[.26,.25,.24,.25].map(function(x){return Math.round(D.costs[11]*x)});lb=['2 au 8','9 au 15','16 au 22','23 au 30'];per='Novembre, semaine par semaine'}
-    else{rv=D.revenue.slice(-n);co=D.costs.slice(-n);lb=D.months.slice(-n);per=n===12?'Novembre, au 17':'Septembre à novembre'}
+    else{rv=D.revenue.slice(-n);co=D.costs.slice(-n);lb=D.months.slice(-n);per=n===12?['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][D.today.getMonth()]+', au '+D.today.getDate():'Septembre à novembre'}
     var tot=rv.reduce(function(a,b){return a+b},0),res=tot-co.reduce(function(a,b){return a+b},0),mx=Math.max.apply(null,rv.concat(co));
     return '<div class="ck-rev"><div><div class="ck-lbl" style="color:var(--mut)">'+per+'</div><div class="ck-big"><span data-count="'+(n===12?cur:tot)+'" data-fmt="eur">'+F.eur(n===12?cur:tot)+'</span></div></div>'+
-      '<span class="ck-dl2'+(res<0?' neg':'')+'">'+(n===12?'+8,4'+NB+'% sur un an':'Marge '+(res<0?'−':'')+F.eur(Math.abs(res)))+'</span><span class="ck-dl2 mo" title="Encaissé aujourd’hui">'+ICON('card','sm')+F.eur(inSum)+' encaissés aujourd’hui</span></div>'+
+      '<span class="ck-dl2'+(res<0?' neg':'')+'">'+(n===12&&(D.me&&D.me.gerant==='s01'||!!(window.PL&&PL.sandbox))?'+8,4'+NB+'% sur un an':'Marge '+(res<0?'−':'')+F.eur(Math.abs(res)))+'</span><span class="ck-dl2 mo" title="Encaissé aujourd’hui">'+ICON('card','sm')+F.eur(inSum)+' encaissés aujourd’hui</span></div>'+
       '<div class="ck-bars'+(rv.length>8?' many':'')+'" style="--n:'+rv.length+'">'+rv.map(function(v,i){return '<div class="'+(i===rv.length-1?'cur':'')+'"><em>'+F.eur(v)+' · dépenses '+F.eur(co[i])+'</em><i style="--h:'+(v/mx*100).toFixed(1)+'%;--c:'+(co[i]/v*100).toFixed(1)+'%;--i:'+i+'"></i><span>'+lb[i]+'</span></div>'}).join('')+'</div>'+
       '<div class="ck-lg" style="margin-top:12px"><span><i></i>Recettes</span><span><i class="c"></i>Dépenses</span><span class="grow"></span><span>'+(res<0?'−':'+')+F.eur(Math.abs(res))+' de résultat '+(n===12?'sur 12 mois':n===3?'sur le trimestre':'en novembre')+'</span></div>'}
 
@@ -3082,7 +3084,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   function order(){var o=(mob?MOB:TK).filter(function(k){return on.indexOf(k)>=0});if(S.focus!=='all'){var a=o.filter(function(k){return TD[k]===S.focus}),b=o.filter(function(k){return TD[k]!==S.focus});o=a.concat(b)}return o}
 
   var dateTxt=cap(F.dateL(D.today));
-  var h='<div class="ck-ph"><div><div class="ck-eb">'+dateTxt+' · '+E(D.club.name)+'</div><h1>Bonjour Claire</h1></div><div class="ck-rt">'+
+  var h='<div class="ck-ph"><div><div class="ck-eb">'+dateTxt+' · '+E(D.club.name)+'</div><h1>Bonjour'+(gFirst()?' '+E(gFirst()):'')+'</h1></div><div class="ck-rt">'+
     '<div class="ck-acts"><button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Créer</button></div>'+
     '<div class="ck-chips scroll-x" role="group" aria-label="Mettre un domaine en avant">'+FOC.map(function(f){return '<button class="ck-chip'+(f[0]==='all'?'':' d-'+f[0])+'" data-focus="'+f[0]+'" aria-pressed="'+(S.focus===f[0])+'">'+(f[0]==='all'?ICON('grid','sm'):'<i></i>')+f[1]+'</button>'}).join('')+'</div></div></div>';
   var ord=order();
@@ -3655,10 +3657,12 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
       if(!any2)h+=U.empty('filter','Aucune reprise ne correspond aux filtres','Élargissez la recherche pour retrouver vos créneaux.','<button class="btn sm" data-clear>Tout afficher</button>');h+='</div>'}
     /* sous le calendrier */
     var weekH={};AR.forEach(function(a){weekH[a.id]=evs.filter(function(e){return e.arena===a.id&&!e.cx&&e.k!=='balade'}).reduce(function(s,e){return s+e.dur},0)/60});
-    var tm=['s02','s03','s04','s08'].map(function(id){var p=D.staffer(id),hh=evs.filter(function(e){return e.coach===id&&!e.cx}).reduce(function(s,e){return s+e.dur},0)/60;return {p:p,h:hh}});
+    /* club réel : les moniteurs et coachs qui ont des reprises cette semaine (la démo garde ses quatre moniteurs) */
+    var tmIds=['s02','s03','s04','s08'].filter(function(id){return D.staffer(id)});if(!tmIds.length)evs.forEach(function(e){if(e.coach&&tmIds.indexOf(e.coach)<0&&(D.staffer(e.coach)||D.coach(e.coach)))tmIds.push(e.coach)});
+    var tm=tmIds.map(function(id){var p=D.staffer(id)||D.coach(id),hh=evs.filter(function(e){return e.coach===id&&!e.cx}).reduce(function(s,e){return s+e.dur},0)/60;return {p:p,h:hh}});
     h+='<div class="pl-below'+(first?' rise':'')+'"><div class="card pl-card"><div class="pl-ch"><span class="ico d-tm">'+ICON('arena')+'</span><h3>Occupation des pistes</h3><span class="mut s">'+cap1(DNL[ST.day])+' '+dDate.getDate()+'</span></div>'+tlHTML(evs,ST.day,weekH)+'</div>'+
      '<div class="card pl-card"><div class="pl-ch"><span class="ico d-rd">'+ICON('ticket')+'</span><h3>Rattrapages</h3><button class="btn ghost sm" data-propall>Tout proposer</button></div>'+D.planCatch.slice(0,4).map(function(c){var m=D.member(c.m),sg=suggest(m);return '<div class="pl-p">'+U.av(m)+'<div class="grow" style="min-width:0"><div class="b ellip">'+m.first+' '+m.last+' <span class="mut" style="font-weight:500">· Galop '+m.galop+'</span></div><div class="s mut ellip">'+(sg?sg.txt:'Aucun créneau libre à son niveau')+' · expire dans '+c.exp+' j</div></div>'+(ST.prop[c.m]?U.chip('Proposé','ok',true):'<button class="btn sm tint d-rd" data-prop="'+c.m+'">Proposer</button>')+'</div>'}).join('')+'</div>'+
-     '<div class="card pl-card"><div class="pl-ch"><span class="ico d-tm">'+ICON('team')+'</span><h3>Heures des moniteurs</h3><button class="btn ghost sm" data-go="equipe">Équipe'+ICON('arrow','sm')+'</button></div>'+tm.map(function(t){var mx=Math.round(t.p.hours*.6);return '<div class="pl-p">'+U.av(t.p)+'<div class="grow stack" style="--g:6px;min-width:0"><div class="hrow sp"><span class="b">'+t.p.first+' '+t.p.last+'</span><span class="s num"><b>'+hm(Math.round(t.h*60))+'</b> <span class="mut">sur '+mx+' h</span></span></div>'+U.bar(t.h/mx*100,t.h>mx?'var(--cr)':'var(--tm)')+'</div></div>'}).join('')+'</div></div>'}
+     '<div class="card pl-card"><div class="pl-ch"><span class="ico d-tm">'+ICON('team')+'</span><h3>Heures des moniteurs</h3><button class="btn ghost sm" data-go="equipe">Équipe'+ICON('arrow','sm')+'</button></div>'+tm.map(function(t){var mx=t.p.hours?Math.round(t.p.hours*.6):0;return '<div class="pl-p">'+U.av(t.p)+'<div class="grow stack" style="--g:6px;min-width:0"><div class="hrow sp"><span class="b">'+t.p.first+' '+t.p.last+'</span><span class="s num"><b>'+hm(Math.round(t.h*60))+'</b>'+(mx?' <span class="mut">sur '+mx+' h</span>':'')+'</span></div>'+(mx?U.bar(t.h/mx*100,t.h>mx?'var(--cr)':'var(--tm)'):'')+'</div></div>'}).join('')+(tm.length?'':'<p class="s mut" style="padding:4px 2px">Aucune reprise attribuée cette semaine.</p>')+'</div></div>'}
    el.innerHTML=h;bind(evs,cf);
    if(o.flip)flipPlay(el,m,o.scale);
    if(o.slide&&!P.RM){var cal=$('.pl-cal,.pl-ag,.pl-list',el);if(cal)cal.animate([{opacity:0,transform:'translateX('+(o.slide*40)+'px)'},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.16,1,.3,1)'})}
@@ -5362,7 +5366,7 @@ P.mod({id:'chevaux',role:'gerant',group:'Écurie',title:'Chevaux',icon:'horse',n
   el.innerHTML=LPH('Chevaux',all.length+' chevaux et poneys suivis · '+all.filter(function(h){return h.kind==='club'}).length+' de club, '+all.filter(function(h){return h.kind!=='club'}).length+' en pension',
      '<button class="btn" data-imp>'+ICON('upload','sm')+'<span class="hide-s">Importer en lot</span><span class="only-s">Importer</span></button><button class="btn pri" data-add>'+ICON('plus','sm')+'Ajouter un cheval</button>')+
    '<div class="stack" style="--g:18px"><div class="lb-bento rise">'+
-    heroTile({dom:'chevaux',icon:'horse',eyebrow:'Cheptel des Tilleuls',big:cnt(all.length),unit:'chevaux et poneys',sub:all.filter(function(h){return h.status==='ok'}).length+' en forme aujourd’hui. '+plural(Math.max(0,D.club.boxes-all.filter(function(h){return !h.visitor}).length),'box libre','boxes libres')+' sur '+D.club.boxes+'.',
+    heroTile({dom:'chevaux',icon:'horse',eyebrow:/Tilleuls/.test(D.club.name||'')?'Cheptel des Tilleuls':'Cheptel du club',big:cnt(all.length),unit:'chevaux et poneys',sub:all.filter(function(h){return h.status==='ok'}).length+' en forme aujourd’hui. '+plural(Math.max(0,D.club.boxes-all.filter(function(h){return !h.visitor}).length),'box libre','boxes libres')+' sur '+D.club.boxes+'.',
      stats:[[all.filter(function(h){return h.kind==='club'}).length,'de club'],[all.filter(function(h){return h.kind!=='club'}).length,'en pension'],[all.filter(function(h){return h.pony}).length,'poneys']],illu:'cheval'})+
     '<div class="card tint d-soins lb-kpi lb-watch"><div class="lab"><span class="ico sm">'+ICON('pulse','sm')+'</span><span class="ellip">À surveiller</span></div><div class="val">'+cnt(nb+nw)+'<small>chevaux</small></div><div class="sub"><b>'+nb+' urgents</b> · '+nw+' à voir cette semaine</div>'+
      '<div class="lb-wl">'+all.filter(function(h){return h.status==='bad'}).map(function(h){return '<button class="lb-wh" data-go="cheval" data-id="'+h.id+'" title="Ouvrir la fiche de '+E(h.name)+'">'+portrait(h,'sm')+'<span>'+E(h.name.split(' ')[0])+'</span></button>'}).join('')+'</div></div>'+
@@ -7414,7 +7418,8 @@ P.mod({id:'cameras',role:'gerant',group:'Écurie',title:'Caméras et capteurs',i
   function direct(){var list=cams.filter(function(c){return SC.f==='all'||(SC.f==='box'?c.box:SC.f==='inst'?!c.box:c.alert)});
     if(SC.lay==='focus'&&!list.some(function(c){return c.id===SC.focus}))SC.focus=(list[0]||{}).id;
     if(SC.lay==='focus')list=list.slice().sort(function(a,b){return (b.id===SC.focus)-(a.id===SC.focus)});
-    return '<div class="card tint d-soins cm-hero"><span class="ico lg">'+ICON('alert','lg')+'</span><div class="tx"><div class="b" style="font-size:15px;letter-spacing:-.01em">Xanthos (B23) s’est couché 4 fois depuis 6 h et boit 40 % de moins.</div><div class="s mut">La caméra et l’abreuvoir donnent le même signal : risque de colique. Antoine passe toutes les deux heures.</div></div><div class="hrow cm-ha" style="--g:8px"><button class="btn" data-cam="cam2">'+ICON('camera','sm')+'Voir le box</button><button class="btn pri" data-vet>'+ICON('phone','sm')+'Appeler le Dr Leclerc</button></div></div>'+
+    /* l'alerte de démo (Xanthos, box B23) ne s'affiche que si la caméra de ce box existe */
+    return (!cams.some(function(c){return /Xanthos/.test(c.name||'')})?'':'<div class="card tint d-soins cm-hero"><span class="ico lg">'+ICON('alert','lg')+'</span><div class="tx"><div class="b" style="font-size:15px;letter-spacing:-.01em">Xanthos (B23) s’est couché 4 fois depuis 6 h et boit 40 % de moins.</div><div class="s mut">La caméra et l’abreuvoir donnent le même signal : risque de colique. Antoine passe toutes les deux heures.</div></div><div class="hrow cm-ha" style="--g:8px"><button class="btn" data-cam="cam2">'+ICON('camera','sm')+'Voir le box</button><button class="btn pri" data-vet>'+ICON('phone','sm')+'Appeler le Dr Leclerc</button></div></div>')+
      foalCard()+'<div class="cm-lay"><div class="stack" style="--g:12px"><div class="hrow sp wrap">'+U.seg([['all','Toutes · '+cams.length],['box','Boxes · '+cams.filter(function(c){return c.box}).length],['inst','Installations · '+cams.filter(function(c){return !c.box}).length],['al','Alertes · '+cams.filter(function(c){return c.alert}).length]],SC.f,'data-f')+U.seg([['grid',ICON('grid','sm')+'Mosaïque'],['focus',ICON('expand','sm')+'Focus']],SC.lay,'data-lay')+'</div>'+
       wall(list)+
       '<div class="xs mut hrow" style="--g:6px">'+ICON('shield','sm')+'<span>Images conservées 30 jours au plus. Aucun poste de travail n’est filmé en continu.</span></div></div>'+
@@ -7683,7 +7688,7 @@ P.mod({id:'entretien',role:'gerant',group:'Écurie',title:'Entretien et stocks',
   var TABS=[['tasks','Tâches'],['equip','Matériel et véhicules'],['stock','Stocks'],['arena','Carrières et sols']];
   function draw(){var L=stock(),low=L.filter(function(s){return s.low&&!s.x.order}),done=T.filter(function(t){return t.st==='fait'}).length;
     var sec={tasks:'<button class="btn" data-rec>'+ICON('repeat','sm')+'Tâches récurrentes</button>',equip:'<button class="btn" data-neweq>'+ICON('plus','sm')+'Ajouter un matériel</button>',stock:'<button class="btn" data-inv>'+ICON('scan','sm')+'Faire l’inventaire</button>',arena:''}[SE.tab];
-    var mob=ctx.mobile;el.innerHTML=U.ph('Entretien et stocks',mob?done+' faites sur '+T.length+' · '+low.length+' stocks bas':done+' tâches faites sur '+T.length+' aujourd’hui · '+(low.length?low.map(function(s){return s.name.split(' ')[0].toLowerCase()}).join(' et ')+' sous le seuil':'stocks suffisants')+' · herse et solarium à réviser',(mob?'':sec)+'<button class="btn pri" data-new>'+ICON('plus','sm')+'Nouvelle tâche</button>')+
+    var mob=ctx.mobile;el.innerHTML=U.ph('Entretien et stocks',mob?done+' faites sur '+T.length+' · '+low.length+' stocks bas':done+' tâches faites sur '+T.length+' aujourd’hui · '+(low.length?low.map(function(s){return s.name.split(' ')[0].toLowerCase()}).join(' et ')+' sous le seuil':'stocks suffisants')+(D.facts&&D.facts.hersage?' · herse et solarium à réviser':''),(mob?'':sec)+'<button class="btn pri" data-new>'+ICON('plus','sm')+'Nouvelle tâche</button>')+
       summary(L,low,done)+'<div class="ec-tabs">'+U.tabs(TABS.map(function(t){return [t[0],t[1]+(t[0]==='stock'&&low.length?' <span class="chip warn" style="margin-left:4px">'+low.length+'</span>':'')]}),SE.tab,'data-tab')+'</div><div class="'+(enN?(enSw?'ec-sw':''):'fade')+'">'+(mob&&sec&&SE.tab!=='tasks'?'<div class="en-msec">'+sec+'</div>':'')+{tasks:tabTasks,equip:tabEquip,stock:tabStock,arena:tabArena}[SE.tab]()+'</div>';
     if(!enN||enSw)P.animate(el);enN++;enSw=false;dnd()}
   function summary(L,low,done){var eq=equip().filter(function(e){return e.status!=='ok'}),cur=T.filter(function(t){return t.st==='cours'}).length,urg=T.filter(function(t){return t.urgent&&t.st!=='fait'}),pc=Math.round(done/T.length*100),team=['s05','s06','s07'].filter(function(i){return D.staffer(i)});
@@ -10432,6 +10437,14 @@ P.css(`
 @container arsh (max-width:440px){.eq-ts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 `);
 var SE={tab:'salaries',grp:'all',day:1,leave:{},punch:false,week:false,exp:null,onb:{0:1,1:1,2:1,8:1,9:1},role:'Moniteur',perm:{},gap:false,dip:{},pub:false};
+/* club réel (la personne connectée n'est pas la gérante de démo s01) : pas de fin de CDD ni de pointage manquant inventés pour Kévin (s07) ;
+   les demandes de congés faites dans l'espace employé (D.empLeaves, seule collection que l'employé peut écrire) arrivent dans D.leaves,
+   et la réponse du gérant est enregistrée des deux côtés. */
+function gDemo(){return !D.me||D.me.gerant==='s01'||!!(window.PL&&PL.sandbox)}
+function syncEmpLeaves(){if(!D.staffer('s07')){SE.dip.cdd=1;SE.punch=true}if(gDemo()||!Array.isArray(D.empLeaves))return;D.leaves=D.leaves||[];
+  D.empLeaves.forEach(function(e){if(!e||!e.who||!e.id)return;var id='el-'+e.id,l=D.leaves.find(function(x){return x.id===id||x.src===e.id});
+   var st=/valid/.test(e.st||'')?'validé':/refus/.test(e.st||'')?'refusé':'attente';
+   if(!l)D.leaves.push({id:id,src:e.id,who:e.who,kind:!e.kind||e.kind==='Congé payé'?'Congés payés':e.kind,from:e.from,to:e.to,days:e.days||1,state:st,asked:'dans l’espace employé',note:e.note||''})})}
 var SH={M:{l:'Matin',t:'7 h – 12 h 30',h:5.5,c:'var(--c4)'},S:{l:'Soir',t:'13 h 30 – 19 h',h:5.5,c:'var(--c5)'},J:{l:'Journée',t:'8 h 30 – 17 h 30',h:8,c:'var(--c1)'},C:{l:'Coupé',t:'7 h – 11 h, 16 h – 19 h',h:7,c:'var(--c3)'},E:{l:'Écurie',t:'7 h – 12 h, 14 h – 17 h',h:8,c:'var(--c3)'},L:{l:'Écurie et soins',t:'7 h – 12 h, 14 h – 18 h 30',h:9.5,c:'var(--c3)'},A:{l:'Matinée d’écurie',t:'7 h – 12 h',h:5,c:'var(--c4)'},K:{l:'Concours',t:'6 h 30 – 16 h',h:8,c:'var(--c6)'},F:{l:'Formation',t:'CFA de Rambouillet',h:7,c:'var(--c7)'},P:{l:'Congé',t:'Congés payés',h:7,c:'var(--mut-2)'},R:{l:'Repos',t:'',h:0,c:'var(--line-2)'}};
 var DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],DAYL=['lundi 16','mardi 17','mercredi 18','jeudi 19','vendredi 20','samedi 21','dimanche 22'];
 var FEM={s01:1,s03:1,s06:1,s08:1,s09:1},PUNCH={s01:'8 h 24',s04:'8 h 52',s05:'6 h 56',s06:'8 h 27',s07:'8 h 31',s09:'8 h 58'},PDEC={s01:8.4,s04:8.87,s05:6.93,s06:8.45,s07:8.52,s09:8.97};
@@ -10491,7 +10504,7 @@ function eqSalaries(){var al=[];D.staff.forEach(function(s){var w=worst(s.id);if
   var h=(al.length||!SE.dip.cdd?'<div class="card" style="margin-bottom:14px"><div class="ch"><div><h3>Échéances à traiter</h3><div class="xs mut">Diplômes, cartes professionnelles et fins de contrat dans les 100 prochains jours</div></div><span class="chip warn">'+(al.length+(SE.dip.cdd?0:1))+'</span></div><div class="list" style="padding:6px 0">'+
     al.map(function(a){var s=a[0],d=a[1];return '<div class="li ar-ck">'+U.av(s)+'<div class="grow"><div class="t">'+s.first+' '+s.last+' · '+d[0]+'</div><div class="s">'+d[2]+'</div></div><div class="r"><button class="btn sm" data-a="dip" data-id="'+s.id+'" data-k="'+E(d[0])+'">'+(/PSC1/.test(d[0])?'Inscrire à la session du 12 décembre':'Préparer le renouvellement')+'</button></div></div>'}).join('')+
     (SE.dip.cdd?'':'<div class="li ar-ck">'+U.av('s07')+'<div class="grow"><div class="t">Kévin Bernard · fin du CDD</div><div class="s">Le contrat se termine le 28 février 2027, dans 103 jours</div></div><div class="r"><button class="btn sm" data-a="cdd">Préparer la suite</button></div></div>')+'</div></div>':'');
-  h+='<div class="ar-tb">'+'<div class="ar-chips scroll-x" role="tablist">'+[['all','Tous',9,'team'],['ens','Enseignants',4,'whistle'],['ecu','Écurie',3,'hay'],['adm','Direction et accueil',2,'key']].map(function(g){return '<button class="tag" role="tab" data-grp="'+g[0]+'" aria-pressed="'+(SE.grp===g[0])+'">'+ICON(g[3],'sm')+g[1]+' <b class="num">'+g[2]+'</b></button>'}).join('')+'</div>'+'</div><div class="eq-grid">'+
+  h+='<div class="ar-tb">'+'<div class="ar-chips scroll-x" role="tablist">'+(gDemo()?[['all','Tous',9,'team'],['ens','Enseignants',4,'whistle'],['ecu','Écurie',3,'hay'],['adm','Direction et accueil',2,'key']]:[['all','Tous',D.staff.length,'team']]).map(function(g){return '<button class="tag" role="tab" data-grp="'+g[0]+'" aria-pressed="'+(SE.grp===g[0])+'">'+ICON(g[3],'sm')+g[1]+' <b class="num">'+g[2]+'</b></button>'}).join('')+'</div>'+'</div><div class="eq-grid">'+
    list.map(function(s){var st=stNow(s.id),pl=planned(s.id),w=worst(s.id),H=D.hr[s.id];return '<button class="card hover eq-card" data-a="staff" data-id="'+s.id+'"><span class="hrow">'+U.av(s,'lg')+'<span class="grow" style="min-width:0"><b class="ellip" style="display:block">'+s.first+' '+s.last+'</b><span class="s mut ellip" style="display:block">'+s.role+'</span></span>'+ICON('right','sm')+'</span>'+
     '<span class="hrow s" style="--g:8px"><span class="eq-dot" style="--c:'+tone(st[0])+'"></span><span class="ellip">'+st[1]+'</span></span>'+wkMini(s.id)+
     '<span class="hrow sp wrap" style="--g:6px"><span class="xs mut">'+s.contract+' · <b style="color:var(--ink)">'+hm(pl)+'</b> cette semaine</span>'+(w?'<span class="chip '+w[1]+' dot">'+w[0].split(' ')[0].replace(',','')+(/Jamais/.test(w[2])?' à passer':w[1]==='bad'?' dépassé':' à renouveler')+'</span>':H.until&&s.id==='s07'?'<span class="chip line">CDD jusqu’au 28 févr.</span>':'<span class="chip ok dot">à jour</span>')+'</span></button>'}).join('')+'</div>';
@@ -10563,15 +10576,16 @@ function eqDroits(){var r=ROLES.find(function(x){return x[0]===SE.role}),lv=SE.p
 
 P.mod({id:'equipe',role:'gerant',group:'Équipe',title:'Équipe',icon:'team',n:10,phoneTitle:'Équipe',
  badge:function(){var n=D.leaves.filter(function(l){return l.state==='attente'&&!SE.leave[l.id]}).length;return n?{v:n}:null},
- render:function(el,ctx){syncB();el.classList.add('ar-pg');
+ render:function(el,ctx){syncB();syncEmpLeaves();el.classList.add('ar-pg');
   if(ctx.params.tab){SE.tab=ctx.params.tab;ctx.params.tab=null}
   var ET=[['salaries','Salariés'],['planning','Planning'],['heures','Heures et pointage'],['conges','Congés et absences'],['paie','Paie'],['docs','Documents et entretiens'],['droits','Droits d’accès']];
-  var pres=Object.keys(PUNCH).length,pend=D.leaves.filter(function(l){return l.state==='attente'&&!SE.leave[l.id]}).length,tot=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return planned(s.id)}),ctr=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return s.hours}),ot=sum(D.staff,function(s){return D.hr[s.id].ot}),due=D.staff.filter(function(s){return worst(s.id)}).length+(SE.dip.cdd?0:1);
-  el.innerHTML='<div class="ar-hd">'+U.ph('Équipe',((D.facts&&D.facts.staff)||'8 salariés et la gérante')+' · '+pres+' en poste ce matin, 2 attendus à 13 h 30 · '+(pend?pend+' demande'+(pend>1?'s':'')+' de congé à valider':'aucune demande en attente'),
+  /* club réel : présents = pointages du jour (D.empPresence), pas d'arrivées ni d'historique inventés */
+  var GD=gDemo(),pres=GD?Object.keys(PUNCH).length:(D.empPresence||[]).filter(function(x){return x.date===D.iso(D.day(0))&&x.in&&!x.out}).length,pend=D.leaves.filter(function(l){return l.state==='attente'&&!SE.leave[l.id]}).length,tot=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return planned(s.id)}),ctr=sum(D.staff.filter(function(s){return s.id!=='s01'}),function(s){return s.hours}),ot=sum(D.staff,function(s){return D.hr[s.id].ot}),due=D.staff.filter(function(s){return worst(s.id)}).length+(SE.dip.cdd?0:1);
+  el.innerHTML='<div class="ar-hd">'+U.ph('Équipe',(GD?((D.facts&&D.facts.staff)||'8 salariés et la gérante')+' · '+pres+' en poste ce matin, 2 attendus à 13 h 30 · ':D.staff.length+' personne'+(D.staff.length>1?'s':'')+' dans l’équipe · '+pres+' en poste en ce moment · ')+(pend?pend+' demande'+(pend>1?'s':'')+' de congé à valider':'aucune demande en attente'),
     '<button class="btn" data-a="tab" data-k="paie">'+ICON('euro','sm')+'Préparer la paie</button><button class="btn pri" data-a="newstaff">'+ICON('plus','sm')+'Ajouter un salarié</button>')+'</div>'+
-   '<div class="ar-k4 '+(REDRAW?'':'rise')+'">'+K({dom:'equipe',tint:true,label:'En poste ce matin',value:pres+'<small> sur '+D.staff.length+'</small>',delta:'2 attendus à 13 h 30',tone:'acc',di:'clock',bar:pres/9*100,icon:'clockin'})+
+   '<div class="ar-k4 '+(REDRAW?'':'rise')+'">'+K({dom:'equipe',tint:true,label:'En poste ce matin',value:pres+'<small> sur '+D.staff.length+'</small>',delta:GD?'2 attendus à 13 h 30':'selon les pointages du jour',tone:'acc',di:'clock',bar:pres/(GD?9:Math.max(1,D.staff.length))*100,icon:'clockin'})+
     K({dom:'equipe',label:'Heures planifiées cette semaine',value:hm(tot),delta:tot>ctr?'+'+hm(tot-ctr):hm(ctr-tot)+' de marge',tone:tot>ctr+8?'warn':'ok',di:tot>ctr?'up':'check',dsub:' pour '+ctr+' h de contrats',bar:Math.min(100,tot/ctr*100),color:tot>ctr+8?'var(--warn)':'var(--ok)',icon:'planning'})+
-    K({dom:'equipe',label:'Heures supplémentaires de novembre',value:hm(ot),delta:'−3 h',tone:'ok',di:'down',dsub:' vs octobre',spark:[31,28,35,30,26.5,23.5],color:'var(--c4)',icon:'hourglass'})+
+    K({dom:'equipe',label:'Heures supplémentaires de novembre',value:hm(ot),delta:GD?'−3 h':'',tone:'ok',di:GD?'down':'',dsub:GD?' vs octobre':'',spark:GD?[31,28,35,30,26.5,23.5]:null,color:'var(--c4)',icon:'hourglass'})+
     K({dom:'equipe',label:'À traiter',value:String(pend+due+(SE.punch?0:1)),delta:pend+' congé'+(pend>1?'s':''),tone:pend+due?'warn':'ok',di:pend+due?'alert':'check',dsub:' · '+due+' échéance'+(due>1?'s':'')+(SE.punch?'':' · 1 pointage'),bar:100-(pend+due)*12,color:'var(--warn)',icon:'bell'})+'</div>'+
    tabsBar(ET,SE.tab,'data-et')+'<div id="eq-body"></div>'+
    '<div class="ar-cta"><div class="ar-fab"><button class="btn icon ar-fab2" data-a="newstaff" title="Ajouter un salarié">'+ICON('plus')+'</button><button class="btn pri ar-fab1" data-a="tab" data-k="conges" title="'+(pend?'Valider '+pend+' congé'+(pend>1?'s':''):'Voir les congés')+'">'+ICON('holiday')+'<span>'+(pend?pend+' congé'+(pend>1?'s':'')+' à valider':'Congés')+'</span></button></div></div>';
@@ -10596,7 +10610,7 @@ P.mod({id:'equipe',role:'gerant',group:'Équipe',title:'Équipe',icon:'team',n:1
    punch:function(){SE.punch=true;re();P.toast('Départ de Kévin corrigé à 12 h 34, il en est informé',{undo:function(){SE.punch=false;re()}})},
    time:function(b){openSheetTime(b.getAttribute('data-id'))},week:function(){SE.week=true;draw();P.toast('Semaine du 9 au 15 novembre validée : 259 heures envoyées en préparation de paie')},
    lv:function(b){var id=b.getAttribute('data-id'),v=b.getAttribute('data-v'),l=D.leaves.find(function(x){return x.id===id}),s=D.staffer(l.who);if(v==='alt'){l.from=l.to='2026-11-28';l.impact='ok';l.note='Le samedi 28, Lucie et Kévin sont à l’écurie : la journée est couverte.';draw();P.toast('Proposition envoyée à '+s.first+' : le samedi 28 novembre',{icon:'send'});return}
-     SE.leave[id]=v;re();P.toast(v==='ok'?'Congé de '+s.first+' validé, planning mis à jour':'Demande de '+s.first+' refusée, un message lui est proposé',{undo:function(){delete SE.leave[id];re()}})},
+     SE.leave[id]=v;if(!gDemo()){l.state=v==='ok'?'validé':'refusé';var e=l.src&&(D.empLeaves||[]).find(function(x){return x.id===l.src});if(e)e.st=l.state;try{PL.sync.flush()}catch(_){}}re();P.toast(v==='ok'?'Congé de '+s.first+' validé, planning mis à jour':'Demande de '+s.first+' refusée, un message lui est proposé',{undo:function(){delete SE.leave[id];re()}})},
    lvx:function(){P.toast('Soldes de congés exportés',{icon:'download'})},
    prime:function(){SE.prime=1;draw();P.toast('Prime de concours de Thomas confirmée')},
    exp:function(b){payBtn(b,'Variables envoyées',function(){SE.exp='Payfit';draw();P.toast('Variables de novembre envoyées à Payfit',{icon:'send'})})},
@@ -10736,6 +10750,8 @@ PL.modq.push({file:"70-coach-compet.js",run:function(){
    Écrans : coachs, competitions, coach-agenda, coach-eleves, coach-dispo, coach-revenus, coach-concours, coach-profil */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc,I=function(n,k){return ICON(n,k)};
+/* Club réel : la personne connectée n'est pas la coach de démo (c01) → écrans coach branchés sur ses propres données. */
+var DEMO=!D.me||D.me.coach==='c01'||!!(window.PL&&PL.sandbox);
 /* Manche 4 : fondu et léger glissement quand un onglet, un filtre ou une sélection redessine un bloc (pas au premier rendu) */
 function swIn(n){if(!n)return;if(n.__sw&&!P.RM){n.classList.remove('fx-sw');void n.offsetWidth;n.classList.add('fx-sw')}n.__sw=1}
 P.css(`.fx-sw{animation:fxsw .24s var(--e-out) backwards}@keyframes fxsw{from{opacity:0;transform:translateY(10px)}}
@@ -10919,10 +10935,12 @@ P.css(`
  .co-bk .c3{grid-column:2}.co-bk .c4{grid-column:1 / -1;display:flex;gap:8px}.co-bk .c4 .btn{flex:1;height:40px}
 }
 `);
-var coTab='annuaire',coDay=0,coFil='todo',coPaid=false,coReq={status:'new'};
-function dealTxt(c){var d=DEAL[c.id];return d.mode==='commission'?'Commission de '+d.pct+' %':d.mode==='passage'?'Forfait de passage '+F.eur(d.fee):d.mode==='piste'?'Droit de piste '+F.eur(d.fee)+' / mois':'Salarié, prime de '+d.pct+' %'}
-function clubCut(c){var d=DEAL[c.id];return d.mode==='commission'?d.ca*d.pct/100:d.mode==='passage'?d.fee*d.n:d.mode==='piste'?d.fee:d.ca*(1-d.pct/100)}
-function insDays(c){var d=DEAL[c.id];return d.insTo?F.days(d.insTo):999}
+var coTab='annuaire',coDay=0,coFil='todo',coPaid=false,coReq={status:DEMO?'new':'none'};
+/* club réel : un coach ajouté par le gérant n'a pas encore de conditions enregistrées (pas de chiffre inventé) */
+function dealOf(id){return DEAL[id]||{mode:'',n:0,ca:0}}
+function dealTxt(c){var d=dealOf(c.id);return d.mode==='commission'?'Commission de '+d.pct+' %':d.mode==='passage'?'Forfait de passage '+F.eur(d.fee):d.mode==='piste'?'Droit de piste '+F.eur(d.fee)+' / mois':d.mode==='interne'?'Salarié, prime de '+d.pct+' %':'Conditions à définir'}
+function clubCut(c){var d=dealOf(c.id);return d.mode==='commission'?d.ca*d.pct/100:d.mode==='passage'?d.fee*d.n:d.mode==='piste'?d.fee:d.mode==='interne'?d.ca*(1-d.pct/100):0}
+function insDays(c){var d=dealOf(c.id);return d.insTo?F.days(d.insTo):999}
 function pendB(){return BOOK.filter(function(b){return b.status==='à confirmer'})}
 function dayBlocks(off){var dow=day(off).getDay(),bl=[];
  D.lessons.filter(function(l){return l.dow===dow}).forEach(function(l){bl.push({k:'club',arena:l.arena,s:hm(l.start),d:l.dur,t:l.title,who:D.staffer(l.coach).first,c:'var(--mut-2)'})});
@@ -10932,7 +10950,7 @@ function dayBlocks(off){var dow=day(off).getDay(),bl=[];
  return bl.sort(function(a,b){return a.s-b.s})}
 function bookWho(b){return b.riders.length>1?b.riders.length+' cavaliers':nm(b.riders[0])}
 
-function coachSheet(id){var c=D.coach(id),d=DEAL[id],ext=c.ext,idays=insDays(c);
+function coachSheet(id){var c=D.coach(id),d=dealOf(id),ext=c.ext,idays=insDays(c);
  P.sheet({title:c.first+' '+c.last,icon:'coach',body:function(b,sh){
   b.innerHTML='<div class="hrow" style="--g:14px">'+U.av(c,'xl')+'<div class="grow"><div class="hrow wrap" style="--g:6px">'+U.chip(ext?'Coach extérieur':'Moniteur du club',ext?'acc':'')+U.chip(c.spec,'line')+'</div><div class="s mut" style="margin-top:6px">'+c.level+'</div><div class="s" style="margin-top:4px">'+stars(c.rating)+' <b>'+rate(c.rating)+'</b> <span class="mut">· '+c.reviews+' avis</span></div></div></div>'+
    '<div class="card soft g3" style="--g:0;margin-top:16px;grid-template-columns:repeat(3,minmax(0,1fr))">'+stat('Cours en novembre',d.n,null)+stat('Encaissé',F.eur(d.ca),null)+stat('Tarif horaire',F.eur(c.rate),null)+'</div>'+
@@ -10954,7 +10972,7 @@ function coachSheet(id){var c=D.coach(id),d=DEAL[id],ext=c.ext,idays=insDays(c);
    agenda:function(){sh.close();coTab='pistes';P.rerender()}});
  },foot:'<button class="btn" data-a="msg">'+I('chat','sm')+'Écrire à '+c.first+'</button><button class="btn dark" data-a="agenda">'+I('planning','sm')+'Voir son agenda</button>'})}
 
-function bookingSheet(id){var b=BOOK.find(function(x){return x.id===id}),c=D.coach(b.coach),pend=b.status==='à confirmer',bl=dayBlocks(b.d).find(function(x){return x.id===id})||{},cut=DEAL[c.id];
+function bookingSheet(id){var b=BOOK.find(function(x){return x.id===id}),c=D.coach(b.coach),pend=b.status==='à confirmer',bl=dayBlocks(b.d).find(function(x){return x.id===id})||{},cut=dealOf(c.id);
  var part=cut.mode==='commission'?b.price*cut.pct/100:cut.mode==='passage'?cut.fee:cut.mode==='piste'?0:b.price*(1-cut.pct/100);
  P.sheet({title:b.type,icon:'calendar_add',body:function(el,sh){
   el.innerHTML=(bl.clash?'<div class="note bad" style="margin-bottom:14px">'+I('alert','sm')+'<span>La '+arena(b.arena).toLowerCase()+' est déjà prise par une reprise du club à cette heure. La petite carrière est libre : Piaffe peut y déplacer le cours et prévenir tout le monde.</span></div>':'')+
@@ -10991,7 +11009,7 @@ function inviteSheet(req){var title=req?'Demande d’accueil':'Inviter un coach'
    refuse:function(){sh.close();coReq.status='no';P.rerender();P.toast('Demande refusée, les propriétaires sont prévenus',{icon:'xc',undo:function(){coReq.status='new';P.rerender()}})}});
  },foot:req?'<button class="btn danger" data-a="refuse">Refuser</button><button class="btn pri" data-a="send">Accepter et envoyer la convention</button>':'<button class="btn pri" data-a="send">Envoyer l’invitation</button>'})}
 
-function payoutSheet(id){var c=D.coach(id),d=DEAL[id],cut=clubCut(c);
+function payoutSheet(id){var c=D.coach(id),d=dealOf(id),cut=clubCut(c);
  P.sheet({title:'Relevé de novembre',icon:'bank',body:
   '<div class="hrow" style="--g:12px;margin-bottom:14px">'+U.av(c,'lg')+'<div><b>'+c.first+' '+c.last+'</b><div class="s mut">'+dealTxt(c)+'</div></div></div>'+
   '<div class="card flat" style="padding:4px 14px">'+row(d.n+' cours encaissés en ligne','<span class="num">'+F.eur(d.ca)+'</span>')+row(d.mode==='interne'?'Part conservée par le club':'Part du club','<span class="num">−'+F.eur(cut,cut%1?1:0)+'</span>')+row(d.mode==='interne'?'Prime versée sur la paie':'Reversement par virement SEPA','<b class="num">'+F.eur(d.ca-cut,(d.ca-cut)%1?1:0)+'</b>')+'</div>'+
@@ -11004,7 +11022,7 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
  badge:function(){var n=pendB().length+(coReq.status==='new'?1:0);return n?{v:n}:null},
  render:function(el,ctx){el.classList.add('cg-pg');
   if(ctx.params&&ctx.params.tab){coTab=ctx.params.tab;ctx.params.tab=null}
-  var ext=D.coaches.filter(function(c){return c.ext}),tot=D.coaches.reduce(function(a,c){return a+DEAL[c.id].ca},0),cut=D.coaches.reduce(function(a,c){return a+clubCut(c)},0),nres=BOOK.filter(function(b){return b.d>=0&&b.d<7&&b.status!=='annulée'}).length,pend=pendB();
+  var ext=D.coaches.filter(function(c){return c.ext}),tot=D.coaches.reduce(function(a,c){return a+dealOf(c.id).ca},0),cut=D.coaches.reduce(function(a,c){return a+clubCut(c)},0),nres=BOOK.filter(function(b){return b.d>=0&&b.d<7&&b.status!=='annulée'}).length,pend=pendB();
   var h=ph('Coachs',D.coaches.length+' coachs réservables en ligne, dont '+ext.length+' extérieurs · '+pend.length+' réservation'+(pend.length>1?'s':'')+' à confirmer',
    '<button class="btn" data-a="rules">'+I('sliders','sm')+'Règles</button><button class="btn pri" data-a="invite">'+I('plus','sm')+'Inviter un coach</button>');
   h+=stats([stat('Réservations sur 7 jours',nres,'dont '+pend.length+' à confirmer',nres,'','rd','calendar_add'),stat('Coaching encaissé en novembre',F.eur(tot),'140 cours donnés',tot,'eur','mo','wallet'),stat('Part du club',F.eur(cut),Math.round(cut/tot*100)+' % du coaching',Math.round(cut),'eur','tm','percent'),stat('Note moyenne','4,85','600 avis vérifiés',null,'','po','star')]);
@@ -11013,7 +11031,7 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
   function draw(){var s='';
    if(coTab==='annuaire'){
     if(coReq.status==='new')s+='<div class="card co-req"><span class="av lg" style="--c:var(--c5)">ÉV</span><div class="grow"><b>Élodie Vasseur demande à coacher chez vous</b><div class="s mut">Coach de dressage, appelée par deux de vos propriétaires. Carte professionnelle et assurance déjà contrôlées.</div></div><div class="acts hrow"><button class="btn" data-a="req">Étudier la demande</button></div></div>';
-    s+='<div class="co-grid rise">'+D.coaches.concat(coReq.status==='ok'?[{id:'cx',first:'Élodie',last:'Vasseur',spec:'Dressage',level:'DEJEPS, Amateur Élite',rate:60,rating:0,reviews:0,ext:true,slots:[],color:'var(--c5)',fresh:true}]:[]).map(function(c){var d=DEAL[c.id],idays=c.fresh?999:insDays(c);
+    s+='<div class="co-grid rise">'+D.coaches.concat(coReq.status==='ok'?[{id:'cx',first:'Élodie',last:'Vasseur',spec:'Dressage',level:'DEJEPS, Amateur Élite',rate:60,rating:0,reviews:0,ext:true,slots:[],color:'var(--c5)',fresh:true}]:[]).map(function(c){var d=dealOf(c.id),idays=c.fresh?999:insDays(c);
      return '<div class="card hover co-card" role="button" tabindex="0" data-a="'+(c.fresh?'fresh':'coach')+'" data-id="'+c.id+'"><div class="who">'+U.av(c,'lg')+'<div class="grow"><div class="b ellip" style="font-size:15px">'+c.first+' '+c.last+'</div><div class="s mut ellip">'+c.spec+' · '+c.level+'</div></div>'+U.chip(c.ext?'Extérieur':'Club',c.ext?'acc':'')+'</div>'+
       '<div class="meta">'+(c.fresh?'<span>Nouveau profil, convention en cours de signature</span>':stars(c.rating)+'<b>'+rate(c.rating)+'</b><span>'+c.reviews+' avis</span><span>·</span><b class="num">'+F.eur(c.rate)+'</b><span>l’heure</span>')+'</div>'+
       '<div class="hrow wrap" style="--g:6px">'+(c.ext?U.chip('Carte professionnelle','ok',true)+(idays<30?U.chip('Assurance : expire dans '+idays+' j','warn',true):U.chip('Assurance RC pro','ok',true)):U.chip('Salarié du club','',true)+U.chip('Diplôme vérifié','ok',true))+'</div>'+
@@ -11036,9 +11054,9 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
       '<div class="c4 hrow" style="--g:8px">'+(b.status==='à confirmer'?'<button class="btn sm" data-a="bno" data-id="'+b.id+'">Refuser</button><button class="btn sm dark" data-a="'+(bl.clash?'book':'bok')+'" data-id="'+b.id+'">'+(bl.clash?'Régler le conflit':'Confirmer')+'</button>':'<b class="s num">'+F.eur(b.price)+'</b>'+U.chip(b.status,b.status==='confirmée'?'acc':b.status==='terminée'?'ok':'bad',true))+'</div></div>'}).join('')+'</div>'
      :'<div class="card">'+U.empty('checkc','Toutes les demandes sont traitées','Les prochaines réservations de coachs extérieurs arriveront ici.')+'</div>';
    }
-   if(coTab==='paie'){var extL=D.coaches.filter(function(c){return c.ext}),sum=extL.reduce(function(a,c){return a+DEAL[c.id].ca-clubCut(c)},0);
+   if(coTab==='paie'){var extL=D.coaches.filter(function(c){return c.ext}),sum=extL.reduce(function(a,c){return a+dealOf(c.id).ca-clubCut(c)},0);
     s+='<div class="card pad hrow wrap sp" style="--g:16px;margin-bottom:14px"><div class="hrow" style="--g:14px">'+sq('bank',coPaid?'ok':'acc')+'<div><div class="s mut">'+(coPaid?'Virements programmés pour le 30 novembre':'À reverser aux coachs extérieurs le 30 novembre')+'</div><div class="disp num" style="font-size:26px;font-weight:700">'+F.eur(sum,1)+'</div></div></div><div class="hrow wrap" style="--g:8px"><button class="btn" data-a="exp">'+I('download','sm')+'Exporter</button>'+(coPaid?'<span class="chip ok lg dot">4 virements SEPA programmés</span>':'<button class="btn dark" data-a="pay">'+I('send','sm')+'Programmer les 4 virements</button>')+'</div></div>';
-    s+=U.table([{l:'Coach',f:function(c){return '<span class="hrow" style="--g:10px">'+U.av(c,'sm')+'<b>'+c.first+' '+c.last+'</b></span>'}},{l:'Formule',hide:true,f:function(c){return '<span class="mut">'+dealTxt(c)+'</span>'}},{l:'Cours',n:true,hide:true,f:function(c){return DEAL[c.id].n}},{l:'Encaissé',n:true,hide:true,f:function(c){return F.eur(DEAL[c.id].ca)}},{l:'Part du club',n:true,hide:true,f:function(c){var v=clubCut(c);return F.eur(v,v%1?1:0)}},{l:'À reverser',n:true,f:function(c){var v=DEAL[c.id].ca-clubCut(c);return '<b>'+F.eur(v,v%1?1:0)+'</b>'}},{l:'Statut',hide:true,f:function(c){return c.ext?(coPaid?U.chip('Programmé','ok',true):U.chip('À verser','warn',true)):U.chip('Sur la paie','',true)}}],D.coaches,{click:true});
+    s+=U.table([{l:'Coach',f:function(c){return '<span class="hrow" style="--g:10px">'+U.av(c,'sm')+'<b>'+c.first+' '+c.last+'</b></span>'}},{l:'Formule',hide:true,f:function(c){return '<span class="mut">'+dealTxt(c)+'</span>'}},{l:'Cours',n:true,hide:true,f:function(c){return dealOf(c.id).n}},{l:'Encaissé',n:true,hide:true,f:function(c){return F.eur(dealOf(c.id).ca)}},{l:'Part du club',n:true,hide:true,f:function(c){var v=clubCut(c);return F.eur(v,v%1?1:0)}},{l:'À reverser',n:true,f:function(c){var v=dealOf(c.id).ca-clubCut(c);return '<b>'+F.eur(v,v%1?1:0)+'</b>'}},{l:'Statut',hide:true,f:function(c){return c.ext?(coPaid?U.chip('Programmé','ok',true):U.chip('À verser','warn',true)):U.chip('Sur la paie','',true)}}],D.coaches,{click:true});
     s+='<p class="xs mut" style="margin-top:12px">Le club encaisse les réservations en ligne pour le compte des coachs, puis reverse leur part chaque fin de mois. Chaque coach reçoit son relevé détaillé.</p>';
    }
    if(coTab==='avis'){var dist=[[5,512],[4,71],[3,12],[2,4],[1,1]];
@@ -12464,7 +12482,7 @@ P.brain.push(
    return {text:'Prochain concours : '+k.name+' à '+k.place.split(',')[0]+', '+F.dateL(k.date)+'. '+es.length+' cavaliers sont engagés pour '+F.eur(tot)+', la clôture est '+F.rel(k.closes)+'. Il manque le certificat médical d’Inès Masson. Ensuite, le Hunter Club à domicile du 6 décembre compte déjà 22 engagés et il manque 4 bénévoles.',
     card:es.slice(0,4).map(function(e){return '<div class="hrow sp"><span class="s">'+nm(e.rider)+' · '+D.horse(e.horse).name+'</span><span class="s mut">'+e.class.split(' · ')[0]+'</span></div>'}).join('')+'<div class="xs mut">et '+(es.length-4)+' autres</div>',
     actions:[{label:'Préparer les engagements',run:function(){P.go('competitions',{id:'k1',tab:'eng'});setTimeout(function(){ffeSheet(k)},350);return 'Saisie assistée ouverte'}},{label:'Voir qui emmène qui',run:function(){P.go('competitions',{id:'k1',tab:'qui'});return 'Ouvert'}}]}}},
- {role:'gerant',re:/coach|reverse|pauline|cours particulier|droit de piste/i,reply:function(){var p=pendB(),ext=D.coaches.filter(function(c){return c.ext}),sum=ext.reduce(function(a,c){return a+DEAL[c.id].ca-clubCut(c)},0),ok=p.filter(function(b){return !(dayBlocks(b.d).find(function(x){return x.id===b.id})||{}).clash});
+ {role:'gerant',re:/coach|reverse|pauline|cours particulier|droit de piste/i,reply:function(){var p=pendB(),ext=D.coaches.filter(function(c){return c.ext}),sum=ext.reduce(function(a,c){return a+dealOf(c.id).ca-clubCut(c)},0),ok=p.filter(function(b){return !(dayBlocks(b.d).find(function(x){return x.id===b.id})||{}).clash});
    return {text:p.length+' réservations de coachs attendent votre accord, dont une en conflit avec la reprise de 18 h. En novembre, les coachs ont donné 140 cours pour '+F.eur(7038)+' ; vous reversez '+F.eur(sum,1)+' aux 4 coachs extérieurs le 30. L’assurance de Julien Mercier expire dans 12 jours.',
     card:p.map(function(b){return '<div class="hrow sp"><span class="s">'+fst(b.coach)+' · '+bookWho(b)+'</span><span class="s mut">'+(b.d===0?'auj.':dlab(b.d))+' '+b.t+'</span></div>'}).join(''),
     actions:[{label:'Confirmer les '+ok.length+' sans conflit',run:function(){ok.forEach(function(b){b.status='confirmée'});P.toast(ok.length+' réservations confirmées, coachs et cavaliers prévenus');return ok.length+' réservations confirmées'}},{label:'Voir les réservations',run:function(){P.go('coachs',{tab:'resa'});return 'Ouvert'}}]}}},
@@ -12495,6 +12513,174 @@ P.tourSteps.push(
  {route:'coach-agenda',title:'Le coach indépendant a enfin son outil',text:'Pauline enseigne dans trois écuries. Son agenda réunit ses cours, ses trajets et ses demandes de réservation. Elle démarre un cours d’un geste, dicte sa note de séance et la partage avec son élève ; ses revenus et ses factures se mettent à jour tout seuls.'});
 
 
+
+/* =====================================================================
+   CLUB RÉEL : l'espace coach de la personne connectée
+   La démo garde Pauline Arnaud (c01) et son jeu d'exemple. Dans un vrai club, D.me.coach est la fiche
+   de la personne connectée : agenda = ses reprises (D.lessons, coach = elle) et les cours particuliers
+   demandés par les adhérents (D.coachBookings) ; élèves = cavaliers de ses reprises et de D.coachStudents ;
+   disponibilités, présentation et spécialités = sa fiche D.coaches. Aucun chiffre inventé.
+   ===================================================================== */
+var LC={},LCB={},lcDayO=0,lcSel=null;
+function lcMe(){var id=D.me&&D.me.coach;return D.coach(id)||D.person(id)||{id:id||'me',first:'',last:''}}
+function lcIds(){var me=lcMe(),ids=[me.id];if(me.staff)ids.push(me.staff);((window.PL&&PL.personIds)||[]).forEach(function(i){if(ids.indexOf(i)<0)ids.push(i)});
+  (D.coaches||[]).forEach(function(c){if(c.staff&&ids.indexOf(c.staff)>=0&&ids.indexOf(c.id)<0)ids.push(c.id)});return ids}
+function lcFirst(){var m=lcMe();return m.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function lcEsc(s){return E(String(s==null?'':s))}
+function lcSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function lcUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function lcCap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1)}
+function lcLessons(){var ids=lcIds();return (D.lessons||[]).filter(function(l){return ids.indexOf(l.coach)>=0&&!/annul/i.test(l.status||'')})}
+function lcOnDay(o){var d=day(o),t=iso(d);return lcLessons().filter(function(l){return l.date?String(l.date).slice(0,10)===t:+l.dow===d.getDay()}).sort(function(a,b){return hm(a.start||'0:0')-hm(b.start||'0:0')})}
+function lcBook(){var ids=lcIds();return (D.coachBookings||[]).filter(function(b){return ids.indexOf(b.coach)>=0})}
+function lcReq(){return lcBook().filter(function(b){return /demand|confirmer/.test(b.status||'')})}
+function lcBookOn(o){var t=iso(day(o));return lcBook().filter(function(b){return b.status==='confirmée'&&b.date===t}).sort(function(a,b){return hm(a.t||'0:0')-hm(b.t||'0:0')})}
+function lcWho(b){var m=D.member(b.member||(b.riders||[])[0]);return m?(m.first+' '+(m.last||'')).trim():b.who||'Un adhérent'}
+function lcSlotNext(s){var p=String(s||'').split(' '),w=DWS.indexOf(p[0]);if(w<0)return null;for(var o=1;o<=7;o++)if(day(o).getDay()===w)return {o:o,date:iso(day(o)),t:p[1]||''};return null}
+function lcStudents(){var ids=lcIds(),S={};
+  lcLessons().forEach(function(l){(l.riders||[]).forEach(function(r){var s=S[r]=S[r]||{id:r,les:[],book:[]};s.les.push(l)})});
+  lcBook().filter(function(b){return b.status==='confirmée'||b.status==='terminée'}).forEach(function(b){var r=b.member||(b.riders||[])[0];if(!r)return;var s=S[r]=S[r]||{id:r,les:[],book:[]};s.book.push(b);s.who=s.who||b.who});
+  (D.coachStudents||[]).forEach(function(c){if(c.coach&&ids.indexOf(c.coach)<0)return;var r=c.member||c.rider||c.m;if(!r)return;var s=S[r]=S[r]||{id:r,les:[],book:[]};s.rec=c;s.who=s.who||c.name});
+  return Object.keys(S).map(function(k){var s=S[k],m=D.member(k);s.m=m;s.name=m?(m.first+' '+(m.last||'')).trim():s.who||'Cavalier';s.first=m?m.first:s.name.split(' ')[0];s.galop=m&&m.galop;return s}).sort(function(a,b){return a.name.localeCompare(b.name)})}
+function lcRec(s){var ids=lcIds(),r=(D.coachStudents||[]).filter(function(c){return (c.member||c.rider||c.m)===s.id&&(!c.coach||ids.indexOf(c.coach)>=0)})[0];
+  if(!r){D.coachStudents=D.coachStudents||[];r={id:lcUid('cs'),coach:lcMe().id,member:s.id,name:s.name,notes:[],goals:[]};D.coachStudents.push(r)}r.notes=r.notes||[];r.goals=r.goals||[];return r}
+function lcHorseOf(l,r){var h=l.horses&&l.horses[r];return h?D.horse(h):null}
+function lcArena(l){return l.arena?arena(l.arena):''}
+function lcSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[coach] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+
+/* ---------- Feuille d'une reprise : cavaliers, chevaux ---------- */
+function lcLessonSheet(l,o){var R=l.riders||[];
+  P.sheet({title:l.title||'Reprise',icon:'planning',body:'<div class="stack" style="--g:12px"><div class="card flat" style="padding:4px 14px">'+row('Quand',lcCap(o===0?'aujourd’hui':o===1?'demain':F.dateL(day(o)))+' à '+lcEsc(l.start||''))+row('Durée',dur(+l.dur||60))+(lcArena(l)?row('Piste',lcEsc(lcArena(l))):'')+row('Cavaliers',R.length+' sur '+(l.cap||'?'))+'</div>'+
+   (R.length?'<div class="card list">'+R.map(function(r){var m=D.member(r),h=lcHorseOf(l,r);return '<div class="li">'+U.av(m||r)+'<div class="grow"><div class="t">'+lcEsc(m?m.first+' '+(m.last||''):'Cavalier')+'</div><div class="s">'+(m&&m.galop?'Galop '+m.galop:'')+(h?(m&&m.galop?' · ':'')+lcEsc(h.name):'')+'</div></div></div>'}).join('')+'</div>':'<div class="card">'+U.empty('members','Aucun cavalier inscrit','Les adhérents réservent leur place depuis leur espace.')+'</div>')+'</div>'})}
+
+/* ---------- Agenda ---------- */
+LC['coach-agenda']=function(el){var all=lcLessons(),req=lcReq();
+  function dayItems(o){return lcOnDay(o).map(function(l){return {k:'l',t:l.start||'',l:l}}).concat(lcBookOn(o).map(function(b){return {k:'b',t:b.t||'',b:b}})).sort(function(a,b){return hm(a.t||'0:0')-hm(b.t||'0:0')})}
+  var today=dayItems(0),wk=0,wr=0;for(var o=0;o<7;o++){var di=dayItems(o);wk+=di.length;di.forEach(function(x){wr+=x.k==='l'?(x.l.riders||[]).length:1})}
+  el.innerHTML=ph('Bonjour'+(lcFirst()?' '+lcEsc(lcFirst()):''),lcCap(F.dateL(day(0)))+' · '+(today.length?today.length+' cours aujourd’hui':'aucun cours aujourd’hui'),'')+
+   '<div class="ca"><div class="stack" style="--g:16px"><div class="ca-sum rise">'+
+    tile({dom:'tm',icon:'planning',label:'Cours aujourd’hui',value:today.length,sub:today.length?'à partir de '+th(hm(today[0].t||'0:0')):'journée libre'})+
+    tile({dom:'hb',icon:'clock',label:'Cette semaine',value:wk,sub:wr+' place'+(wr>1?'s':'')+' réservée'+(wr>1?'s':'')})+
+    tile({dom:'mo',icon:'members',label:'Élèves',value:lcStudents().length,a:'tostu',sub:'reprises et cours particuliers'})+
+    tile({dom:'rd',icon:'calendar_add',label:'Demandes',value:req.length,a:'toreq',sub:req.length?'à accepter ou refuser':'tout est traité'})+'</div>'+
+   '<div data-main></div></div><div class="ca-side"><div class="card" data-req></div></div></div>';
+  var main=el.querySelector('[data-main]'),rq=el.querySelector('[data-req]');
+  function drawReq(){var L=lcReq();rq.innerHTML='<div class="ch" style="padding-bottom:8px"><h3>Demandes de cours</h3>'+(L.length?U.chip(L.length,'acc'):'')+'</div>'+(L.length?L.map(function(b){var h=b.horse&&D.horse(b.horse);
+    return '<div class="ca-rq"><div class="hrow" style="--g:12px">'+U.av(D.member(b.member)||{first:lcWho(b)})+'<div class="grow"><div class="b m ellip">'+lcEsc(lcWho(b))+(h||b.horseName?' · '+lcEsc(h?h.name:b.horseName):'')+'</div><div class="s mut ellip">'+lcEsc(b.type||'Cours particulier')+(b.slot?' · '+lcEsc(b.slot.replace(':',' h ')):'')+(b.price?' · '+F.eur(+b.price):'')+'</div>'+(b.note?'<div class="s" style="margin-top:4px">'+lcEsc(b.note)+'</div>':'')+'</div></div>'+
+     '<div class="hrow" style="--g:8px;margin-top:10px"><button class="btn sm" data-a="rno" data-id="'+lcEsc(b.id)+'">Refuser</button><button class="btn sm pri" data-a="rok" data-id="'+lcEsc(b.id)+'">'+I('check','sm')+'Accepter</button></div></div>'}).join(''):
+    '<div class="cb" style="padding-top:0"><p class="s mut">Aucune demande en attente. Les adhérents demandent un cours particulier depuis la page Coachs de leur espace, sur vos créneaux ouverts.</p></div>')}
+  function item(x,o){if(x.k==='b'){var b=x.b;return '<button class="ca-it d-rd" data-a="bk" data-id="'+lcEsc(b.id)+'"><span class="tm">'+lcEsc(b.t||'')+'<small>'+dur(+b.dur||60)+'</small></span><span style="min-width:0"><span class="tt">'+lcEsc(lcWho(b))+'</span><span class="mm">'+lcEsc(b.type||'Cours particulier')+'</span></span><span class="rr">'+U.chip('Particulier','acc',true)+'</span></button>'}
+    var l=x.l,n=(l.riders||[]).length;return '<button class="ca-it d-tm'+(n?'':' free')+'" data-a="les" data-id="'+lcEsc(l.id)+'" data-o="'+o+'"><span class="tm">'+lcEsc(l.start||'')+'<small>'+dur(+l.dur||60)+'</small></span><span style="min-width:0"><span class="tt">'+lcEsc(l.title||'Reprise')+'</span><span class="mm">'+n+' cavalier'+(n>1?'s':'')+' sur '+(l.cap||'?')+(lcArena(l)?' · '+lcEsc(lcArena(l)):'')+'</span></span><span class="rr">'+(n>=(+l.cap||99)?U.chip('Complet','warn',true):'')+'</span></button>'}
+  function draw(){var L=dayItems(lcDayO);
+   main.innerHTML='<div class="ca-days">'+[0,1,2,3,4,5,6].map(function(o){var n=dayItems(o).length;return '<button class="'+(o===0?'today':'')+'" data-a="day" data-d="'+o+'" aria-selected="'+(o===lcDayO)+'">'+DWS[day(o).getDay()]+'<b>'+day(o).getDate()+'</b><i>'+(n?'<u style="--c:var(--tm)"></u>':'')+'</i></button>'}).join('')+'</div>'+
+    '<div class="ca-dh"><h3>'+lcCap(F.dateL(day(lcDayO)))+'</h3><span><b class="num">'+L.length+' cours</b></span></div>'+
+    (L.length?'<div class="ca-tl rise">'+L.map(function(x){return item(x,lcDayO)}).join('')+'</div>':
+     '<div class="card">'+U.empty('sun','Journée libre',all.length?'Aucun cours ce jour-là.':'Aucune reprise ne vous est encore attribuée. Le gérant vous affecte des reprises dans le Planning, les adhérents demandent des cours particuliers sur vos créneaux.')+'</div>');
+   P.animate(main);swIn(main)}
+  draw();drawReq();
+  act(el,{day:function(b){lcDayO=+b.getAttribute('data-d');draw()},
+   les:function(b){var l=all.filter(function(x){return x.id===b.getAttribute('data-id')})[0];if(l)lcLessonSheet(l,+b.getAttribute('data-o'))},
+   bk:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;var h=x.horse&&D.horse(x.horse);
+    P.sheet({title:lcWho(x),icon:'coach',body:'<div class="card flat" style="padding:4px 14px">'+row('Cours',lcEsc(x.type||'Cours particulier'))+row('Quand',lcEsc(F.dateL(x.date)+' à '+(x.t||'')))+(h||x.horseName?row('Cheval',lcEsc(h?h.name:x.horseName)):'')+(x.price?row('Tarif',F.eur(+x.price)):'')+(x.note?row('Message',lcEsc(x.note)):'')+'</div>'})},
+   tostu:function(){P.go('coach-eleves')},
+   toreq:function(){rq.scrollIntoView({behavior:P.RM?'auto':'smooth',block:'center'});pulse(rq)},
+   rok:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;var nx=lcSlotNext(x.slot);x.status='confirmée';if(nx){x.date=nx.date;x.t=nx.t}x.dur=x.dur||60;x.doneAt=new Date().toISOString();
+    var s={id:x.member||(x.riders||[])[0],name:lcWho(x)};if(s.id)lcRec(s);lcSave();drawReq();draw();P.toast('Cours accepté : '+lcWho(x).split(' ')[0]+(nx?', '+F.dateL(nx.date)+' à '+nx.t.replace(':',' h '):''),{icon:'checkc'})},
+   rno:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;x.status='refusée';lcSave();drawReq();P.toast('Demande refusée, '+lcWho(x).split(' ')[0]+' est prévenu',{icon:'swap'})}});
+};
+
+/* ---------- Élèves ---------- */
+LC['coach-eleves']=function(el,ctx){var S=lcStudents();if(ctx.params.id){lcSel=ctx.params.id;ctx.params.id=null}if(!S.some(function(s){return s.id===lcSel}))lcSel=S[0]&&S[0].id;
+  el.innerHTML=ph('Élèves',S.length?S.length+' cavalier'+(S.length>1?'s':'')+' suivi'+(S.length>1?'s':''):'Les cavaliers de vos reprises et de vos cours particuliers','')+
+   (S.length?'<div class="ce"><div class="card"><div data-list style="padding:6px;display:flex;flex-direction:column;gap:2px"></div></div><div class="ce-detail" data-detail></div></div>':
+    '<div class="card">'+U.empty('members','Aucun élève pour l’instant','Les cavaliers inscrits à vos reprises et ceux dont vous acceptez un cours particulier apparaîtront ici.')+'</div>');
+  if(!S.length)return;
+  var list=el.querySelector('[data-list]'),det=el.querySelector('[data-detail]');
+  function detail(s){var r=(D.coachStudents||[]).filter(function(c){return (c.member||c.rider||c.m)===s.id})[0]||{notes:[]},hs={};
+   s.les.forEach(function(l){var h=lcHorseOf(l,s.id);if(h)hs[h.id]=h.name});s.book.forEach(function(b){if(b.horse&&D.horse(b.horse))hs[b.horse]=D.horse(b.horse).name;else if(b.horseName)hs['x'+b.horseName]=b.horseName});
+   var hn=Object.keys(hs).map(function(k){return hs[k]});
+   return '<div class="card tint d-rd ce-hd">'+U.av(s.m||{first:s.name},'xl')+'<div class="grow" style="min-width:min(100%,240px)"><h2 style="font:800 30px/1.1 var(--f-display);letter-spacing:-.03em">'+lcEsc(s.name)+'</h2><div class="s mut" style="margin-top:4px">'+[s.galop?'Galop '+s.galop:'',hn.join(', ')].filter(Boolean).map(lcEsc).join(' · ')+'</div></div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:6px"><h3>Avec vous</h3></div><div class="list">'+
+     s.les.map(function(l){return '<div class="li">'+sq('planning','acc')+'<div class="grow"><div class="t">'+lcEsc(l.title||'Reprise')+'</div><div class="s">'+lcEsc(lcCap(l.day||DWS[+l.dow]||''))+' à '+lcEsc(l.start||'')+(lcArena(l)?' · '+lcEsc(lcArena(l)):'')+'</div></div></div>'}).join('')+
+     s.book.map(function(b){return '<div class="li">'+sq('coach','rd')+'<div class="grow"><div class="t">'+lcEsc(b.type||'Cours particulier')+'</div><div class="s">'+(b.date?lcEsc(F.dateL(b.date))+' à '+lcEsc(b.t||''):lcEsc(b.slot||''))+'</div></div></div>'}).join('')+
+     (s.les.length||s.book.length?'':'<div class="li"><div class="grow s mut">Aucun cours prévu ensemble.</div></div>')+'</div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:6px"><h3>Notes de séance</h3><button class="btn sm" data-a="nadd">'+I('edit','sm')+'Écrire une note</button></div>'+
+     (r.notes.length?r.notes.slice().reverse().map(function(n){return '<div class="ce-note"><div class="xs mut">'+lcEsc(F.date(String(n.at||'').slice(0,10)))+'</div><div class="s" style="margin-top:4px">'+lcEsc(n.t)+'</div></div>'}).join(''):'<div class="cb" style="padding-top:0"><p class="s mut">Pas encore de note. Vos notes restent dans votre espace coach.</p></div>')+'</div>'}
+  function narrow(){return getComputedStyle(det).display==='none'}
+  function drawList(){list.innerHTML=S.map(function(s){var n=s.les.length+s.book.length;return '<button class="ce-li" data-a="pick" data-id="'+lcEsc(s.id)+'" aria-selected="'+(s.id===lcSel)+'">'+U.av(s.m||{first:s.name})+'<span style="min-width:0"><span class="nmx ellip" style="display:block">'+lcEsc(s.name)+'</span><span class="s mut ellip" style="display:block">'+(s.galop?'Galop '+s.galop+' · ':'')+n+' cours avec vous</span></span><span></span></button>'}).join('')}
+  function drawDet(){var s=S.filter(function(x){return x.id===lcSel})[0];if(s){det.innerHTML=detail(s);P.animate(det);swIn(det)}}
+  function note(s,redraw){var sh=P.sheet({title:'Note pour '+s.first,icon:'edit',body:'<label class="field"><span>Ce que vous avez travaillé, ce qu’il faut revoir</span><textarea class="in" rows="5" data-t></textarea></label>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+   sh.querySelector('[data-ok]').onclick=function(){var t=sh.querySelector('[data-t]').value.trim();if(!t){P.toast('Écrivez la note avant d’enregistrer',{icon:'info'});return}lcRec(s).notes.push({t:t,at:new Date().toISOString()});lcSave();sh.close();redraw();P.toast('Note enregistrée',{icon:'checkc'})}}
+  function openSheet(){var s=S.filter(function(x){return x.id===lcSel})[0];P.sheet({title:s.name,icon:'members',wide:true,body:function(b,sheet){function rd(){b.innerHTML=detail(s)}rd();act(sheet,{nadd:function(){note(s,rd)}})}})}
+  drawList();drawDet();
+  act(det,{nadd:function(){note(S.filter(function(x){return x.id===lcSel})[0],drawDet)}});
+  act(list,{pick:function(b){lcSel=b.getAttribute('data-id');drawList();if(narrow())openSheet();else drawDet()}});
+};
+
+/* ---------- Disponibilités : créneaux de la fiche coach, réservables par les adhérents ---------- */
+LC['coach-dispo']=function(el){var c=lcMe(),sl=(c.slots||[]).slice(),ord=function(s){var p=String(s).split(' ');return ((DWS.indexOf(p[0])+6)%7)*1440+hm(p[1]||'0:0')};
+  sl.sort(function(a,b){return ord(a)-ord(b)});var req=lcReq().length,cf=lcBook().filter(function(b){return b.status==='confirmée'}).length;
+  el.innerHTML=ph('Disponibilités',sl.length?sl.length+' créneau'+(sl.length>1?'x':'')+' ouvert'+(sl.length>1?'s':'')+' aux adhérents du club':'Ouvrez des créneaux pour recevoir des demandes de cours','<button class="btn pri" data-a="add">'+I('plus','sm')+'Ouvrir un créneau</button>')+
+   '<div class="fx-stats rise">'+tile({dom:'acc',icon:'calendar_add',label:'Créneaux ouverts',value:sl.length,sub:'chaque semaine'})+tile({dom:'rd',icon:'planning',label:'Demandes en attente',value:req,sub:'dans votre agenda'})+tile({dom:'hz',icon:'checkc',label:'Cours acceptés',value:cf,sub:'cours particuliers'})+(c.rate?tile({dom:'mo',icon:'euro',label:'Tarif',value:F.eur(+c.rate),sub:'fixé avec le club'}):'')+'</div>'+
+   '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:8px"><div><h3>Créneaux de la semaine</h3><div class="xs mut">Visibles par les adhérents sur la page Coachs de leur espace</div></div></div>'+
+    (sl.length?'<div class="list">'+sl.map(function(s){var p=String(s).split(' ');return '<div class="li">'+sq('calendar_add','acc')+'<div class="grow"><div class="t">'+lcEsc(({Dim:'Dimanche',Lun:'Lundi',Mar:'Mardi',Mer:'Mercredi',Jeu:'Jeudi',Ven:'Vendredi',Sam:'Samedi'})[p[0]]||p[0])+' à '+lcEsc(String(p[1]||'').replace(':',' h '))+'</div><div class="s">Cours particulier, '+dur(60)+'</div></div><button class="btn sm ghost" data-a="del" data-s="'+lcEsc(s)+'">'+I('close','sm')+'Fermer</button></div>'}).join('')+'</div>':
+     U.empty('calendar_add','Aucun créneau ouvert','Ajoutez les heures où vous pouvez donner un cours particulier : les adhérents pourront vous le demander.'))+'</div>';
+  function save(){c.slots=sl;lcSave();P.rerender()}
+  act(el,{del:function(b){var s=b.getAttribute('data-s');sl=sl.filter(function(x){return x!==s});save();P.toast('Créneau fermé',{undo:function(){sl.push(s);save()}})},
+   add:function(){var sh=P.sheet({title:'Ouvrir un créneau',icon:'calendar_add',body:'<div class="g2" style="--g:12px;grid-template-columns:1fr 1fr"><label class="field"><span>Jour</span><select class="in" data-d>'+[1,2,3,4,5,6,0].map(function(w){return '<option value="'+DWS[w]+'">'+['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][w]+'</option>'}).join('')+'</select></label><label class="field"><span>Heure</span><input class="in" type="time" value="14:00" step="900" data-t></label></div>',foot:'<button class="btn pri" data-ok>Ouvrir</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var t=sh.querySelector('[data-t]').value;if(!/^\d{2}:\d{2}$/.test(t)){P.toast('Choisissez une heure',{icon:'info'});return}var s=sh.querySelector('[data-d]').value+' '+t;if(sl.indexOf(s)<0)sl.push(s);sh.close();save();P.toast('Créneau ouvert aux adhérents',{icon:'checkc'})}}});
+};
+
+/* ---------- Revenus : seulement ce que Piaffe sait ---------- */
+LC['coach-revenus']=function(el){var B=lcBook().filter(function(b){return b.status==='confirmée'||b.status==='terminée'}),sum=B.reduce(function(a,b){return a+(+b.price||0)},0);
+  el.innerHTML=ph('Revenus',B.length?B.length+' cours particulier'+(B.length>1?'s':'')+' accepté'+(B.length>1?'s':''):'Vos cours particuliers acceptés','')+
+   (B.length?'<div class="fx-stats rise">'+tile({dom:'mo',icon:'euro',label:'Cours particuliers',value:F.eur(sum),sub:'au tarif indiqué à la réservation'})+tile({dom:'tm',icon:'planning',label:'Cours acceptés',value:B.length,sub:'depuis votre arrivée'})+'</div>'+
+    '<div class="card list" style="margin-top:14px">'+B.map(function(b){return '<div class="li">'+sq('coach','acc')+'<div class="grow"><div class="t">'+lcEsc(lcWho(b))+'</div><div class="s">'+lcEsc(b.type||'Cours particulier')+(b.date?' · '+lcEsc(F.dateL(b.date)):'')+'</div></div><div class="r"><b class="s num">'+(b.price?F.eur(+b.price):'')+'</b></div></div>'}).join('')+'</div>'+
+    '<div class="note" style="margin-top:14px">'+I('info','sm')+'<span>Le règlement de ces cours et vos reversements se font directement avec le club : ils ne sont pas encore suivis dans Piaffe.</span></div>':
+    '<div class="card">'+U.empty('wallet','Pas encore de revenus suivis','Les cours particuliers que vous acceptez apparaîtront ici avec leur tarif. Le règlement des reprises du club se fait avec le gérant.')+'</div>');
+};
+
+/* ---------- Concours : concours du club et engagements de vos élèves ---------- */
+LC['coach-concours']=function(el){var t=iso(day(0)),ids=lcIds(),st=lcStudents().map(function(s){return s.id}),
+  K=(D.competitions||[]).filter(function(k){return String(k.date||'')>=t}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),
+  En=(D.entries||[]).filter(function(e){return ids.indexOf(e.coach)>=0||st.indexOf(e.rider)>=0});
+  el.innerHTML=ph('Concours',K.length?K.length+' concours à venir au calendrier du club':'Le calendrier de concours du club','')+
+   (K.length?'<div class="stack rise" style="--g:14px">'+K.map(function(k){var es=En.filter(function(e){return e.comp===k.id});
+     return '<div class="card"><div class="ch"><div><h3>'+lcEsc(k.name||'Concours')+'</h3><div class="xs mut">'+lcEsc(lcCap(F.dateL(k.date)))+(k.place?' · '+lcEsc(k.place):'')+'</div></div>'+(es.length?U.chip(es.length+' engagé'+(es.length>1?'s':''),'acc'):'')+'</div>'+
+      (es.length?'<div class="list">'+es.map(function(e){var m=D.member(e.rider),h=e.horse&&D.horse(e.horse);return '<div class="li">'+U.av(m||e.rider)+'<div class="grow"><div class="t">'+lcEsc(m?m.first+' '+(m.last||''):'Cavalier')+(h?' · '+lcEsc(h.name):'')+'</div><div class="s">'+lcEsc(e.class||'')+'</div></div>'+U.chip(lcCap(e.status||'engagé'),/demand/.test(e.status||'')?'warn':'ok',true)+'</div>'}).join('')+'</div>':'<div class="cb" style="padding-top:0"><p class="s mut">Aucun de vos élèves n’est encore engagé.</p></div>')+'</div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('compet','Aucun concours à venir','Les concours ajoutés par le club et les engagements de vos élèves apparaîtront ici.')+'</div>');
+};
+
+/* ---------- Profil : la fiche coach, éditable (le tarif reste fixé avec le club) ---------- */
+LC['coach-profil']=function(el){var c=lcMe(),SPEC=['CSO','Dressage','Cross','Hunter','Éthologie','Travail sur le plat','Coaching de concours','Jeunes chevaux','Enfants'],my=String(c.spec||'').split(/\s*,\s*/).filter(Boolean);
+  el.innerHTML=ph('Profil','Ce que voient les adhérents du club sur la page Coachs','<button class="btn" data-a="bio">'+I('edit','sm')+'Modifier ma présentation</button>')+
+   '<div class="g2 rise" style="--g:14px"><div class="card pad"><div class="hrow" style="--g:16px">'+U.av(c,'xl')+'<div class="grow"><b class="l disp" style="font-size:22px">'+lcEsc((c.first||'')+' '+(c.last||''))+'</b><div class="s mut">'+lcEsc(c.level||'Coach')+'</div></div></div>'+
+    '<p class="s" style="margin-top:14px;color:var(--ink-2)">'+(c.bio?lcEsc(c.bio):'<span class="mut">Pas encore de présentation.</span>')+'</p>'+
+    '<div class="eyebrow" style="margin:16px 0 8px">Spécialités</div><div class="hrow wrap" style="--g:6px">'+SPEC.concat(my.filter(function(s){return SPEC.indexOf(s)<0})).map(function(k){return '<button class="tag" style="height:34px" data-a="spec" data-k="'+lcEsc(k)+'" aria-pressed="'+(my.indexOf(k)>=0)+'">'+lcEsc(k)+'</button>'}).join('')+'</div></div>'+
+   '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Ma fiche au club</h3></div><div class="cb" style="padding-top:0">'+row('Niveau, diplôme',lcEsc(c.level||'non renseigné'))+row('Tarif d’un cours particulier',c.rate?F.eur(+c.rate):'non renseigné')+row('Créneaux ouverts',(c.slots||[]).length+'')+(c.reviews?row('Avis',lcEsc(String(c.rating||'').replace('.',','))+' sur 5 · '+c.reviews+' avis'):'')+
+    '<p class="xs mut" style="margin-top:10px">Le tarif est fixé avec le gérant du club : demandez-lui de le modifier.</p></div></div></div>';
+  act(el,{spec:function(b){var k=b.getAttribute('data-k'),i=my.indexOf(k);if(i<0)my.push(k);else my.splice(i,1);b.setAttribute('aria-pressed',i<0);c.spec=my.join(', ');lcSave();P.toast('Spécialités enregistrées',{ms:1500})},
+   bio:function(){var sh=P.sheet({title:'Ma présentation',icon:'edit',body:'<div class="stack" style="--g:12px"><label class="field"><span>Niveau, diplôme</span><input class="in" data-l value="'+lcEsc(c.level||'')+'"></label><label class="field"><span>Présentation, visible par les adhérents</span><textarea class="in" rows="6" data-t>'+lcEsc(c.bio||'')+'</textarea></label></div>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){c.bio=sh.querySelector('[data-t]').value.trim();c.level=sh.querySelector('[data-l]').value.trim();lcSave();sh.close();P.rerender();P.toast('Présentation enregistrée',{icon:'checkc'})}}});
+};
+
+/* ---------- Pastilles du menu ---------- */
+LCB['coach-agenda']=function(){var n=lcReq().length;return n?{v:n}:null};
+['coach-eleves','coach-dispo','coach-revenus','coach-concours','coach-profil'].forEach(function(k){LCB[k]=function(){return null}});
+
+if(!DEMO){
+  Object.keys(LC).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=lcSafe(id,LC[id]);m.__lv=true});
+  Object.keys(LCB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LCB[id]});
+  if(P.mods['coach-agenda'])P.mods['coach-agenda'].phoneTitle='Agenda';
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='coach')P.actions.splice(ai,1);
+  P.actions.push({role:'coach',label:'Voir mon agenda',icon:'planning',run:function(){P.go('coach-agenda')}},{role:'coach',label:'Ouvrir un créneau',icon:'calendar_add',run:function(){P.go('coach-dispo')}},
+    {role:'coach',label:'Voir mes élèves',icon:'members',run:function(){P.go('coach-eleves')}},{role:'coach',label:'Modifier ma présentation',icon:'user',run:function(){P.go('coach-profil')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='coach')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^coach-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.coach)P.suggestions.coach.length=0;
+}
+
 /* Manche 4 : segments trop longs pour le téléphone. Un fondu sur le bord indique qu'ils défilent et disparaît en bout de course. */
 P.css(`.seg.fx-sf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
 .seg.fx-sf.l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent)}
@@ -12515,6 +12701,8 @@ PL.modq.push({file:"80-adherent.js",run:function(){
    ===================================================================== */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,$=P.$,$$=P.$$;
+/* La démo suit Léa Martin (m001). Dans un vrai club, D.me.adherent est la fiche de la personne connectée : voir « Club réel » en fin de fichier. */
+var DEMO=!D.me||D.me.adherent==='m001'||!!(window.PL&&PL.sandbox);
 /* Manche 4 : fondu et léger glissement quand un onglet ou un filtre interne redessine un bloc (pas au premier rendu) */
 function swIn(n){if(!n)return;if(n.__sw&&!P.RM){n.classList.remove('ad-sw');void n.offsetWidth;n.classList.add('ad-sw')}n.__sw=1}
 P.css(`.ad-sw{animation:adsw .24s var(--e-out) backwards}@keyframes adsw{from{opacity:0;transform:translateY(10px)}}
@@ -14788,6 +14976,299 @@ P.css(`.seg.ad-sf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px
 .seg.ad-sf.l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent)}
 .seg.ad-sf.e{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px);mask-image:linear-gradient(90deg,transparent,#000 36px)}`);
 function adSegs(root){P.$$('.seg',root).forEach(function(g){if(g.__sf)return;g.__sf=1;function up(){var over=g.scrollWidth>g.clientWidth+2,x=g.scrollLeft,end=x+g.clientWidth>=g.scrollWidth-2;g.classList.toggle('ad-sf',over);g.classList.toggle('l',over&&x>2&&!end);g.classList.toggle('e',over&&end)}g.addEventListener('scroll',up,{passive:true});requestAnimationFrame(up)})}
+/* =====================================================================
+   CLUB RÉEL : l'espace adhérent de la personne connectée
+   La démo garde Léa Martin (m001) et son jeu d'exemple. Dans un vrai club (D.me.adherent est la fiche
+   de la personne connectée), chaque écran se construit à partir de sa fiche, de sa famille (même fam)
+   et des collections du club ; les modifications passent par DATA et sont enregistrées par la synchro.
+   ===================================================================== */
+var LV={},LVB={};
+function lvMe(){var id=D.me&&D.me.adherent,m=id&&D.member(id);return m||D.person(id)||{id:id||'me',first:'',last:'',galop:0}}
+function lvIds(){var me=lvMe(),ids=[me.id];(D.members||[]).forEach(function(m){if(m.fam&&me.fam&&m.fam===me.fam&&ids.indexOf(m.id)<0)ids.push(m.id)});
+  ((window.PL&&PL.personIds)||[]).forEach(function(i){if(ids.indexOf(i)<0&&D.member(i))ids.push(i)});return ids}
+function lvPeople(){var L=lvIds().map(function(i){return D.member(i)}).filter(Boolean);return L.length?L:[lvMe()]}
+function lvFirst(){var me=lvMe();return me.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function lvNm(p){return ((p&&p.first||'')+' '+(p&&p.last||'')).trim()}
+function lvNow(){var t=D.today||new Date();return t.getHours()*60+t.getMinutes()}
+function lvMin(s){var p=String(s||'0:0').split(':');return (+p[0]||0)*60+(+p[1]||0)}
+function lvOff(l){var t=D.today||new Date(),o=(l.dow-t.getDay()+7)%7;if(o===0&&lvMin(l.start)+(+l.dur||60)<=lvNow())o=7;return o}
+function lvWhen(o){return o===0?'aujourd’hui':o===1?'demain':DWL7(o)}
+function DWL7(o){return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][D.day(o).getDay()]}
+function lvMine(){var ids=lvIds();return (D.lessons||[]).filter(function(l){return (l.riders||[]).some(function(r){return ids.indexOf(r)>=0})&&!/annul/i.test(l.status||'')})
+  .map(function(l){return {l:l,off:lvOff(l),who:(l.riders||[]).filter(function(r){return ids.indexOf(r)>=0})}}).sort(function(a,b){return a.off-b.off||lvMin(a.l.start)-lvMin(b.l.start)})}
+function lvHorses(){var ids=lvIds(),hb=(D.halfboard||[]).filter(function(d){return ids.indexOf(d.rider)>=0&&!/termin|annul/i.test(d.status||'')}).map(function(d){return d.horse});
+  return (D.horses||[]).filter(function(h){return ids.indexOf(h.owner)>=0||hb.indexOf(h.id)>=0})}
+function lvInv(){var ids=lvIds();return (D.invoices||[]).filter(function(i){return i.status!=='brouillon'&&(!i.member||ids.indexOf(i.member)>=0)})}
+function lvDueL(){return lvInv().filter(function(i){return +i.left>0&&['payée','annulée','avoir'].indexOf(i.status)<0})}
+function lvDue(){return lvDueL().reduce(function(a,i){return a+(+i.left||0)},0)}
+function lvSigners(c){return Array.isArray(c.signers)&&c.signers.length?c.signers:[c.party].filter(Boolean)}
+function lvContracts(){var ids=lvIds();return (D.contracts||[]).filter(function(c){return c.status!=='brouillon'&&(ids.indexOf(c.party)>=0||lvSigners(c).some(function(s){return ids.indexOf(s)>=0}))})}
+function lvToSign(c){var ids=lvIds(),sg=c.signed||[];return lvSigners(c).filter(function(s){return ids.indexOf(s)>=0&&sg.indexOf(s)<0})}
+function lvMustSign(c){return c.status==='à signer'&&lvToSign(c).length>0}
+function lvWx(){var w=D.weather||[];return w.length&&!w[0].none?w:null}
+function lvSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function lvHM(d){d=d||new Date();return String(d.getHours()).padStart(2,'0')+' h '+String(d.getMinutes()).padStart(2,'0')}
+function lvUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function lvIco(i,d){return '<span class="ico d-'+d+'">'+ICON(i)+'</span>'}
+function lvLk(go,txt){return '<button class="lk" data-go="'+go+'">'+(txt||'')+ICON('arrow','sm')+'</button>'}
+function lvRidersTxt(l){var n=(l.riders||[]).length;return n+' cavalier'+(n>1?'s':'')+' sur '+l.cap}
+function lvCareOf(h){var t=D.iso(D.day(0));return (D.care||[]).filter(function(c){return c.horse===h.id}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))})}
+function lvNextCare(h){var t=D.iso(D.day(0));return lvCareOf(h).filter(function(c){return c.status!=='fait'&&String(c.date)>=t})[0]}
+function lvEsc(s){return F.esc?F.esc(String(s==null?'':s)):String(s==null?'':s)}
+/* écrit au club : un fil de messages avec la personne, créé au besoin */
+function lvThread(){var me=lvMe();return (D.threads||[]).filter(function(t){return t.with===me.id})[0]}
+function lvSend(text){var me=lvMe(),t=lvThread(),m={w:me.id,t:lvHM(),x:text,at:new Date().toISOString()};
+  if(!t){t={id:lvUid('th'),with:me.id,title:lvNm(me)||'Adhérent',last:text,when:lvHM(),unread:1,msgs:[m]};D.threads.unshift(t)}
+  else{t.msgs=(t.msgs||[]).concat([m]);t.last=text;t.when=lvHM();t.unread=(+t.unread||0)+1}
+  lvSave();return t}
+function lvSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[adhérent] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+
+/* ---------- Feuilles communes ---------- */
+function lvLessonSheet(l,off){var ids=lvIds(),who=(l.riders||[]).filter(function(r){return ids.indexOf(r)>=0}),h=who[0]&&l.horses&&l.horses[who[0]]&&D.horse(l.horses[who[0]]);
+  var sh=P.sheet({title:l.title,icon:'planning',body:'<div class="stack" style="--g:14px"><div class="card soft" style="padding:14px"><div class="ad-sum"><span class="mut">Quand</span><b>'+cap(lvWhen(off))+', '+l.start+' – '+endT(l)+'</b></div><div class="ad-sum"><span class="mut">Où</span><b>'+(arena(l)||'Au club')+'</b></div>'+(l.coach?'<div class="ad-sum"><span class="mut">Avec</span><b>'+lvEsc(D.name(l.coach))+'</b></div>':'')+'<div class="ad-sum"><span class="mut">Monture</span><b>'+(h?lvEsc(h.name):'Attribuée par le club')+'</b></div></div>'+
+    '<div><div class="ad-lbl">Inscrits</div><div class="hrow wrap" style="--g:10px">'+who.map(function(r){return U.chip(lvEsc(D.name(r)),'ok',true)}).join('')+'<span class="s mut">'+lvRidersTxt(l)+'</span></div></div>'+
+    '<div class="note">'+ICON('info','sm')+'<span>Vous ne pouvez plus venir ? Libérez votre place : elle est aussitôt proposée aux autres cavaliers.</span></div></div>',
+    foot:'<button class="btn ad-full" data-abs>Libérer ma place</button><button class="btn pri ad-full" data-x2>Fermer</button>'});
+  $('[data-x2]',sh).onclick=function(){sh.close()};
+  $('[data-abs]',sh).onclick=function(){l.riders=(l.riders||[]).filter(function(r){return ids.indexOf(r)<0});who.forEach(function(r){if(l.horses)delete l.horses[r]});lvSave();sh.close();P.rerender();
+    P.toast('Place libérée pour la reprise « '+l.title+' »',{icon:'calendar_add',undo:function(){who.forEach(function(r){if(l.riders.indexOf(r)<0)l.riders.push(r)});lvSave();P.rerender()}})}}
+function lvBookSheet(l,off,who,after){var p=D.member(who)||lvMe(),left=l.cap-(l.riders||[]).length;
+  var sh=P.sheet({title:'Réserver la reprise',icon:'calendar_add',body:'<div class="card soft" style="padding:14px 16px"><div class="hrow" style="--g:12px"><div class="ad-date"><b>'+D.day(off).getDate()+'</b><span>'+DW[D.day(off).getDay()]+'</span></div><div class="grow"><div class="b" style="font-size:15.5px">'+lvEsc(l.title)+'</div><div class="s mut">'+l.start+' – '+endT(l)+(arena(l)?' · '+lvEsc(arena(l)):'')+'</div><div class="s mut">'+(l.coach?lvEsc(D.name(l.coach))+' · ':'')+left+' place'+(left>1?'s':'')+' restante'+(left>1?'s':'')+'</div></div></div></div>'+
+    '<div class="ad-lbl">Cavalier</div><div class="ad-row">'+U.av(p)+'<div class="grow"><div class="t">'+lvEsc(lvNm(p))+'</div><div class="s">'+(p.galop?'Galop '+p.galop:'Cavalier du club')+'</div></div></div>'+
+    '<p class="xs mut" style="margin-top:14px">Votre inscription est envoyée au club, qui la voit aussitôt dans son planning. Vous pouvez libérer votre place depuis cet écran.</p>',
+    foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('calendar_add','sm')+'Réserver ma place</button>'});
+  var ok=$('[data-ok]',sh);ok.onclick=function(){spin(ok,function(){if((l.riders||[]).indexOf(who)<0){l.riders=(l.riders||[]).concat([who])}
+    if(Array.isArray(l.waitlist))l.waitlist=l.waitlist.filter(function(x){return x!==who});lvSave();
+    success(sh,{title:'C’est réservé',text:'Votre place est enregistrée. Le club la voit dans son planning.',head:'<div class="ad-date"><b>'+D.day(off).getDate()+'</b><span>'+DW[D.day(off).getDay()]+'</span></div><div class="grow"><div class="b" style="font-size:15.5px">'+lvEsc(l.title)+'</div><div class="s mut">'+cap(F.dateL(D.day(off)))+'</div></div>'+(l.coach?U.av(l.coach):''),
+      rows:[['Horaire',l.start+' – '+endT(l)],['Lieu',lvEsc(arena(l)||'Au club')],['Cavalier',lvEsc(lvNm(p))],['Avec',lvEsc(l.coach?D.name(l.coach):'Le club')]]});if(after)after()})}}
+function lvSignSheet(c,after){var me=lvMe(),must=lvToSign(c),done=!must.length;
+  var sh=P.sheet({title:c.title||'Document',icon:'sign',wide:true,body:function(b){
+   b.innerHTML='<div class="ad-paper"><h4>'+lvEsc(c.title||'Document')+'</h4><div class="xs mut">'+lvEsc(D.club.name)+(c.date?' · '+F.date(c.date):'')+(c.horse&&D.horse(c.horse)?' · '+lvEsc(D.horse(c.horse).name):'')+(c.amount?' · '+F.eur(c.amount):'')+'</div>'+
+     (c.text?'<p>'+lvEsc(c.text)+'</p>':Array.isArray(c.arts)&&c.arts.length?c.arts.map(function(a,i){return '<h5>Article '+(i+1)+'. '+lvEsc(a[0])+'</h5><p>'+lvEsc(a[1])+'</p>'}).join(''):'<p>Le texte complet de ce document vous est remis par le club. En signant, vous confirmez l’avoir lu et en accepter les termes.</p>')+'</div>'+
+    '<div class="ad-lbl">Signataires</div><div class="card list" data-sg></div>'+
+    (done?'':'<label class="hrow" style="--g:10px;margin:16px 0 12px;cursor:pointer">'+U.chk(false,'read')+'<span class="s">J’ai lu le document en entier et j’en accepte les termes.</span></label>')+
+    (done?'':'<div class="hrow sp" style="margin:0 0 8px"><span class="ad-lbl" style="margin:0">Votre signature</span><button class="btn ghost sm" data-clr>Effacer</button></div><div class="ad-pad"><canvas></canvas><span class="bs"></span><span class="ul"></span><span class="hl">Signez ici, au doigt ou à la souris</span></div>')+
+    '<p class="xs mut hrow" style="--g:6px;margin-top:10px">'+ICON('shield','sm')+'Signature électronique horodatée, enregistrée par le club.</p>'},
+   foot:done?'<button class="btn pri ad-full" data-x2>Fermer</button>':'<button class="btn pri lg ad-full" data-ok disabled>'+ICON('sign','sm')+'Signer le document</button>'});
+  function signers(){$('[data-sg]',sh).innerHTML=lvSigners(c).map(function(s){var y=(c.signed||[]).indexOf(s)>=0;return '<div class="li">'+U.av(s)+'<div class="grow"><div class="t">'+(s===me.id?'Vous, '+lvEsc(lvNm(me)):lvEsc(D.name(s)||'Le club'))+'</div></div>'+(y?U.chip('Signé','ok',true):U.chip('En attente',''))+'</div>'}).join('')}
+  signers();
+  if(done){$('[data-x2]',sh).onclick=function(){sh.close()};return}
+  var pad=$('.ad-pad',sh),ok=$('[data-ok]',sh),inked=false,api=signPad(pad,function(v){inked=v;chk()});
+  function chk(){setTimeout(function(){ok.disabled=!(inked&&$('.chk[data-id="read"]',sh).getAttribute('aria-checked')==='true')},0)}
+  $('.chk[data-id="read"]',sh).addEventListener('click',chk);$('.chk[data-id="read"]',sh).parentNode.addEventListener('click',chk);$('[data-clr]',sh).onclick=function(){api.clear()};
+  ok.onclick=function(){c.signed=(c.signed||[]).concat(must.filter(function(s){return (c.signed||[]).indexOf(s)<0}));c.signedAt=c.signedAt||{};must.forEach(function(s){c.signedAt[s]=new Date().toISOString()});
+   if(lvSigners(c).every(function(s){return c.signed.indexOf(s)>=0}))c.status='signé';lvSave();
+   pad.classList.add('done');pad.insertAdjacentHTML('beforeend','<span class="ad-stamp"><span class="strass"></span>Signé le '+F.date(D.iso(new Date()))+' à '+lvHM()+'</span>');signers();
+   var f=$('.sf',sh);f.innerHTML='<button class="btn pri ad-full" data-done>Terminé</button>';$('[data-clr]',sh)&&$('[data-clr]',sh).remove();$('[data-done]',f).onclick=function(){sh.close()};
+   P.toast(c.status==='signé'?'Document signé, le club en reçoit une copie':'Document signé. Les autres signataires sont prévenus.',{icon:'sign'});if(after)after()}}
+function lvWriteSheet(title,ph,send){var sh=P.sheet({title:title,icon:'chat',body:'<label class="lv-fl"><span>Votre message</span><textarea class="in" rows="5" data-tx placeholder="'+lvEsc(ph||'')+'" style="height:auto;padding:12px"></textarea></label>',foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok>'+ICON('send','sm')+'Envoyer</button>'});
+  $('[data-x2]',sh).onclick=function(){sh.close()};$('[data-ok]',sh).onclick=function(){var t=$('[data-tx]',sh).value.trim();if(!t){P.toast('Écrivez votre message.',{icon:'alert'});return}send(t);sh.close()};return sh}
+
+/* ---------- 1. Accueil ---------- */
+LV['adh-accueil']=function(el,ctx){var me=lvMe(),first=lvFirst(),mine=lvMine(),n=mine[0],hs=lvHorses(),h0=hs[0],dueV=lvDue(),ts=lvContracts().filter(lvMustSign),wx=lvWx(),B=[];
+  B.push('<div class="ad-quick w4" data-b="quick">'+[['adh-reserver','calendar_add','Réserver',mine.length?mine.length+' reprise'+(mine.length>1?'s':'')+' par semaine':'Choisir une reprise',0,'cavaliers'],['adh-paiements','card','Payer',dueV?F.eur(dueV)+' à régler':'Tout est réglé',0,'argent'],['adh-contrats','sign','Signer',ts.length?ts.length+' document'+(ts.length>1?'s':'')+' en attente':'Tout est signé',ts.length,'plateforme'],['adh-messages','chat','Messages','Écrire au club',0,'equipe']].map(function(q){
+    return '<button class="ad-q" data-go="'+q[0]+'"><span class="ico d-'+q[5]+'">'+ICON(q[1])+(q[4]?'<em>'+q[4]+'</em>':'')+'</span><span class="grow" style="min-width:0"><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'}).join('')+'</div>');
+  if(n){var l=n.l,who=n.who[0],h=l.horses&&l.horses[who]&&D.horse(l.horses[who]),w=wx&&wx[Math.min(6,n.off)],kid=who!==me.id,mn=n.off*1440+lvMin(l.start)-lvNow();
+   B.push('<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp" style="position:relative"><span class="eyebrow">Prochaine reprise'+(kid?' de '+lvEsc((D.member(who)||{}).first||''):'')+'</span><span class="ad-cd">'+ICON('clock','sm')+(n.off===0?'Dans '+dur(Math.max(1,mn)):n.off===1?'Demain':'Dans '+n.off+' jours')+'</span></div>'+
+    '<div style="position:relative"><h2>'+lvEsc(l.title)+'</h2><div class="wh">'+cap(F.dateL(D.day(n.off)))+' · '+hm(l.start)+' à '+hm(endT(l))+(arena(l)?' · '+lvEsc(arena(l)):'')+'</div></div>'+
+    '<div class="ad-ng"><div>'+(h?U.hav(h):'<span class="wi">'+ICON('horse')+'</span>')+'<div class="grow" style="min-width:0"><div class="k">Monture</div><div class="v ellip">'+(h?lvEsc(h.name):'Attribuée par le club')+'</div></div></div>'+
+    (l.coach?'<div>'+U.av(l.coach)+'<div class="grow" style="min-width:0"><div class="k">'+lvEsc(((D.staffer(l.coach)||D.coach(l.coach)||{}).role)||'Enseignant')+'</div><div class="v ellip">'+lvEsc(D.name(l.coach))+'</div></div></div>':'')+
+    (w?'<div><span class="wi">'+ICON(w.i)+'</span><div class="grow" style="min-width:0"><div class="k">Météo</div><div class="v">'+w.t+' °C, '+(w.r>50?'pluie':w.r>15?'nuageux':'temps sec')+'</div></div></div>':'<div><span class="wi">'+ICON('members')+'</span><div class="grow" style="min-width:0"><div class="k">Reprise</div><div class="v">'+lvRidersTxt(l)+'</div></div></div>')+'</div>'+
+    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn ad-nb on" data-les>Voir la séance</button><button class="btn ad-nb" data-go="adh-reserver">Toutes mes réservations'+ICON('arrow','sm')+'</button></div></div>')}
+  else B.push('<div class="card w2" data-b="next">'+U.empty('planning','Aucune reprise réservée','Choisissez un créneau : votre place est enregistrée tout de suite auprès du club.','<button class="btn pri" data-go="adh-reserver">Réserver une reprise</button>')+'</div>');
+  if(h0){var nc=lvNextCare(h0);
+   B.push('<div class="card tint d-chevaux ad-t w2" data-b="horse"><div class="ad-tt">'+lvIco('horse','chevaux')+'<h3>'+lvEsc(h0.name)+'</h3>'+lvLk('adh-cheval','Sa fiche')+'</div>'+
+    '<div class="ad-row"><span class="sub grow"><b>'+(h0.box?'Au box '+lvEsc(h0.box)+'.':'Au club.')+'</b> '+(nc?'Prochain soin : '+lvEsc(nc.kind).toLowerCase()+' '+F.rel(nc.date)+'.':'Aucun soin prévu pour l’instant.')+'</span></div>'+
+    '<div class="hrow wrap end" style="--g:8px">'+(nc?U.chip(ICON('care','sm')+lvEsc(nc.kind)+' · '+F.date(nc.date),'warn'):'')+(h0.status==='ok'||!h0.status?U.chip(ICON('heart','sm')+'En forme','ok'):U.chip(ICON('alert','sm')+'À surveiller','bad'))+(hs.length>1?U.chip('+'+(hs.length-1)+' autre'+(hs.length>2?'s':''),'d'):'')+'</div></div>')}
+  var dl=lvDueL();
+  B.push('<div class="card tint d-argent ad-t has-illu w1 pw2" data-b="money">'+ILLU.pieces({size:null,cls:'corner'})+'<div class="ad-tt">'+lvIco('wallet','argent')+'<h3>'+(dueV?'À régler':'Solde')+'</h3></div>'+
+    (dueV?'<div><div class="big num"><span data-count="'+dueV+'" data-fmt="eur">'+F.eur(dueV)+'</span></div><div class="sub" style="margin-top:8px">'+dl.length+' facture'+(dl.length>1?'s':'')+' en attente'+(dl[0]&&dl[0].due?', échéance le '+F.date(dl[0].due):'')+'.</div></div>':'<div><div class="big num">0 €</div><div class="sub" style="margin-top:8px">Tout est réglé'+(first?'. Merci '+lvEsc(first)+'.':'.')+'</div></div>')+
+    (dueV?'<div class="hrow end" style="--g:8px"><button class="btn pri grow" data-go="adh-paiements">'+ICON('card','sm')+'Payer '+F.eur(dueV)+'</button></div>':'<button class="btn block end" data-go="adh-paiements">Voir mes factures</button>')+'</div>');
+  B.push('<div class="card ad-t w1 pw2" data-b="sign"><div class="ad-tt">'+lvIco('sign','plateforme')+'<h3>À signer</h3>'+(ts.length?'<span class="chip acc lg">'+ts.length+'</span>':'<span class="chip ok dot">À jour</span>')+'</div>'+
+    (ts.length?'<div><div class="b" style="font-size:15.5px;line-height:1.3">'+lvEsc(ts[0].title)+'</div><div class="s mut" style="margin-top:4px">'+(ts[0].date?'Envoyé le '+F.date(ts[0].date):'')+'</div></div><button class="btn dark block end" data-sign="'+lvEsc(ts[0].id)+'">'+ICON('sign','sm')+'Signer au doigt</button>':
+     '<div class="ad-row">'+sq('checkc','ok')+'<div class="grow"><div class="t">Aucun document en attente</div><div class="s">Retrouvez vos documents dans Contrats.</div></div></div><button class="btn block end" data-go="adh-contrats">Voir mes documents</button>')+'</div>');
+  if(wx)B.push('<div class="card tint d-equipe ad-t w2" data-b="weather"><div class="ad-tt">'+lvIco(wx[0].i,'equipe')+'<h3>Météo du club</h3>'+(D.club.city?'<span class="s" style="opacity:.8">'+lvEsc(D.club.city)+'</span>':'')+'</div>'+
+    '<div class="hrow" style="--g:14px;align-items:flex-end"><div class="big num">'+wx[0].t+'<small>°C</small></div><div class="sub" style="padding-bottom:6px">'+wx[0].r+' % de risque de pluie aujourd’hui</div></div>'+
+    '<div class="ad-wx">'+wx.map(function(w,i){return '<div class="'+(i===0?'on':w.r>50?'rn':'')+'"><span>'+(i===0?'Auj.':w.d)+'</span>'+ICON(w.i)+'<b class="num">'+w.t+'°</b><span class="num" style="opacity:.75">'+w.r+' %</span></div>'}).join('')+'</div></div>');
+  el.innerHTML='<div class="ad-ph">'+U.ph('Bonjour'+(first?' '+lvEsc(first):''),cap(F.dateL(D.day(0)))+' · '+(n?'prochaine reprise '+lvWhen(n.off)+' à '+hm(n.l.start)+'.':'bienvenue dans votre espace '+lvEsc(D.club.name)+'.'),'')+'</div><div class="ad-home rise">'+B.join('')+'</div>';
+  var bl=$('[data-les]',el);if(bl)bl.onclick=function(){lvLessonSheet(n.l,n.off)};
+  $$('[data-sign]',el).forEach(function(b){b.onclick=function(){var c=ts.filter(function(x){return String(x.id)===b.getAttribute('data-sign')})[0];if(c)lvSignSheet(c,P.rerender)}})};
+
+/* ---------- 2. Réserver ---------- */
+var LRS={day:0,who:null};
+LV['adh-reserver']=function(el,ctx){var people=lvPeople(),who=LRS.who&&people.some(function(p){return p.id===LRS.who})?LRS.who:people[0].id,me=D.member(who)||lvMe();
+  function dayLs(o){var d=D.day(o).getDay();return (D.lessons||[]).filter(function(l){return l.dow===d&&!/annul/i.test(l.status||'')&&!(o===0&&lvMin(l.start)+(+l.dur||60)<=lvNow())})}
+  el.innerHTML='<div class="ad-ph">'+U.ph('Réserver',people.length>1?'Choisissez le cavalier, puis une reprise : la place est enregistrée tout de suite auprès du club.':'Choisissez une reprise : votre place est enregistrée tout de suite auprès du club.','')+'</div>'+
+   (people.length>1?U.seg(people.map(function(p){return [p.id,lvEsc(p.first||lvNm(p))]}),who,'data-who'):'')+
+   '<div class="ad-rsv" style="margin-top:4px"><div data-main style="min-width:0"></div><div data-side class="stack" style="--g:14px;margin-top:14px"></div></div>';
+  $$('[data-who]',el).forEach(function(b){b.addEventListener('click',function(){LRS.who=b.getAttribute('data-who');P.rerender()})});
+  function side(){var rs=lvMine();$('[data-side]',el).innerHTML='<div class="card"><div class="ch"><h3>Mes réservations</h3><span class="chip">'+rs.length+'</span></div><div style="padding:8px 0">'+
+    (rs.length?rs.map(function(r,i){var l=r.l;return '<div class="ad-mine" data-r="'+i+'"><div class="ad-date g"><b>'+D.day(r.off).getDate()+'</b><span>'+DW[D.day(r.off).getDay()]+'</span></div><div class="grow"><div class="b s ellip">'+lvEsc(l.title)+'</div><div class="xs mut ellip">'+l.start+' · chaque '+DWL7(r.off)+(l.coach?' · '+lvEsc((D.person(l.coach)||{}).first||''):'')+'</div></div>'+ICON('right','sm')+'</div>'}).join(''):U.empty('planning','Rien de prévu','Choisissez un créneau dans le calendrier.'))+
+    '</div><div class="cf"><button class="btn sm grow" data-go="lv-cal-adh">'+ICON('calendar_add','sm')+'Ajouter à mon agenda</button></div></div>'+
+    '<div class="note">'+ICON('info','sm')+'<span>Une reprise réservée revient chaque semaine. Prévenez le club le plus tôt possible si vous ne pouvez pas venir : libérez votre place depuis « Mes réservations ».</span></div>';
+   $$('[data-r]',el).forEach(function(x){x.onclick=function(){var r=rs[+x.getAttribute('data-r')];lvLessonSheet(r.l,r.off)}})}
+  function main(){var m=$('[data-main]',el),h='<div class="ad-days scroll-x">'+Array.apply(null,Array(14)).map(function(_,o){var ls=dayLs(o),mine=ls.some(function(l){return (l.riders||[]).indexOf(who)>=0});
+      return '<button class="ad-day'+(mine?' mine':'')+'" data-day="'+o+'" aria-selected="'+(o===LRS.day)+'" title="'+cap(lvWhen(o))+'"><span class="w">'+(o===0?'auj.':DW[D.day(o).getDay()])+'</span><span class="d">'+D.day(o).getDate()+'</span><span class="c">'+(ls.length?ls.length+' cr.':'·')+'</span></button>'}).join('')+'</div>';
+    var list=dayLs(LRS.day).sort(function(a,b){return lvMin(a.start)-lvMin(b.start)});
+    h+='<div class="hrow sp" style="margin:12px 0 10px"><h3 style="font-size:17px">'+cap(dayL(LRS.day))+'</h3><span class="s mut">'+list.length+' reprise'+(list.length>1?'s':'')+'</span></div>';
+    h+='<div class="card">'+(list.length?list.map(function(l,i){var n=(l.riders||[]).length,left=l.cap-n,mine=(l.riders||[]).indexOf(who)>=0,w=Array.isArray(l.waitlist)&&l.waitlist.indexOf(who)>=0;
+      return '<div class="ad-slot'+(mine?' mine':'')+'" style="--i:'+i+'"><div class="tm">'+l.start+'<small>'+l.dur+' min</small></div><div style="min-width:0"><div class="ti ellip">'+lvEsc(l.title)+'</div><div class="s mut ellip">'+[l.coach?lvEsc(D.name(l.coach)):'',lvEsc(arena(l)||'')].filter(Boolean).join(' · ')+'</div><div class="me">'+
+        (mine?U.chip('Réservé','ok',true):left<=0?U.chip('Complet'+(Array.isArray(l.waitlist)&&l.waitlist.length?' · '+l.waitlist.length+' en attente':''),'bad',true):left===1?U.chip('Dernière place','warn',true):U.chip(left+' places','ok',true))+'<span style="width:64px">'+U.bar(l.cap?n/l.cap*100:0,left<=0?'var(--bad)':left===1?'var(--warn)':'var(--ok)')+'</span><span class="xs mut num">'+n+'/'+l.cap+'</span></div></div>'+
+        '<div class="rt"><span class="pr"></span>'+(mine?'<button class="btn" data-see="'+lvEsc(l.id)+'">Voir</button>':w?'<button class="btn" data-unw="'+lvEsc(l.id)+'">En attente</button>':left<=0?'<button class="btn" data-wait="'+lvEsc(l.id)+'">'+ICON('waitlist','sm')+'Liste d’attente</button>':'<button class="btn dark" data-book="'+lvEsc(l.id)+'">Réserver</button>')+'</div></div>'}).join(''):
+      U.empty('planning','Aucune reprise ce jour-là','Essayez un autre jour : les reprises du club apparaissent ici dès qu’elles sont au planning.'))+'</div>';
+    m.innerHTML=h;
+    $$('[data-day]',m).forEach(function(b){b.onclick=function(){LRS.day=+b.getAttribute('data-day');main()}});
+    function L(id){return (D.lessons||[]).filter(function(l){return String(l.id)===id})[0]}
+    $$('[data-book]',m).forEach(function(b){b.onclick=function(){lvBookSheet(L(b.getAttribute('data-book')),LRS.day,who,upd)}});
+    $$('[data-see]',m).forEach(function(b){b.onclick=function(){lvLessonSheet(L(b.getAttribute('data-see')),LRS.day)}});
+    $$('[data-wait]',m).forEach(function(b){b.onclick=function(){var l=L(b.getAttribute('data-wait'));l.waitlist=(Array.isArray(l.waitlist)?l.waitlist:[]).concat([who]);lvSave();upd();P.toast('Vous êtes '+l.waitlist.length+(l.waitlist.length>1?'e':'er')+' sur la liste d’attente. Le club vous prévient si une place se libère.',{icon:'waitlist'})}});
+    $$('[data-unw]',m).forEach(function(b){b.onclick=function(){var l=L(b.getAttribute('data-unw'));l.waitlist=(l.waitlist||[]).filter(function(x){return x!==who});lvSave();upd();P.toast('Vous avez quitté la liste d’attente',{icon:'waitlist'})}})}
+  function upd(){side();main()}
+  upd()};
+
+/* ---------- 3. Coachs ---------- */
+LV['adh-coachs']=function(el,ctx){var me=lvMe(),cs=(D.coaches||[]),mineB=(D.coachBookings||[]).filter(function(b){return lvIds().indexOf(b.member)>=0||(b.riders||[]).some(function(r){return lvIds().indexOf(r)>=0})});
+  el.innerHTML=U.ph('Coachs','Les coachs du club et les intervenants que vous pouvez réserver.','')+
+   (mineB.length?'<div class="card" style="margin-bottom:16px"><div class="ch"><h3>Mes demandes</h3><span class="chip">'+mineB.length+'</span></div><div class="list">'+mineB.map(function(b){return '<div class="li">'+U.av(b.coach)+'<div class="grow"><div class="t">'+lvEsc(b.type||'Cours particulier')+' avec '+lvEsc(D.name(b.coach))+'</div><div class="s">'+lvEsc(b.slot||b.t||'')+'</div></div>'+U.chip(lvEsc(b.status||'demandée'),b.status==='confirmée'?'ok':'acc',true)+'</div>'}).join('')+'</div></div>':'')+
+   (cs.length?'<div class="g3 rise">'+cs.map(function(c){return '<div class="card pad"><div class="hrow" style="--g:12px">'+U.av(c)+'<div class="grow" style="min-width:0"><div class="b ellip">'+lvEsc(lvNm(c))+'</div><div class="s mut ellip">'+lvEsc([c.spec,c.level].filter(Boolean).join(' · '))+'</div></div></div>'+
+      (c.bio?'<p class="s" style="margin-top:12px;color:var(--ink-2)">'+lvEsc(c.bio)+'</p>':'')+'<div class="hrow sp" style="margin-top:14px">'+(c.rate?'<span class="b num">'+F.eur(c.rate)+' <span class="s mut">la séance</span></span>':'<span></span>')+'<button class="btn dark sm" data-cb="'+lvEsc(c.id)+'">Demander un cours</button></div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('coach','Aucun coach pour l’instant','Le club n’a pas encore ajouté de coach réservable. Les moniteurs du club vous accueillent dans vos reprises.')+'</div>');
+  $$('[data-cb]',el).forEach(function(b){b.onclick=function(){var c=D.coach(b.getAttribute('data-cb'))||cs.filter(function(x){return x.id===b.getAttribute('data-cb')})[0],slots=(c.slots||[]).filter(Boolean);
+    var sh=P.sheet({title:'Cours avec '+lvNm(c),icon:'coach',body:(slots.length?'<div class="ad-lbl">Créneau souhaité</div>'+opts(slots.map(function(s){return [s,s,'Proposé par '+(c.first||'le coach')]}),slots[0],'slot'):'<p class="s mut">Ce coach n’a pas encore publié ses disponibilités : il vous propose un créneau en retour.</p>')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Précisions (facultatif)</span><input class="in" data-nt placeholder="Votre niveau, votre objectif, votre cheval"></label>',foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('send','sm')+'Envoyer la demande</button>'});
+    bindOpts(sh);$('[data-ok]',sh).onclick=function(){var s=slots.length?optVal(sh,'slot'):'',h=lvHorses()[0];
+      D.coachBookings.push({id:lvUid('cb'),coach:c.id,member:me.id,who:lvNm(me),riders:[me.id],horse:h?h.id:null,horseName:h?h.name:'',slot:s,type:'Cours particulier',note:$('[data-nt]',sh).value.trim(),price:c.rate||0,status:'demandée',at:new Date().toISOString()});lvSave();
+      sh.close();P.rerender();P.toast('Demande envoyée à '+(c.first||'votre coach')+'. Vous serez prévenu de sa réponse.',{icon:'send'})}}})};
+
+/* ---------- 4. Mon cheval ---------- */
+var LCH={id:null};
+LV['adh-cheval']=function(el,ctx){var hs=lvHorses(),me=lvMe();
+  if(!hs.length){el.innerHTML=U.ph('Mon cheval','Le suivi de votre cheval au quotidien.','')+'<div class="card">'+U.empty('horse','Aucun cheval relié à votre fiche','Propriétaire ou demi-pensionnaire ? Demandez au club de relier votre cheval à votre fiche : vous suivrez ici ses soins, sa ration et son carnet.','<button class="btn pri" data-wr>'+ICON('chat','sm')+'Écrire au club</button>')+'</div>';
+   var w=$('[data-wr]',el);if(w)w.onclick=function(){lvWriteSheet('Écrire au club','Bonjour, pouvez-vous relier mon cheval à ma fiche ?',function(t){lvSend(t);P.toast('Message envoyé au club',{icon:'send'})})};return}
+  var h=hs.filter(function(x){return x.id===(ctx.params.id||LCH.id)})[0]||hs[0];LCH.id=h.id;
+  var t=D.iso(D.day(0)),care=lvCareOf(h),next=care.filter(function(c){return c.status!=='fait'&&String(c.date)>=t}),late=care.filter(function(c){return c.status!=='fait'&&String(c.date)<t}),past=care.filter(function(c){return c.status==='fait'}).reverse();
+  var dueK=[['vacc','Vaccin',365],['worm','Vermifuge',90],['farrier','Maréchal',49]].map(function(k){var d=h[k[0]];if(!d)return null;var age=Math.round((D.day(0)-new Date(d+'T12:00:00'))/864e5);return {k:k[1],d:d,ok:age<=k[2]}}).filter(Boolean);
+  var okN=dueK.filter(function(x){return x.ok}).length,wp=h.workMax?Math.round((+h.work||0)/h.workMax*100):0,jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse();
+  var role=h.owner&&lvIds().indexOf(h.owner)>=0?'Votre cheval':'En demi-pension';
+  el.innerHTML=(hs.length>1?'<div style="margin-bottom:12px">'+U.seg(hs.map(function(x){return [x.id,lvEsc(x.name)]}),h.id,'data-hs')+'</div>':'')+
+   '<div class="card tint d-chevaux ad-hh rise"><div class="ad-hhi">'+ILLU.cheval({size:null})+'</div><div class="ad-hht"><span class="eyebrow">'+role+(h.box?' · box '+lvEsc(h.box):'')+'</span><h1 class="ad-hn">'+lvEsc(h.name)+'</h1><div class="sub">'+lvEsc([h.breed,(h.sex||'').toLowerCase(),(h.coat||'').toLowerCase(),h.age?h.age+' ans':''].filter(Boolean).join(' · '))+'</div>'+
+    '<div class="hrow wrap" style="--g:8px">'+(h.status==='ok'||!h.status?U.chip(ICON('heart','sm')+'En forme','ok'):U.chip(ICON('alert','sm')+'À surveiller','bad'))+(h.mood?U.chip(ICON('pulse','sm')+'Humeur : '+lvEsc(h.mood).toLowerCase(),'d'):'')+(next[0]?U.chip(ICON('care','sm')+lvEsc(next[0].kind)+' '+F.rel(next[0].date),'warn'):'')+'</div>'+
+    '<div class="hrow wrap acts" style="--g:8px"><button class="btn pri" data-jr>'+ICON('edit','sm')+'Écrire dans son carnet</button><button class="btn" data-ask>'+ICON('chat','sm')+'Demander une prestation</button></div></div>'+
+   '<div class="ad-hhr">'+rings([{p:wp,c:'var(--hz)'},{p:dueK.length?okN/dueK.length*100:0,c:'var(--acc)'},{p:(+h.bcs||0)/5*100,c:'var(--rd)'}],164)+'<div class="ad-hhl">'+
+    [['var(--hz)','Travail sur 7 jours',(+h.work||0)+' h','sur '+(h.workMax||0)+' h conseillées'],['var(--acc)','Soins à jour',dueK.length?String(okN):'–',dueK.length?'sur '+dueK.length+' suivis':'dates à renseigner'],['var(--rd)','État corporel',h.bcs?String(h.bcs).replace('.',','):'–','sur 5']].map(function(x){return '<div><i style="background:'+x[0]+'"></i><span class="grow"><span class="k">'+x[1]+'</span><b class="num">'+x[2]+'</b> <span class="u">'+x[3]+'</span></span></div>'}).join('')+'</div></div></div>'+
+   '<div class="g2" style="margin-top:16px;align-items:start"><div class="stack" style="--g:16px">'+
+    '<div class="card"><div class="ch"><h3>Prochains soins</h3>'+(late.length?U.chip(late.length+' en retard','bad',true):'')+'</div>'+((late.concat(next)).length?'<div class="list">'+late.concat(next).map(function(c){return '<div class="li"><span class="ico sm">'+ICON('care','sm')+'</span><div class="grow"><div class="t">'+lvEsc(c.kind)+(c.who?' · '+lvEsc(c.who):'')+'</div><div class="s">'+F.date(c.date)+(c.time?' à '+lvEsc(c.time):'')+(c.note?' · '+lvEsc(c.note):'')+'</div></div>'+U.chip(String(c.date)<t?'En retard':cap(F.rel(c.date)),String(c.date)<t?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('care','Aucun soin prévu','Le club planifie ici le maréchal, les vaccins et les visites.'))+'</div>'+
+    (dueK.length?'<div class="card"><div class="ch"><h3>Derniers soins connus</h3></div><div class="list">'+dueK.map(function(x){return '<div class="li"><div class="grow"><div class="t">'+x.k+'</div><div class="s">'+F.date(x.d)+' · '+F.rel(x.d)+'</div></div>'+U.chip(x.ok?'À jour':'À prévoir',x.ok?'ok':'warn',true)+'</div>'}).join('')+'</div></div>':'')+
+    (h.ration?'<div class="card pad"><div class="eyebrow">Sa ration</div><div class="g3" style="margin-top:10px"><div><div class="big num" style="font-size:28px">'+(+h.ration.hay||0)+' kg</div><div class="s mut">Foin par jour</div></div><div><div class="big num" style="font-size:28px">'+String(+h.ration.grain||0).replace('.',',')+' kg</div><div class="s mut">Granulés</div></div><div><div class="b">'+lvEsc(h.ration.supp||'Aucun')+'</div><div class="s mut">Complément</div></div></div></div>':'')+
+   '</div><div class="card"><div class="ch"><h3>Son carnet</h3><button class="btn sm" data-jr>'+ICON('plus','sm')+'Écrire</button></div>'+(jr.length?'<div class="list">'+jr.slice(0,12).map(function(j){return '<div class="li" style="align-items:flex-start">'+U.av(j.who)+'<div class="grow"><div class="t">'+lvEsc(D.name(j.who)||j.role||'Le club')+'<span class="s mut" style="font-weight:400"> · '+lvEsc(j.when||'')+'</span></div><div class="s" style="color:var(--ink-2);margin-top:2px">'+lvEsc(j.text)+'</div></div></div>'}).join('')+'</div>':U.empty('doc','Le carnet est vide','Notez une séance, une balade ou une observation : le club et l’équipe la lisent.'))+'</div></div>';
+  $$('[data-hs]',el).forEach(function(b){b.addEventListener('click',function(){LCH.id=b.getAttribute('data-hs');P.rerender()})});
+  $$('[data-jr]',el).forEach(function(b){b.onclick=function(){var sh=P.sheet({title:'Carnet de '+h.name,icon:'edit',body:'<div class="ad-lbl">Type</div>'+opts([['travail','Séance de travail','Plat, obstacle, longe'],['balade','Balade','Extérieur'],['soin','Observation','Santé, comportement, alimentation']],'travail','kind')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Ce qu’il faut retenir</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px" placeholder="Durée, exercices, ressenti"></textarea></label>',foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok>'+ICON('check','sm')+'Enregistrer</button>'});
+    bindOpts(sh);$('[data-x2]',sh).onclick=function(){sh.close()};
+    $('[data-ok]',sh).onclick=function(){var tx=$('[data-tx]',sh).value.trim();if(!tx){P.toast('Écrivez quelques mots.',{icon:'alert'});return}
+      D.journal.push({id:lvUid('jr'),horse:h.id,who:me.id,role:h.owner===me.id?'Propriétaire':'Demi-pensionnaire',when:'Aujourd’hui, '+lvHM(),date:D.iso(new Date()),text:tx,kind:optVal(sh,'kind')||'travail',mood:4});lvSave();sh.close();P.rerender();P.toast('Ajouté au carnet de '+h.name,{icon:'check'})}}});
+  var ak=$('[data-ask]',el);if(ak)ak.onclick=function(){lvWriteSheet('Demander une prestation','Par exemple : une sortie au paddock, une couverture, une douche…',function(tx){lvSend('Pour '+h.name+' : '+tx);P.toast('Demande envoyée au club',{icon:'send'})})}};
+
+/* ---------- 5. Demi-pension ---------- */
+LV['adh-demipension']=function(el,ctx){var ids=lvIds(),mine=(D.halfboard||[]).filter(function(d){return ids.indexOf(d.rider)>=0||lvHorses().some(function(h){return h.id===d.horse})}),offers=(D.halfboardOffers||[]);
+  el.innerHTML=U.ph('Demi-pension','Partager un cheval quelques jours par semaine, encadré par le club.','')+
+   (mine.length?'<div class="g2 rise" style="margin-bottom:16px">'+mine.map(function(d){var h=D.horse(d.horse)||{name:'Cheval'};return '<div class="card tint d-chevaux pad"><div class="hrow" style="--g:12px">'+U.hav(h)+'<div class="grow"><div class="b">'+lvEsc(h.name)+'</div><div class="s mut">'+(ids.indexOf(d.rider)>=0?'Votre demi-pension':'Demi-pensionnaire : '+lvEsc(D.name(d.rider)))+'</div></div>'+U.chip(lvEsc(d.status||'Actif'),'ok',true)+'</div>'+
+     '<div class="hrow wrap" style="--g:8px;margin-top:12px">'+(Array.isArray(d.days)&&d.days.length?U.chip(ICON('calendar_add','sm')+lvEsc(d.days.join(', ')),'d'):'')+(d.price?U.chip(F.eur(d.price)+' par mois','line'):'')+(d.since?U.chip('Depuis le '+F.date(d.since),'line'):'')+'</div></div>'}).join('')+'</div>':'')+
+   '<div class="card"><div class="ch"><h3>Chevaux proposés en demi-pension</h3><span class="chip">'+offers.length+'</span></div>'+(offers.length?'<div class="list">'+offers.map(function(o){var h=D.horse(o.horse)||{name:o.name||'Cheval'};return '<div class="li">'+U.hav(h)+'<div class="grow"><div class="t">'+lvEsc(h.name)+'</div><div class="s">'+lvEsc([o.days,o.level,o.price?F.eur(o.price)+' par mois':''].filter(Boolean).join(' · '))+'</div>'+(o.note?'<div class="xs mut" style="margin-top:2px">'+lvEsc(o.note)+'</div>':'')+'</div><button class="btn sm dark" data-of="'+lvEsc(o.id)+'">Je suis intéressé</button></div>'}).join('')+'</div>':
+    U.empty('swap','Aucune demi-pension proposée en ce moment','Le club publie ici les chevaux disponibles. Vous pouvez aussi lui écrire pour signaler votre intérêt.','<button class="btn" data-wr>'+ICON('chat','sm')+'Écrire au club</button>'))+'</div>';
+  $$('[data-of]',el).forEach(function(b){b.onclick=function(){var o=offers.filter(function(x){return String(x.id)===b.getAttribute('data-of')})[0],h=D.horse(o.horse)||{name:'ce cheval'};lvSend('Je suis intéressé par la demi-pension de '+h.name+'.');b.disabled=true;b.textContent='Demande envoyée';P.toast('Le club a reçu votre demande pour '+h.name,{icon:'send'})}});
+  var w=$('[data-wr]',el);if(w)w.onclick=function(){lvWriteSheet('Écrire au club','Je cherche une demi-pension…',function(t){lvSend(t);P.toast('Message envoyé au club',{icon:'send'})})}};
+
+/* ---------- 6. Concours ---------- */
+LV['adh-concours']=function(el,ctx){var ids=lvIds(),t=D.iso(D.day(0)),comps=(D.competitions||[]).filter(function(c){return String(c.date)>=t}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),ent=(D.entries||[]).filter(function(e){return ids.indexOf(e.rider)>=0});
+  el.innerHTML=U.ph('Concours','Les concours du club et vos engagements.','')+
+   (comps.length?'<div class="stack rise" style="--g:14px">'+comps.map(function(c){var my=ent.filter(function(e){return e.comp===c.id}),open=!c.closes||String(c.closes)>=t;
+    return '<div class="card pad"><div class="hrow" style="--g:14px;align-items:flex-start"><div class="ad-date"><b>'+new Date(c.date+'T12:00:00').getDate()+'</b><span>'+F.date(c.date).split(' ')[1]+'</span></div><div class="grow" style="min-width:0"><div class="b" style="font-size:16px">'+lvEsc(c.name)+'</div><div class="s mut">'+lvEsc([c.place,c.disc,c.level].filter(Boolean).join(' · '))+'</div>'+
+     '<div class="hrow wrap" style="--g:6px;margin-top:8px">'+(my.length?my.map(function(e){return U.chip(lvEsc(D.name(e.rider)||'')+(e.status&&e.status!=='confirmé'?' · '+lvEsc(e.status):' · engagé'),e.status==='demandé'?'acc':'ok',true)}).join(''):'')+(c.closes?U.chip('Clôture '+F.rel(c.closes),open?'line':'bad'):'')+'</div></div>'+
+     (open?'<button class="btn '+(my.length?'':'dark')+' sm" data-en="'+lvEsc(c.id)+'">'+(my.length?'Ajouter':'Demander un engagement')+'</button>':'')+'</div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('trophy','Aucun concours prévu','Le club publie ici ses sorties en concours. Vous pourrez demander votre engagement en un geste.')+'</div>');
+  $$('[data-en]',el).forEach(function(b){b.onclick=function(){var c=comps.filter(function(x){return String(x.id)===b.getAttribute('data-en')})[0],people=lvPeople(),hs=lvHorses();
+    var sh=P.sheet({title:'Demander un engagement',icon:'trophy',body:'<div class="card soft" style="padding:14px"><div class="b">'+lvEsc(c.name)+'</div><div class="s mut">'+F.dateL(c.date)+(c.place?' · '+lvEsc(c.place):'')+'</div></div>'+
+      '<div class="ad-lbl">Cavalier</div>'+opts(people.map(function(p){return [p.id,lvEsc(lvNm(p)),p.galop?'Galop '+p.galop:'',U.av(p)]}),people[0].id,'who')+
+      '<div class="ad-lbl">Monture</div>'+opts(hs.map(function(h){return [h.id,lvEsc(h.name),'Votre cheval',U.hav(h)]}).concat([['club','Un cheval du club','Proposé par le moniteur',sq('horse')]]),hs[0]?hs[0].id:'club','horse')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Épreuve souhaitée</span><input class="in" data-cl placeholder="'+lvEsc(c.level||'Club 2')+'"></label>',foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('send','sm')+'Envoyer la demande</button>'});
+    bindOpts(sh);$('[data-ok]',sh).onclick=function(){var hv=optVal(sh,'horse');D.entries.push({id:lvUid('en'),comp:c.id,rider:optVal(sh,'who'),horse:hv==='club'?null:hv,class:$('[data-cl]',sh).value.trim(),status:'demandé',at:new Date().toISOString()});lvSave();sh.close();P.rerender();P.toast('Demande d’engagement envoyée au club',{icon:'trophy'})}}})};
+
+/* ---------- 7. Progression ---------- */
+LV['adh-progression']=function(el,ctx){var people=lvPeople(),mine=lvMine();
+  el.innerHTML=U.ph('Progression','Votre galop et votre rythme de pratique, d’après vos reprises au club.','')+
+   '<div class="g2 rise">'+people.map(function(p){var ls=mine.filter(function(r){return r.who.indexOf(p.id)>=0}),hrs=ls.reduce(function(a,r){return a+(+r.l.dur||60)},0)/60,g=+p.galop||0;
+    return '<div class="card tint d-acc ad-t"><div class="ad-tt">'+lvIco('trend','acc')+'<h3>'+lvEsc(lvNm(p))+'</h3></div><div class="hrow ad-pgr" style="--g:14px">'+ringSVG(g/7*100,84,10,'var(--acc)','<b>'+g+'</b><small>/7</small>')+'<div class="grow" style="min-width:0"><div class="b" style="font-size:16px;line-height:1.25">'+(g?'Galop '+g+' validé':'Premiers pas à cheval')+'</div><div class="s mut" style="margin-top:4px">'+(g<7?'Prochain objectif : Galop '+(g+1):'Dernier galop fédéral atteint')+'</div></div></div>'+
+     '<div class="end"><div class="s">'+(ls.length?ls.length+' reprise'+(ls.length>1?'s':'')+' par semaine, soit '+String(Math.round(hrs*10)/10).replace('.',',')+' h en selle':'Aucune reprise réservée pour l’instant')+'</div>'+(p.licence||p.lic?'<div class="xs mut" style="margin-top:4px">Licence FFE '+lvEsc(p.licence||p.lic)+'</div>':'')+'</div></div>'}).join('')+'</div>'+
+   (mine.length?'':'<div class="hrow" style="justify-content:center;margin-top:18px"><button class="btn pri" data-go="adh-reserver">'+ICON('calendar_add','sm')+'Réserver une reprise</button></div>')};
+
+/* ---------- 9. Contrats ---------- */
+LV['adh-contrats']=function(el,ctx){var all=lvContracts(),todo=all.filter(lvMustSign),rest=all.filter(function(c){return !lvMustSign(c)});
+  el.innerHTML=U.ph('Contrats','Vos contrats et autorisations, à signer au doigt depuis votre téléphone.','')+
+   (todo.length?'<div class="card" style="margin-bottom:16px"><div class="ch"><h3>À signer</h3><span class="chip acc">'+todo.length+'</span></div><div class="list">'+todo.map(function(c){return '<div class="li ad-tap" data-ct="'+lvEsc(c.id)+'">'+sq('sign','acc')+'<div class="grow"><div class="t">'+lvEsc(c.title)+'</div><div class="s">'+lvEsc([c.horse&&D.horse(c.horse)?D.horse(c.horse).name:'',c.date?'Envoyé le '+F.date(c.date):''].filter(Boolean).join(' · '))+'</div></div><button class="btn dark sm">'+ICON('sign','sm')+'Signer</button></div>'}).join('')+'</div></div>':'')+
+   '<div class="card"><div class="ch"><h3>Mes documents</h3></div>'+(rest.length?'<div class="list">'+rest.map(function(c){return '<div class="li ad-tap" data-ct="'+lvEsc(c.id)+'">'+sq('doc')+'<div class="grow"><div class="t">'+lvEsc(c.title)+'</div><div class="s">'+lvEsc([c.date?F.date(c.date):'',c.amount?F.eur(c.amount):''].filter(Boolean).join(' · '))+'</div></div>'+U.status(c.status||'signé')+'</div>'}).join('')+'</div>':U.empty('contract',todo.length?'Aucun autre document':'Aucun document pour l’instant','Les contrats et autorisations que le club vous envoie apparaîtront ici.'))+'</div>';
+  $$('[data-ct]',el).forEach(function(r){r.onclick=function(){var c=all.filter(function(x){return String(x.id)===r.getAttribute('data-ct')})[0];if(c)lvSignSheet(c,P.rerender)}})};
+
+/* ---------- 10. Messages ---------- */
+LV['adh-messages']=function(el,ctx){var me=lvMe(),th=(D.threads||[]);
+  el.innerHTML=U.ph('Messages','Vos échanges avec le club.','<button class="btn pri" data-new>'+ICON('edit','sm')+'Écrire au club</button>')+
+   '<div class="card">'+(th.length?'<div class="list">'+th.map(function(t){return '<div class="li ad-tap" data-th="'+lvEsc(t.id)+'">'+sq('chat','acc')+'<div class="grow" style="min-width:0"><div class="t">'+lvEsc(t.with===me.id?D.club.name:(t.title||D.club.name))+'</div><div class="s ellip">'+lvEsc(t.last||'')+'</div></div><span class="xs mut">'+lvEsc(t.when||'')+'</span></div>'}).join('')+'</div>':
+    U.empty('chat','Aucun message','Une question sur une reprise, une facture ou votre cheval ? Écrivez au club, la réponse arrive ici.','<button class="btn pri" data-new2>'+ICON('edit','sm')+'Écrire au club</button>'))+'</div>';
+  function write(){lvWriteSheet('Écrire au club','Bonjour,',function(t){lvSend(t);P.rerender();P.toast('Message envoyé au club',{icon:'send'})})}
+  $$('[data-new],[data-new2]',el).forEach(function(b){b.onclick=write});
+  $$('[data-th]',el).forEach(function(r){r.onclick=function(){var t=th.filter(function(x){return String(x.id)===r.getAttribute('data-th')})[0];if(!t)return;var ms=Array.isArray(t.msgs)?t.msgs:[{w:'club',t:t.when,x:t.last}];
+    var sh=P.sheet({title:t.with===me.id?D.club.name:t.title,icon:'chat',body:'<div class="stack" style="--g:10px">'+ms.map(function(m){var mine=m.w===me.id;return '<div class="card '+(mine?'tint d-acc':'soft')+'" style="padding:12px 14px;max-width:85%;'+(mine?'margin-left:auto':'')+'"><div class="s">'+lvEsc(m.x)+'</div><div class="xs mut" style="margin-top:4px">'+(mine?'Vous':lvEsc(D.name(m.w)||'Le club'))+(m.t?' · '+lvEsc(m.t):'')+'</div></div>'}).join('')+'</div>',
+      foot:'<input class="in" data-rp placeholder="Votre réponse" style="flex:1"><button class="btn pri" data-ok>'+ICON('send','sm')+'Envoyer</button>'});
+    $('[data-ok]',sh).onclick=function(){var x=$('[data-rp]',sh).value.trim();if(!x)return;lvSend(x);sh.close();P.rerender();P.toast('Message envoyé',{icon:'send'})}}})};
+
+/* ---------- 11. Profil ---------- */
+LV['adh-profil']=function(el,ctx){var me=lvMe(),people=lvPeople(),u=(window.PL&&PL.user)||{},isM=!!D.member(me.id);
+  el.innerHTML=U.ph('Profil','Vos coordonnées et votre famille au club.','')+
+   '<div class="g2 rise" style="align-items:start"><div class="card pad"><div class="hrow" style="--g:14px">'+U.av(me)+'<div class="grow"><div class="b" style="font-size:18px">'+lvEsc(lvNm(me)||u.email||'')+'</div><div class="s mut">'+lvEsc([me.galop?'Galop '+me.galop:'',me.licence||me.lic?'Licence '+(me.licence||me.lic):''].filter(Boolean).join(' · ')||D.club.name)+'</div></div></div>'+
+    (isM?'<div class="lv-f" style="margin-top:16px"><label class="lv-fl"><span>Téléphone</span><input class="in" data-f="phone" inputmode="tel" value="'+lvEsc(me.phone||'')+'"></label><label class="lv-fl"><span>Adresse e-mail</span><input class="in" data-f="email" type="email" value="'+lvEsc(me.email||u.email||'')+'"></label>'+
+     '<label class="lv-fl"><span>Personne à prévenir en cas d’urgence</span><input class="in" data-f="emergency" value="'+lvEsc(me.emergency||'')+'"></label><label class="lv-fl"><span>Son téléphone</span><input class="in" data-f="emergencyPhone" inputmode="tel" value="'+lvEsc(me.emergencyPhone||'')+'"></label>'+
+     '<label class="lv-fl"><span>Allergies ou informations médicales utiles</span><input class="in" data-f="allergies" value="'+lvEsc(me.allergies||'')+'"></label></div><button class="btn pri" data-save style="margin-top:14px">'+ICON('check','sm')+'Enregistrer</button>':'<p class="lv-note" style="margin-top:14px">Votre fiche n’est pas encore reliée par le club : vos coordonnées s’afficheront ici.</p>')+'</div>'+
+    '<div class="stack" style="--g:16px"><div class="card"><div class="ch"><h3>Ma famille au club</h3></div><div class="list">'+people.map(function(p){return '<div class="li">'+U.av(p)+'<div class="grow"><div class="t">'+lvEsc(lvNm(p))+(p.id===me.id?' <span class="s mut">(vous)</span>':'')+'</div><div class="s">'+lvEsc([p.age?p.age+' ans':'',p.galop?'Galop '+p.galop:''].filter(Boolean).join(' · '))+'</div></div></div>'}).join('')+'</div></div>'+
+    '<div class="card"><div class="list"><button class="li ad-tap" data-acct style="width:100%;text-align:left">'+sq('user')+'<div class="grow"><div class="t">Mon compte</div><div class="s">Mot de passe, apparence, déconnexion</div></div>'+ICON('right','sm')+'</button><button class="li ad-tap" data-go="lv-cal-adh" style="width:100%;text-align:left">'+sq('calendar_add')+'<div class="grow"><div class="t">Mes reprises dans mon agenda</div><div class="s">Google Agenda, Apple Calendrier, Outlook</div></div>'+ICON('right','sm')+'</button></div></div></div></div>';
+  var s=$('[data-save]',el);if(s)s.onclick=function(){var m=D.member(me.id);$$('[data-f]',el).forEach(function(i){m[i.getAttribute('data-f')]=i.value.trim()});lvSave();P.toast('Coordonnées enregistrées',{icon:'check'})};
+  var a=$('[data-acct]',el);if(a)a.onclick=function(){if(window.PL&&PL.account)PL.account()}};
+
+/* ---------- Mon arrivée ---------- */
+LV['adh-bienvenue']=function(el,ctx){var me=lvMe(),first=lvFirst(),ts=lvContracts().filter(lvMustSign),mine=lvMine(),cal=P.mods['lv-cal-adh'];
+  var steps=[['user','Vérifier mes coordonnées','Téléphone et personne à prévenir','adh-profil',!!(me.phone&&me.emergency)],['sign','Signer mes documents',ts.length?ts.length+' en attente':'Rien à signer','adh-contrats',!ts.length],['calendar_add','Réserver ma première reprise',mine.length?'C’est fait':'Choisir un créneau','adh-reserver',!!mine.length],['card','Consulter mes factures','Payer en ligne ou à l’accueil','adh-paiements',!lvDue()]];
+  if(cal)steps.push(['calendar_add','Ajouter mes reprises à mon agenda','Google Agenda, Apple, Outlook','lv-cal-adh',false]);
+  var done=steps.filter(function(s){return s[4]}).length;
+  el.innerHTML=U.ph('Bienvenue'+(first?' '+lvEsc(first):''),'Votre espace '+lvEsc(D.club.name)+' : réservations, factures, documents et messages au même endroit.','')+
+   '<div class="card tint d-acc pad" style="margin-bottom:16px"><div class="eyebrow">Pour bien démarrer</div><div class="big num" style="margin:8px 0">'+done+'<small> / '+steps.length+'</small></div>'+U.bar(done/steps.length*100,'var(--acc)')+'</div>'+
+   '<div class="card"><div class="list">'+steps.map(function(s){return '<button class="li ad-tap" data-go="'+s[3]+'" style="width:100%;text-align:left">'+sq(s[4]?'checkc':s[0],s[4]?'ok':'acc')+'<div class="grow"><div class="t">'+s[1]+'</div><div class="s">'+s[2]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'};
+
+/* ---------- Boutique ---------- */
+LV['adh-boutique']=function(el,ctx){var it=(D.shopItems||[]).filter(function(x){return x&&x.name&&x.active!==false});
+  el.innerHTML=U.ph('Boutique','Les cartes, stages et articles proposés par le club.','')+
+   (it.length?'<div class="g3 rise">'+it.map(function(x){return '<div class="card pad"><div class="hrow" style="--g:12px">'+sq(x.icon||'bag','acc')+'<div class="grow" style="min-width:0"><div class="b ellip">'+lvEsc(x.name)+'</div><div class="s mut">'+lvEsc(x.cat||'')+'</div></div></div><div class="hrow sp" style="margin-top:14px"><span class="b num">'+F.eur(+x.price||0)+'</span><button class="btn dark sm" data-bq="'+lvEsc(x.id)+'">Commander</button></div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('shop','La boutique du club est vide','Le club n’a pas encore mis d’article en vente. Les cartes de séances et les stages apparaîtront ici.')+'</div>');
+  $$('[data-bq]',el).forEach(function(b){b.onclick=function(){var x=it.filter(function(y){return String(y.id)===b.getAttribute('data-bq')})[0];lvSend('Je souhaite commander : '+x.name+' ('+F.eur(+x.price||0)+').');b.disabled=true;b.textContent='Demande envoyée';P.toast('Commande transmise au club : la facture suivra',{icon:'bag'})}})};
+
+/* ---------- Pastilles du menu ---------- */
+LVB['adh-paiements']=function(){var d=lvDue();return d>0?{v:F.eur(d),hot:true}:null};
+LVB['adh-contrats']=function(){var n=lvContracts().filter(lvMustSign).length;return n?{v:n,hot:true}:null};
+['adh-demipension','adh-concours','adh-messages','adh-boutique','adh-reserver','adh-coachs','adh-cheval','adh-accueil','adh-progression','adh-profil'].forEach(function(k){LVB[k]=function(){return null}});
+
+if(!DEMO){
+  Object.keys(LV).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=lvSafe(id,LV[id]);m.__lv=true});
+  Object.keys(LVB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LVB[id]});
+  if(P.mods['adh-cheval']){P.mods['adh-cheval'].short='Cheval';P.mods['adh-cheval'].phoneTitle='Mon cheval'}
+  if(P.mods['adh-accueil'])P.mods['adh-accueil'].phoneTitle='Bonjour';
+  /* palette ⌘K, assistant et visite : seulement ce qui marche avec les vraies données */
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='adherent')P.actions.splice(ai,1);
+  P.actions.push({role:'adherent',label:'Réserver une reprise',icon:'calendar_add',run:function(){P.go('adh-reserver')}},{role:'adherent',label:'Payer mes factures',icon:'card',run:function(){P.go('adh-paiements')}},
+    {role:'adherent',label:'Signer mes documents',icon:'sign',run:function(){P.go('adh-contrats')}},{role:'adherent',label:'Écrire au club',icon:'chat',run:function(){P.go('adh-messages')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='adherent')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^adh-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.adherent)P.suggestions.adherent.length=0;
+}
+
 Object.keys(P.mods).forEach(function(k){var m=P.mods[k];if(!(m.role==='adherent')||m.__sf)return;m.__sf=1;var r=m.render;m.render=function(el,ctx){var o=r.apply(this,arguments);try{adSegs(el)}catch(e){}return o}});
 
 })();
@@ -14800,6 +15281,9 @@ PL.modq.push({file:"90-employe.js",run:function(){
    Téléphone d'abord : gros boutons, forts contrastes, tout à portée de pouce. */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,$=P.$,$$=P.$$;
+/* Club réel : la personne connectée n'est pas l'employée de démo (s05) → écrans branchés sur ses propres données. */
+var DEMO=!D.me||D.me.employe==='s05'||!!(window.PL&&PL.sandbox);
+function cap(x){x=String(x||'');return x.charAt(0).toUpperCase()+x.slice(1)}
 
 /* =====================================================================
    Données propres à la vue employé
@@ -16263,6 +16747,189 @@ button.em-sm:active{transform:scale(.97)}
  .app[data-role="employe"] .view .em-sm{min-height:0}
 }
 `);
+/* =====================================================================
+   CLUB RÉEL : l'espace de l'employé connecté
+   La démo suit Antoine Leroy (s05). Dans un vrai club, D.me.employe est la fiche du salarié connecté :
+   ses tâches (D.tasks), les soins du jour (D.care), les chevaux, ses reprises et son pointage.
+   ===================================================================== */
+var LE={},LEB={};
+function leMe(){var id=D.me&&D.me.employe;return D.staffer(id)||D.person(id)||{id:id||'me',first:'',last:'',role:''}}
+function leFirst(){var m=leMe();return m.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function leT(){return D.iso(D.day(0))}
+function leNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function leHh(s){return /^\d{1,2}:\d{2}$/.test(String(s||''))?hm(s):String(s||'')}
+function leSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function leUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function leEsc(s){return F.esc(String(s==null?'':s))}
+function leTasks(){var me=leMe(),t=leT();return (D.tasks||[]).filter(function(x){return (!x.who||x.who===me.id)&&(!x.date||x.date===t)}).sort(function(a,b){return String(a.time||'99').localeCompare(String(b.time||'99'))})}
+function leCare(){var t=leT();return (D.care||[]).filter(function(c){return c.status!=='fait'&&c.date&&c.date<=t}).sort(function(a,b){return String(a.date+a.time).localeCompare(String(b.date+b.time))})}
+function leCareDone(){var t=leT();return (D.care||[]).filter(function(c){return c.status==='fait'&&(c.doneAt||c.date||'').slice(0,10)===t})}
+function leLessons(dow){var me=leMe();return (D.lessons||[]).filter(function(l){return l.dow===dow&&l.coach===me.id&&!/annul/i.test(l.status||'')}).sort(function(a,b){return String(a.start).localeCompare(String(b.start))})}
+function leSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[employé] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+function leTaskRow(t){return '<div class="em-row em-task'+(t.done?' done':'')+'" data-task="'+leEsc(t.id)+'"><span class="em-tm">'+leEsc(t.time||'')+'</span><div class="grow"><div class="t">'+leEsc(t.title)+'</div><div class="s">'+leEsc(t.zone||'')+(t.done&&t.doneBy&&t.doneBy!==leMe().id?' · fait par '+leEsc((D.person(t.doneBy)||{}).first||''):'')+'</div>'+(t.urgent&&!t.done?'<div style="margin-top:6px">'+U.chip('Prioritaire','bad',true)+'</div>':'')+'</div>'+ck(leEsc(t.id),t.done)+'</div>'}
+function leToggle(id,el,draw){var t=(D.tasks||[]).filter(function(x){return String(x.id)===id})[0];if(!t)return;var me=leMe();
+  if(t.done){t.done=false;delete t.doneBy;delete t.doneAt;leSave();draw();return}
+  var row=el.querySelector('[data-task="'+id+'"]'),c=row&&row.querySelector('.em-ck');if(c)c.classList.add('on','go');if(row)row.classList.add('fin');
+  setTimeout(function(){t.done=true;t.doneBy=me.id;t.doneAt=new Date().toISOString();leSave();if(el.isConnected)draw();
+    P.toast('Tâche terminée : '+t.title,{icon:'checkc',undo:function(){t.done=false;delete t.doneBy;delete t.doneAt;leSave();if(el.isConnected)draw()}})},P.RM?10:520)}
+function leCareCard(c){var h=D.horse(c.horse)||{name:'Cheval'},late=c.date<leT();
+  return '<div class="card em-care"><div class="hrow" style="--g:12px;align-items:flex-start">'+ico('care','lg',late?'var(--bad)':'var(--acc)')+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b style="font-size:15px">'+leEsc(c.kind)+'</b>'+(late?U.chip('En retard, prévu le '+F.date(c.date),'bad',true):U.chip(c.time?'À '+leEsc(leHh(c.time)):'Aujourd’hui',''))+'</div>'+
+    '<button class="hrow s" style="--g:6px;margin-top:4px;color:var(--ink-2);font-weight:600" data-go="emp-cheval" data-id="'+leEsc(h.id)+'">'+U.hav(h,'sm')+leEsc(h.name)+(h.box?' · '+leEsc(h.box):'')+'</button></div></div>'+
+    ((c.who||c.note)?'<div><div style="font-size:14.5px">'+leEsc(c.note||'')+'</div>'+(c.who?'<div class="s mut" style="margin-top:4px">Intervenant : '+leEsc(c.who)+'</div>':'')+'</div>':'')+
+    '<div class="hrow" style="--g:8px"><button class="btn em-b pri grow" data-care="'+leEsc(c.id)+'">'+ICON('check')+'Valider le soin</button></div></div>'}
+function leValidate(id,after){var c=(D.care||[]).filter(function(x){return String(x.id)===id})[0];if(!c)return;var me=leMe();c.status='fait';c.doneBy=me.id;c.doneAt=new Date().toISOString();
+  var h=D.horse(c.horse);if(h){var k={Vermifuge:'worm',Vaccin:'vacc','Maréchal':'farrier',Dentiste:'dentist','Ostéopathe':'osteo'}[c.kind];if(k)h[k]=leT()}
+  leSave();if(after)after();P.toast(c.kind+' validé'+(h?' pour '+h.name:''),{icon:'checkc',undo:function(){c.status='planifié';delete c.doneBy;delete c.doneAt;leSave();if(after)after()}})}
+
+/* ---------- Ma journée ---------- */
+LE['emp-jour']=function(el,ctx){var showDone=false,first=true;
+  function draw(){var me=leMe(),T=leTasks(),left=T.filter(function(t){return !t.done}),done=T.filter(function(t){return t.done}),now=left[0],rest=left.slice(1),cr=leCare(),ls=leLessons(D.day(0).getDay());
+   var h=hd('Bonjour'+(leFirst()?' '+leEsc(leFirst()):''),cap(F.dateL(D.day(0)))+(me.role?' · '+leEsc(me.role):''),'');
+   var B=[];
+   if(now)B.push('<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+leEsc(now.id)+'"><div class="hrow sp"><span class="eyebrow">'+(now.time&&now.time<=leNowHM()?'Maintenant · depuis '+leEsc(leHh(now.time)):now.time?'À suivre · à '+leEsc(leHh(now.time)):'À faire')+'</span></div>'+
+     '<div class="hrow" style="--g:14px;align-items:flex-start">'+ck(leEsc(now.id),false,'xl')+'<div class="grow"><h2>'+leEsc(now.title)+'</h2><div class="sb2">'+leEsc(now.zone||'')+'</div></div></div>'+
+     '<div class="hrow" style="--g:8px"><button class="btn em-b pri grow" data-fin="'+leEsc(now.id)+'">'+ICON('check')+'C’est fait</button></div></div>');
+   else B.push('<div class="card navy em-now"><div class="hrow"><span class="strass" style="background:var(--navy-ink)"></span><span class="eyebrow">'+(T.length?'Journée bouclée':'Aucune tâche')+'</span></div><h2>'+(T.length?'Tout est fait'+(leFirst()?', '+leEsc(leFirst()):'')+'.':'Rien de planifié pour vous aujourd’hui.')+'</h2><div class="sb2" style="margin-top:-8px">'+(T.length?T.length+' tâche'+(T.length>1?'s':'')+' terminée'+(T.length>1?'s':'')+'. Pensez à pointer votre départ.':'Votre gérant ajoute vos tâches dans Piaffe : elles apparaîtront ici.')+'</div><button class="btn em-b pri" data-go="emp-pointage">'+ICON('clockin')+'Pointage</button></div>');
+   B.push('<div class="em-sum">'+[['d-equipe','today',left.length,'tâche'+(left.length>1?'s':'')+' à faire',''],['d-soins','care',cr.length,'soin'+(cr.length>1?'s':'')+' à donner','data-go="emp-soins"'],['d-chevaux','horse',(D.horses||[]).length,'cheva'+((D.horses||[]).length>1?'ux':'l')+' à l’écurie','data-go="emp-chevaux"']].map(function(t){return '<'+(t[4]?'button '+t[4]:'div')+' class="card tint em-sm '+t[0]+(t[0]==='d-soins'&&t[2]?' em-hot':'')+'"><span class="ico sm">'+ICON(t[1])+'</span><b class="big num">'+t[2]+'</b><span class="lb">'+t[3]+'</span>'+(t[4]?'<span class="go">'+ICON('arrow','sm')+'</span>':'')+'</'+(t[4]?'button':'div')+'>'}).join('')+'</div>');
+   B.push('<div class="em-qa" style="grid-template-columns:repeat(4,minmax(0,1fr))">'+[['emp-signaler','alert','Signaler','al','em-dbad'],['emp-soins','care','Soins','','d-soins'],['emp-pointage','clockin','Pointage','','d-equipe'],['emp-tournee','stable','Tournée','','d-chevaux']].map(function(q){return '<button data-go="'+q[0]+'"'+(q[3]?' class="'+q[3]+'"':'')+'><span class="ico '+q[4]+'">'+ICON(q[1])+'</span>'+q[2]+(q[0]==='emp-soins'&&cr.length?'<span class="bd">'+cr.length+'</span>':'')+'</button>'}).join('')+'</div>');
+   B.push('<div class="card"><div class="ch" style="padding-bottom:8px"><h3>'+(now?'Ensuite':'Mes tâches')+'</h3>'+(T.length?'<div class="hrow" style="--g:8px"><span class="s mut num">'+done.length+' sur '+T.length+' faites</span>'+U.ring(done.length/T.length*100,done.length,'var(--ok)',34)+'</div>':'')+'</div><div>'+
+     (rest.length?rest.map(leTaskRow).join(''):'<div class="empty" style="padding:22px">'+ICON('checkc')+'<span class="s">'+(T.length?'Plus rien après cette tâche.':'Aucune tâche ne vous est attribuée aujourd’hui.')+'</span></div>')+'</div>'+
+     (done.length?'<button class="em-more" data-done aria-expanded="'+showDone+'">'+ICON('down','sm')+done.length+' tâche'+(done.length>1?'s':'')+' faite'+(done.length>1?'s':'')+'</button>'+(showDone?'<div>'+done.map(leTaskRow).join('')+'</div>':''):'')+'</div>');
+   if(cr.length)B.push('<div class="card"><div class="ch"><h3>Soins à donner</h3><button class="btn ghost sm" data-go="emp-soins">Tout voir'+ICON('arrow','sm')+'</button></div><div>'+cr.slice(0,4).map(function(c){var hh=D.horse(c.horse)||{name:'Cheval'};return '<button class="em-row" data-go="emp-soins">'+U.hav(hh)+'<div class="grow"><div class="t">'+leEsc(c.kind)+' · '+leEsc(hh.name)+'</div><div class="s">'+(c.date<leT()?'En retard depuis le '+F.date(c.date):c.time?'À '+leEsc(leHh(c.time)):'Aujourd’hui')+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>');
+   if(ls.length)B.push('<div class="card"><div class="ch"><h3>Mes reprises du jour</h3></div><div>'+ls.map(function(l){return '<div class="em-row"><span class="em-tm">'+leEsc(l.start)+'</span><div class="grow"><div class="t">'+leEsc(l.title)+'</div><div class="s">'+(l.riders||[]).length+' cavalier'+((l.riders||[]).length>1?'s':'')+' sur '+l.cap+'</div></div></div>'}).join('')+'</div></div>');
+   el.innerHTML=h+'<div class="stack'+(first?' rise':'')+'" style="--g:14px">'+B.join('')+'</div>';if(first)P.animate(el);first=false}
+  on(el,'[data-ck]',function(b,e){e.stopPropagation();leToggle(b.getAttribute('data-ck'),el,draw)});
+  on(el,'[data-fin]',function(b){leToggle(b.getAttribute('data-fin'),el,draw)});
+  on(el,'[data-done]',function(){showDone=!showDone;draw()});
+  draw()};
+
+/* ---------- Tournée des boxes : un passage noté dans le carnet de chaque cheval ---------- */
+LE['emp-tournee']=function(el,ctx){var t=leT(),me=leMe(),hs=(D.horses||[]).slice().sort(function(a,b){return String(a.box||'zz').localeCompare(String(b.box||'zz'),'fr',{numeric:true})});
+  function seen(h){return (D.journal||[]).filter(function(j){return j.horse===h.id&&j.kind==='tournee'&&j.date===t})[0]}
+  function draw(){var n=hs.filter(seen).length;
+   el.innerHTML=hd('Tournée des boxes',hs.length?n+' box'+(n>1?'es':'')+' vu'+(n>1?'s':'')+' sur '+hs.length+' · chaque passage est noté dans le carnet du cheval':'Aucun cheval à l’écurie pour l’instant','')+
+    (hs.length?'<div class="card" style="margin-bottom:14px;padding:16px">'+U.bar(n/hs.length*100,'var(--ok)')+'</div><div class="stack rise" style="--g:10px">'+hs.map(function(h){var s=seen(h),r=h.ration||{};
+     return '<div class="card" style="padding:14px 16px"><div class="hrow" style="--g:12px">'+U.hav(h)+'<div class="grow" style="min-width:0"><div class="b">'+leEsc(h.name)+(h.box?' <span class="mut" style="font-weight:500">· '+leEsc(h.box)+'</span>':'')+'</div><div class="s mut ellip">'+(r.hay?r.hay+' kg de foin':'')+(r.grain?' · '+String(r.grain).replace('.',',')+' kg de granulés':'')+(r.supp&&r.supp!=='Aucun'?' · '+leEsc(r.supp):'')+'</div>'+(s?'<div class="s" style="margin-top:4px">'+U.chip(s.text==='Tournée : rien à signaler'?'RAS à '+leEsc(s.when):'Signalé à '+leEsc(s.when),s.text==='Tournée : rien à signaler'?'ok':'warn',true)+'</div>':'')+'</div>'+
+      (s?'':'<button class="btn em-b" data-ras="'+leEsc(h.id)+'" title="Rien à signaler">'+ICON('check')+'RAS</button><button class="btn em-b" data-pb="'+leEsc(h.id)+'" title="Signaler un problème">'+ICON('alert')+'</button>')+'</div></div>'}).join('')+'</div>':'<div class="card">'+U.empty('stable','Aucun box à visiter','Les chevaux ajoutés par votre gérant apparaîtront ici avec leur ration.')+'</div>')}
+  function note(h,text){D.journal.push({id:leUid('jr'),horse:h.id,who:me.id,role:me.role||'Équipe',when:leHh(leNowHM()),date:t,text:text,kind:'tournee',mood:text==='Tournée : rien à signaler'?5:2});leSave();draw()}
+  on(el,'[data-ras]',function(b){var h=D.horse(b.getAttribute('data-ras'));note(h,'Tournée : rien à signaler');P.toast(h.name+' : rien à signaler',{icon:'checkc'})});
+  on(el,'[data-pb]',function(b){var h=D.horse(b.getAttribute('data-pb'));var sh=P.sheet({title:h.name+(h.box?' · '+h.box:''),icon:'alert',body:'<label class="lv-fl"><span>Ce que vous avez constaté</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px" placeholder="N’a pas fini sa ration, boite, abreuvoir en panne…"></textarea></label>',foot:'<button class="btn em-b" data-x2>Annuler</button><button class="btn em-b pri" style="flex:1" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-x2]').onclick=function(){sh.close()};sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x){P.toast('Décrivez ce que vous avez vu.',{icon:'alert'});return}note(h,'Tournée : '+x);sh.close();P.toast('Noté dans le carnet de '+h.name+', le gérant le voit',{icon:'alert'})}});
+  draw()};
+
+/* ---------- Fiche cheval ---------- */
+LE['emp-cheval']=function(el,ctx){var hs=D.horses||[],h=D.horse(ctx.params.id)||hs[0],me=leMe();
+  if(!h){el.innerHTML=hd('Fiche cheval','','')+'<div class="card">'+U.empty('horse','Aucun cheval','Les chevaux ajoutés par votre gérant apparaîtront ici.')+'</div>';return}
+  var t=leT(),care=(D.care||[]).filter(function(c){return c.horse===h.id}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),todo=care.filter(function(c){return c.status!=='fait'}),jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse(),r=h.ration||{},note=D.empNotes&&D.empNotes[h.id];
+  function draw(){var mt=$('.mt',P.app());if(mt)mt.textContent=h.name;el.innerHTML=hd(leEsc(h.name),leEsc([h.box?'Box '+h.box:'',h.breed,h.age?h.age+' ans':'',h.owner?'à '+D.name(h.owner):'cheval du club'].filter(Boolean).join(' · ')),'<button class="btn" data-obs>'+ICON('edit','sm')+'Observation</button>')+
+   '<div class="stack rise" style="--g:14px">'+(note?'<div class="note warn">'+ICON('alert','sm')+'<span><b>Consigne :</b> '+leEsc(note)+'</span></div>':'')+
+   '<div class="card pad"><div class="eyebrow">Ration du jour</div><div class="g3" style="margin-top:10px"><div><div class="big num" style="font-size:28px">'+(+r.hay||0)+' kg</div><div class="s mut">Foin</div></div><div><div class="big num" style="font-size:28px">'+String(+r.grain||0).replace('.',',')+' kg</div><div class="s mut">Granulés</div></div><div><div class="b">'+leEsc(r.supp||'Aucun')+'</div><div class="s mut">Complément</div></div></div>'+(h.paddock?'<div class="s mut" style="margin-top:10px">Paddock : '+leEsc(h.paddock)+'</div>':'')+'</div>'+
+   '<div class="card"><div class="ch"><h3>Soins</h3>'+(todo.length?U.chip(todo.length+' à faire','warn',true):'')+'</div>'+(care.length?'<div>'+care.slice(-8).reverse().map(function(c){var dn=c.status==='fait';return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(c.kind)+(c.who?' · '+leEsc(c.who):'')+'</div><div class="s">'+F.date(c.date)+(c.note?' · '+leEsc(c.note):'')+'</div></div>'+(dn?U.chip('Fait','ok',true):c.date<=t?'<button class="btn em-b sm pri" data-care="'+leEsc(c.id)+'">'+ICON('check','sm')+'Valider</button>':U.chip(cap(F.rel(c.date)),'acc',true))+'</div>'}).join('')+'</div>':U.empty('care','Aucun soin enregistré',''))+'</div>'+
+   '<div class="card"><div class="ch"><h3>Carnet</h3></div>'+(jr.length?'<div>'+jr.slice(0,10).map(function(j){return '<div class="em-row">'+U.av(j.who)+'<div class="grow"><div class="t">'+leEsc(D.name(j.who)||j.role||'')+' <span class="mut" style="font-weight:500">· '+leEsc(j.when||'')+'</span></div><div class="s">'+leEsc(j.text)+'</div></div></div>'}).join('')+'</div>':U.empty('doc','Carnet vide','Notez une observation : le gérant et le propriétaire la voient.'))+'</div></div>'}
+  on(el,'[data-care]',function(b){leValidate(b.getAttribute('data-care'),function(){care=(D.care||[]).filter(function(c){return c.horse===h.id});todo=care.filter(function(c){return c.status!=='fait'});draw()})});
+  on(el,'[data-obs]',function(){var sh=P.sheet({title:'Observation · '+h.name,icon:'edit',body:'<label class="lv-fl"><span>Ce que vous avez constaté</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px"></textarea></label>',foot:'<button class="btn em-b pri block" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x)return;D.journal.push({id:leUid('jr'),horse:h.id,who:me.id,role:me.role||'Équipe',when:'Aujourd’hui, '+leHh(leNowHM()),date:t,text:x,kind:'soin',mood:3});leSave();jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse();sh.close();draw();P.toast('Observation enregistrée',{icon:'check'})}});
+  draw()};
+
+/* ---------- Mon planning ---------- */
+LE['emp-planning']=function(el,ctx){var me=leMe(),days=Array.apply(null,Array(7)).map(function(_,o){return o}),any=days.some(function(o){return leLessons(D.day(o).getDay()).length});
+  var tk=leTasks();
+  el.innerHTML=hd('Mon planning','Vos reprises des 7 prochains jours'+(me.hours?' · contrat de '+me.hours+' h par semaine':''),'')+
+   (any?'<div class="stack rise" style="--g:12px">'+days.map(function(o){var ls=leLessons(D.day(o).getDay());if(!ls.length)return '';return '<div class="card"><div class="ch"><h3>'+cap(o===0?'aujourd’hui':o===1?'demain':F.dateL(D.day(o)))+'</h3><span class="chip">'+ls.length+'</span></div><div>'+ls.map(function(l){return '<div class="em-row"><span class="em-tm">'+leEsc(l.start)+'</span><div class="grow"><div class="t">'+leEsc(l.title)+'</div><div class="s">'+l.dur+' min · '+(l.riders||[]).length+' cavalier'+((l.riders||[]).length>1?'s':'')+' sur '+l.cap+(D.club.arenas&&l.arena?' · '+leEsc((D.club.arenas.filter(function(a){return a.id===l.arena})[0]||{}).name||''):'')+'</div></div></div>'}).join('')+'</div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('planning','Aucune reprise à votre nom','Vos horaires et vos reprises apparaîtront ici dès que votre gérant les aura saisis.'+(tk.length?' En attendant, vos tâches du jour sont sur « Aujourd’hui ».':''),tk.length?'<button class="btn pri" data-go="emp-jour">Voir mes tâches</button>':'')+'</div>')};
+
+/* ---------- Soins du jour ---------- */
+LE['emp-soins']=function(el,ctx){var tab='todo';
+  function draw(){var todo=leCare(),done=leCareDone();
+   var x=hd('Soins du jour',todo.length+' soin'+(todo.length>1?'s':'')+' à donner · '+done.length+' fait'+(done.length>1?'s':'')+' aujourd’hui',U.seg([['todo','À donner <b class="num">'+todo.length+'</b>'],['done','Faits <b class="num">'+done.length+'</b>']],tab,'data-tab'));
+   var L=tab==='todo'?todo:done;
+   x+=L.length?'<div class="em-cg rise">'+(tab==='todo'?L.map(leCareCard).join(''):L.map(function(c){var h=D.horse(c.horse)||{name:'Cheval'};return '<div class="card em-care done"><div class="hrow" style="--g:12px">'+ico('care','lg','var(--ok)')+'<div class="grow"><b>'+leEsc(c.kind)+'</b> · '+leEsc(h.name)+'<div class="s mut">'+(c.doneBy?'Par '+leEsc(D.name(c.doneBy)):'')+(c.doneAt?' à '+lvT(c.doneAt):'')+'</div></div>'+U.chip('Fait','ok',true)+'</div></div>'}).join(''))+'</div>':
+     '<div class="card">'+U.empty('checkc',tab==='todo'?'Aucun soin à donner':'Aucun soin validé aujourd’hui',tab==='todo'?'Les soins planifiés par le club pour aujourd’hui apparaîtront ici.':'')+'</div>';
+   el.innerHTML=x}
+  function lvT(iso){var d=new Date(iso);return isNaN(d)?'':leHh(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'))}
+  on(el,'[data-tab]',function(b){tab=b.getAttribute('data-tab');draw()});
+  on(el,'[data-care]',function(b){leValidate(b.getAttribute('data-care'),draw)});
+  draw()};
+
+/* ---------- Pointage ---------- */
+LE['emp-pointage']=function(el,ctx){var me=leMe(),t=leT();
+  function mine(){return (D.empPresence||[]).filter(function(p){return p.who===me.id})}
+  function today(){return mine().filter(function(p){return p.date===t})}
+  function mins(p){if(!p.in)return 0;var o=p.out||(p.date===t?leNowHM():p.in);var a=p.in.split(':'),b=o.split(':');return Math.max(0,(+b[0]*60+(+b[1]))-(+a[0]*60+(+a[1])))}
+  function fmtM(m){return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')}
+  function draw(){var td=today(),open=td.filter(function(p){return !p.out})[0],dm=td.reduce(function(a,p){return a+mins(p)},0),wk=[];for(var i=0;i<7;i++)wk.push(D.iso(D.day(-i)));var wm=mine().filter(function(p){return wk.indexOf(p.date)>=0}).reduce(function(a,p){return a+mins(p)},0);
+   el.innerHTML=hd('Pointage',cap(F.dateL(D.day(0)))+(me.hours?' · contrat de '+me.hours+' h par semaine':''),'')+
+    '<div class="stack rise" style="--g:14px"><div class="card navy em-now"><div class="hrow sp"><span class="eyebrow">'+(open?'Pointé depuis '+leEsc(leHh(open.in)):'Pas pointé')+'</span></div><h2 class="num">'+fmtM(dm)+'</h2><div class="sb2">travaillées aujourd’hui · '+fmtM(wm)+' sur 7 jours</div>'+
+    '<button class="btn em-b pri block" data-clock>'+ICON('clockin')+(open?'Pointer mon départ':'Pointer mon arrivée')+'</button></div>'+
+    '<div class="card"><div class="ch"><h3>Aujourd’hui</h3></div>'+(td.length?'<div>'+td.map(function(p){return '<div class="em-row"><span class="em-tm">'+leEsc(p.in)+'</span><div class="grow"><div class="t">'+(p.out?'De '+leEsc(leHh(p.in))+' à '+leEsc(leHh(p.out)):'Arrivée à '+leEsc(leHh(p.in)))+'</div><div class="s">'+fmtM(mins(p))+'</div></div></div>'}).join('')+'</div>':U.empty('clockin','Aucun pointage aujourd’hui','Pointez votre arrivée : votre gérant voit vos heures et le total de la semaine.'))+'</div></div>'}
+  on(el,'[data-clock]',function(){var open=today().filter(function(p){return !p.out})[0],now=leNowHM();
+    if(open){open.out=now;P.toast('Départ pointé à '+leHh(now),{icon:'clockin'})}else{D.empPresence.push({id:leUid('pt'),who:me.id,date:t,in:now,out:null,st:'in',txt:'Depuis '+leHh(now)});P.toast('Arrivée pointée à '+leHh(now),{icon:'clockin'})}leSave();draw()});
+  draw()};
+
+/* ---------- Signaler ---------- */
+LE['emp-signaler']=function(el,ctx){var me=leMe(),K=[['Cheval blessé ou malade','horse'],['Matériel cassé','wrench'],['Clôture','paddock'],['Abreuvoir ou eau','drop'],['Stock bas','stock'],['Autre','alert']],sel=0,sev=1;
+  function mine(){return (D.empIncidents||[]).filter(function(i){return i.by===me.id}).slice().reverse()}
+  function draw(){var L=mine();el.innerHTML=hd('Signaler','Un problème à l’écurie : votre gérant est prévenu tout de suite.','')+
+   '<div class="stack rise" style="--g:14px"><div class="card pad"><span class="em-lbl">Quoi</span><div class="hrow wrap" style="--g:6px">'+K.map(function(k,i){return '<button class="tag" data-k="'+i+'" aria-pressed="'+(i===sel)+'">'+ICON(k[1],'sm')+k[0]+'</button>'}).join('')+'</div>'+
+    '<span class="em-lbl" style="margin-top:14px">Où</span><input class="in" data-where placeholder="Box, paddock, carrière…">'+
+    '<span class="em-lbl" style="margin-top:14px">Urgence</span>'+tri('sev',['Peut attendre','Aujourd’hui','Tout de suite'],sev)+
+    '<span class="em-lbl" style="margin-top:14px">Détails</span><textarea class="in" rows="3" data-tx style="height:auto;padding:12px"></textarea>'+
+    '<button class="btn em-b pri block" style="margin-top:14px" data-send>'+ICON('send')+'Envoyer au gérant</button></div>'+
+   '<div class="card"><div class="ch"><h3>Mes signalements</h3></div>'+(L.length?'<div>'+L.map(function(i){return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(i.kind)+(i.where?' · '+leEsc(i.where):'')+'</div><div class="s">'+leEsc(i.when)+(i.txt?' · '+leEsc(i.txt):'')+'</div></div>'+U.chip(leEsc(i.st||'Envoyé'),i.sev>=2?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('alert','Aucun signalement','Ce que vous signalez ici reste dans l’historique.'))+'</div></div>';
+   bindTri(el,function(k,v){sev=v})}
+  on(el,'[data-k]',function(b){sel=+b.getAttribute('data-k');$$('[data-k]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)})});
+  on(el,'[data-send]',function(){var w=el.querySelector('[data-where]').value.trim(),x=el.querySelector('[data-tx]').value.trim();
+    D.empIncidents.push({id:leUid('inc'),kind:K[sel][0],where:w,when:'Aujourd’hui, '+leHh(leNowHM()),date:leT(),sev:sev,st:'Envoyé',txt:x,by:me.id});leSave();draw();P.toast('Signalement envoyé au gérant',{icon:'send'})});
+  draw()};
+
+/* ---------- Messages ---------- */
+LE['emp-messages']=function(el,ctx){var me=leMe();
+  function mine(){return (D.empThreads||[]).filter(function(t){return t.from===me.id||t.with===me.id||(Array.isArray(t.grp)&&t.grp.indexOf(me.id)>=0)})}
+  function send(t,x){var m={w:me.id,t:leHh(leNowHM()),x:x,at:new Date().toISOString()};if(!t){t={id:leUid('et'),title:'Gérance',from:me.id,grp:[me.id],unread:1,msgs:[m]};D.empThreads.unshift(t)}else{t.msgs=(t.msgs||[]).concat([m]);t.unread=(+t.unread||0)+1}leSave();return t}
+  function draw(){var L=mine();el.innerHTML=hd('Messages','Vos échanges avec la gérance et l’équipe.','<button class="btn pri" data-new>'+ICON('edit','sm')+'Écrire</button>')+
+   '<div class="card">'+(L.length?'<div>'+L.map(function(t){var last=(t.msgs||[]).slice(-1)[0]||{};return '<button class="em-row" data-th="'+leEsc(t.id)+'" style="width:100%;text-align:left">'+ico('chat')+'<div class="grow" style="min-width:0"><div class="t">'+leEsc(t.from===me.id?'Gérance':t.title||'Équipe')+'</div><div class="s ellip">'+leEsc(last.x||'')+'</div></div><span class="xs mut">'+leEsc(last.t||'')+'</span></button>'}).join('')+'</div>':
+    U.empty('chat','Aucun message','Une question, un imprévu ? Écrivez à la gérance, la réponse arrive ici.','<button class="btn pri" data-new2>'+ICON('edit','sm')+'Écrire à la gérance</button>'))+'</div>'}
+  function write(t){var sh=P.sheet({title:t?(t.from===me.id?'Gérance':t.title):'Écrire à la gérance',icon:'chat',body:(t?'<div class="stack" style="--g:10px;margin-bottom:14px">'+(t.msgs||[]).map(function(m){var my=m.w===me.id;return '<div class="card '+(my?'tint d-acc':'soft')+'" style="padding:12px 14px;max-width:85%;'+(my?'margin-left:auto':'')+'"><div class="s">'+leEsc(m.x)+'</div><div class="xs mut" style="margin-top:4px">'+(my?'Vous':leEsc(D.name(m.w)||'Gérance'))+' · '+leEsc(m.t||'')+'</div></div>'}).join('')+'</div>':'')+'<textarea class="in" rows="3" data-tx style="height:auto;padding:12px" placeholder="Votre message"></textarea>',foot:'<button class="btn em-b pri block" data-ok>'+ICON('send')+'Envoyer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x)return;send(t,x);sh.close();draw();P.toast('Message envoyé',{icon:'send'})}}
+  on(el,'[data-new],[data-new2]',function(){write(null)});
+  on(el,'[data-th]',function(b){write(mine().filter(function(t){return String(t.id)===b.getAttribute('data-th')})[0])});
+  draw()};
+
+/* ---------- Congés et documents ---------- */
+LE['emp-conges']=function(el,ctx){var me=leMe();
+  function mine(){return (D.empLeaves||[]).filter(function(l){return l.who===me.id})}
+  function draw(){var L=mine();el.innerHTML=hd('Congés et documents','Vos demandes d’absence, transmises à la gérance.','<button class="btn pri" data-ask>'+ICON('plus','sm')+'Demander un congé</button>')+
+   '<div class="card">'+(L.length?'<div>'+L.map(function(l){return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(l.kind)+' · '+l.days+' jour'+(l.days>1?'s':'')+'</div><div class="s">Du '+F.date(l.from)+' au '+F.date(l.to)+(l.note?' · '+leEsc(l.note):'')+'</div></div>'+U.chip(leEsc(l.st),l.st==='validé'?'ok':l.st==='refusé'?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('holiday','Aucune demande','Demandez un congé : la gérance le valide depuis son espace.'))+'</div>'+
+   '<div class="card" style="margin-top:14px">'+U.empty('doc','Vos documents','Contrat, bulletins de paie et attestations sont remis par la gérance.')+'</div>'}
+  on(el,'[data-ask]',function(){var sh=P.sheet({title:'Demander un congé',icon:'holiday',body:'<div class="lv-f"><label class="lv-fl"><span>Type</span><select class="in" data-k><option>Congé payé</option><option>Récupération</option><option>Congé sans solde</option><option>Absence exceptionnelle</option></select></label><div class="lv-row2"><label class="lv-fl"><span>Du</span><input class="in" type="date" data-f value="'+leT()+'"></label><label class="lv-fl"><span>Au</span><input class="in" type="date" data-t value="'+leT()+'"></label></div><label class="lv-fl"><span>Commentaire</span><input class="in" data-n></label></div>',foot:'<button class="btn em-b pri block" data-ok>'+ICON('send')+'Envoyer la demande</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var f=sh.querySelector('[data-f]').value,to=sh.querySelector('[data-t]').value;if(!f||!to||to<f){P.toast('Vérifiez les dates.',{icon:'alert'});return}
+      var days=Math.round((new Date(to+'T12:00:00')-new Date(f+'T12:00:00'))/864e5)+1;D.empLeaves.unshift({id:leUid('cg'),who:me.id,kind:sh.querySelector('[data-k]').value,from:f,to:to,days:days,st:'en attente',note:sh.querySelector('[data-n]').value.trim(),asked:new Date().toISOString()});leSave();sh.close();draw();P.toast('Demande envoyée à la gérance',{icon:'holiday'})}});
+  draw()};
+
+/* ---------- Mon arrivée ---------- */
+LE['emp-bienvenue']=function(el,ctx){var me=leMe(),u=(window.PL&&PL.user)||{};
+  var steps=[['today','Voir ma journée','Mes tâches et les soins du jour','emp-jour'],['horse','Découvrir les chevaux','Fiches, rations et consignes','emp-chevaux'],['clockin','Pointer mon arrivée','Mes heures, jour après jour','emp-pointage'],['alert','Savoir signaler un problème','Votre gérant est prévenu tout de suite','emp-signaler']];
+  el.innerHTML=hd('Bienvenue'+(leFirst()?' '+leEsc(leFirst()):''),'Votre espace '+leEsc(D.club.name)+(me.role?' · '+leEsc(me.role):''),'')+
+   '<div class="card"><div>'+steps.map(function(s){return '<button class="em-row" data-go="'+s[3]+'" style="width:100%;text-align:left">'+ico(s[0])+'<div class="grow"><div class="t">'+s[1]+'</div><div class="s">'+s[2]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'};
+
+/* ---------- Pastilles ---------- */
+LEB['emp-jour']=function(){var n=leTasks().filter(function(t){return !t.done}).length;return n?{v:n}:null};
+LEB['emp-soins']=function(){var n=leCare().length;return n?{v:n,hot:true}:null};
+LEB['emp-tournee']=function(){return null};LEB['emp-messages']=function(){return null};
+
+if(!DEMO){
+  Object.keys(LE).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=leSafe(id,LE[id]);m.__lv=true});
+  Object.keys(LEB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LEB[id]});
+  if(P.mods['emp-jour'])P.mods['emp-jour'].phoneTitle='Bonjour';
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='employe')P.actions.splice(ai,1);
+  P.actions.push({role:'employe',label:'Voir mes tâches du jour',icon:'today',run:function(){P.go('emp-jour')}},{role:'employe',label:'Valider un soin',icon:'care',run:function(){P.go('emp-soins')}},
+    {role:'employe',label:'Pointer',icon:'clockin',run:function(){P.go('emp-pointage')}},{role:'employe',label:'Signaler un problème',icon:'alert',run:function(){P.go('emp-signaler')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='employe')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^emp-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.employe)P.suggestions.employe.length=0;
+}
+
 })();
 
 }});
@@ -16639,6 +17306,10 @@ var CONVS=[
  {id:'cv8',title:'Heures de l’équipe pour la paie',when:'9 nov.',grp:'Plus ancien',qs:['Sors-moi les heures de l’équipe pour la paie de novembre']},
  {id:'cv9',title:'Cartes qui expirent avant Noël',when:'5 nov.',grp:'Plus ancien',qs:['Quelles cartes de 10 séances expirent avant Noël ?']}];
 var AS={tab:'chat',cur:'cv1',dom:'Argent',jf:'all'};
+/* club réel : pas d'historique de conversations inventé, une conversation vide pour commencer */
+if(D.me&&D.me.gerant&&D.me.gerant!=='s01'&&!(window.PL&&PL.sandbox)){CONVS.splice(0,CONVS.length,{id:'cv0',title:'Nouvelle conversation',when:'à l’instant',grp:'Aujourd’hui',msgs:[]});AS.cur='cv0'}
+function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
+
 var DOMS=[['Argent','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
 function conv(){return CONVS.find(function(c){return c.id===AS.cur})||CONVS[0]}
 function msgs(c){if(!c.msgs){c.msgs=[];(c.qs||[]).forEach(function(q){c.msgs.push({u:q});c.msgs.push({a:answer(q)})})}return c.msgs}
@@ -16684,7 +17355,7 @@ function renderChat(el,ctx,seg){
      '<div class="pfa-legal">L’assistant agit avec vos droits de gérante. Il ne modifie rien sans que vous ayez validé l’aperçu.</div></div></section></div></div>';
   var th=$('.pfa-thread',el),inp=$('[data-q]',el),comp=$('.pfa-comp',el),fu=$('.pfa-fu',el),busy=false,vt=null;
   function draw(scroll){var c=conv(),m=msgs(c);$('[data-title]',el).textContent=c.title||'Nouvelle conversation';
-    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="eyebrow" style="margin-bottom:10px">Piaffe AI · vos données, vos droits</div><h2>Bonjour Claire. Que voulez-vous savoir ou faire aux Tilleuls ?</h2><p class="mut">Posez votre question comme à un collègue. Chaque réponse cite ses sources et chaque action passe par un aperçu.</p></div></div>'+
+    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="eyebrow" style="margin-bottom:10px">Piaffe AI · vos données, vos droits</div><h2>Bonjour'+(gFirst()?' '+esc(gFirst()):'')+'. Que voulez-vous savoir ou faire '+(/Tilleuls/.test(D.club.name||'')?'aux Tilleuls':'au club')+' ?</h2><p class="mut">Posez votre question comme à un collègue. Chaque réponse cite ses sources et chaque action passe par un aperçu.</p></div></div>'+
         '<div class="hrow wrap" style="--g:6px">'+DOMS.map(function(d){return '<button class="tag" data-manual data-dom="'+d[0]+'" aria-pressed="'+(d[0]===AS.dom)+'">'+ICON(d[1],'sm')+d[0]+'</button>'}).join('')+'</div>'+
         '<div class="pfa-sg rise">'+INT.filter(function(i){return i.dom===AS.dom&&i.q}).slice(0,6).map(function(i){return '<button class="'+(DOMC[AS.dom]||'')+'" data-sq="'+esc(i.q)+'"><span class="ico sm">'+ICON(i.ic)+'</span><span>'+i.q+'</span>'+ICON('arrow','sm')+'</button>'}).join('')+'</div></div>';
       fu.innerHTML='';P.animate(th);return}
@@ -18420,6 +19091,9 @@ PL.preseed=function(data){data=data||{};
   PL.MODKEYS.A.forEach(function(k){D[k]=Array.isArray(data[k])?data[k].slice():[]});
   PL.MODKEYS.O.forEach(function(k){D[k]=data[k]&&typeof data[k]==='object'&&!Array.isArray(data[k])?data[k]:{}});
   D._lotB=true;
+  /* le planning de la démo « complète » les reprises avec des cavaliers pris au hasard la première fois (D.planInit) :
+     jamais sur les vraies reprises d'un club (et la boucle ne s'arrête pas quand il y a moins d'adhérents que de places) */
+  D.planInit=true;
   /* fiches RH et plannings par salarié : un salarié sans fiche reçoit une fiche vide au lieu de casser l'écran Équipe */
   var dflt={hr:function(){return {since:'',cls:'',gross:0,cp:[25,0],rec:0,ot:0,dip:[]}},shifts:function(){return []}};
   if(typeof Proxy==='function')Object.keys(dflt).forEach(function(k){var t=D[k];D[k]=new Proxy(t,{get:function(o,p){if(typeof p==='string'&&!(p in o)&&(D.staff||[]).some(function(x){return x.id===p}))o[p]=dflt[k]();return o[p]}})})};
@@ -18470,9 +19144,13 @@ PL.loadWeather=function(){var c=D.club,lat=+c.lat,lon=+c.lon;
     .catch(function(){return false})};
 
 /* ---------- Factures (API typée du lot C) → format de la démo ---------- */
-var IST={draft:'brouillon',issued:'envoyée',sent:'envoyée',paid:'payée',partially_paid:'envoyée',overdue:'en retard',canceled:'annulée',cancelled:'annulée',credited:'avoir',void:'annulée'};
-PL.invoiceToDemo=function(x){var total=x.total_cents!=null?x.total_cents:(x.amount_cents!=null?x.amount_cents:x.total_ttc_cents);
-  var paid=x.paid_cents||0,st=IST[x.status]||x.status||'brouillon',due=x.due_date||x.due||'',today=PL.isoDay();
+var IST={draft:'brouillon',issued:'envoyée',unpaid:'envoyée',sent:'envoyée',paid:'payée',partially_paid:'envoyée',overdue:'en retard',canceled:'annulée',cancelled:'annulée',credited:'avoir',void:'annulée'};
+PL.invoiceToDemo=function(x){var total=x.total_cents!=null?x.total_cents:(x.amount_cents!=null?x.amount_cents:x.total_ttc_cents!=null?x.total_ttc_cents:x.total_ttc);total=+total||0;
+  /* format de l'API des factures (lot C) : montants en centimes, client dans customer, reste dû dans amount_due */
+  var paid=x.paid_cents!=null?x.paid_cents:x.amount_due!=null?total-x.amount_due:(x.paid_amount||0);
+  if(!x.member_ref&&!x.customer_ref&&x.customer&&x.customer.ref)x.member_ref=x.customer.ref;
+  if(x.kind==='credit_note'){total=-Math.abs(total);paid=total}
+  var st=x.kind==='credit_note'?'avoir':IST[x.status]||x.status||'brouillon',due=x.due_date||x.due||'',today=PL.isoDay();
   if((st==='envoyée')&&due&&due<today&&paid<total)st='en retard';
   var lab=x.label||x.title||(x.lines&&x.lines[0]&&(x.lines[0].label||x.lines[0].description))||'Facture';
   return {id:x.number||x.id,_id:x.id,member:x.member_ref||x.customer_ref||x.member||'',label:lab,amount:(total||0)/100,left:Math.max(0,(total-paid)||0)/100,vat:x.vat_rate!=null?x.vat_rate:(x.lines&&x.lines[0]&&x.lines[0].vat_rate)||0,
@@ -19519,12 +20197,15 @@ function renderMyInvoices(el){var run=screen(el,ph('Mes factures','Payez en lign
     if(q('paiement')==='succes'){P.toast('Merci, votre paiement est enregistré.');cleanQuery()}else if(q('paiement')==='annule'){P.toast('Paiement annulé : rien n’a été débité.',{icon:'info'});cleanQuery()}else if(q('prelevement')==='succes'){P.toast('Prélèvement SEPA mis en place.');cleanQuery()}
     var due=list.filter(function(x){return x.amount_due>0&&x.kind!=='credit_note'}),total=due.reduce(function(s,x){return s+x.amount_due},0);
     var h='<div class="card pad '+(total?'tint d-mo':'tint d-hz')+'" style="margin-bottom:16px"><div class="eyebrow">'+(total?'À régler':'Tout est réglé')+'</div><div class="big num" style="margin:8px 0">'+eur(total)+'</div>'+
-      (total&&po.enabled?'<button class="btn pri lg" data-payall>'+ICON('card','sm')+'Payer '+(due.length>1?'la plus ancienne':'maintenant')+'</button>':total?'<p class="lv-note">Votre club n’a pas encore activé le paiement en ligne : réglez à l’accueil.</p>':'<p class="lv-note">Merci, aucune facture en attente.</p>')+
+      (total?'<button class="btn pri lg" data-payall>'+ICON('card','sm')+'Payer '+(due.length>1?'la plus ancienne':'maintenant')+'</button>'+(po.enabled?'':'<p class="lv-note" style="margin-top:10px">Le paiement en ligne n’est peut-être pas encore activé par votre club : vous pouvez aussi régler à l’accueil.</p>'):'<p class="lv-note">Merci, aucune facture en attente.</p>')+
       (po.mandate?'<button class="btn ghost" data-sepa style="margin-left:8px">'+ICON('bank','sm')+'Mettre en place le prélèvement</button>':'')+'</div>';
     h+=list.length?'<div class="list card">'+list.map(function(x){return '<div class="li"><span class="ico sm">'+ICON('invoice','sm')+'</span><div class="grow"><b>'+esc(x.label||x.number)+'</b><div class="xs mut">'+esc(x.number||'')+(x.issue_date?' · '+F.date(x.issue_date):'')+'</div></div><span class="num">'+eur(x.total_ttc)+'</span>'+invChip(x)+
-      (x.amount_due>0&&po.enabled?'<button class="btn pri sm" data-pay="'+esc(x.id)+'">Payer</button>':'')+(x.has_pdf?'<button class="btn ghost icon sm" data-pdf="'+esc(x.id)+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button>':'')+'</div>'}).join('')+'</div>':U.empty('invoice','Aucune facture','Vos factures apparaîtront ici dès leur émission.');
+      (x.amount_due>0&&x.kind!=='credit_note'?'<button class="btn pri sm" data-pay="'+esc(x.id)+'">Payer</button>':'')+(x.has_pdf?'<button class="btn ghost icon sm" data-pdf="'+esc(x.id)+'" title="Télécharger le PDF">'+ICON('download','sm')+'</button>':'')+'</div>'}).join('')+'</div>':U.empty('invoice','Aucune facture','Vos factures apparaîtront ici dès leur émission.');
     b.innerHTML=h;
-    function pay(id,btn){btnBusy(btn,true);PL.post('/api/pay/invoice/'+encodeURIComponent(id),{}).then(function(r){PL.openUrl(r.url)},function(e){btnBusy(btn,false);PL.fail(e,'Paiement')})}
+    function pay(id,btn){btnBusy(btn,true);PL.post('/api/pay/invoice/'+encodeURIComponent(id),{}).then(function(r){if(r&&r.url)PL.openUrl(r.url);else{btnBusy(btn,false);P.toast('Le paiement n’a pas pu démarrer. Réessayez dans un instant.',{icon:'alert'})}},function(e){btnBusy(btn,false);
+      /* paiement en ligne non activé (Stripe Connect absent ou incomplet) : message clair et solution */
+      if(e&&(e.code==='connect_not_ready'||e.code==='stripe_not_configured'||e.status===409||e.status===503||e.unavailable)){var sh=P.sheet({title:'Paiement en ligne',icon:'card',body:'<p>'+esc(e.code==='nothing_due'?e.message:'Votre club n’a pas encore activé le paiement en ligne.')+'</p><p class="lv-note" style="margin-top:12px">'+esc(e.code==='nothing_due'?'Rechargez la page pour voir l’état à jour.':'Vous pouvez régler cette facture à l’accueil (chèque, espèces, carte ou virement). Elle passera en « Payée » dès que le club aura enregistré votre règlement.')+'</p>',foot:'<button class="btn pri" data-x2>J’ai compris</button>'});sh.querySelector('[data-x2]').onclick=function(){sh.close()};return}
+      PL.fail(e,'Paiement')})}
     b.querySelectorAll('[data-pay]').forEach(function(x){x.onclick=function(){pay(x.getAttribute('data-pay'),x)}});
     var pa=b.querySelector('[data-payall]');if(pa)pa.onclick=function(){var o=due.sort(function(a,c){return String(a.due_date).localeCompare(String(c.due_date))})[0];pay(o.id,pa)};
     var sp=b.querySelector('[data-sepa]');if(sp)sp.onclick=function(){btnBusy(sp,true);PL.post('/api/pay/mandate',{}).then(function(r){PL.openUrl(r.url)},function(e){btnBusy(sp,false);PL.fail(e,'Prélèvement')})};

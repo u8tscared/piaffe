@@ -368,6 +368,10 @@ var CONVS=[
  {id:'cv8',title:'Heures de l’équipe pour la paie',when:'9 nov.',grp:'Plus ancien',qs:['Sors-moi les heures de l’équipe pour la paie de novembre']},
  {id:'cv9',title:'Cartes qui expirent avant Noël',when:'5 nov.',grp:'Plus ancien',qs:['Quelles cartes de 10 séances expirent avant Noël ?']}];
 var AS={tab:'chat',cur:'cv1',dom:'Argent',jf:'all'};
+/* club réel : pas d'historique de conversations inventé, une conversation vide pour commencer */
+if(D.me&&D.me.gerant&&D.me.gerant!=='s01'&&!(window.PL&&PL.sandbox)){CONVS.splice(0,CONVS.length,{id:'cv0',title:'Nouvelle conversation',when:'à l’instant',grp:'Aujourd’hui',msgs:[]});AS.cur='cv0'}
+function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
+
 var DOMS=[['Argent','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
 function conv(){return CONVS.find(function(c){return c.id===AS.cur})||CONVS[0]}
 function msgs(c){if(!c.msgs){c.msgs=[];(c.qs||[]).forEach(function(q){c.msgs.push({u:q});c.msgs.push({a:answer(q)})})}return c.msgs}
@@ -413,7 +417,7 @@ function renderChat(el,ctx,seg){
      '<div class="pfa-legal">L’assistant agit avec vos droits de gérante. Il ne modifie rien sans que vous ayez validé l’aperçu.</div></div></section></div></div>';
   var th=$('.pfa-thread',el),inp=$('[data-q]',el),comp=$('.pfa-comp',el),fu=$('.pfa-fu',el),busy=false,vt=null;
   function draw(scroll){var c=conv(),m=msgs(c);$('[data-title]',el).textContent=c.title||'Nouvelle conversation';
-    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="eyebrow" style="margin-bottom:10px">Piaffe AI · vos données, vos droits</div><h2>Bonjour Claire. Que voulez-vous savoir ou faire aux Tilleuls ?</h2><p class="mut">Posez votre question comme à un collègue. Chaque réponse cite ses sources et chaque action passe par un aperçu.</p></div></div>'+
+    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="eyebrow" style="margin-bottom:10px">Piaffe AI · vos données, vos droits</div><h2>Bonjour'+(gFirst()?' '+esc(gFirst()):'')+'. Que voulez-vous savoir ou faire '+(/Tilleuls/.test(D.club.name||'')?'aux Tilleuls':'au club')+' ?</h2><p class="mut">Posez votre question comme à un collègue. Chaque réponse cite ses sources et chaque action passe par un aperçu.</p></div></div>'+
         '<div class="hrow wrap" style="--g:6px">'+DOMS.map(function(d){return '<button class="tag" data-manual data-dom="'+d[0]+'" aria-pressed="'+(d[0]===AS.dom)+'">'+ICON(d[1],'sm')+d[0]+'</button>'}).join('')+'</div>'+
         '<div class="pfa-sg rise">'+INT.filter(function(i){return i.dom===AS.dom&&i.q}).slice(0,6).map(function(i){return '<button class="'+(DOMC[AS.dom]||'')+'" data-sq="'+esc(i.q)+'"><span class="ico sm">'+ICON(i.ic)+'</span><span>'+i.q+'</span>'+ICON('arrow','sm')+'</button>'}).join('')+'</div></div>';
       fu.innerHTML='';P.animate(th);return}

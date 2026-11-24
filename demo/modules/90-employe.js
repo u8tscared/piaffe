@@ -2,6 +2,9 @@
    Téléphone d'abord : gros boutons, forts contrastes, tout à portée de pouce. */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,$=P.$,$$=P.$$;
+/* Club réel : la personne connectée n'est pas l'employée de démo (s05) → écrans branchés sur ses propres données. */
+var DEMO=!D.me||D.me.employe==='s05'||!!(window.PL&&PL.sandbox);
+function cap(x){x=String(x||'');return x.charAt(0).toUpperCase()+x.slice(1)}
 
 /* =====================================================================
    Données propres à la vue employé
@@ -1465,4 +1468,187 @@ button.em-sm:active{transform:scale(.97)}
  .app[data-role="employe"] .view .em-sm{min-height:0}
 }
 `);
+/* =====================================================================
+   CLUB RÉEL : l'espace de l'employé connecté
+   La démo suit Antoine Leroy (s05). Dans un vrai club, D.me.employe est la fiche du salarié connecté :
+   ses tâches (D.tasks), les soins du jour (D.care), les chevaux, ses reprises et son pointage.
+   ===================================================================== */
+var LE={},LEB={};
+function leMe(){var id=D.me&&D.me.employe;return D.staffer(id)||D.person(id)||{id:id||'me',first:'',last:'',role:''}}
+function leFirst(){var m=leMe();return m.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function leT(){return D.iso(D.day(0))}
+function leNowHM(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function leHh(s){return /^\d{1,2}:\d{2}$/.test(String(s||''))?hm(s):String(s||'')}
+function leSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function leUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function leEsc(s){return F.esc(String(s==null?'':s))}
+function leTasks(){var me=leMe(),t=leT();return (D.tasks||[]).filter(function(x){return (!x.who||x.who===me.id)&&(!x.date||x.date===t)}).sort(function(a,b){return String(a.time||'99').localeCompare(String(b.time||'99'))})}
+function leCare(){var t=leT();return (D.care||[]).filter(function(c){return c.status!=='fait'&&c.date&&c.date<=t}).sort(function(a,b){return String(a.date+a.time).localeCompare(String(b.date+b.time))})}
+function leCareDone(){var t=leT();return (D.care||[]).filter(function(c){return c.status==='fait'&&(c.doneAt||c.date||'').slice(0,10)===t})}
+function leLessons(dow){var me=leMe();return (D.lessons||[]).filter(function(l){return l.dow===dow&&l.coach===me.id&&!/annul/i.test(l.status||'')}).sort(function(a,b){return String(a.start).localeCompare(String(b.start))})}
+function leSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[employé] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+function leTaskRow(t){return '<div class="em-row em-task'+(t.done?' done':'')+'" data-task="'+leEsc(t.id)+'"><span class="em-tm">'+leEsc(t.time||'')+'</span><div class="grow"><div class="t">'+leEsc(t.title)+'</div><div class="s">'+leEsc(t.zone||'')+(t.done&&t.doneBy&&t.doneBy!==leMe().id?' · fait par '+leEsc((D.person(t.doneBy)||{}).first||''):'')+'</div>'+(t.urgent&&!t.done?'<div style="margin-top:6px">'+U.chip('Prioritaire','bad',true)+'</div>':'')+'</div>'+ck(leEsc(t.id),t.done)+'</div>'}
+function leToggle(id,el,draw){var t=(D.tasks||[]).filter(function(x){return String(x.id)===id})[0];if(!t)return;var me=leMe();
+  if(t.done){t.done=false;delete t.doneBy;delete t.doneAt;leSave();draw();return}
+  var row=el.querySelector('[data-task="'+id+'"]'),c=row&&row.querySelector('.em-ck');if(c)c.classList.add('on','go');if(row)row.classList.add('fin');
+  setTimeout(function(){t.done=true;t.doneBy=me.id;t.doneAt=new Date().toISOString();leSave();if(el.isConnected)draw();
+    P.toast('Tâche terminée : '+t.title,{icon:'checkc',undo:function(){t.done=false;delete t.doneBy;delete t.doneAt;leSave();if(el.isConnected)draw()}})},P.RM?10:520)}
+function leCareCard(c){var h=D.horse(c.horse)||{name:'Cheval'},late=c.date<leT();
+  return '<div class="card em-care"><div class="hrow" style="--g:12px;align-items:flex-start">'+ico('care','lg',late?'var(--bad)':'var(--acc)')+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b style="font-size:15px">'+leEsc(c.kind)+'</b>'+(late?U.chip('En retard, prévu le '+F.date(c.date),'bad',true):U.chip(c.time?'À '+leEsc(leHh(c.time)):'Aujourd’hui',''))+'</div>'+
+    '<button class="hrow s" style="--g:6px;margin-top:4px;color:var(--ink-2);font-weight:600" data-go="emp-cheval" data-id="'+leEsc(h.id)+'">'+U.hav(h,'sm')+leEsc(h.name)+(h.box?' · '+leEsc(h.box):'')+'</button></div></div>'+
+    ((c.who||c.note)?'<div><div style="font-size:14.5px">'+leEsc(c.note||'')+'</div>'+(c.who?'<div class="s mut" style="margin-top:4px">Intervenant : '+leEsc(c.who)+'</div>':'')+'</div>':'')+
+    '<div class="hrow" style="--g:8px"><button class="btn em-b pri grow" data-care="'+leEsc(c.id)+'">'+ICON('check')+'Valider le soin</button></div></div>'}
+function leValidate(id,after){var c=(D.care||[]).filter(function(x){return String(x.id)===id})[0];if(!c)return;var me=leMe();c.status='fait';c.doneBy=me.id;c.doneAt=new Date().toISOString();
+  var h=D.horse(c.horse);if(h){var k={Vermifuge:'worm',Vaccin:'vacc','Maréchal':'farrier',Dentiste:'dentist','Ostéopathe':'osteo'}[c.kind];if(k)h[k]=leT()}
+  leSave();if(after)after();P.toast(c.kind+' validé'+(h?' pour '+h.name:''),{icon:'checkc',undo:function(){c.status='planifié';delete c.doneBy;delete c.doneAt;leSave();if(after)after()}})}
+
+/* ---------- Ma journée ---------- */
+LE['emp-jour']=function(el,ctx){var showDone=false,first=true;
+  function draw(){var me=leMe(),T=leTasks(),left=T.filter(function(t){return !t.done}),done=T.filter(function(t){return t.done}),now=left[0],rest=left.slice(1),cr=leCare(),ls=leLessons(D.day(0).getDay());
+   var h=hd('Bonjour'+(leFirst()?' '+leEsc(leFirst()):''),cap(F.dateL(D.day(0)))+(me.role?' · '+leEsc(me.role):''),'');
+   var B=[];
+   if(now)B.push('<div class="card navy em-now'+(first?'':' pop')+'" data-task="'+leEsc(now.id)+'"><div class="hrow sp"><span class="eyebrow">'+(now.time&&now.time<=leNowHM()?'Maintenant · depuis '+leEsc(leHh(now.time)):now.time?'À suivre · à '+leEsc(leHh(now.time)):'À faire')+'</span></div>'+
+     '<div class="hrow" style="--g:14px;align-items:flex-start">'+ck(leEsc(now.id),false,'xl')+'<div class="grow"><h2>'+leEsc(now.title)+'</h2><div class="sb2">'+leEsc(now.zone||'')+'</div></div></div>'+
+     '<div class="hrow" style="--g:8px"><button class="btn em-b pri grow" data-fin="'+leEsc(now.id)+'">'+ICON('check')+'C’est fait</button></div></div>');
+   else B.push('<div class="card navy em-now"><div class="hrow"><span class="strass" style="background:var(--navy-ink)"></span><span class="eyebrow">'+(T.length?'Journée bouclée':'Aucune tâche')+'</span></div><h2>'+(T.length?'Tout est fait'+(leFirst()?', '+leEsc(leFirst()):'')+'.':'Rien de planifié pour vous aujourd’hui.')+'</h2><div class="sb2" style="margin-top:-8px">'+(T.length?T.length+' tâche'+(T.length>1?'s':'')+' terminée'+(T.length>1?'s':'')+'. Pensez à pointer votre départ.':'Votre gérant ajoute vos tâches dans Piaffe : elles apparaîtront ici.')+'</div><button class="btn em-b pri" data-go="emp-pointage">'+ICON('clockin')+'Pointage</button></div>');
+   B.push('<div class="em-sum">'+[['d-equipe','today',left.length,'tâche'+(left.length>1?'s':'')+' à faire',''],['d-soins','care',cr.length,'soin'+(cr.length>1?'s':'')+' à donner','data-go="emp-soins"'],['d-chevaux','horse',(D.horses||[]).length,'cheva'+((D.horses||[]).length>1?'ux':'l')+' à l’écurie','data-go="emp-chevaux"']].map(function(t){return '<'+(t[4]?'button '+t[4]:'div')+' class="card tint em-sm '+t[0]+(t[0]==='d-soins'&&t[2]?' em-hot':'')+'"><span class="ico sm">'+ICON(t[1])+'</span><b class="big num">'+t[2]+'</b><span class="lb">'+t[3]+'</span>'+(t[4]?'<span class="go">'+ICON('arrow','sm')+'</span>':'')+'</'+(t[4]?'button':'div')+'>'}).join('')+'</div>');
+   B.push('<div class="em-qa" style="grid-template-columns:repeat(4,minmax(0,1fr))">'+[['emp-signaler','alert','Signaler','al','em-dbad'],['emp-soins','care','Soins','','d-soins'],['emp-pointage','clockin','Pointage','','d-equipe'],['emp-tournee','stable','Tournée','','d-chevaux']].map(function(q){return '<button data-go="'+q[0]+'"'+(q[3]?' class="'+q[3]+'"':'')+'><span class="ico '+q[4]+'">'+ICON(q[1])+'</span>'+q[2]+(q[0]==='emp-soins'&&cr.length?'<span class="bd">'+cr.length+'</span>':'')+'</button>'}).join('')+'</div>');
+   B.push('<div class="card"><div class="ch" style="padding-bottom:8px"><h3>'+(now?'Ensuite':'Mes tâches')+'</h3>'+(T.length?'<div class="hrow" style="--g:8px"><span class="s mut num">'+done.length+' sur '+T.length+' faites</span>'+U.ring(done.length/T.length*100,done.length,'var(--ok)',34)+'</div>':'')+'</div><div>'+
+     (rest.length?rest.map(leTaskRow).join(''):'<div class="empty" style="padding:22px">'+ICON('checkc')+'<span class="s">'+(T.length?'Plus rien après cette tâche.':'Aucune tâche ne vous est attribuée aujourd’hui.')+'</span></div>')+'</div>'+
+     (done.length?'<button class="em-more" data-done aria-expanded="'+showDone+'">'+ICON('down','sm')+done.length+' tâche'+(done.length>1?'s':'')+' faite'+(done.length>1?'s':'')+'</button>'+(showDone?'<div>'+done.map(leTaskRow).join('')+'</div>':''):'')+'</div>');
+   if(cr.length)B.push('<div class="card"><div class="ch"><h3>Soins à donner</h3><button class="btn ghost sm" data-go="emp-soins">Tout voir'+ICON('arrow','sm')+'</button></div><div>'+cr.slice(0,4).map(function(c){var hh=D.horse(c.horse)||{name:'Cheval'};return '<button class="em-row" data-go="emp-soins">'+U.hav(hh)+'<div class="grow"><div class="t">'+leEsc(c.kind)+' · '+leEsc(hh.name)+'</div><div class="s">'+(c.date<leT()?'En retard depuis le '+F.date(c.date):c.time?'À '+leEsc(leHh(c.time)):'Aujourd’hui')+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>');
+   if(ls.length)B.push('<div class="card"><div class="ch"><h3>Mes reprises du jour</h3></div><div>'+ls.map(function(l){return '<div class="em-row"><span class="em-tm">'+leEsc(l.start)+'</span><div class="grow"><div class="t">'+leEsc(l.title)+'</div><div class="s">'+(l.riders||[]).length+' cavalier'+((l.riders||[]).length>1?'s':'')+' sur '+l.cap+'</div></div></div>'}).join('')+'</div></div>');
+   el.innerHTML=h+'<div class="stack'+(first?' rise':'')+'" style="--g:14px">'+B.join('')+'</div>';if(first)P.animate(el);first=false}
+  on(el,'[data-ck]',function(b,e){e.stopPropagation();leToggle(b.getAttribute('data-ck'),el,draw)});
+  on(el,'[data-fin]',function(b){leToggle(b.getAttribute('data-fin'),el,draw)});
+  on(el,'[data-done]',function(){showDone=!showDone;draw()});
+  draw()};
+
+/* ---------- Tournée des boxes : un passage noté dans le carnet de chaque cheval ---------- */
+LE['emp-tournee']=function(el,ctx){var t=leT(),me=leMe(),hs=(D.horses||[]).slice().sort(function(a,b){return String(a.box||'zz').localeCompare(String(b.box||'zz'),'fr',{numeric:true})});
+  function seen(h){return (D.journal||[]).filter(function(j){return j.horse===h.id&&j.kind==='tournee'&&j.date===t})[0]}
+  function draw(){var n=hs.filter(seen).length;
+   el.innerHTML=hd('Tournée des boxes',hs.length?n+' box'+(n>1?'es':'')+' vu'+(n>1?'s':'')+' sur '+hs.length+' · chaque passage est noté dans le carnet du cheval':'Aucun cheval à l’écurie pour l’instant','')+
+    (hs.length?'<div class="card" style="margin-bottom:14px;padding:16px">'+U.bar(n/hs.length*100,'var(--ok)')+'</div><div class="stack rise" style="--g:10px">'+hs.map(function(h){var s=seen(h),r=h.ration||{};
+     return '<div class="card" style="padding:14px 16px"><div class="hrow" style="--g:12px">'+U.hav(h)+'<div class="grow" style="min-width:0"><div class="b">'+leEsc(h.name)+(h.box?' <span class="mut" style="font-weight:500">· '+leEsc(h.box)+'</span>':'')+'</div><div class="s mut ellip">'+(r.hay?r.hay+' kg de foin':'')+(r.grain?' · '+String(r.grain).replace('.',',')+' kg de granulés':'')+(r.supp&&r.supp!=='Aucun'?' · '+leEsc(r.supp):'')+'</div>'+(s?'<div class="s" style="margin-top:4px">'+U.chip(s.text==='Tournée : rien à signaler'?'RAS à '+leEsc(s.when):'Signalé à '+leEsc(s.when),s.text==='Tournée : rien à signaler'?'ok':'warn',true)+'</div>':'')+'</div>'+
+      (s?'':'<button class="btn em-b" data-ras="'+leEsc(h.id)+'" title="Rien à signaler">'+ICON('check')+'RAS</button><button class="btn em-b" data-pb="'+leEsc(h.id)+'" title="Signaler un problème">'+ICON('alert')+'</button>')+'</div></div>'}).join('')+'</div>':'<div class="card">'+U.empty('stable','Aucun box à visiter','Les chevaux ajoutés par votre gérant apparaîtront ici avec leur ration.')+'</div>')}
+  function note(h,text){D.journal.push({id:leUid('jr'),horse:h.id,who:me.id,role:me.role||'Équipe',when:leHh(leNowHM()),date:t,text:text,kind:'tournee',mood:text==='Tournée : rien à signaler'?5:2});leSave();draw()}
+  on(el,'[data-ras]',function(b){var h=D.horse(b.getAttribute('data-ras'));note(h,'Tournée : rien à signaler');P.toast(h.name+' : rien à signaler',{icon:'checkc'})});
+  on(el,'[data-pb]',function(b){var h=D.horse(b.getAttribute('data-pb'));var sh=P.sheet({title:h.name+(h.box?' · '+h.box:''),icon:'alert',body:'<label class="lv-fl"><span>Ce que vous avez constaté</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px" placeholder="N’a pas fini sa ration, boite, abreuvoir en panne…"></textarea></label>',foot:'<button class="btn em-b" data-x2>Annuler</button><button class="btn em-b pri" style="flex:1" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-x2]').onclick=function(){sh.close()};sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x){P.toast('Décrivez ce que vous avez vu.',{icon:'alert'});return}note(h,'Tournée : '+x);sh.close();P.toast('Noté dans le carnet de '+h.name+', le gérant le voit',{icon:'alert'})}});
+  draw()};
+
+/* ---------- Fiche cheval ---------- */
+LE['emp-cheval']=function(el,ctx){var hs=D.horses||[],h=D.horse(ctx.params.id)||hs[0],me=leMe();
+  if(!h){el.innerHTML=hd('Fiche cheval','','')+'<div class="card">'+U.empty('horse','Aucun cheval','Les chevaux ajoutés par votre gérant apparaîtront ici.')+'</div>';return}
+  var t=leT(),care=(D.care||[]).filter(function(c){return c.horse===h.id}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),todo=care.filter(function(c){return c.status!=='fait'}),jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse(),r=h.ration||{},note=D.empNotes&&D.empNotes[h.id];
+  function draw(){var mt=$('.mt',P.app());if(mt)mt.textContent=h.name;el.innerHTML=hd(leEsc(h.name),leEsc([h.box?'Box '+h.box:'',h.breed,h.age?h.age+' ans':'',h.owner?'à '+D.name(h.owner):'cheval du club'].filter(Boolean).join(' · ')),'<button class="btn" data-obs>'+ICON('edit','sm')+'Observation</button>')+
+   '<div class="stack rise" style="--g:14px">'+(note?'<div class="note warn">'+ICON('alert','sm')+'<span><b>Consigne :</b> '+leEsc(note)+'</span></div>':'')+
+   '<div class="card pad"><div class="eyebrow">Ration du jour</div><div class="g3" style="margin-top:10px"><div><div class="big num" style="font-size:28px">'+(+r.hay||0)+' kg</div><div class="s mut">Foin</div></div><div><div class="big num" style="font-size:28px">'+String(+r.grain||0).replace('.',',')+' kg</div><div class="s mut">Granulés</div></div><div><div class="b">'+leEsc(r.supp||'Aucun')+'</div><div class="s mut">Complément</div></div></div>'+(h.paddock?'<div class="s mut" style="margin-top:10px">Paddock : '+leEsc(h.paddock)+'</div>':'')+'</div>'+
+   '<div class="card"><div class="ch"><h3>Soins</h3>'+(todo.length?U.chip(todo.length+' à faire','warn',true):'')+'</div>'+(care.length?'<div>'+care.slice(-8).reverse().map(function(c){var dn=c.status==='fait';return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(c.kind)+(c.who?' · '+leEsc(c.who):'')+'</div><div class="s">'+F.date(c.date)+(c.note?' · '+leEsc(c.note):'')+'</div></div>'+(dn?U.chip('Fait','ok',true):c.date<=t?'<button class="btn em-b sm pri" data-care="'+leEsc(c.id)+'">'+ICON('check','sm')+'Valider</button>':U.chip(cap(F.rel(c.date)),'acc',true))+'</div>'}).join('')+'</div>':U.empty('care','Aucun soin enregistré',''))+'</div>'+
+   '<div class="card"><div class="ch"><h3>Carnet</h3></div>'+(jr.length?'<div>'+jr.slice(0,10).map(function(j){return '<div class="em-row">'+U.av(j.who)+'<div class="grow"><div class="t">'+leEsc(D.name(j.who)||j.role||'')+' <span class="mut" style="font-weight:500">· '+leEsc(j.when||'')+'</span></div><div class="s">'+leEsc(j.text)+'</div></div></div>'}).join('')+'</div>':U.empty('doc','Carnet vide','Notez une observation : le gérant et le propriétaire la voient.'))+'</div></div>'}
+  on(el,'[data-care]',function(b){leValidate(b.getAttribute('data-care'),function(){care=(D.care||[]).filter(function(c){return c.horse===h.id});todo=care.filter(function(c){return c.status!=='fait'});draw()})});
+  on(el,'[data-obs]',function(){var sh=P.sheet({title:'Observation · '+h.name,icon:'edit',body:'<label class="lv-fl"><span>Ce que vous avez constaté</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px"></textarea></label>',foot:'<button class="btn em-b pri block" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x)return;D.journal.push({id:leUid('jr'),horse:h.id,who:me.id,role:me.role||'Équipe',when:'Aujourd’hui, '+leHh(leNowHM()),date:t,text:x,kind:'soin',mood:3});leSave();jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse();sh.close();draw();P.toast('Observation enregistrée',{icon:'check'})}});
+  draw()};
+
+/* ---------- Mon planning ---------- */
+LE['emp-planning']=function(el,ctx){var me=leMe(),days=Array.apply(null,Array(7)).map(function(_,o){return o}),any=days.some(function(o){return leLessons(D.day(o).getDay()).length});
+  var tk=leTasks();
+  el.innerHTML=hd('Mon planning','Vos reprises des 7 prochains jours'+(me.hours?' · contrat de '+me.hours+' h par semaine':''),'')+
+   (any?'<div class="stack rise" style="--g:12px">'+days.map(function(o){var ls=leLessons(D.day(o).getDay());if(!ls.length)return '';return '<div class="card"><div class="ch"><h3>'+cap(o===0?'aujourd’hui':o===1?'demain':F.dateL(D.day(o)))+'</h3><span class="chip">'+ls.length+'</span></div><div>'+ls.map(function(l){return '<div class="em-row"><span class="em-tm">'+leEsc(l.start)+'</span><div class="grow"><div class="t">'+leEsc(l.title)+'</div><div class="s">'+l.dur+' min · '+(l.riders||[]).length+' cavalier'+((l.riders||[]).length>1?'s':'')+' sur '+l.cap+(D.club.arenas&&l.arena?' · '+leEsc((D.club.arenas.filter(function(a){return a.id===l.arena})[0]||{}).name||''):'')+'</div></div></div>'}).join('')+'</div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('planning','Aucune reprise à votre nom','Vos horaires et vos reprises apparaîtront ici dès que votre gérant les aura saisis.'+(tk.length?' En attendant, vos tâches du jour sont sur « Aujourd’hui ».':''),tk.length?'<button class="btn pri" data-go="emp-jour">Voir mes tâches</button>':'')+'</div>')};
+
+/* ---------- Soins du jour ---------- */
+LE['emp-soins']=function(el,ctx){var tab='todo';
+  function draw(){var todo=leCare(),done=leCareDone();
+   var x=hd('Soins du jour',todo.length+' soin'+(todo.length>1?'s':'')+' à donner · '+done.length+' fait'+(done.length>1?'s':'')+' aujourd’hui',U.seg([['todo','À donner <b class="num">'+todo.length+'</b>'],['done','Faits <b class="num">'+done.length+'</b>']],tab,'data-tab'));
+   var L=tab==='todo'?todo:done;
+   x+=L.length?'<div class="em-cg rise">'+(tab==='todo'?L.map(leCareCard).join(''):L.map(function(c){var h=D.horse(c.horse)||{name:'Cheval'};return '<div class="card em-care done"><div class="hrow" style="--g:12px">'+ico('care','lg','var(--ok)')+'<div class="grow"><b>'+leEsc(c.kind)+'</b> · '+leEsc(h.name)+'<div class="s mut">'+(c.doneBy?'Par '+leEsc(D.name(c.doneBy)):'')+(c.doneAt?' à '+lvT(c.doneAt):'')+'</div></div>'+U.chip('Fait','ok',true)+'</div></div>'}).join(''))+'</div>':
+     '<div class="card">'+U.empty('checkc',tab==='todo'?'Aucun soin à donner':'Aucun soin validé aujourd’hui',tab==='todo'?'Les soins planifiés par le club pour aujourd’hui apparaîtront ici.':'')+'</div>';
+   el.innerHTML=x}
+  function lvT(iso){var d=new Date(iso);return isNaN(d)?'':leHh(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'))}
+  on(el,'[data-tab]',function(b){tab=b.getAttribute('data-tab');draw()});
+  on(el,'[data-care]',function(b){leValidate(b.getAttribute('data-care'),draw)});
+  draw()};
+
+/* ---------- Pointage ---------- */
+LE['emp-pointage']=function(el,ctx){var me=leMe(),t=leT();
+  function mine(){return (D.empPresence||[]).filter(function(p){return p.who===me.id})}
+  function today(){return mine().filter(function(p){return p.date===t})}
+  function mins(p){if(!p.in)return 0;var o=p.out||(p.date===t?leNowHM():p.in);var a=p.in.split(':'),b=o.split(':');return Math.max(0,(+b[0]*60+(+b[1]))-(+a[0]*60+(+a[1])))}
+  function fmtM(m){return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')}
+  function draw(){var td=today(),open=td.filter(function(p){return !p.out})[0],dm=td.reduce(function(a,p){return a+mins(p)},0),wk=[];for(var i=0;i<7;i++)wk.push(D.iso(D.day(-i)));var wm=mine().filter(function(p){return wk.indexOf(p.date)>=0}).reduce(function(a,p){return a+mins(p)},0);
+   el.innerHTML=hd('Pointage',cap(F.dateL(D.day(0)))+(me.hours?' · contrat de '+me.hours+' h par semaine':''),'')+
+    '<div class="stack rise" style="--g:14px"><div class="card navy em-now"><div class="hrow sp"><span class="eyebrow">'+(open?'Pointé depuis '+leEsc(leHh(open.in)):'Pas pointé')+'</span></div><h2 class="num">'+fmtM(dm)+'</h2><div class="sb2">travaillées aujourd’hui · '+fmtM(wm)+' sur 7 jours</div>'+
+    '<button class="btn em-b pri block" data-clock>'+ICON('clockin')+(open?'Pointer mon départ':'Pointer mon arrivée')+'</button></div>'+
+    '<div class="card"><div class="ch"><h3>Aujourd’hui</h3></div>'+(td.length?'<div>'+td.map(function(p){return '<div class="em-row"><span class="em-tm">'+leEsc(p.in)+'</span><div class="grow"><div class="t">'+(p.out?'De '+leEsc(leHh(p.in))+' à '+leEsc(leHh(p.out)):'Arrivée à '+leEsc(leHh(p.in)))+'</div><div class="s">'+fmtM(mins(p))+'</div></div></div>'}).join('')+'</div>':U.empty('clockin','Aucun pointage aujourd’hui','Pointez votre arrivée : votre gérant voit vos heures et le total de la semaine.'))+'</div></div>'}
+  on(el,'[data-clock]',function(){var open=today().filter(function(p){return !p.out})[0],now=leNowHM();
+    if(open){open.out=now;P.toast('Départ pointé à '+leHh(now),{icon:'clockin'})}else{D.empPresence.push({id:leUid('pt'),who:me.id,date:t,in:now,out:null,st:'in',txt:'Depuis '+leHh(now)});P.toast('Arrivée pointée à '+leHh(now),{icon:'clockin'})}leSave();draw()});
+  draw()};
+
+/* ---------- Signaler ---------- */
+LE['emp-signaler']=function(el,ctx){var me=leMe(),K=[['Cheval blessé ou malade','horse'],['Matériel cassé','wrench'],['Clôture','paddock'],['Abreuvoir ou eau','drop'],['Stock bas','stock'],['Autre','alert']],sel=0,sev=1;
+  function mine(){return (D.empIncidents||[]).filter(function(i){return i.by===me.id}).slice().reverse()}
+  function draw(){var L=mine();el.innerHTML=hd('Signaler','Un problème à l’écurie : votre gérant est prévenu tout de suite.','')+
+   '<div class="stack rise" style="--g:14px"><div class="card pad"><span class="em-lbl">Quoi</span><div class="hrow wrap" style="--g:6px">'+K.map(function(k,i){return '<button class="tag" data-k="'+i+'" aria-pressed="'+(i===sel)+'">'+ICON(k[1],'sm')+k[0]+'</button>'}).join('')+'</div>'+
+    '<span class="em-lbl" style="margin-top:14px">Où</span><input class="in" data-where placeholder="Box, paddock, carrière…">'+
+    '<span class="em-lbl" style="margin-top:14px">Urgence</span>'+tri('sev',['Peut attendre','Aujourd’hui','Tout de suite'],sev)+
+    '<span class="em-lbl" style="margin-top:14px">Détails</span><textarea class="in" rows="3" data-tx style="height:auto;padding:12px"></textarea>'+
+    '<button class="btn em-b pri block" style="margin-top:14px" data-send>'+ICON('send')+'Envoyer au gérant</button></div>'+
+   '<div class="card"><div class="ch"><h3>Mes signalements</h3></div>'+(L.length?'<div>'+L.map(function(i){return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(i.kind)+(i.where?' · '+leEsc(i.where):'')+'</div><div class="s">'+leEsc(i.when)+(i.txt?' · '+leEsc(i.txt):'')+'</div></div>'+U.chip(leEsc(i.st||'Envoyé'),i.sev>=2?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('alert','Aucun signalement','Ce que vous signalez ici reste dans l’historique.'))+'</div></div>';
+   bindTri(el,function(k,v){sev=v})}
+  on(el,'[data-k]',function(b){sel=+b.getAttribute('data-k');$$('[data-k]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)})});
+  on(el,'[data-send]',function(){var w=el.querySelector('[data-where]').value.trim(),x=el.querySelector('[data-tx]').value.trim();
+    D.empIncidents.push({id:leUid('inc'),kind:K[sel][0],where:w,when:'Aujourd’hui, '+leHh(leNowHM()),date:leT(),sev:sev,st:'Envoyé',txt:x,by:me.id});leSave();draw();P.toast('Signalement envoyé au gérant',{icon:'send'})});
+  draw()};
+
+/* ---------- Messages ---------- */
+LE['emp-messages']=function(el,ctx){var me=leMe();
+  function mine(){return (D.empThreads||[]).filter(function(t){return t.from===me.id||t.with===me.id||(Array.isArray(t.grp)&&t.grp.indexOf(me.id)>=0)})}
+  function send(t,x){var m={w:me.id,t:leHh(leNowHM()),x:x,at:new Date().toISOString()};if(!t){t={id:leUid('et'),title:'Gérance',from:me.id,grp:[me.id],unread:1,msgs:[m]};D.empThreads.unshift(t)}else{t.msgs=(t.msgs||[]).concat([m]);t.unread=(+t.unread||0)+1}leSave();return t}
+  function draw(){var L=mine();el.innerHTML=hd('Messages','Vos échanges avec la gérance et l’équipe.','<button class="btn pri" data-new>'+ICON('edit','sm')+'Écrire</button>')+
+   '<div class="card">'+(L.length?'<div>'+L.map(function(t){var last=(t.msgs||[]).slice(-1)[0]||{};return '<button class="em-row" data-th="'+leEsc(t.id)+'" style="width:100%;text-align:left">'+ico('chat')+'<div class="grow" style="min-width:0"><div class="t">'+leEsc(t.from===me.id?'Gérance':t.title||'Équipe')+'</div><div class="s ellip">'+leEsc(last.x||'')+'</div></div><span class="xs mut">'+leEsc(last.t||'')+'</span></button>'}).join('')+'</div>':
+    U.empty('chat','Aucun message','Une question, un imprévu ? Écrivez à la gérance, la réponse arrive ici.','<button class="btn pri" data-new2>'+ICON('edit','sm')+'Écrire à la gérance</button>'))+'</div>'}
+  function write(t){var sh=P.sheet({title:t?(t.from===me.id?'Gérance':t.title):'Écrire à la gérance',icon:'chat',body:(t?'<div class="stack" style="--g:10px;margin-bottom:14px">'+(t.msgs||[]).map(function(m){var my=m.w===me.id;return '<div class="card '+(my?'tint d-acc':'soft')+'" style="padding:12px 14px;max-width:85%;'+(my?'margin-left:auto':'')+'"><div class="s">'+leEsc(m.x)+'</div><div class="xs mut" style="margin-top:4px">'+(my?'Vous':leEsc(D.name(m.w)||'Gérance'))+' · '+leEsc(m.t||'')+'</div></div>'}).join('')+'</div>':'')+'<textarea class="in" rows="3" data-tx style="height:auto;padding:12px" placeholder="Votre message"></textarea>',foot:'<button class="btn em-b pri block" data-ok>'+ICON('send')+'Envoyer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var x=sh.querySelector('[data-tx]').value.trim();if(!x)return;send(t,x);sh.close();draw();P.toast('Message envoyé',{icon:'send'})}}
+  on(el,'[data-new],[data-new2]',function(){write(null)});
+  on(el,'[data-th]',function(b){write(mine().filter(function(t){return String(t.id)===b.getAttribute('data-th')})[0])});
+  draw()};
+
+/* ---------- Congés et documents ---------- */
+LE['emp-conges']=function(el,ctx){var me=leMe();
+  function mine(){return (D.empLeaves||[]).filter(function(l){return l.who===me.id})}
+  function draw(){var L=mine();el.innerHTML=hd('Congés et documents','Vos demandes d’absence, transmises à la gérance.','<button class="btn pri" data-ask>'+ICON('plus','sm')+'Demander un congé</button>')+
+   '<div class="card">'+(L.length?'<div>'+L.map(function(l){return '<div class="em-row"><div class="grow"><div class="t">'+leEsc(l.kind)+' · '+l.days+' jour'+(l.days>1?'s':'')+'</div><div class="s">Du '+F.date(l.from)+' au '+F.date(l.to)+(l.note?' · '+leEsc(l.note):'')+'</div></div>'+U.chip(leEsc(l.st),l.st==='validé'?'ok':l.st==='refusé'?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('holiday','Aucune demande','Demandez un congé : la gérance le valide depuis son espace.'))+'</div>'+
+   '<div class="card" style="margin-top:14px">'+U.empty('doc','Vos documents','Contrat, bulletins de paie et attestations sont remis par la gérance.')+'</div>'}
+  on(el,'[data-ask]',function(){var sh=P.sheet({title:'Demander un congé',icon:'holiday',body:'<div class="lv-f"><label class="lv-fl"><span>Type</span><select class="in" data-k><option>Congé payé</option><option>Récupération</option><option>Congé sans solde</option><option>Absence exceptionnelle</option></select></label><div class="lv-row2"><label class="lv-fl"><span>Du</span><input class="in" type="date" data-f value="'+leT()+'"></label><label class="lv-fl"><span>Au</span><input class="in" type="date" data-t value="'+leT()+'"></label></div><label class="lv-fl"><span>Commentaire</span><input class="in" data-n></label></div>',foot:'<button class="btn em-b pri block" data-ok>'+ICON('send')+'Envoyer la demande</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var f=sh.querySelector('[data-f]').value,to=sh.querySelector('[data-t]').value;if(!f||!to||to<f){P.toast('Vérifiez les dates.',{icon:'alert'});return}
+      var days=Math.round((new Date(to+'T12:00:00')-new Date(f+'T12:00:00'))/864e5)+1;D.empLeaves.unshift({id:leUid('cg'),who:me.id,kind:sh.querySelector('[data-k]').value,from:f,to:to,days:days,st:'en attente',note:sh.querySelector('[data-n]').value.trim(),asked:new Date().toISOString()});leSave();sh.close();draw();P.toast('Demande envoyée à la gérance',{icon:'holiday'})}});
+  draw()};
+
+/* ---------- Mon arrivée ---------- */
+LE['emp-bienvenue']=function(el,ctx){var me=leMe(),u=(window.PL&&PL.user)||{};
+  var steps=[['today','Voir ma journée','Mes tâches et les soins du jour','emp-jour'],['horse','Découvrir les chevaux','Fiches, rations et consignes','emp-chevaux'],['clockin','Pointer mon arrivée','Mes heures, jour après jour','emp-pointage'],['alert','Savoir signaler un problème','Votre gérant est prévenu tout de suite','emp-signaler']];
+  el.innerHTML=hd('Bienvenue'+(leFirst()?' '+leEsc(leFirst()):''),'Votre espace '+leEsc(D.club.name)+(me.role?' · '+leEsc(me.role):''),'')+
+   '<div class="card"><div>'+steps.map(function(s){return '<button class="em-row" data-go="'+s[3]+'" style="width:100%;text-align:left">'+ico(s[0])+'<div class="grow"><div class="t">'+s[1]+'</div><div class="s">'+s[2]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'};
+
+/* ---------- Pastilles ---------- */
+LEB['emp-jour']=function(){var n=leTasks().filter(function(t){return !t.done}).length;return n?{v:n}:null};
+LEB['emp-soins']=function(){var n=leCare().length;return n?{v:n,hot:true}:null};
+LEB['emp-tournee']=function(){return null};LEB['emp-messages']=function(){return null};
+
+if(!DEMO){
+  Object.keys(LE).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=leSafe(id,LE[id]);m.__lv=true});
+  Object.keys(LEB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LEB[id]});
+  if(P.mods['emp-jour'])P.mods['emp-jour'].phoneTitle='Bonjour';
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='employe')P.actions.splice(ai,1);
+  P.actions.push({role:'employe',label:'Voir mes tâches du jour',icon:'today',run:function(){P.go('emp-jour')}},{role:'employe',label:'Valider un soin',icon:'care',run:function(){P.go('emp-soins')}},
+    {role:'employe',label:'Pointer',icon:'clockin',run:function(){P.go('emp-pointage')}},{role:'employe',label:'Signaler un problème',icon:'alert',run:function(){P.go('emp-signaler')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='employe')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^emp-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.employe)P.suggestions.employe.length=0;
+}
+
 })();

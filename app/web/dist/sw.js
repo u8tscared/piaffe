@@ -1,5 +1,5 @@
 /* Piaffe · service worker : coque hors ligne seulement. Jamais de cache pour l'API, l'authentification ni la passerelle. */
-const VERSION = '202611241721';
+const VERSION = '202611241804';
 const SHELL = 'piaffe-shell-' + VERSION;
 const ASSETS = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png'];
 self.addEventListener('install', (e) => {

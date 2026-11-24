@@ -2,6 +2,8 @@
    Écrans : coachs, competitions, coach-agenda, coach-eleves, coach-dispo, coach-revenus, coach-concours, coach-profil */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc,I=function(n,k){return ICON(n,k)};
+/* Club réel : la personne connectée n'est pas la coach de démo (c01) → écrans coach branchés sur ses propres données. */
+var DEMO=!D.me||D.me.coach==='c01'||!!(window.PL&&PL.sandbox);
 /* Manche 4 : fondu et léger glissement quand un onglet, un filtre ou une sélection redessine un bloc (pas au premier rendu) */
 function swIn(n){if(!n)return;if(n.__sw&&!P.RM){n.classList.remove('fx-sw');void n.offsetWidth;n.classList.add('fx-sw')}n.__sw=1}
 P.css(`.fx-sw{animation:fxsw .24s var(--e-out) backwards}@keyframes fxsw{from{opacity:0;transform:translateY(10px)}}
@@ -185,10 +187,12 @@ P.css(`
  .co-bk .c3{grid-column:2}.co-bk .c4{grid-column:1 / -1;display:flex;gap:8px}.co-bk .c4 .btn{flex:1;height:40px}
 }
 `);
-var coTab='annuaire',coDay=0,coFil='todo',coPaid=false,coReq={status:'new'};
-function dealTxt(c){var d=DEAL[c.id];return d.mode==='commission'?'Commission de '+d.pct+' %':d.mode==='passage'?'Forfait de passage '+F.eur(d.fee):d.mode==='piste'?'Droit de piste '+F.eur(d.fee)+' / mois':'Salarié, prime de '+d.pct+' %'}
-function clubCut(c){var d=DEAL[c.id];return d.mode==='commission'?d.ca*d.pct/100:d.mode==='passage'?d.fee*d.n:d.mode==='piste'?d.fee:d.ca*(1-d.pct/100)}
-function insDays(c){var d=DEAL[c.id];return d.insTo?F.days(d.insTo):999}
+var coTab='annuaire',coDay=0,coFil='todo',coPaid=false,coReq={status:DEMO?'new':'none'};
+/* club réel : un coach ajouté par le gérant n'a pas encore de conditions enregistrées (pas de chiffre inventé) */
+function dealOf(id){return DEAL[id]||{mode:'',n:0,ca:0}}
+function dealTxt(c){var d=dealOf(c.id);return d.mode==='commission'?'Commission de '+d.pct+' %':d.mode==='passage'?'Forfait de passage '+F.eur(d.fee):d.mode==='piste'?'Droit de piste '+F.eur(d.fee)+' / mois':d.mode==='interne'?'Salarié, prime de '+d.pct+' %':'Conditions à définir'}
+function clubCut(c){var d=dealOf(c.id);return d.mode==='commission'?d.ca*d.pct/100:d.mode==='passage'?d.fee*d.n:d.mode==='piste'?d.fee:d.mode==='interne'?d.ca*(1-d.pct/100):0}
+function insDays(c){var d=dealOf(c.id);return d.insTo?F.days(d.insTo):999}
 function pendB(){return BOOK.filter(function(b){return b.status==='à confirmer'})}
 function dayBlocks(off){var dow=day(off).getDay(),bl=[];
  D.lessons.filter(function(l){return l.dow===dow}).forEach(function(l){bl.push({k:'club',arena:l.arena,s:hm(l.start),d:l.dur,t:l.title,who:D.staffer(l.coach).first,c:'var(--mut-2)'})});
@@ -198,7 +202,7 @@ function dayBlocks(off){var dow=day(off).getDay(),bl=[];
  return bl.sort(function(a,b){return a.s-b.s})}
 function bookWho(b){return b.riders.length>1?b.riders.length+' cavaliers':nm(b.riders[0])}
 
-function coachSheet(id){var c=D.coach(id),d=DEAL[id],ext=c.ext,idays=insDays(c);
+function coachSheet(id){var c=D.coach(id),d=dealOf(id),ext=c.ext,idays=insDays(c);
  P.sheet({title:c.first+' '+c.last,icon:'coach',body:function(b,sh){
   b.innerHTML='<div class="hrow" style="--g:14px">'+U.av(c,'xl')+'<div class="grow"><div class="hrow wrap" style="--g:6px">'+U.chip(ext?'Coach extérieur':'Moniteur du club',ext?'acc':'')+U.chip(c.spec,'line')+'</div><div class="s mut" style="margin-top:6px">'+c.level+'</div><div class="s" style="margin-top:4px">'+stars(c.rating)+' <b>'+rate(c.rating)+'</b> <span class="mut">· '+c.reviews+' avis</span></div></div></div>'+
    '<div class="card soft g3" style="--g:0;margin-top:16px;grid-template-columns:repeat(3,minmax(0,1fr))">'+stat('Cours en novembre',d.n,null)+stat('Encaissé',F.eur(d.ca),null)+stat('Tarif horaire',F.eur(c.rate),null)+'</div>'+
@@ -220,7 +224,7 @@ function coachSheet(id){var c=D.coach(id),d=DEAL[id],ext=c.ext,idays=insDays(c);
    agenda:function(){sh.close();coTab='pistes';P.rerender()}});
  },foot:'<button class="btn" data-a="msg">'+I('chat','sm')+'Écrire à '+c.first+'</button><button class="btn dark" data-a="agenda">'+I('planning','sm')+'Voir son agenda</button>'})}
 
-function bookingSheet(id){var b=BOOK.find(function(x){return x.id===id}),c=D.coach(b.coach),pend=b.status==='à confirmer',bl=dayBlocks(b.d).find(function(x){return x.id===id})||{},cut=DEAL[c.id];
+function bookingSheet(id){var b=BOOK.find(function(x){return x.id===id}),c=D.coach(b.coach),pend=b.status==='à confirmer',bl=dayBlocks(b.d).find(function(x){return x.id===id})||{},cut=dealOf(c.id);
  var part=cut.mode==='commission'?b.price*cut.pct/100:cut.mode==='passage'?cut.fee:cut.mode==='piste'?0:b.price*(1-cut.pct/100);
  P.sheet({title:b.type,icon:'calendar_add',body:function(el,sh){
   el.innerHTML=(bl.clash?'<div class="note bad" style="margin-bottom:14px">'+I('alert','sm')+'<span>La '+arena(b.arena).toLowerCase()+' est déjà prise par une reprise du club à cette heure. La petite carrière est libre : Piaffe peut y déplacer le cours et prévenir tout le monde.</span></div>':'')+
@@ -257,7 +261,7 @@ function inviteSheet(req){var title=req?'Demande d’accueil':'Inviter un coach'
    refuse:function(){sh.close();coReq.status='no';P.rerender();P.toast('Demande refusée, les propriétaires sont prévenus',{icon:'xc',undo:function(){coReq.status='new';P.rerender()}})}});
  },foot:req?'<button class="btn danger" data-a="refuse">Refuser</button><button class="btn pri" data-a="send">Accepter et envoyer la convention</button>':'<button class="btn pri" data-a="send">Envoyer l’invitation</button>'})}
 
-function payoutSheet(id){var c=D.coach(id),d=DEAL[id],cut=clubCut(c);
+function payoutSheet(id){var c=D.coach(id),d=dealOf(id),cut=clubCut(c);
  P.sheet({title:'Relevé de novembre',icon:'bank',body:
   '<div class="hrow" style="--g:12px;margin-bottom:14px">'+U.av(c,'lg')+'<div><b>'+c.first+' '+c.last+'</b><div class="s mut">'+dealTxt(c)+'</div></div></div>'+
   '<div class="card flat" style="padding:4px 14px">'+row(d.n+' cours encaissés en ligne','<span class="num">'+F.eur(d.ca)+'</span>')+row(d.mode==='interne'?'Part conservée par le club':'Part du club','<span class="num">−'+F.eur(cut,cut%1?1:0)+'</span>')+row(d.mode==='interne'?'Prime versée sur la paie':'Reversement par virement SEPA','<b class="num">'+F.eur(d.ca-cut,(d.ca-cut)%1?1:0)+'</b>')+'</div>'+
@@ -270,7 +274,7 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
  badge:function(){var n=pendB().length+(coReq.status==='new'?1:0);return n?{v:n}:null},
  render:function(el,ctx){el.classList.add('cg-pg');
   if(ctx.params&&ctx.params.tab){coTab=ctx.params.tab;ctx.params.tab=null}
-  var ext=D.coaches.filter(function(c){return c.ext}),tot=D.coaches.reduce(function(a,c){return a+DEAL[c.id].ca},0),cut=D.coaches.reduce(function(a,c){return a+clubCut(c)},0),nres=BOOK.filter(function(b){return b.d>=0&&b.d<7&&b.status!=='annulée'}).length,pend=pendB();
+  var ext=D.coaches.filter(function(c){return c.ext}),tot=D.coaches.reduce(function(a,c){return a+dealOf(c.id).ca},0),cut=D.coaches.reduce(function(a,c){return a+clubCut(c)},0),nres=BOOK.filter(function(b){return b.d>=0&&b.d<7&&b.status!=='annulée'}).length,pend=pendB();
   var h=ph('Coachs',D.coaches.length+' coachs réservables en ligne, dont '+ext.length+' extérieurs · '+pend.length+' réservation'+(pend.length>1?'s':'')+' à confirmer',
    '<button class="btn" data-a="rules">'+I('sliders','sm')+'Règles</button><button class="btn pri" data-a="invite">'+I('plus','sm')+'Inviter un coach</button>');
   h+=stats([stat('Réservations sur 7 jours',nres,'dont '+pend.length+' à confirmer',nres,'','rd','calendar_add'),stat('Coaching encaissé en novembre',F.eur(tot),'140 cours donnés',tot,'eur','mo','wallet'),stat('Part du club',F.eur(cut),Math.round(cut/tot*100)+' % du coaching',Math.round(cut),'eur','tm','percent'),stat('Note moyenne','4,85','600 avis vérifiés',null,'','po','star')]);
@@ -279,7 +283,7 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
   function draw(){var s='';
    if(coTab==='annuaire'){
     if(coReq.status==='new')s+='<div class="card co-req"><span class="av lg" style="--c:var(--c5)">ÉV</span><div class="grow"><b>Élodie Vasseur demande à coacher chez vous</b><div class="s mut">Coach de dressage, appelée par deux de vos propriétaires. Carte professionnelle et assurance déjà contrôlées.</div></div><div class="acts hrow"><button class="btn" data-a="req">Étudier la demande</button></div></div>';
-    s+='<div class="co-grid rise">'+D.coaches.concat(coReq.status==='ok'?[{id:'cx',first:'Élodie',last:'Vasseur',spec:'Dressage',level:'DEJEPS, Amateur Élite',rate:60,rating:0,reviews:0,ext:true,slots:[],color:'var(--c5)',fresh:true}]:[]).map(function(c){var d=DEAL[c.id],idays=c.fresh?999:insDays(c);
+    s+='<div class="co-grid rise">'+D.coaches.concat(coReq.status==='ok'?[{id:'cx',first:'Élodie',last:'Vasseur',spec:'Dressage',level:'DEJEPS, Amateur Élite',rate:60,rating:0,reviews:0,ext:true,slots:[],color:'var(--c5)',fresh:true}]:[]).map(function(c){var d=dealOf(c.id),idays=c.fresh?999:insDays(c);
      return '<div class="card hover co-card" role="button" tabindex="0" data-a="'+(c.fresh?'fresh':'coach')+'" data-id="'+c.id+'"><div class="who">'+U.av(c,'lg')+'<div class="grow"><div class="b ellip" style="font-size:15px">'+c.first+' '+c.last+'</div><div class="s mut ellip">'+c.spec+' · '+c.level+'</div></div>'+U.chip(c.ext?'Extérieur':'Club',c.ext?'acc':'')+'</div>'+
       '<div class="meta">'+(c.fresh?'<span>Nouveau profil, convention en cours de signature</span>':stars(c.rating)+'<b>'+rate(c.rating)+'</b><span>'+c.reviews+' avis</span><span>·</span><b class="num">'+F.eur(c.rate)+'</b><span>l’heure</span>')+'</div>'+
       '<div class="hrow wrap" style="--g:6px">'+(c.ext?U.chip('Carte professionnelle','ok',true)+(idays<30?U.chip('Assurance : expire dans '+idays+' j','warn',true):U.chip('Assurance RC pro','ok',true)):U.chip('Salarié du club','',true)+U.chip('Diplôme vérifié','ok',true))+'</div>'+
@@ -302,9 +306,9 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
       '<div class="c4 hrow" style="--g:8px">'+(b.status==='à confirmer'?'<button class="btn sm" data-a="bno" data-id="'+b.id+'">Refuser</button><button class="btn sm dark" data-a="'+(bl.clash?'book':'bok')+'" data-id="'+b.id+'">'+(bl.clash?'Régler le conflit':'Confirmer')+'</button>':'<b class="s num">'+F.eur(b.price)+'</b>'+U.chip(b.status,b.status==='confirmée'?'acc':b.status==='terminée'?'ok':'bad',true))+'</div></div>'}).join('')+'</div>'
      :'<div class="card">'+U.empty('checkc','Toutes les demandes sont traitées','Les prochaines réservations de coachs extérieurs arriveront ici.')+'</div>';
    }
-   if(coTab==='paie'){var extL=D.coaches.filter(function(c){return c.ext}),sum=extL.reduce(function(a,c){return a+DEAL[c.id].ca-clubCut(c)},0);
+   if(coTab==='paie'){var extL=D.coaches.filter(function(c){return c.ext}),sum=extL.reduce(function(a,c){return a+dealOf(c.id).ca-clubCut(c)},0);
     s+='<div class="card pad hrow wrap sp" style="--g:16px;margin-bottom:14px"><div class="hrow" style="--g:14px">'+sq('bank',coPaid?'ok':'acc')+'<div><div class="s mut">'+(coPaid?'Virements programmés pour le 30 novembre':'À reverser aux coachs extérieurs le 30 novembre')+'</div><div class="disp num" style="font-size:26px;font-weight:700">'+F.eur(sum,1)+'</div></div></div><div class="hrow wrap" style="--g:8px"><button class="btn" data-a="exp">'+I('download','sm')+'Exporter</button>'+(coPaid?'<span class="chip ok lg dot">4 virements SEPA programmés</span>':'<button class="btn dark" data-a="pay">'+I('send','sm')+'Programmer les 4 virements</button>')+'</div></div>';
-    s+=U.table([{l:'Coach',f:function(c){return '<span class="hrow" style="--g:10px">'+U.av(c,'sm')+'<b>'+c.first+' '+c.last+'</b></span>'}},{l:'Formule',hide:true,f:function(c){return '<span class="mut">'+dealTxt(c)+'</span>'}},{l:'Cours',n:true,hide:true,f:function(c){return DEAL[c.id].n}},{l:'Encaissé',n:true,hide:true,f:function(c){return F.eur(DEAL[c.id].ca)}},{l:'Part du club',n:true,hide:true,f:function(c){var v=clubCut(c);return F.eur(v,v%1?1:0)}},{l:'À reverser',n:true,f:function(c){var v=DEAL[c.id].ca-clubCut(c);return '<b>'+F.eur(v,v%1?1:0)+'</b>'}},{l:'Statut',hide:true,f:function(c){return c.ext?(coPaid?U.chip('Programmé','ok',true):U.chip('À verser','warn',true)):U.chip('Sur la paie','',true)}}],D.coaches,{click:true});
+    s+=U.table([{l:'Coach',f:function(c){return '<span class="hrow" style="--g:10px">'+U.av(c,'sm')+'<b>'+c.first+' '+c.last+'</b></span>'}},{l:'Formule',hide:true,f:function(c){return '<span class="mut">'+dealTxt(c)+'</span>'}},{l:'Cours',n:true,hide:true,f:function(c){return dealOf(c.id).n}},{l:'Encaissé',n:true,hide:true,f:function(c){return F.eur(dealOf(c.id).ca)}},{l:'Part du club',n:true,hide:true,f:function(c){var v=clubCut(c);return F.eur(v,v%1?1:0)}},{l:'À reverser',n:true,f:function(c){var v=dealOf(c.id).ca-clubCut(c);return '<b>'+F.eur(v,v%1?1:0)+'</b>'}},{l:'Statut',hide:true,f:function(c){return c.ext?(coPaid?U.chip('Programmé','ok',true):U.chip('À verser','warn',true)):U.chip('Sur la paie','',true)}}],D.coaches,{click:true});
     s+='<p class="xs mut" style="margin-top:12px">Le club encaisse les réservations en ligne pour le compte des coachs, puis reverse leur part chaque fin de mois. Chaque coach reçoit son relevé détaillé.</p>';
    }
    if(coTab==='avis'){var dist=[[5,512],[4,71],[3,12],[2,4],[1,1]];
@@ -1730,7 +1734,7 @@ P.brain.push(
    return {text:'Prochain concours : '+k.name+' à '+k.place.split(',')[0]+', '+F.dateL(k.date)+'. '+es.length+' cavaliers sont engagés pour '+F.eur(tot)+', la clôture est '+F.rel(k.closes)+'. Il manque le certificat médical d’Inès Masson. Ensuite, le Hunter Club à domicile du 6 décembre compte déjà 22 engagés et il manque 4 bénévoles.',
     card:es.slice(0,4).map(function(e){return '<div class="hrow sp"><span class="s">'+nm(e.rider)+' · '+D.horse(e.horse).name+'</span><span class="s mut">'+e.class.split(' · ')[0]+'</span></div>'}).join('')+'<div class="xs mut">et '+(es.length-4)+' autres</div>',
     actions:[{label:'Préparer les engagements',run:function(){P.go('competitions',{id:'k1',tab:'eng'});setTimeout(function(){ffeSheet(k)},350);return 'Saisie assistée ouverte'}},{label:'Voir qui emmène qui',run:function(){P.go('competitions',{id:'k1',tab:'qui'});return 'Ouvert'}}]}}},
- {role:'gerant',re:/coach|reverse|pauline|cours particulier|droit de piste/i,reply:function(){var p=pendB(),ext=D.coaches.filter(function(c){return c.ext}),sum=ext.reduce(function(a,c){return a+DEAL[c.id].ca-clubCut(c)},0),ok=p.filter(function(b){return !(dayBlocks(b.d).find(function(x){return x.id===b.id})||{}).clash});
+ {role:'gerant',re:/coach|reverse|pauline|cours particulier|droit de piste/i,reply:function(){var p=pendB(),ext=D.coaches.filter(function(c){return c.ext}),sum=ext.reduce(function(a,c){return a+dealOf(c.id).ca-clubCut(c)},0),ok=p.filter(function(b){return !(dayBlocks(b.d).find(function(x){return x.id===b.id})||{}).clash});
    return {text:p.length+' réservations de coachs attendent votre accord, dont une en conflit avec la reprise de 18 h. En novembre, les coachs ont donné 140 cours pour '+F.eur(7038)+' ; vous reversez '+F.eur(sum,1)+' aux 4 coachs extérieurs le 30. L’assurance de Julien Mercier expire dans 12 jours.',
     card:p.map(function(b){return '<div class="hrow sp"><span class="s">'+fst(b.coach)+' · '+bookWho(b)+'</span><span class="s mut">'+(b.d===0?'auj.':dlab(b.d))+' '+b.t+'</span></div>'}).join(''),
     actions:[{label:'Confirmer les '+ok.length+' sans conflit',run:function(){ok.forEach(function(b){b.status='confirmée'});P.toast(ok.length+' réservations confirmées, coachs et cavaliers prévenus');return ok.length+' réservations confirmées'}},{label:'Voir les réservations',run:function(){P.go('coachs',{tab:'resa'});return 'Ouvert'}}]}}},
@@ -1760,6 +1764,174 @@ P.tourSteps.push(
  {route:'competitions',params:{id:'k1',tab:'qui'},title:'Qui emmène qui, en un coup d’œil',text:'Avant un concours, le gérant glisse chevaux et cavaliers dans le camion, les vans et les voitures des familles. Piaffe compte les places, calcule l’heure de départ et envoie le plan à tout le monde. Les engagements, le matériel et les frais suivent dans les onglets voisins.'},
  {route:'coach-agenda',title:'Le coach indépendant a enfin son outil',text:'Pauline enseigne dans trois écuries. Son agenda réunit ses cours, ses trajets et ses demandes de réservation. Elle démarre un cours d’un geste, dicte sa note de séance et la partage avec son élève ; ses revenus et ses factures se mettent à jour tout seuls.'});
 
+
+
+/* =====================================================================
+   CLUB RÉEL : l'espace coach de la personne connectée
+   La démo garde Pauline Arnaud (c01) et son jeu d'exemple. Dans un vrai club, D.me.coach est la fiche
+   de la personne connectée : agenda = ses reprises (D.lessons, coach = elle) et les cours particuliers
+   demandés par les adhérents (D.coachBookings) ; élèves = cavaliers de ses reprises et de D.coachStudents ;
+   disponibilités, présentation et spécialités = sa fiche D.coaches. Aucun chiffre inventé.
+   ===================================================================== */
+var LC={},LCB={},lcDayO=0,lcSel=null;
+function lcMe(){var id=D.me&&D.me.coach;return D.coach(id)||D.person(id)||{id:id||'me',first:'',last:''}}
+function lcIds(){var me=lcMe(),ids=[me.id];if(me.staff)ids.push(me.staff);((window.PL&&PL.personIds)||[]).forEach(function(i){if(ids.indexOf(i)<0)ids.push(i)});
+  (D.coaches||[]).forEach(function(c){if(c.staff&&ids.indexOf(c.staff)>=0&&ids.indexOf(c.id)<0)ids.push(c.id)});return ids}
+function lcFirst(){var m=lcMe();return m.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function lcEsc(s){return E(String(s==null?'':s))}
+function lcSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function lcUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function lcCap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1)}
+function lcLessons(){var ids=lcIds();return (D.lessons||[]).filter(function(l){return ids.indexOf(l.coach)>=0&&!/annul/i.test(l.status||'')})}
+function lcOnDay(o){var d=day(o),t=iso(d);return lcLessons().filter(function(l){return l.date?String(l.date).slice(0,10)===t:+l.dow===d.getDay()}).sort(function(a,b){return hm(a.start||'0:0')-hm(b.start||'0:0')})}
+function lcBook(){var ids=lcIds();return (D.coachBookings||[]).filter(function(b){return ids.indexOf(b.coach)>=0})}
+function lcReq(){return lcBook().filter(function(b){return /demand|confirmer/.test(b.status||'')})}
+function lcBookOn(o){var t=iso(day(o));return lcBook().filter(function(b){return b.status==='confirmée'&&b.date===t}).sort(function(a,b){return hm(a.t||'0:0')-hm(b.t||'0:0')})}
+function lcWho(b){var m=D.member(b.member||(b.riders||[])[0]);return m?(m.first+' '+(m.last||'')).trim():b.who||'Un adhérent'}
+function lcSlotNext(s){var p=String(s||'').split(' '),w=DWS.indexOf(p[0]);if(w<0)return null;for(var o=1;o<=7;o++)if(day(o).getDay()===w)return {o:o,date:iso(day(o)),t:p[1]||''};return null}
+function lcStudents(){var ids=lcIds(),S={};
+  lcLessons().forEach(function(l){(l.riders||[]).forEach(function(r){var s=S[r]=S[r]||{id:r,les:[],book:[]};s.les.push(l)})});
+  lcBook().filter(function(b){return b.status==='confirmée'||b.status==='terminée'}).forEach(function(b){var r=b.member||(b.riders||[])[0];if(!r)return;var s=S[r]=S[r]||{id:r,les:[],book:[]};s.book.push(b);s.who=s.who||b.who});
+  (D.coachStudents||[]).forEach(function(c){if(c.coach&&ids.indexOf(c.coach)<0)return;var r=c.member||c.rider||c.m;if(!r)return;var s=S[r]=S[r]||{id:r,les:[],book:[]};s.rec=c;s.who=s.who||c.name});
+  return Object.keys(S).map(function(k){var s=S[k],m=D.member(k);s.m=m;s.name=m?(m.first+' '+(m.last||'')).trim():s.who||'Cavalier';s.first=m?m.first:s.name.split(' ')[0];s.galop=m&&m.galop;return s}).sort(function(a,b){return a.name.localeCompare(b.name)})}
+function lcRec(s){var ids=lcIds(),r=(D.coachStudents||[]).filter(function(c){return (c.member||c.rider||c.m)===s.id&&(!c.coach||ids.indexOf(c.coach)>=0)})[0];
+  if(!r){D.coachStudents=D.coachStudents||[];r={id:lcUid('cs'),coach:lcMe().id,member:s.id,name:s.name,notes:[],goals:[]};D.coachStudents.push(r)}r.notes=r.notes||[];r.goals=r.goals||[];return r}
+function lcHorseOf(l,r){var h=l.horses&&l.horses[r];return h?D.horse(h):null}
+function lcArena(l){return l.arena?arena(l.arena):''}
+function lcSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[coach] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+
+/* ---------- Feuille d'une reprise : cavaliers, chevaux ---------- */
+function lcLessonSheet(l,o){var R=l.riders||[];
+  P.sheet({title:l.title||'Reprise',icon:'planning',body:'<div class="stack" style="--g:12px"><div class="card flat" style="padding:4px 14px">'+row('Quand',lcCap(o===0?'aujourd’hui':o===1?'demain':F.dateL(day(o)))+' à '+lcEsc(l.start||''))+row('Durée',dur(+l.dur||60))+(lcArena(l)?row('Piste',lcEsc(lcArena(l))):'')+row('Cavaliers',R.length+' sur '+(l.cap||'?'))+'</div>'+
+   (R.length?'<div class="card list">'+R.map(function(r){var m=D.member(r),h=lcHorseOf(l,r);return '<div class="li">'+U.av(m||r)+'<div class="grow"><div class="t">'+lcEsc(m?m.first+' '+(m.last||''):'Cavalier')+'</div><div class="s">'+(m&&m.galop?'Galop '+m.galop:'')+(h?(m&&m.galop?' · ':'')+lcEsc(h.name):'')+'</div></div></div>'}).join('')+'</div>':'<div class="card">'+U.empty('members','Aucun cavalier inscrit','Les adhérents réservent leur place depuis leur espace.')+'</div>')+'</div>'})}
+
+/* ---------- Agenda ---------- */
+LC['coach-agenda']=function(el){var all=lcLessons(),req=lcReq();
+  function dayItems(o){return lcOnDay(o).map(function(l){return {k:'l',t:l.start||'',l:l}}).concat(lcBookOn(o).map(function(b){return {k:'b',t:b.t||'',b:b}})).sort(function(a,b){return hm(a.t||'0:0')-hm(b.t||'0:0')})}
+  var today=dayItems(0),wk=0,wr=0;for(var o=0;o<7;o++){var di=dayItems(o);wk+=di.length;di.forEach(function(x){wr+=x.k==='l'?(x.l.riders||[]).length:1})}
+  el.innerHTML=ph('Bonjour'+(lcFirst()?' '+lcEsc(lcFirst()):''),lcCap(F.dateL(day(0)))+' · '+(today.length?today.length+' cours aujourd’hui':'aucun cours aujourd’hui'),'')+
+   '<div class="ca"><div class="stack" style="--g:16px"><div class="ca-sum rise">'+
+    tile({dom:'tm',icon:'planning',label:'Cours aujourd’hui',value:today.length,sub:today.length?'à partir de '+th(hm(today[0].t||'0:0')):'journée libre'})+
+    tile({dom:'hb',icon:'clock',label:'Cette semaine',value:wk,sub:wr+' place'+(wr>1?'s':'')+' réservée'+(wr>1?'s':'')})+
+    tile({dom:'mo',icon:'members',label:'Élèves',value:lcStudents().length,a:'tostu',sub:'reprises et cours particuliers'})+
+    tile({dom:'rd',icon:'calendar_add',label:'Demandes',value:req.length,a:'toreq',sub:req.length?'à accepter ou refuser':'tout est traité'})+'</div>'+
+   '<div data-main></div></div><div class="ca-side"><div class="card" data-req></div></div></div>';
+  var main=el.querySelector('[data-main]'),rq=el.querySelector('[data-req]');
+  function drawReq(){var L=lcReq();rq.innerHTML='<div class="ch" style="padding-bottom:8px"><h3>Demandes de cours</h3>'+(L.length?U.chip(L.length,'acc'):'')+'</div>'+(L.length?L.map(function(b){var h=b.horse&&D.horse(b.horse);
+    return '<div class="ca-rq"><div class="hrow" style="--g:12px">'+U.av(D.member(b.member)||{first:lcWho(b)})+'<div class="grow"><div class="b m ellip">'+lcEsc(lcWho(b))+(h||b.horseName?' · '+lcEsc(h?h.name:b.horseName):'')+'</div><div class="s mut ellip">'+lcEsc(b.type||'Cours particulier')+(b.slot?' · '+lcEsc(b.slot.replace(':',' h ')):'')+(b.price?' · '+F.eur(+b.price):'')+'</div>'+(b.note?'<div class="s" style="margin-top:4px">'+lcEsc(b.note)+'</div>':'')+'</div></div>'+
+     '<div class="hrow" style="--g:8px;margin-top:10px"><button class="btn sm" data-a="rno" data-id="'+lcEsc(b.id)+'">Refuser</button><button class="btn sm pri" data-a="rok" data-id="'+lcEsc(b.id)+'">'+I('check','sm')+'Accepter</button></div></div>'}).join(''):
+    '<div class="cb" style="padding-top:0"><p class="s mut">Aucune demande en attente. Les adhérents demandent un cours particulier depuis la page Coachs de leur espace, sur vos créneaux ouverts.</p></div>')}
+  function item(x,o){if(x.k==='b'){var b=x.b;return '<button class="ca-it d-rd" data-a="bk" data-id="'+lcEsc(b.id)+'"><span class="tm">'+lcEsc(b.t||'')+'<small>'+dur(+b.dur||60)+'</small></span><span style="min-width:0"><span class="tt">'+lcEsc(lcWho(b))+'</span><span class="mm">'+lcEsc(b.type||'Cours particulier')+'</span></span><span class="rr">'+U.chip('Particulier','acc',true)+'</span></button>'}
+    var l=x.l,n=(l.riders||[]).length;return '<button class="ca-it d-tm'+(n?'':' free')+'" data-a="les" data-id="'+lcEsc(l.id)+'" data-o="'+o+'"><span class="tm">'+lcEsc(l.start||'')+'<small>'+dur(+l.dur||60)+'</small></span><span style="min-width:0"><span class="tt">'+lcEsc(l.title||'Reprise')+'</span><span class="mm">'+n+' cavalier'+(n>1?'s':'')+' sur '+(l.cap||'?')+(lcArena(l)?' · '+lcEsc(lcArena(l)):'')+'</span></span><span class="rr">'+(n>=(+l.cap||99)?U.chip('Complet','warn',true):'')+'</span></button>'}
+  function draw(){var L=dayItems(lcDayO);
+   main.innerHTML='<div class="ca-days">'+[0,1,2,3,4,5,6].map(function(o){var n=dayItems(o).length;return '<button class="'+(o===0?'today':'')+'" data-a="day" data-d="'+o+'" aria-selected="'+(o===lcDayO)+'">'+DWS[day(o).getDay()]+'<b>'+day(o).getDate()+'</b><i>'+(n?'<u style="--c:var(--tm)"></u>':'')+'</i></button>'}).join('')+'</div>'+
+    '<div class="ca-dh"><h3>'+lcCap(F.dateL(day(lcDayO)))+'</h3><span><b class="num">'+L.length+' cours</b></span></div>'+
+    (L.length?'<div class="ca-tl rise">'+L.map(function(x){return item(x,lcDayO)}).join('')+'</div>':
+     '<div class="card">'+U.empty('sun','Journée libre',all.length?'Aucun cours ce jour-là.':'Aucune reprise ne vous est encore attribuée. Le gérant vous affecte des reprises dans le Planning, les adhérents demandent des cours particuliers sur vos créneaux.')+'</div>');
+   P.animate(main);swIn(main)}
+  draw();drawReq();
+  act(el,{day:function(b){lcDayO=+b.getAttribute('data-d');draw()},
+   les:function(b){var l=all.filter(function(x){return x.id===b.getAttribute('data-id')})[0];if(l)lcLessonSheet(l,+b.getAttribute('data-o'))},
+   bk:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;var h=x.horse&&D.horse(x.horse);
+    P.sheet({title:lcWho(x),icon:'coach',body:'<div class="card flat" style="padding:4px 14px">'+row('Cours',lcEsc(x.type||'Cours particulier'))+row('Quand',lcEsc(F.dateL(x.date)+' à '+(x.t||'')))+(h||x.horseName?row('Cheval',lcEsc(h?h.name:x.horseName)):'')+(x.price?row('Tarif',F.eur(+x.price)):'')+(x.note?row('Message',lcEsc(x.note)):'')+'</div>'})},
+   tostu:function(){P.go('coach-eleves')},
+   toreq:function(){rq.scrollIntoView({behavior:P.RM?'auto':'smooth',block:'center'});pulse(rq)},
+   rok:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;var nx=lcSlotNext(x.slot);x.status='confirmée';if(nx){x.date=nx.date;x.t=nx.t}x.dur=x.dur||60;x.doneAt=new Date().toISOString();
+    var s={id:x.member||(x.riders||[])[0],name:lcWho(x)};if(s.id)lcRec(s);lcSave();drawReq();draw();P.toast('Cours accepté : '+lcWho(x).split(' ')[0]+(nx?', '+F.dateL(nx.date)+' à '+nx.t.replace(':',' h '):''),{icon:'checkc'})},
+   rno:function(b){var x=lcBook().filter(function(y){return y.id===b.getAttribute('data-id')})[0];if(!x)return;x.status='refusée';lcSave();drawReq();P.toast('Demande refusée, '+lcWho(x).split(' ')[0]+' est prévenu',{icon:'swap'})}});
+};
+
+/* ---------- Élèves ---------- */
+LC['coach-eleves']=function(el,ctx){var S=lcStudents();if(ctx.params.id){lcSel=ctx.params.id;ctx.params.id=null}if(!S.some(function(s){return s.id===lcSel}))lcSel=S[0]&&S[0].id;
+  el.innerHTML=ph('Élèves',S.length?S.length+' cavalier'+(S.length>1?'s':'')+' suivi'+(S.length>1?'s':''):'Les cavaliers de vos reprises et de vos cours particuliers','')+
+   (S.length?'<div class="ce"><div class="card"><div data-list style="padding:6px;display:flex;flex-direction:column;gap:2px"></div></div><div class="ce-detail" data-detail></div></div>':
+    '<div class="card">'+U.empty('members','Aucun élève pour l’instant','Les cavaliers inscrits à vos reprises et ceux dont vous acceptez un cours particulier apparaîtront ici.')+'</div>');
+  if(!S.length)return;
+  var list=el.querySelector('[data-list]'),det=el.querySelector('[data-detail]');
+  function detail(s){var r=(D.coachStudents||[]).filter(function(c){return (c.member||c.rider||c.m)===s.id})[0]||{notes:[]},hs={};
+   s.les.forEach(function(l){var h=lcHorseOf(l,s.id);if(h)hs[h.id]=h.name});s.book.forEach(function(b){if(b.horse&&D.horse(b.horse))hs[b.horse]=D.horse(b.horse).name;else if(b.horseName)hs['x'+b.horseName]=b.horseName});
+   var hn=Object.keys(hs).map(function(k){return hs[k]});
+   return '<div class="card tint d-rd ce-hd">'+U.av(s.m||{first:s.name},'xl')+'<div class="grow" style="min-width:min(100%,240px)"><h2 style="font:800 30px/1.1 var(--f-display);letter-spacing:-.03em">'+lcEsc(s.name)+'</h2><div class="s mut" style="margin-top:4px">'+[s.galop?'Galop '+s.galop:'',hn.join(', ')].filter(Boolean).map(lcEsc).join(' · ')+'</div></div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:6px"><h3>Avec vous</h3></div><div class="list">'+
+     s.les.map(function(l){return '<div class="li">'+sq('planning','acc')+'<div class="grow"><div class="t">'+lcEsc(l.title||'Reprise')+'</div><div class="s">'+lcEsc(lcCap(l.day||DWS[+l.dow]||''))+' à '+lcEsc(l.start||'')+(lcArena(l)?' · '+lcEsc(lcArena(l)):'')+'</div></div></div>'}).join('')+
+     s.book.map(function(b){return '<div class="li">'+sq('coach','rd')+'<div class="grow"><div class="t">'+lcEsc(b.type||'Cours particulier')+'</div><div class="s">'+(b.date?lcEsc(F.dateL(b.date))+' à '+lcEsc(b.t||''):lcEsc(b.slot||''))+'</div></div></div>'}).join('')+
+     (s.les.length||s.book.length?'':'<div class="li"><div class="grow s mut">Aucun cours prévu ensemble.</div></div>')+'</div></div>'+
+    '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:6px"><h3>Notes de séance</h3><button class="btn sm" data-a="nadd">'+I('edit','sm')+'Écrire une note</button></div>'+
+     (r.notes.length?r.notes.slice().reverse().map(function(n){return '<div class="ce-note"><div class="xs mut">'+lcEsc(F.date(String(n.at||'').slice(0,10)))+'</div><div class="s" style="margin-top:4px">'+lcEsc(n.t)+'</div></div>'}).join(''):'<div class="cb" style="padding-top:0"><p class="s mut">Pas encore de note. Vos notes restent dans votre espace coach.</p></div>')+'</div>'}
+  function narrow(){return getComputedStyle(det).display==='none'}
+  function drawList(){list.innerHTML=S.map(function(s){var n=s.les.length+s.book.length;return '<button class="ce-li" data-a="pick" data-id="'+lcEsc(s.id)+'" aria-selected="'+(s.id===lcSel)+'">'+U.av(s.m||{first:s.name})+'<span style="min-width:0"><span class="nmx ellip" style="display:block">'+lcEsc(s.name)+'</span><span class="s mut ellip" style="display:block">'+(s.galop?'Galop '+s.galop+' · ':'')+n+' cours avec vous</span></span><span></span></button>'}).join('')}
+  function drawDet(){var s=S.filter(function(x){return x.id===lcSel})[0];if(s){det.innerHTML=detail(s);P.animate(det);swIn(det)}}
+  function note(s,redraw){var sh=P.sheet({title:'Note pour '+s.first,icon:'edit',body:'<label class="field"><span>Ce que vous avez travaillé, ce qu’il faut revoir</span><textarea class="in" rows="5" data-t></textarea></label>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+   sh.querySelector('[data-ok]').onclick=function(){var t=sh.querySelector('[data-t]').value.trim();if(!t){P.toast('Écrivez la note avant d’enregistrer',{icon:'info'});return}lcRec(s).notes.push({t:t,at:new Date().toISOString()});lcSave();sh.close();redraw();P.toast('Note enregistrée',{icon:'checkc'})}}
+  function openSheet(){var s=S.filter(function(x){return x.id===lcSel})[0];P.sheet({title:s.name,icon:'members',wide:true,body:function(b,sheet){function rd(){b.innerHTML=detail(s)}rd();act(sheet,{nadd:function(){note(s,rd)}})}})}
+  drawList();drawDet();
+  act(det,{nadd:function(){note(S.filter(function(x){return x.id===lcSel})[0],drawDet)}});
+  act(list,{pick:function(b){lcSel=b.getAttribute('data-id');drawList();if(narrow())openSheet();else drawDet()}});
+};
+
+/* ---------- Disponibilités : créneaux de la fiche coach, réservables par les adhérents ---------- */
+LC['coach-dispo']=function(el){var c=lcMe(),sl=(c.slots||[]).slice(),ord=function(s){var p=String(s).split(' ');return ((DWS.indexOf(p[0])+6)%7)*1440+hm(p[1]||'0:0')};
+  sl.sort(function(a,b){return ord(a)-ord(b)});var req=lcReq().length,cf=lcBook().filter(function(b){return b.status==='confirmée'}).length;
+  el.innerHTML=ph('Disponibilités',sl.length?sl.length+' créneau'+(sl.length>1?'x':'')+' ouvert'+(sl.length>1?'s':'')+' aux adhérents du club':'Ouvrez des créneaux pour recevoir des demandes de cours','<button class="btn pri" data-a="add">'+I('plus','sm')+'Ouvrir un créneau</button>')+
+   '<div class="fx-stats rise">'+tile({dom:'acc',icon:'calendar_add',label:'Créneaux ouverts',value:sl.length,sub:'chaque semaine'})+tile({dom:'rd',icon:'planning',label:'Demandes en attente',value:req,sub:'dans votre agenda'})+tile({dom:'hz',icon:'checkc',label:'Cours acceptés',value:cf,sub:'cours particuliers'})+(c.rate?tile({dom:'mo',icon:'euro',label:'Tarif',value:F.eur(+c.rate),sub:'fixé avec le club'}):'')+'</div>'+
+   '<div class="card" style="margin-top:14px"><div class="ch" style="padding-bottom:8px"><div><h3>Créneaux de la semaine</h3><div class="xs mut">Visibles par les adhérents sur la page Coachs de leur espace</div></div></div>'+
+    (sl.length?'<div class="list">'+sl.map(function(s){var p=String(s).split(' ');return '<div class="li">'+sq('calendar_add','acc')+'<div class="grow"><div class="t">'+lcEsc(({Dim:'Dimanche',Lun:'Lundi',Mar:'Mardi',Mer:'Mercredi',Jeu:'Jeudi',Ven:'Vendredi',Sam:'Samedi'})[p[0]]||p[0])+' à '+lcEsc(String(p[1]||'').replace(':',' h '))+'</div><div class="s">Cours particulier, '+dur(60)+'</div></div><button class="btn sm ghost" data-a="del" data-s="'+lcEsc(s)+'">'+I('close','sm')+'Fermer</button></div>'}).join('')+'</div>':
+     U.empty('calendar_add','Aucun créneau ouvert','Ajoutez les heures où vous pouvez donner un cours particulier : les adhérents pourront vous le demander.'))+'</div>';
+  function save(){c.slots=sl;lcSave();P.rerender()}
+  act(el,{del:function(b){var s=b.getAttribute('data-s');sl=sl.filter(function(x){return x!==s});save();P.toast('Créneau fermé',{undo:function(){sl.push(s);save()}})},
+   add:function(){var sh=P.sheet({title:'Ouvrir un créneau',icon:'calendar_add',body:'<div class="g2" style="--g:12px;grid-template-columns:1fr 1fr"><label class="field"><span>Jour</span><select class="in" data-d>'+[1,2,3,4,5,6,0].map(function(w){return '<option value="'+DWS[w]+'">'+['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][w]+'</option>'}).join('')+'</select></label><label class="field"><span>Heure</span><input class="in" type="time" value="14:00" step="900" data-t></label></div>',foot:'<button class="btn pri" data-ok>Ouvrir</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){var t=sh.querySelector('[data-t]').value;if(!/^\d{2}:\d{2}$/.test(t)){P.toast('Choisissez une heure',{icon:'info'});return}var s=sh.querySelector('[data-d]').value+' '+t;if(sl.indexOf(s)<0)sl.push(s);sh.close();save();P.toast('Créneau ouvert aux adhérents',{icon:'checkc'})}}});
+};
+
+/* ---------- Revenus : seulement ce que Piaffe sait ---------- */
+LC['coach-revenus']=function(el){var B=lcBook().filter(function(b){return b.status==='confirmée'||b.status==='terminée'}),sum=B.reduce(function(a,b){return a+(+b.price||0)},0);
+  el.innerHTML=ph('Revenus',B.length?B.length+' cours particulier'+(B.length>1?'s':'')+' accepté'+(B.length>1?'s':''):'Vos cours particuliers acceptés','')+
+   (B.length?'<div class="fx-stats rise">'+tile({dom:'mo',icon:'euro',label:'Cours particuliers',value:F.eur(sum),sub:'au tarif indiqué à la réservation'})+tile({dom:'tm',icon:'planning',label:'Cours acceptés',value:B.length,sub:'depuis votre arrivée'})+'</div>'+
+    '<div class="card list" style="margin-top:14px">'+B.map(function(b){return '<div class="li">'+sq('coach','acc')+'<div class="grow"><div class="t">'+lcEsc(lcWho(b))+'</div><div class="s">'+lcEsc(b.type||'Cours particulier')+(b.date?' · '+lcEsc(F.dateL(b.date)):'')+'</div></div><div class="r"><b class="s num">'+(b.price?F.eur(+b.price):'')+'</b></div></div>'}).join('')+'</div>'+
+    '<div class="note" style="margin-top:14px">'+I('info','sm')+'<span>Le règlement de ces cours et vos reversements se font directement avec le club : ils ne sont pas encore suivis dans Piaffe.</span></div>':
+    '<div class="card">'+U.empty('wallet','Pas encore de revenus suivis','Les cours particuliers que vous acceptez apparaîtront ici avec leur tarif. Le règlement des reprises du club se fait avec le gérant.')+'</div>');
+};
+
+/* ---------- Concours : concours du club et engagements de vos élèves ---------- */
+LC['coach-concours']=function(el){var t=iso(day(0)),ids=lcIds(),st=lcStudents().map(function(s){return s.id}),
+  K=(D.competitions||[]).filter(function(k){return String(k.date||'')>=t}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),
+  En=(D.entries||[]).filter(function(e){return ids.indexOf(e.coach)>=0||st.indexOf(e.rider)>=0});
+  el.innerHTML=ph('Concours',K.length?K.length+' concours à venir au calendrier du club':'Le calendrier de concours du club','')+
+   (K.length?'<div class="stack rise" style="--g:14px">'+K.map(function(k){var es=En.filter(function(e){return e.comp===k.id});
+     return '<div class="card"><div class="ch"><div><h3>'+lcEsc(k.name||'Concours')+'</h3><div class="xs mut">'+lcEsc(lcCap(F.dateL(k.date)))+(k.place?' · '+lcEsc(k.place):'')+'</div></div>'+(es.length?U.chip(es.length+' engagé'+(es.length>1?'s':''),'acc'):'')+'</div>'+
+      (es.length?'<div class="list">'+es.map(function(e){var m=D.member(e.rider),h=e.horse&&D.horse(e.horse);return '<div class="li">'+U.av(m||e.rider)+'<div class="grow"><div class="t">'+lcEsc(m?m.first+' '+(m.last||''):'Cavalier')+(h?' · '+lcEsc(h.name):'')+'</div><div class="s">'+lcEsc(e.class||'')+'</div></div>'+U.chip(lcCap(e.status||'engagé'),/demand/.test(e.status||'')?'warn':'ok',true)+'</div>'}).join('')+'</div>':'<div class="cb" style="padding-top:0"><p class="s mut">Aucun de vos élèves n’est encore engagé.</p></div>')+'</div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('compet','Aucun concours à venir','Les concours ajoutés par le club et les engagements de vos élèves apparaîtront ici.')+'</div>');
+};
+
+/* ---------- Profil : la fiche coach, éditable (le tarif reste fixé avec le club) ---------- */
+LC['coach-profil']=function(el){var c=lcMe(),SPEC=['CSO','Dressage','Cross','Hunter','Éthologie','Travail sur le plat','Coaching de concours','Jeunes chevaux','Enfants'],my=String(c.spec||'').split(/\s*,\s*/).filter(Boolean);
+  el.innerHTML=ph('Profil','Ce que voient les adhérents du club sur la page Coachs','<button class="btn" data-a="bio">'+I('edit','sm')+'Modifier ma présentation</button>')+
+   '<div class="g2 rise" style="--g:14px"><div class="card pad"><div class="hrow" style="--g:16px">'+U.av(c,'xl')+'<div class="grow"><b class="l disp" style="font-size:22px">'+lcEsc((c.first||'')+' '+(c.last||''))+'</b><div class="s mut">'+lcEsc(c.level||'Coach')+'</div></div></div>'+
+    '<p class="s" style="margin-top:14px;color:var(--ink-2)">'+(c.bio?lcEsc(c.bio):'<span class="mut">Pas encore de présentation.</span>')+'</p>'+
+    '<div class="eyebrow" style="margin:16px 0 8px">Spécialités</div><div class="hrow wrap" style="--g:6px">'+SPEC.concat(my.filter(function(s){return SPEC.indexOf(s)<0})).map(function(k){return '<button class="tag" style="height:34px" data-a="spec" data-k="'+lcEsc(k)+'" aria-pressed="'+(my.indexOf(k)>=0)+'">'+lcEsc(k)+'</button>'}).join('')+'</div></div>'+
+   '<div class="card"><div class="ch" style="padding-bottom:8px"><h3>Ma fiche au club</h3></div><div class="cb" style="padding-top:0">'+row('Niveau, diplôme',lcEsc(c.level||'non renseigné'))+row('Tarif d’un cours particulier',c.rate?F.eur(+c.rate):'non renseigné')+row('Créneaux ouverts',(c.slots||[]).length+'')+(c.reviews?row('Avis',lcEsc(String(c.rating||'').replace('.',','))+' sur 5 · '+c.reviews+' avis'):'')+
+    '<p class="xs mut" style="margin-top:10px">Le tarif est fixé avec le gérant du club : demandez-lui de le modifier.</p></div></div></div>';
+  act(el,{spec:function(b){var k=b.getAttribute('data-k'),i=my.indexOf(k);if(i<0)my.push(k);else my.splice(i,1);b.setAttribute('aria-pressed',i<0);c.spec=my.join(', ');lcSave();P.toast('Spécialités enregistrées',{ms:1500})},
+   bio:function(){var sh=P.sheet({title:'Ma présentation',icon:'edit',body:'<div class="stack" style="--g:12px"><label class="field"><span>Niveau, diplôme</span><input class="in" data-l value="'+lcEsc(c.level||'')+'"></label><label class="field"><span>Présentation, visible par les adhérents</span><textarea class="in" rows="6" data-t>'+lcEsc(c.bio||'')+'</textarea></label></div>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+    sh.querySelector('[data-ok]').onclick=function(){c.bio=sh.querySelector('[data-t]').value.trim();c.level=sh.querySelector('[data-l]').value.trim();lcSave();sh.close();P.rerender();P.toast('Présentation enregistrée',{icon:'checkc'})}}});
+};
+
+/* ---------- Pastilles du menu ---------- */
+LCB['coach-agenda']=function(){var n=lcReq().length;return n?{v:n}:null};
+['coach-eleves','coach-dispo','coach-revenus','coach-concours','coach-profil'].forEach(function(k){LCB[k]=function(){return null}});
+
+if(!DEMO){
+  Object.keys(LC).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=lcSafe(id,LC[id]);m.__lv=true});
+  Object.keys(LCB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LCB[id]});
+  if(P.mods['coach-agenda'])P.mods['coach-agenda'].phoneTitle='Agenda';
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='coach')P.actions.splice(ai,1);
+  P.actions.push({role:'coach',label:'Voir mon agenda',icon:'planning',run:function(){P.go('coach-agenda')}},{role:'coach',label:'Ouvrir un créneau',icon:'calendar_add',run:function(){P.go('coach-dispo')}},
+    {role:'coach',label:'Voir mes élèves',icon:'members',run:function(){P.go('coach-eleves')}},{role:'coach',label:'Modifier ma présentation',icon:'user',run:function(){P.go('coach-profil')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='coach')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^coach-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.coach)P.suggestions.coach.length=0;
+}
 
 /* Manche 4 : segments trop longs pour le téléphone. Un fondu sur le bord indique qu'ils défilent et disparaît en bout de course. */
 P.css(`.seg.fx-sf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}

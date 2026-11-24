@@ -5,6 +5,8 @@
    ===================================================================== */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,$=P.$,$$=P.$$;
+/* La démo suit Léa Martin (m001). Dans un vrai club, D.me.adherent est la fiche de la personne connectée : voir « Club réel » en fin de fichier. */
+var DEMO=!D.me||D.me.adherent==='m001'||!!(window.PL&&PL.sandbox);
 /* Manche 4 : fondu et léger glissement quand un onglet ou un filtre interne redessine un bloc (pas au premier rendu) */
 function swIn(n){if(!n)return;if(n.__sw&&!P.RM){n.classList.remove('ad-sw');void n.offsetWidth;n.classList.add('ad-sw')}n.__sw=1}
 P.css(`.ad-sw{animation:adsw .24s var(--e-out) backwards}@keyframes adsw{from{opacity:0;transform:translateY(10px)}}
@@ -2278,6 +2280,299 @@ P.css(`.seg.ad-sf{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px
 .seg.ad-sf.l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent)}
 .seg.ad-sf.e{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px);mask-image:linear-gradient(90deg,transparent,#000 36px)}`);
 function adSegs(root){P.$$('.seg',root).forEach(function(g){if(g.__sf)return;g.__sf=1;function up(){var over=g.scrollWidth>g.clientWidth+2,x=g.scrollLeft,end=x+g.clientWidth>=g.scrollWidth-2;g.classList.toggle('ad-sf',over);g.classList.toggle('l',over&&x>2&&!end);g.classList.toggle('e',over&&end)}g.addEventListener('scroll',up,{passive:true});requestAnimationFrame(up)})}
+/* =====================================================================
+   CLUB RÉEL : l'espace adhérent de la personne connectée
+   La démo garde Léa Martin (m001) et son jeu d'exemple. Dans un vrai club (D.me.adherent est la fiche
+   de la personne connectée), chaque écran se construit à partir de sa fiche, de sa famille (même fam)
+   et des collections du club ; les modifications passent par DATA et sont enregistrées par la synchro.
+   ===================================================================== */
+var LV={},LVB={};
+function lvMe(){var id=D.me&&D.me.adherent,m=id&&D.member(id);return m||D.person(id)||{id:id||'me',first:'',last:'',galop:0}}
+function lvIds(){var me=lvMe(),ids=[me.id];(D.members||[]).forEach(function(m){if(m.fam&&me.fam&&m.fam===me.fam&&ids.indexOf(m.id)<0)ids.push(m.id)});
+  ((window.PL&&PL.personIds)||[]).forEach(function(i){if(ids.indexOf(i)<0&&D.member(i))ids.push(i)});return ids}
+function lvPeople(){var L=lvIds().map(function(i){return D.member(i)}).filter(Boolean);return L.length?L:[lvMe()]}
+function lvFirst(){var me=lvMe();return me.first||((window.PL&&PL.user&&PL.user.first)||'')}
+function lvNm(p){return ((p&&p.first||'')+' '+(p&&p.last||'')).trim()}
+function lvNow(){var t=D.today||new Date();return t.getHours()*60+t.getMinutes()}
+function lvMin(s){var p=String(s||'0:0').split(':');return (+p[0]||0)*60+(+p[1]||0)}
+function lvOff(l){var t=D.today||new Date(),o=(l.dow-t.getDay()+7)%7;if(o===0&&lvMin(l.start)+(+l.dur||60)<=lvNow())o=7;return o}
+function lvWhen(o){return o===0?'aujourd’hui':o===1?'demain':DWL7(o)}
+function DWL7(o){return ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][D.day(o).getDay()]}
+function lvMine(){var ids=lvIds();return (D.lessons||[]).filter(function(l){return (l.riders||[]).some(function(r){return ids.indexOf(r)>=0})&&!/annul/i.test(l.status||'')})
+  .map(function(l){return {l:l,off:lvOff(l),who:(l.riders||[]).filter(function(r){return ids.indexOf(r)>=0})}}).sort(function(a,b){return a.off-b.off||lvMin(a.l.start)-lvMin(b.l.start)})}
+function lvHorses(){var ids=lvIds(),hb=(D.halfboard||[]).filter(function(d){return ids.indexOf(d.rider)>=0&&!/termin|annul/i.test(d.status||'')}).map(function(d){return d.horse});
+  return (D.horses||[]).filter(function(h){return ids.indexOf(h.owner)>=0||hb.indexOf(h.id)>=0})}
+function lvInv(){var ids=lvIds();return (D.invoices||[]).filter(function(i){return i.status!=='brouillon'&&(!i.member||ids.indexOf(i.member)>=0)})}
+function lvDueL(){return lvInv().filter(function(i){return +i.left>0&&['payée','annulée','avoir'].indexOf(i.status)<0})}
+function lvDue(){return lvDueL().reduce(function(a,i){return a+(+i.left||0)},0)}
+function lvSigners(c){return Array.isArray(c.signers)&&c.signers.length?c.signers:[c.party].filter(Boolean)}
+function lvContracts(){var ids=lvIds();return (D.contracts||[]).filter(function(c){return c.status!=='brouillon'&&(ids.indexOf(c.party)>=0||lvSigners(c).some(function(s){return ids.indexOf(s)>=0}))})}
+function lvToSign(c){var ids=lvIds(),sg=c.signed||[];return lvSigners(c).filter(function(s){return ids.indexOf(s)>=0&&sg.indexOf(s)<0})}
+function lvMustSign(c){return c.status==='à signer'&&lvToSign(c).length>0}
+function lvWx(){var w=D.weather||[];return w.length&&!w[0].none?w:null}
+function lvSave(){try{if(window.PL&&PL.sync)PL.sync.flush()}catch(e){}}
+function lvHM(d){d=d||new Date();return String(d.getHours()).padStart(2,'0')+' h '+String(d.getMinutes()).padStart(2,'0')}
+function lvUid(p){return window.PL&&PL.uid?PL.uid(p):p+Date.now().toString(36)}
+function lvIco(i,d){return '<span class="ico d-'+d+'">'+ICON(i)+'</span>'}
+function lvLk(go,txt){return '<button class="lk" data-go="'+go+'">'+(txt||'')+ICON('arrow','sm')+'</button>'}
+function lvRidersTxt(l){var n=(l.riders||[]).length;return n+' cavalier'+(n>1?'s':'')+' sur '+l.cap}
+function lvCareOf(h){var t=D.iso(D.day(0));return (D.care||[]).filter(function(c){return c.horse===h.id}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))})}
+function lvNextCare(h){var t=D.iso(D.day(0));return lvCareOf(h).filter(function(c){return c.status!=='fait'&&String(c.date)>=t})[0]}
+function lvEsc(s){return F.esc?F.esc(String(s==null?'':s)):String(s==null?'':s)}
+/* écrit au club : un fil de messages avec la personne, créé au besoin */
+function lvThread(){var me=lvMe();return (D.threads||[]).filter(function(t){return t.with===me.id})[0]}
+function lvSend(text){var me=lvMe(),t=lvThread(),m={w:me.id,t:lvHM(),x:text,at:new Date().toISOString()};
+  if(!t){t={id:lvUid('th'),with:me.id,title:lvNm(me)||'Adhérent',last:text,when:lvHM(),unread:1,msgs:[m]};D.threads.unshift(t)}
+  else{t.msgs=(t.msgs||[]).concat([m]);t.last=text;t.when=lvHM();t.unread=(+t.unread||0)+1}
+  lvSave();return t}
+function lvSafe(id,fn){return function(el,ctx){ctx=ctx||{params:{}};ctx.params=ctx.params||{};try{fn(el,ctx)}catch(e){console.warn('[adhérent] '+id,e);
+  if(window.PL&&PL.renderEmpty){PL.renderErrors[id]=String(e&&e.message||e);PL.renderEmpty(el,P.mods[id],e)}else throw e}}}
+
+/* ---------- Feuilles communes ---------- */
+function lvLessonSheet(l,off){var ids=lvIds(),who=(l.riders||[]).filter(function(r){return ids.indexOf(r)>=0}),h=who[0]&&l.horses&&l.horses[who[0]]&&D.horse(l.horses[who[0]]);
+  var sh=P.sheet({title:l.title,icon:'planning',body:'<div class="stack" style="--g:14px"><div class="card soft" style="padding:14px"><div class="ad-sum"><span class="mut">Quand</span><b>'+cap(lvWhen(off))+', '+l.start+' – '+endT(l)+'</b></div><div class="ad-sum"><span class="mut">Où</span><b>'+(arena(l)||'Au club')+'</b></div>'+(l.coach?'<div class="ad-sum"><span class="mut">Avec</span><b>'+lvEsc(D.name(l.coach))+'</b></div>':'')+'<div class="ad-sum"><span class="mut">Monture</span><b>'+(h?lvEsc(h.name):'Attribuée par le club')+'</b></div></div>'+
+    '<div><div class="ad-lbl">Inscrits</div><div class="hrow wrap" style="--g:10px">'+who.map(function(r){return U.chip(lvEsc(D.name(r)),'ok',true)}).join('')+'<span class="s mut">'+lvRidersTxt(l)+'</span></div></div>'+
+    '<div class="note">'+ICON('info','sm')+'<span>Vous ne pouvez plus venir ? Libérez votre place : elle est aussitôt proposée aux autres cavaliers.</span></div></div>',
+    foot:'<button class="btn ad-full" data-abs>Libérer ma place</button><button class="btn pri ad-full" data-x2>Fermer</button>'});
+  $('[data-x2]',sh).onclick=function(){sh.close()};
+  $('[data-abs]',sh).onclick=function(){l.riders=(l.riders||[]).filter(function(r){return ids.indexOf(r)<0});who.forEach(function(r){if(l.horses)delete l.horses[r]});lvSave();sh.close();P.rerender();
+    P.toast('Place libérée pour la reprise « '+l.title+' »',{icon:'calendar_add',undo:function(){who.forEach(function(r){if(l.riders.indexOf(r)<0)l.riders.push(r)});lvSave();P.rerender()}})}}
+function lvBookSheet(l,off,who,after){var p=D.member(who)||lvMe(),left=l.cap-(l.riders||[]).length;
+  var sh=P.sheet({title:'Réserver la reprise',icon:'calendar_add',body:'<div class="card soft" style="padding:14px 16px"><div class="hrow" style="--g:12px"><div class="ad-date"><b>'+D.day(off).getDate()+'</b><span>'+DW[D.day(off).getDay()]+'</span></div><div class="grow"><div class="b" style="font-size:15.5px">'+lvEsc(l.title)+'</div><div class="s mut">'+l.start+' – '+endT(l)+(arena(l)?' · '+lvEsc(arena(l)):'')+'</div><div class="s mut">'+(l.coach?lvEsc(D.name(l.coach))+' · ':'')+left+' place'+(left>1?'s':'')+' restante'+(left>1?'s':'')+'</div></div></div></div>'+
+    '<div class="ad-lbl">Cavalier</div><div class="ad-row">'+U.av(p)+'<div class="grow"><div class="t">'+lvEsc(lvNm(p))+'</div><div class="s">'+(p.galop?'Galop '+p.galop:'Cavalier du club')+'</div></div></div>'+
+    '<p class="xs mut" style="margin-top:14px">Votre inscription est envoyée au club, qui la voit aussitôt dans son planning. Vous pouvez libérer votre place depuis cet écran.</p>',
+    foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('calendar_add','sm')+'Réserver ma place</button>'});
+  var ok=$('[data-ok]',sh);ok.onclick=function(){spin(ok,function(){if((l.riders||[]).indexOf(who)<0){l.riders=(l.riders||[]).concat([who])}
+    if(Array.isArray(l.waitlist))l.waitlist=l.waitlist.filter(function(x){return x!==who});lvSave();
+    success(sh,{title:'C’est réservé',text:'Votre place est enregistrée. Le club la voit dans son planning.',head:'<div class="ad-date"><b>'+D.day(off).getDate()+'</b><span>'+DW[D.day(off).getDay()]+'</span></div><div class="grow"><div class="b" style="font-size:15.5px">'+lvEsc(l.title)+'</div><div class="s mut">'+cap(F.dateL(D.day(off)))+'</div></div>'+(l.coach?U.av(l.coach):''),
+      rows:[['Horaire',l.start+' – '+endT(l)],['Lieu',lvEsc(arena(l)||'Au club')],['Cavalier',lvEsc(lvNm(p))],['Avec',lvEsc(l.coach?D.name(l.coach):'Le club')]]});if(after)after()})}}
+function lvSignSheet(c,after){var me=lvMe(),must=lvToSign(c),done=!must.length;
+  var sh=P.sheet({title:c.title||'Document',icon:'sign',wide:true,body:function(b){
+   b.innerHTML='<div class="ad-paper"><h4>'+lvEsc(c.title||'Document')+'</h4><div class="xs mut">'+lvEsc(D.club.name)+(c.date?' · '+F.date(c.date):'')+(c.horse&&D.horse(c.horse)?' · '+lvEsc(D.horse(c.horse).name):'')+(c.amount?' · '+F.eur(c.amount):'')+'</div>'+
+     (c.text?'<p>'+lvEsc(c.text)+'</p>':Array.isArray(c.arts)&&c.arts.length?c.arts.map(function(a,i){return '<h5>Article '+(i+1)+'. '+lvEsc(a[0])+'</h5><p>'+lvEsc(a[1])+'</p>'}).join(''):'<p>Le texte complet de ce document vous est remis par le club. En signant, vous confirmez l’avoir lu et en accepter les termes.</p>')+'</div>'+
+    '<div class="ad-lbl">Signataires</div><div class="card list" data-sg></div>'+
+    (done?'':'<label class="hrow" style="--g:10px;margin:16px 0 12px;cursor:pointer">'+U.chk(false,'read')+'<span class="s">J’ai lu le document en entier et j’en accepte les termes.</span></label>')+
+    (done?'':'<div class="hrow sp" style="margin:0 0 8px"><span class="ad-lbl" style="margin:0">Votre signature</span><button class="btn ghost sm" data-clr>Effacer</button></div><div class="ad-pad"><canvas></canvas><span class="bs"></span><span class="ul"></span><span class="hl">Signez ici, au doigt ou à la souris</span></div>')+
+    '<p class="xs mut hrow" style="--g:6px;margin-top:10px">'+ICON('shield','sm')+'Signature électronique horodatée, enregistrée par le club.</p>'},
+   foot:done?'<button class="btn pri ad-full" data-x2>Fermer</button>':'<button class="btn pri lg ad-full" data-ok disabled>'+ICON('sign','sm')+'Signer le document</button>'});
+  function signers(){$('[data-sg]',sh).innerHTML=lvSigners(c).map(function(s){var y=(c.signed||[]).indexOf(s)>=0;return '<div class="li">'+U.av(s)+'<div class="grow"><div class="t">'+(s===me.id?'Vous, '+lvEsc(lvNm(me)):lvEsc(D.name(s)||'Le club'))+'</div></div>'+(y?U.chip('Signé','ok',true):U.chip('En attente',''))+'</div>'}).join('')}
+  signers();
+  if(done){$('[data-x2]',sh).onclick=function(){sh.close()};return}
+  var pad=$('.ad-pad',sh),ok=$('[data-ok]',sh),inked=false,api=signPad(pad,function(v){inked=v;chk()});
+  function chk(){setTimeout(function(){ok.disabled=!(inked&&$('.chk[data-id="read"]',sh).getAttribute('aria-checked')==='true')},0)}
+  $('.chk[data-id="read"]',sh).addEventListener('click',chk);$('.chk[data-id="read"]',sh).parentNode.addEventListener('click',chk);$('[data-clr]',sh).onclick=function(){api.clear()};
+  ok.onclick=function(){c.signed=(c.signed||[]).concat(must.filter(function(s){return (c.signed||[]).indexOf(s)<0}));c.signedAt=c.signedAt||{};must.forEach(function(s){c.signedAt[s]=new Date().toISOString()});
+   if(lvSigners(c).every(function(s){return c.signed.indexOf(s)>=0}))c.status='signé';lvSave();
+   pad.classList.add('done');pad.insertAdjacentHTML('beforeend','<span class="ad-stamp"><span class="strass"></span>Signé le '+F.date(D.iso(new Date()))+' à '+lvHM()+'</span>');signers();
+   var f=$('.sf',sh);f.innerHTML='<button class="btn pri ad-full" data-done>Terminé</button>';$('[data-clr]',sh)&&$('[data-clr]',sh).remove();$('[data-done]',f).onclick=function(){sh.close()};
+   P.toast(c.status==='signé'?'Document signé, le club en reçoit une copie':'Document signé. Les autres signataires sont prévenus.',{icon:'sign'});if(after)after()}}
+function lvWriteSheet(title,ph,send){var sh=P.sheet({title:title,icon:'chat',body:'<label class="lv-fl"><span>Votre message</span><textarea class="in" rows="5" data-tx placeholder="'+lvEsc(ph||'')+'" style="height:auto;padding:12px"></textarea></label>',foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok>'+ICON('send','sm')+'Envoyer</button>'});
+  $('[data-x2]',sh).onclick=function(){sh.close()};$('[data-ok]',sh).onclick=function(){var t=$('[data-tx]',sh).value.trim();if(!t){P.toast('Écrivez votre message.',{icon:'alert'});return}send(t);sh.close()};return sh}
+
+/* ---------- 1. Accueil ---------- */
+LV['adh-accueil']=function(el,ctx){var me=lvMe(),first=lvFirst(),mine=lvMine(),n=mine[0],hs=lvHorses(),h0=hs[0],dueV=lvDue(),ts=lvContracts().filter(lvMustSign),wx=lvWx(),B=[];
+  B.push('<div class="ad-quick w4" data-b="quick">'+[['adh-reserver','calendar_add','Réserver',mine.length?mine.length+' reprise'+(mine.length>1?'s':'')+' par semaine':'Choisir une reprise',0,'cavaliers'],['adh-paiements','card','Payer',dueV?F.eur(dueV)+' à régler':'Tout est réglé',0,'argent'],['adh-contrats','sign','Signer',ts.length?ts.length+' document'+(ts.length>1?'s':'')+' en attente':'Tout est signé',ts.length,'plateforme'],['adh-messages','chat','Messages','Écrire au club',0,'equipe']].map(function(q){
+    return '<button class="ad-q" data-go="'+q[0]+'"><span class="ico d-'+q[5]+'">'+ICON(q[1])+(q[4]?'<em>'+q[4]+'</em>':'')+'</span><span class="grow" style="min-width:0"><b>'+q[2]+'</b><small>'+q[3]+'</small></span></button>'}).join('')+'</div>');
+  if(n){var l=n.l,who=n.who[0],h=l.horses&&l.horses[who]&&D.horse(l.horses[who]),w=wx&&wx[Math.min(6,n.off)],kid=who!==me.id,mn=n.off*1440+lvMin(l.start)-lvNow();
+   B.push('<div class="card navy ad-next w2" data-b="next"><div class="glow"></div><div class="hrow sp" style="position:relative"><span class="eyebrow">Prochaine reprise'+(kid?' de '+lvEsc((D.member(who)||{}).first||''):'')+'</span><span class="ad-cd">'+ICON('clock','sm')+(n.off===0?'Dans '+dur(Math.max(1,mn)):n.off===1?'Demain':'Dans '+n.off+' jours')+'</span></div>'+
+    '<div style="position:relative"><h2>'+lvEsc(l.title)+'</h2><div class="wh">'+cap(F.dateL(D.day(n.off)))+' · '+hm(l.start)+' à '+hm(endT(l))+(arena(l)?' · '+lvEsc(arena(l)):'')+'</div></div>'+
+    '<div class="ad-ng"><div>'+(h?U.hav(h):'<span class="wi">'+ICON('horse')+'</span>')+'<div class="grow" style="min-width:0"><div class="k">Monture</div><div class="v ellip">'+(h?lvEsc(h.name):'Attribuée par le club')+'</div></div></div>'+
+    (l.coach?'<div>'+U.av(l.coach)+'<div class="grow" style="min-width:0"><div class="k">'+lvEsc(((D.staffer(l.coach)||D.coach(l.coach)||{}).role)||'Enseignant')+'</div><div class="v ellip">'+lvEsc(D.name(l.coach))+'</div></div></div>':'')+
+    (w?'<div><span class="wi">'+ICON(w.i)+'</span><div class="grow" style="min-width:0"><div class="k">Météo</div><div class="v">'+w.t+' °C, '+(w.r>50?'pluie':w.r>15?'nuageux':'temps sec')+'</div></div></div>':'<div><span class="wi">'+ICON('members')+'</span><div class="grow" style="min-width:0"><div class="k">Reprise</div><div class="v">'+lvRidersTxt(l)+'</div></div></div>')+'</div>'+
+    '<div class="hrow wrap acts" style="--g:8px;margin-top:auto"><button class="btn ad-nb on" data-les>Voir la séance</button><button class="btn ad-nb" data-go="adh-reserver">Toutes mes réservations'+ICON('arrow','sm')+'</button></div></div>')}
+  else B.push('<div class="card w2" data-b="next">'+U.empty('planning','Aucune reprise réservée','Choisissez un créneau : votre place est enregistrée tout de suite auprès du club.','<button class="btn pri" data-go="adh-reserver">Réserver une reprise</button>')+'</div>');
+  if(h0){var nc=lvNextCare(h0);
+   B.push('<div class="card tint d-chevaux ad-t w2" data-b="horse"><div class="ad-tt">'+lvIco('horse','chevaux')+'<h3>'+lvEsc(h0.name)+'</h3>'+lvLk('adh-cheval','Sa fiche')+'</div>'+
+    '<div class="ad-row"><span class="sub grow"><b>'+(h0.box?'Au box '+lvEsc(h0.box)+'.':'Au club.')+'</b> '+(nc?'Prochain soin : '+lvEsc(nc.kind).toLowerCase()+' '+F.rel(nc.date)+'.':'Aucun soin prévu pour l’instant.')+'</span></div>'+
+    '<div class="hrow wrap end" style="--g:8px">'+(nc?U.chip(ICON('care','sm')+lvEsc(nc.kind)+' · '+F.date(nc.date),'warn'):'')+(h0.status==='ok'||!h0.status?U.chip(ICON('heart','sm')+'En forme','ok'):U.chip(ICON('alert','sm')+'À surveiller','bad'))+(hs.length>1?U.chip('+'+(hs.length-1)+' autre'+(hs.length>2?'s':''),'d'):'')+'</div></div>')}
+  var dl=lvDueL();
+  B.push('<div class="card tint d-argent ad-t has-illu w1 pw2" data-b="money">'+ILLU.pieces({size:null,cls:'corner'})+'<div class="ad-tt">'+lvIco('wallet','argent')+'<h3>'+(dueV?'À régler':'Solde')+'</h3></div>'+
+    (dueV?'<div><div class="big num"><span data-count="'+dueV+'" data-fmt="eur">'+F.eur(dueV)+'</span></div><div class="sub" style="margin-top:8px">'+dl.length+' facture'+(dl.length>1?'s':'')+' en attente'+(dl[0]&&dl[0].due?', échéance le '+F.date(dl[0].due):'')+'.</div></div>':'<div><div class="big num">0 €</div><div class="sub" style="margin-top:8px">Tout est réglé'+(first?'. Merci '+lvEsc(first)+'.':'.')+'</div></div>')+
+    (dueV?'<div class="hrow end" style="--g:8px"><button class="btn pri grow" data-go="adh-paiements">'+ICON('card','sm')+'Payer '+F.eur(dueV)+'</button></div>':'<button class="btn block end" data-go="adh-paiements">Voir mes factures</button>')+'</div>');
+  B.push('<div class="card ad-t w1 pw2" data-b="sign"><div class="ad-tt">'+lvIco('sign','plateforme')+'<h3>À signer</h3>'+(ts.length?'<span class="chip acc lg">'+ts.length+'</span>':'<span class="chip ok dot">À jour</span>')+'</div>'+
+    (ts.length?'<div><div class="b" style="font-size:15.5px;line-height:1.3">'+lvEsc(ts[0].title)+'</div><div class="s mut" style="margin-top:4px">'+(ts[0].date?'Envoyé le '+F.date(ts[0].date):'')+'</div></div><button class="btn dark block end" data-sign="'+lvEsc(ts[0].id)+'">'+ICON('sign','sm')+'Signer au doigt</button>':
+     '<div class="ad-row">'+sq('checkc','ok')+'<div class="grow"><div class="t">Aucun document en attente</div><div class="s">Retrouvez vos documents dans Contrats.</div></div></div><button class="btn block end" data-go="adh-contrats">Voir mes documents</button>')+'</div>');
+  if(wx)B.push('<div class="card tint d-equipe ad-t w2" data-b="weather"><div class="ad-tt">'+lvIco(wx[0].i,'equipe')+'<h3>Météo du club</h3>'+(D.club.city?'<span class="s" style="opacity:.8">'+lvEsc(D.club.city)+'</span>':'')+'</div>'+
+    '<div class="hrow" style="--g:14px;align-items:flex-end"><div class="big num">'+wx[0].t+'<small>°C</small></div><div class="sub" style="padding-bottom:6px">'+wx[0].r+' % de risque de pluie aujourd’hui</div></div>'+
+    '<div class="ad-wx">'+wx.map(function(w,i){return '<div class="'+(i===0?'on':w.r>50?'rn':'')+'"><span>'+(i===0?'Auj.':w.d)+'</span>'+ICON(w.i)+'<b class="num">'+w.t+'°</b><span class="num" style="opacity:.75">'+w.r+' %</span></div>'}).join('')+'</div></div>');
+  el.innerHTML='<div class="ad-ph">'+U.ph('Bonjour'+(first?' '+lvEsc(first):''),cap(F.dateL(D.day(0)))+' · '+(n?'prochaine reprise '+lvWhen(n.off)+' à '+hm(n.l.start)+'.':'bienvenue dans votre espace '+lvEsc(D.club.name)+'.'),'')+'</div><div class="ad-home rise">'+B.join('')+'</div>';
+  var bl=$('[data-les]',el);if(bl)bl.onclick=function(){lvLessonSheet(n.l,n.off)};
+  $$('[data-sign]',el).forEach(function(b){b.onclick=function(){var c=ts.filter(function(x){return String(x.id)===b.getAttribute('data-sign')})[0];if(c)lvSignSheet(c,P.rerender)}})};
+
+/* ---------- 2. Réserver ---------- */
+var LRS={day:0,who:null};
+LV['adh-reserver']=function(el,ctx){var people=lvPeople(),who=LRS.who&&people.some(function(p){return p.id===LRS.who})?LRS.who:people[0].id,me=D.member(who)||lvMe();
+  function dayLs(o){var d=D.day(o).getDay();return (D.lessons||[]).filter(function(l){return l.dow===d&&!/annul/i.test(l.status||'')&&!(o===0&&lvMin(l.start)+(+l.dur||60)<=lvNow())})}
+  el.innerHTML='<div class="ad-ph">'+U.ph('Réserver',people.length>1?'Choisissez le cavalier, puis une reprise : la place est enregistrée tout de suite auprès du club.':'Choisissez une reprise : votre place est enregistrée tout de suite auprès du club.','')+'</div>'+
+   (people.length>1?U.seg(people.map(function(p){return [p.id,lvEsc(p.first||lvNm(p))]}),who,'data-who'):'')+
+   '<div class="ad-rsv" style="margin-top:4px"><div data-main style="min-width:0"></div><div data-side class="stack" style="--g:14px;margin-top:14px"></div></div>';
+  $$('[data-who]',el).forEach(function(b){b.addEventListener('click',function(){LRS.who=b.getAttribute('data-who');P.rerender()})});
+  function side(){var rs=lvMine();$('[data-side]',el).innerHTML='<div class="card"><div class="ch"><h3>Mes réservations</h3><span class="chip">'+rs.length+'</span></div><div style="padding:8px 0">'+
+    (rs.length?rs.map(function(r,i){var l=r.l;return '<div class="ad-mine" data-r="'+i+'"><div class="ad-date g"><b>'+D.day(r.off).getDate()+'</b><span>'+DW[D.day(r.off).getDay()]+'</span></div><div class="grow"><div class="b s ellip">'+lvEsc(l.title)+'</div><div class="xs mut ellip">'+l.start+' · chaque '+DWL7(r.off)+(l.coach?' · '+lvEsc((D.person(l.coach)||{}).first||''):'')+'</div></div>'+ICON('right','sm')+'</div>'}).join(''):U.empty('planning','Rien de prévu','Choisissez un créneau dans le calendrier.'))+
+    '</div><div class="cf"><button class="btn sm grow" data-go="lv-cal-adh">'+ICON('calendar_add','sm')+'Ajouter à mon agenda</button></div></div>'+
+    '<div class="note">'+ICON('info','sm')+'<span>Une reprise réservée revient chaque semaine. Prévenez le club le plus tôt possible si vous ne pouvez pas venir : libérez votre place depuis « Mes réservations ».</span></div>';
+   $$('[data-r]',el).forEach(function(x){x.onclick=function(){var r=rs[+x.getAttribute('data-r')];lvLessonSheet(r.l,r.off)}})}
+  function main(){var m=$('[data-main]',el),h='<div class="ad-days scroll-x">'+Array.apply(null,Array(14)).map(function(_,o){var ls=dayLs(o),mine=ls.some(function(l){return (l.riders||[]).indexOf(who)>=0});
+      return '<button class="ad-day'+(mine?' mine':'')+'" data-day="'+o+'" aria-selected="'+(o===LRS.day)+'" title="'+cap(lvWhen(o))+'"><span class="w">'+(o===0?'auj.':DW[D.day(o).getDay()])+'</span><span class="d">'+D.day(o).getDate()+'</span><span class="c">'+(ls.length?ls.length+' cr.':'·')+'</span></button>'}).join('')+'</div>';
+    var list=dayLs(LRS.day).sort(function(a,b){return lvMin(a.start)-lvMin(b.start)});
+    h+='<div class="hrow sp" style="margin:12px 0 10px"><h3 style="font-size:17px">'+cap(dayL(LRS.day))+'</h3><span class="s mut">'+list.length+' reprise'+(list.length>1?'s':'')+'</span></div>';
+    h+='<div class="card">'+(list.length?list.map(function(l,i){var n=(l.riders||[]).length,left=l.cap-n,mine=(l.riders||[]).indexOf(who)>=0,w=Array.isArray(l.waitlist)&&l.waitlist.indexOf(who)>=0;
+      return '<div class="ad-slot'+(mine?' mine':'')+'" style="--i:'+i+'"><div class="tm">'+l.start+'<small>'+l.dur+' min</small></div><div style="min-width:0"><div class="ti ellip">'+lvEsc(l.title)+'</div><div class="s mut ellip">'+[l.coach?lvEsc(D.name(l.coach)):'',lvEsc(arena(l)||'')].filter(Boolean).join(' · ')+'</div><div class="me">'+
+        (mine?U.chip('Réservé','ok',true):left<=0?U.chip('Complet'+(Array.isArray(l.waitlist)&&l.waitlist.length?' · '+l.waitlist.length+' en attente':''),'bad',true):left===1?U.chip('Dernière place','warn',true):U.chip(left+' places','ok',true))+'<span style="width:64px">'+U.bar(l.cap?n/l.cap*100:0,left<=0?'var(--bad)':left===1?'var(--warn)':'var(--ok)')+'</span><span class="xs mut num">'+n+'/'+l.cap+'</span></div></div>'+
+        '<div class="rt"><span class="pr"></span>'+(mine?'<button class="btn" data-see="'+lvEsc(l.id)+'">Voir</button>':w?'<button class="btn" data-unw="'+lvEsc(l.id)+'">En attente</button>':left<=0?'<button class="btn" data-wait="'+lvEsc(l.id)+'">'+ICON('waitlist','sm')+'Liste d’attente</button>':'<button class="btn dark" data-book="'+lvEsc(l.id)+'">Réserver</button>')+'</div></div>'}).join(''):
+      U.empty('planning','Aucune reprise ce jour-là','Essayez un autre jour : les reprises du club apparaissent ici dès qu’elles sont au planning.'))+'</div>';
+    m.innerHTML=h;
+    $$('[data-day]',m).forEach(function(b){b.onclick=function(){LRS.day=+b.getAttribute('data-day');main()}});
+    function L(id){return (D.lessons||[]).filter(function(l){return String(l.id)===id})[0]}
+    $$('[data-book]',m).forEach(function(b){b.onclick=function(){lvBookSheet(L(b.getAttribute('data-book')),LRS.day,who,upd)}});
+    $$('[data-see]',m).forEach(function(b){b.onclick=function(){lvLessonSheet(L(b.getAttribute('data-see')),LRS.day)}});
+    $$('[data-wait]',m).forEach(function(b){b.onclick=function(){var l=L(b.getAttribute('data-wait'));l.waitlist=(Array.isArray(l.waitlist)?l.waitlist:[]).concat([who]);lvSave();upd();P.toast('Vous êtes '+l.waitlist.length+(l.waitlist.length>1?'e':'er')+' sur la liste d’attente. Le club vous prévient si une place se libère.',{icon:'waitlist'})}});
+    $$('[data-unw]',m).forEach(function(b){b.onclick=function(){var l=L(b.getAttribute('data-unw'));l.waitlist=(l.waitlist||[]).filter(function(x){return x!==who});lvSave();upd();P.toast('Vous avez quitté la liste d’attente',{icon:'waitlist'})}})}
+  function upd(){side();main()}
+  upd()};
+
+/* ---------- 3. Coachs ---------- */
+LV['adh-coachs']=function(el,ctx){var me=lvMe(),cs=(D.coaches||[]),mineB=(D.coachBookings||[]).filter(function(b){return lvIds().indexOf(b.member)>=0||(b.riders||[]).some(function(r){return lvIds().indexOf(r)>=0})});
+  el.innerHTML=U.ph('Coachs','Les coachs du club et les intervenants que vous pouvez réserver.','')+
+   (mineB.length?'<div class="card" style="margin-bottom:16px"><div class="ch"><h3>Mes demandes</h3><span class="chip">'+mineB.length+'</span></div><div class="list">'+mineB.map(function(b){return '<div class="li">'+U.av(b.coach)+'<div class="grow"><div class="t">'+lvEsc(b.type||'Cours particulier')+' avec '+lvEsc(D.name(b.coach))+'</div><div class="s">'+lvEsc(b.slot||b.t||'')+'</div></div>'+U.chip(lvEsc(b.status||'demandée'),b.status==='confirmée'?'ok':'acc',true)+'</div>'}).join('')+'</div></div>':'')+
+   (cs.length?'<div class="g3 rise">'+cs.map(function(c){return '<div class="card pad"><div class="hrow" style="--g:12px">'+U.av(c)+'<div class="grow" style="min-width:0"><div class="b ellip">'+lvEsc(lvNm(c))+'</div><div class="s mut ellip">'+lvEsc([c.spec,c.level].filter(Boolean).join(' · '))+'</div></div></div>'+
+      (c.bio?'<p class="s" style="margin-top:12px;color:var(--ink-2)">'+lvEsc(c.bio)+'</p>':'')+'<div class="hrow sp" style="margin-top:14px">'+(c.rate?'<span class="b num">'+F.eur(c.rate)+' <span class="s mut">la séance</span></span>':'<span></span>')+'<button class="btn dark sm" data-cb="'+lvEsc(c.id)+'">Demander un cours</button></div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('coach','Aucun coach pour l’instant','Le club n’a pas encore ajouté de coach réservable. Les moniteurs du club vous accueillent dans vos reprises.')+'</div>');
+  $$('[data-cb]',el).forEach(function(b){b.onclick=function(){var c=D.coach(b.getAttribute('data-cb'))||cs.filter(function(x){return x.id===b.getAttribute('data-cb')})[0],slots=(c.slots||[]).filter(Boolean);
+    var sh=P.sheet({title:'Cours avec '+lvNm(c),icon:'coach',body:(slots.length?'<div class="ad-lbl">Créneau souhaité</div>'+opts(slots.map(function(s){return [s,s,'Proposé par '+(c.first||'le coach')]}),slots[0],'slot'):'<p class="s mut">Ce coach n’a pas encore publié ses disponibilités : il vous propose un créneau en retour.</p>')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Précisions (facultatif)</span><input class="in" data-nt placeholder="Votre niveau, votre objectif, votre cheval"></label>',foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('send','sm')+'Envoyer la demande</button>'});
+    bindOpts(sh);$('[data-ok]',sh).onclick=function(){var s=slots.length?optVal(sh,'slot'):'',h=lvHorses()[0];
+      D.coachBookings.push({id:lvUid('cb'),coach:c.id,member:me.id,who:lvNm(me),riders:[me.id],horse:h?h.id:null,horseName:h?h.name:'',slot:s,type:'Cours particulier',note:$('[data-nt]',sh).value.trim(),price:c.rate||0,status:'demandée',at:new Date().toISOString()});lvSave();
+      sh.close();P.rerender();P.toast('Demande envoyée à '+(c.first||'votre coach')+'. Vous serez prévenu de sa réponse.',{icon:'send'})}}})};
+
+/* ---------- 4. Mon cheval ---------- */
+var LCH={id:null};
+LV['adh-cheval']=function(el,ctx){var hs=lvHorses(),me=lvMe();
+  if(!hs.length){el.innerHTML=U.ph('Mon cheval','Le suivi de votre cheval au quotidien.','')+'<div class="card">'+U.empty('horse','Aucun cheval relié à votre fiche','Propriétaire ou demi-pensionnaire ? Demandez au club de relier votre cheval à votre fiche : vous suivrez ici ses soins, sa ration et son carnet.','<button class="btn pri" data-wr>'+ICON('chat','sm')+'Écrire au club</button>')+'</div>';
+   var w=$('[data-wr]',el);if(w)w.onclick=function(){lvWriteSheet('Écrire au club','Bonjour, pouvez-vous relier mon cheval à ma fiche ?',function(t){lvSend(t);P.toast('Message envoyé au club',{icon:'send'})})};return}
+  var h=hs.filter(function(x){return x.id===(ctx.params.id||LCH.id)})[0]||hs[0];LCH.id=h.id;
+  var t=D.iso(D.day(0)),care=lvCareOf(h),next=care.filter(function(c){return c.status!=='fait'&&String(c.date)>=t}),late=care.filter(function(c){return c.status!=='fait'&&String(c.date)<t}),past=care.filter(function(c){return c.status==='fait'}).reverse();
+  var dueK=[['vacc','Vaccin',365],['worm','Vermifuge',90],['farrier','Maréchal',49]].map(function(k){var d=h[k[0]];if(!d)return null;var age=Math.round((D.day(0)-new Date(d+'T12:00:00'))/864e5);return {k:k[1],d:d,ok:age<=k[2]}}).filter(Boolean);
+  var okN=dueK.filter(function(x){return x.ok}).length,wp=h.workMax?Math.round((+h.work||0)/h.workMax*100):0,jr=(D.journal||[]).filter(function(j){return j.horse===h.id}).slice().reverse();
+  var role=h.owner&&lvIds().indexOf(h.owner)>=0?'Votre cheval':'En demi-pension';
+  el.innerHTML=(hs.length>1?'<div style="margin-bottom:12px">'+U.seg(hs.map(function(x){return [x.id,lvEsc(x.name)]}),h.id,'data-hs')+'</div>':'')+
+   '<div class="card tint d-chevaux ad-hh rise"><div class="ad-hhi">'+ILLU.cheval({size:null})+'</div><div class="ad-hht"><span class="eyebrow">'+role+(h.box?' · box '+lvEsc(h.box):'')+'</span><h1 class="ad-hn">'+lvEsc(h.name)+'</h1><div class="sub">'+lvEsc([h.breed,(h.sex||'').toLowerCase(),(h.coat||'').toLowerCase(),h.age?h.age+' ans':''].filter(Boolean).join(' · '))+'</div>'+
+    '<div class="hrow wrap" style="--g:8px">'+(h.status==='ok'||!h.status?U.chip(ICON('heart','sm')+'En forme','ok'):U.chip(ICON('alert','sm')+'À surveiller','bad'))+(h.mood?U.chip(ICON('pulse','sm')+'Humeur : '+lvEsc(h.mood).toLowerCase(),'d'):'')+(next[0]?U.chip(ICON('care','sm')+lvEsc(next[0].kind)+' '+F.rel(next[0].date),'warn'):'')+'</div>'+
+    '<div class="hrow wrap acts" style="--g:8px"><button class="btn pri" data-jr>'+ICON('edit','sm')+'Écrire dans son carnet</button><button class="btn" data-ask>'+ICON('chat','sm')+'Demander une prestation</button></div></div>'+
+   '<div class="ad-hhr">'+rings([{p:wp,c:'var(--hz)'},{p:dueK.length?okN/dueK.length*100:0,c:'var(--acc)'},{p:(+h.bcs||0)/5*100,c:'var(--rd)'}],164)+'<div class="ad-hhl">'+
+    [['var(--hz)','Travail sur 7 jours',(+h.work||0)+' h','sur '+(h.workMax||0)+' h conseillées'],['var(--acc)','Soins à jour',dueK.length?String(okN):'–',dueK.length?'sur '+dueK.length+' suivis':'dates à renseigner'],['var(--rd)','État corporel',h.bcs?String(h.bcs).replace('.',','):'–','sur 5']].map(function(x){return '<div><i style="background:'+x[0]+'"></i><span class="grow"><span class="k">'+x[1]+'</span><b class="num">'+x[2]+'</b> <span class="u">'+x[3]+'</span></span></div>'}).join('')+'</div></div></div>'+
+   '<div class="g2" style="margin-top:16px;align-items:start"><div class="stack" style="--g:16px">'+
+    '<div class="card"><div class="ch"><h3>Prochains soins</h3>'+(late.length?U.chip(late.length+' en retard','bad',true):'')+'</div>'+((late.concat(next)).length?'<div class="list">'+late.concat(next).map(function(c){return '<div class="li"><span class="ico sm">'+ICON('care','sm')+'</span><div class="grow"><div class="t">'+lvEsc(c.kind)+(c.who?' · '+lvEsc(c.who):'')+'</div><div class="s">'+F.date(c.date)+(c.time?' à '+lvEsc(c.time):'')+(c.note?' · '+lvEsc(c.note):'')+'</div></div>'+U.chip(String(c.date)<t?'En retard':cap(F.rel(c.date)),String(c.date)<t?'bad':'acc',true)+'</div>'}).join('')+'</div>':U.empty('care','Aucun soin prévu','Le club planifie ici le maréchal, les vaccins et les visites.'))+'</div>'+
+    (dueK.length?'<div class="card"><div class="ch"><h3>Derniers soins connus</h3></div><div class="list">'+dueK.map(function(x){return '<div class="li"><div class="grow"><div class="t">'+x.k+'</div><div class="s">'+F.date(x.d)+' · '+F.rel(x.d)+'</div></div>'+U.chip(x.ok?'À jour':'À prévoir',x.ok?'ok':'warn',true)+'</div>'}).join('')+'</div></div>':'')+
+    (h.ration?'<div class="card pad"><div class="eyebrow">Sa ration</div><div class="g3" style="margin-top:10px"><div><div class="big num" style="font-size:28px">'+(+h.ration.hay||0)+' kg</div><div class="s mut">Foin par jour</div></div><div><div class="big num" style="font-size:28px">'+String(+h.ration.grain||0).replace('.',',')+' kg</div><div class="s mut">Granulés</div></div><div><div class="b">'+lvEsc(h.ration.supp||'Aucun')+'</div><div class="s mut">Complément</div></div></div></div>':'')+
+   '</div><div class="card"><div class="ch"><h3>Son carnet</h3><button class="btn sm" data-jr>'+ICON('plus','sm')+'Écrire</button></div>'+(jr.length?'<div class="list">'+jr.slice(0,12).map(function(j){return '<div class="li" style="align-items:flex-start">'+U.av(j.who)+'<div class="grow"><div class="t">'+lvEsc(D.name(j.who)||j.role||'Le club')+'<span class="s mut" style="font-weight:400"> · '+lvEsc(j.when||'')+'</span></div><div class="s" style="color:var(--ink-2);margin-top:2px">'+lvEsc(j.text)+'</div></div></div>'}).join('')+'</div>':U.empty('doc','Le carnet est vide','Notez une séance, une balade ou une observation : le club et l’équipe la lisent.'))+'</div></div>';
+  $$('[data-hs]',el).forEach(function(b){b.addEventListener('click',function(){LCH.id=b.getAttribute('data-hs');P.rerender()})});
+  $$('[data-jr]',el).forEach(function(b){b.onclick=function(){var sh=P.sheet({title:'Carnet de '+h.name,icon:'edit',body:'<div class="ad-lbl">Type</div>'+opts([['travail','Séance de travail','Plat, obstacle, longe'],['balade','Balade','Extérieur'],['soin','Observation','Santé, comportement, alimentation']],'travail','kind')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Ce qu’il faut retenir</span><textarea class="in" rows="4" data-tx style="height:auto;padding:12px" placeholder="Durée, exercices, ressenti"></textarea></label>',foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok>'+ICON('check','sm')+'Enregistrer</button>'});
+    bindOpts(sh);$('[data-x2]',sh).onclick=function(){sh.close()};
+    $('[data-ok]',sh).onclick=function(){var tx=$('[data-tx]',sh).value.trim();if(!tx){P.toast('Écrivez quelques mots.',{icon:'alert'});return}
+      D.journal.push({id:lvUid('jr'),horse:h.id,who:me.id,role:h.owner===me.id?'Propriétaire':'Demi-pensionnaire',when:'Aujourd’hui, '+lvHM(),date:D.iso(new Date()),text:tx,kind:optVal(sh,'kind')||'travail',mood:4});lvSave();sh.close();P.rerender();P.toast('Ajouté au carnet de '+h.name,{icon:'check'})}}});
+  var ak=$('[data-ask]',el);if(ak)ak.onclick=function(){lvWriteSheet('Demander une prestation','Par exemple : une sortie au paddock, une couverture, une douche…',function(tx){lvSend('Pour '+h.name+' : '+tx);P.toast('Demande envoyée au club',{icon:'send'})})}};
+
+/* ---------- 5. Demi-pension ---------- */
+LV['adh-demipension']=function(el,ctx){var ids=lvIds(),mine=(D.halfboard||[]).filter(function(d){return ids.indexOf(d.rider)>=0||lvHorses().some(function(h){return h.id===d.horse})}),offers=(D.halfboardOffers||[]);
+  el.innerHTML=U.ph('Demi-pension','Partager un cheval quelques jours par semaine, encadré par le club.','')+
+   (mine.length?'<div class="g2 rise" style="margin-bottom:16px">'+mine.map(function(d){var h=D.horse(d.horse)||{name:'Cheval'};return '<div class="card tint d-chevaux pad"><div class="hrow" style="--g:12px">'+U.hav(h)+'<div class="grow"><div class="b">'+lvEsc(h.name)+'</div><div class="s mut">'+(ids.indexOf(d.rider)>=0?'Votre demi-pension':'Demi-pensionnaire : '+lvEsc(D.name(d.rider)))+'</div></div>'+U.chip(lvEsc(d.status||'Actif'),'ok',true)+'</div>'+
+     '<div class="hrow wrap" style="--g:8px;margin-top:12px">'+(Array.isArray(d.days)&&d.days.length?U.chip(ICON('calendar_add','sm')+lvEsc(d.days.join(', ')),'d'):'')+(d.price?U.chip(F.eur(d.price)+' par mois','line'):'')+(d.since?U.chip('Depuis le '+F.date(d.since),'line'):'')+'</div></div>'}).join('')+'</div>':'')+
+   '<div class="card"><div class="ch"><h3>Chevaux proposés en demi-pension</h3><span class="chip">'+offers.length+'</span></div>'+(offers.length?'<div class="list">'+offers.map(function(o){var h=D.horse(o.horse)||{name:o.name||'Cheval'};return '<div class="li">'+U.hav(h)+'<div class="grow"><div class="t">'+lvEsc(h.name)+'</div><div class="s">'+lvEsc([o.days,o.level,o.price?F.eur(o.price)+' par mois':''].filter(Boolean).join(' · '))+'</div>'+(o.note?'<div class="xs mut" style="margin-top:2px">'+lvEsc(o.note)+'</div>':'')+'</div><button class="btn sm dark" data-of="'+lvEsc(o.id)+'">Je suis intéressé</button></div>'}).join('')+'</div>':
+    U.empty('swap','Aucune demi-pension proposée en ce moment','Le club publie ici les chevaux disponibles. Vous pouvez aussi lui écrire pour signaler votre intérêt.','<button class="btn" data-wr>'+ICON('chat','sm')+'Écrire au club</button>'))+'</div>';
+  $$('[data-of]',el).forEach(function(b){b.onclick=function(){var o=offers.filter(function(x){return String(x.id)===b.getAttribute('data-of')})[0],h=D.horse(o.horse)||{name:'ce cheval'};lvSend('Je suis intéressé par la demi-pension de '+h.name+'.');b.disabled=true;b.textContent='Demande envoyée';P.toast('Le club a reçu votre demande pour '+h.name,{icon:'send'})}});
+  var w=$('[data-wr]',el);if(w)w.onclick=function(){lvWriteSheet('Écrire au club','Je cherche une demi-pension…',function(t){lvSend(t);P.toast('Message envoyé au club',{icon:'send'})})}};
+
+/* ---------- 6. Concours ---------- */
+LV['adh-concours']=function(el,ctx){var ids=lvIds(),t=D.iso(D.day(0)),comps=(D.competitions||[]).filter(function(c){return String(c.date)>=t}).sort(function(a,b){return String(a.date).localeCompare(String(b.date))}),ent=(D.entries||[]).filter(function(e){return ids.indexOf(e.rider)>=0});
+  el.innerHTML=U.ph('Concours','Les concours du club et vos engagements.','')+
+   (comps.length?'<div class="stack rise" style="--g:14px">'+comps.map(function(c){var my=ent.filter(function(e){return e.comp===c.id}),open=!c.closes||String(c.closes)>=t;
+    return '<div class="card pad"><div class="hrow" style="--g:14px;align-items:flex-start"><div class="ad-date"><b>'+new Date(c.date+'T12:00:00').getDate()+'</b><span>'+F.date(c.date).split(' ')[1]+'</span></div><div class="grow" style="min-width:0"><div class="b" style="font-size:16px">'+lvEsc(c.name)+'</div><div class="s mut">'+lvEsc([c.place,c.disc,c.level].filter(Boolean).join(' · '))+'</div>'+
+     '<div class="hrow wrap" style="--g:6px;margin-top:8px">'+(my.length?my.map(function(e){return U.chip(lvEsc(D.name(e.rider)||'')+(e.status&&e.status!=='confirmé'?' · '+lvEsc(e.status):' · engagé'),e.status==='demandé'?'acc':'ok',true)}).join(''):'')+(c.closes?U.chip('Clôture '+F.rel(c.closes),open?'line':'bad'):'')+'</div></div>'+
+     (open?'<button class="btn '+(my.length?'':'dark')+' sm" data-en="'+lvEsc(c.id)+'">'+(my.length?'Ajouter':'Demander un engagement')+'</button>':'')+'</div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('trophy','Aucun concours prévu','Le club publie ici ses sorties en concours. Vous pourrez demander votre engagement en un geste.')+'</div>');
+  $$('[data-en]',el).forEach(function(b){b.onclick=function(){var c=comps.filter(function(x){return String(x.id)===b.getAttribute('data-en')})[0],people=lvPeople(),hs=lvHorses();
+    var sh=P.sheet({title:'Demander un engagement',icon:'trophy',body:'<div class="card soft" style="padding:14px"><div class="b">'+lvEsc(c.name)+'</div><div class="s mut">'+F.dateL(c.date)+(c.place?' · '+lvEsc(c.place):'')+'</div></div>'+
+      '<div class="ad-lbl">Cavalier</div>'+opts(people.map(function(p){return [p.id,lvEsc(lvNm(p)),p.galop?'Galop '+p.galop:'',U.av(p)]}),people[0].id,'who')+
+      '<div class="ad-lbl">Monture</div>'+opts(hs.map(function(h){return [h.id,lvEsc(h.name),'Votre cheval',U.hav(h)]}).concat([['club','Un cheval du club','Proposé par le moniteur',sq('horse')]]),hs[0]?hs[0].id:'club','horse')+
+      '<label class="lv-fl" style="margin-top:14px"><span>Épreuve souhaitée</span><input class="in" data-cl placeholder="'+lvEsc(c.level||'Club 2')+'"></label>',foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('send','sm')+'Envoyer la demande</button>'});
+    bindOpts(sh);$('[data-ok]',sh).onclick=function(){var hv=optVal(sh,'horse');D.entries.push({id:lvUid('en'),comp:c.id,rider:optVal(sh,'who'),horse:hv==='club'?null:hv,class:$('[data-cl]',sh).value.trim(),status:'demandé',at:new Date().toISOString()});lvSave();sh.close();P.rerender();P.toast('Demande d’engagement envoyée au club',{icon:'trophy'})}}})};
+
+/* ---------- 7. Progression ---------- */
+LV['adh-progression']=function(el,ctx){var people=lvPeople(),mine=lvMine();
+  el.innerHTML=U.ph('Progression','Votre galop et votre rythme de pratique, d’après vos reprises au club.','')+
+   '<div class="g2 rise">'+people.map(function(p){var ls=mine.filter(function(r){return r.who.indexOf(p.id)>=0}),hrs=ls.reduce(function(a,r){return a+(+r.l.dur||60)},0)/60,g=+p.galop||0;
+    return '<div class="card tint d-acc ad-t"><div class="ad-tt">'+lvIco('trend','acc')+'<h3>'+lvEsc(lvNm(p))+'</h3></div><div class="hrow ad-pgr" style="--g:14px">'+ringSVG(g/7*100,84,10,'var(--acc)','<b>'+g+'</b><small>/7</small>')+'<div class="grow" style="min-width:0"><div class="b" style="font-size:16px;line-height:1.25">'+(g?'Galop '+g+' validé':'Premiers pas à cheval')+'</div><div class="s mut" style="margin-top:4px">'+(g<7?'Prochain objectif : Galop '+(g+1):'Dernier galop fédéral atteint')+'</div></div></div>'+
+     '<div class="end"><div class="s">'+(ls.length?ls.length+' reprise'+(ls.length>1?'s':'')+' par semaine, soit '+String(Math.round(hrs*10)/10).replace('.',',')+' h en selle':'Aucune reprise réservée pour l’instant')+'</div>'+(p.licence||p.lic?'<div class="xs mut" style="margin-top:4px">Licence FFE '+lvEsc(p.licence||p.lic)+'</div>':'')+'</div></div>'}).join('')+'</div>'+
+   (mine.length?'':'<div class="hrow" style="justify-content:center;margin-top:18px"><button class="btn pri" data-go="adh-reserver">'+ICON('calendar_add','sm')+'Réserver une reprise</button></div>')};
+
+/* ---------- 9. Contrats ---------- */
+LV['adh-contrats']=function(el,ctx){var all=lvContracts(),todo=all.filter(lvMustSign),rest=all.filter(function(c){return !lvMustSign(c)});
+  el.innerHTML=U.ph('Contrats','Vos contrats et autorisations, à signer au doigt depuis votre téléphone.','')+
+   (todo.length?'<div class="card" style="margin-bottom:16px"><div class="ch"><h3>À signer</h3><span class="chip acc">'+todo.length+'</span></div><div class="list">'+todo.map(function(c){return '<div class="li ad-tap" data-ct="'+lvEsc(c.id)+'">'+sq('sign','acc')+'<div class="grow"><div class="t">'+lvEsc(c.title)+'</div><div class="s">'+lvEsc([c.horse&&D.horse(c.horse)?D.horse(c.horse).name:'',c.date?'Envoyé le '+F.date(c.date):''].filter(Boolean).join(' · '))+'</div></div><button class="btn dark sm">'+ICON('sign','sm')+'Signer</button></div>'}).join('')+'</div></div>':'')+
+   '<div class="card"><div class="ch"><h3>Mes documents</h3></div>'+(rest.length?'<div class="list">'+rest.map(function(c){return '<div class="li ad-tap" data-ct="'+lvEsc(c.id)+'">'+sq('doc')+'<div class="grow"><div class="t">'+lvEsc(c.title)+'</div><div class="s">'+lvEsc([c.date?F.date(c.date):'',c.amount?F.eur(c.amount):''].filter(Boolean).join(' · '))+'</div></div>'+U.status(c.status||'signé')+'</div>'}).join('')+'</div>':U.empty('contract',todo.length?'Aucun autre document':'Aucun document pour l’instant','Les contrats et autorisations que le club vous envoie apparaîtront ici.'))+'</div>';
+  $$('[data-ct]',el).forEach(function(r){r.onclick=function(){var c=all.filter(function(x){return String(x.id)===r.getAttribute('data-ct')})[0];if(c)lvSignSheet(c,P.rerender)}})};
+
+/* ---------- 10. Messages ---------- */
+LV['adh-messages']=function(el,ctx){var me=lvMe(),th=(D.threads||[]);
+  el.innerHTML=U.ph('Messages','Vos échanges avec le club.','<button class="btn pri" data-new>'+ICON('edit','sm')+'Écrire au club</button>')+
+   '<div class="card">'+(th.length?'<div class="list">'+th.map(function(t){return '<div class="li ad-tap" data-th="'+lvEsc(t.id)+'">'+sq('chat','acc')+'<div class="grow" style="min-width:0"><div class="t">'+lvEsc(t.with===me.id?D.club.name:(t.title||D.club.name))+'</div><div class="s ellip">'+lvEsc(t.last||'')+'</div></div><span class="xs mut">'+lvEsc(t.when||'')+'</span></div>'}).join('')+'</div>':
+    U.empty('chat','Aucun message','Une question sur une reprise, une facture ou votre cheval ? Écrivez au club, la réponse arrive ici.','<button class="btn pri" data-new2>'+ICON('edit','sm')+'Écrire au club</button>'))+'</div>';
+  function write(){lvWriteSheet('Écrire au club','Bonjour,',function(t){lvSend(t);P.rerender();P.toast('Message envoyé au club',{icon:'send'})})}
+  $$('[data-new],[data-new2]',el).forEach(function(b){b.onclick=write});
+  $$('[data-th]',el).forEach(function(r){r.onclick=function(){var t=th.filter(function(x){return String(x.id)===r.getAttribute('data-th')})[0];if(!t)return;var ms=Array.isArray(t.msgs)?t.msgs:[{w:'club',t:t.when,x:t.last}];
+    var sh=P.sheet({title:t.with===me.id?D.club.name:t.title,icon:'chat',body:'<div class="stack" style="--g:10px">'+ms.map(function(m){var mine=m.w===me.id;return '<div class="card '+(mine?'tint d-acc':'soft')+'" style="padding:12px 14px;max-width:85%;'+(mine?'margin-left:auto':'')+'"><div class="s">'+lvEsc(m.x)+'</div><div class="xs mut" style="margin-top:4px">'+(mine?'Vous':lvEsc(D.name(m.w)||'Le club'))+(m.t?' · '+lvEsc(m.t):'')+'</div></div>'}).join('')+'</div>',
+      foot:'<input class="in" data-rp placeholder="Votre réponse" style="flex:1"><button class="btn pri" data-ok>'+ICON('send','sm')+'Envoyer</button>'});
+    $('[data-ok]',sh).onclick=function(){var x=$('[data-rp]',sh).value.trim();if(!x)return;lvSend(x);sh.close();P.rerender();P.toast('Message envoyé',{icon:'send'})}}})};
+
+/* ---------- 11. Profil ---------- */
+LV['adh-profil']=function(el,ctx){var me=lvMe(),people=lvPeople(),u=(window.PL&&PL.user)||{},isM=!!D.member(me.id);
+  el.innerHTML=U.ph('Profil','Vos coordonnées et votre famille au club.','')+
+   '<div class="g2 rise" style="align-items:start"><div class="card pad"><div class="hrow" style="--g:14px">'+U.av(me)+'<div class="grow"><div class="b" style="font-size:18px">'+lvEsc(lvNm(me)||u.email||'')+'</div><div class="s mut">'+lvEsc([me.galop?'Galop '+me.galop:'',me.licence||me.lic?'Licence '+(me.licence||me.lic):''].filter(Boolean).join(' · ')||D.club.name)+'</div></div></div>'+
+    (isM?'<div class="lv-f" style="margin-top:16px"><label class="lv-fl"><span>Téléphone</span><input class="in" data-f="phone" inputmode="tel" value="'+lvEsc(me.phone||'')+'"></label><label class="lv-fl"><span>Adresse e-mail</span><input class="in" data-f="email" type="email" value="'+lvEsc(me.email||u.email||'')+'"></label>'+
+     '<label class="lv-fl"><span>Personne à prévenir en cas d’urgence</span><input class="in" data-f="emergency" value="'+lvEsc(me.emergency||'')+'"></label><label class="lv-fl"><span>Son téléphone</span><input class="in" data-f="emergencyPhone" inputmode="tel" value="'+lvEsc(me.emergencyPhone||'')+'"></label>'+
+     '<label class="lv-fl"><span>Allergies ou informations médicales utiles</span><input class="in" data-f="allergies" value="'+lvEsc(me.allergies||'')+'"></label></div><button class="btn pri" data-save style="margin-top:14px">'+ICON('check','sm')+'Enregistrer</button>':'<p class="lv-note" style="margin-top:14px">Votre fiche n’est pas encore reliée par le club : vos coordonnées s’afficheront ici.</p>')+'</div>'+
+    '<div class="stack" style="--g:16px"><div class="card"><div class="ch"><h3>Ma famille au club</h3></div><div class="list">'+people.map(function(p){return '<div class="li">'+U.av(p)+'<div class="grow"><div class="t">'+lvEsc(lvNm(p))+(p.id===me.id?' <span class="s mut">(vous)</span>':'')+'</div><div class="s">'+lvEsc([p.age?p.age+' ans':'',p.galop?'Galop '+p.galop:''].filter(Boolean).join(' · '))+'</div></div></div>'}).join('')+'</div></div>'+
+    '<div class="card"><div class="list"><button class="li ad-tap" data-acct style="width:100%;text-align:left">'+sq('user')+'<div class="grow"><div class="t">Mon compte</div><div class="s">Mot de passe, apparence, déconnexion</div></div>'+ICON('right','sm')+'</button><button class="li ad-tap" data-go="lv-cal-adh" style="width:100%;text-align:left">'+sq('calendar_add')+'<div class="grow"><div class="t">Mes reprises dans mon agenda</div><div class="s">Google Agenda, Apple Calendrier, Outlook</div></div>'+ICON('right','sm')+'</button></div></div></div></div>';
+  var s=$('[data-save]',el);if(s)s.onclick=function(){var m=D.member(me.id);$$('[data-f]',el).forEach(function(i){m[i.getAttribute('data-f')]=i.value.trim()});lvSave();P.toast('Coordonnées enregistrées',{icon:'check'})};
+  var a=$('[data-acct]',el);if(a)a.onclick=function(){if(window.PL&&PL.account)PL.account()}};
+
+/* ---------- Mon arrivée ---------- */
+LV['adh-bienvenue']=function(el,ctx){var me=lvMe(),first=lvFirst(),ts=lvContracts().filter(lvMustSign),mine=lvMine(),cal=P.mods['lv-cal-adh'];
+  var steps=[['user','Vérifier mes coordonnées','Téléphone et personne à prévenir','adh-profil',!!(me.phone&&me.emergency)],['sign','Signer mes documents',ts.length?ts.length+' en attente':'Rien à signer','adh-contrats',!ts.length],['calendar_add','Réserver ma première reprise',mine.length?'C’est fait':'Choisir un créneau','adh-reserver',!!mine.length],['card','Consulter mes factures','Payer en ligne ou à l’accueil','adh-paiements',!lvDue()]];
+  if(cal)steps.push(['calendar_add','Ajouter mes reprises à mon agenda','Google Agenda, Apple, Outlook','lv-cal-adh',false]);
+  var done=steps.filter(function(s){return s[4]}).length;
+  el.innerHTML=U.ph('Bienvenue'+(first?' '+lvEsc(first):''),'Votre espace '+lvEsc(D.club.name)+' : réservations, factures, documents et messages au même endroit.','')+
+   '<div class="card tint d-acc pad" style="margin-bottom:16px"><div class="eyebrow">Pour bien démarrer</div><div class="big num" style="margin:8px 0">'+done+'<small> / '+steps.length+'</small></div>'+U.bar(done/steps.length*100,'var(--acc)')+'</div>'+
+   '<div class="card"><div class="list">'+steps.map(function(s){return '<button class="li ad-tap" data-go="'+s[3]+'" style="width:100%;text-align:left">'+sq(s[4]?'checkc':s[0],s[4]?'ok':'acc')+'<div class="grow"><div class="t">'+s[1]+'</div><div class="s">'+s[2]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'};
+
+/* ---------- Boutique ---------- */
+LV['adh-boutique']=function(el,ctx){var it=(D.shopItems||[]).filter(function(x){return x&&x.name&&x.active!==false});
+  el.innerHTML=U.ph('Boutique','Les cartes, stages et articles proposés par le club.','')+
+   (it.length?'<div class="g3 rise">'+it.map(function(x){return '<div class="card pad"><div class="hrow" style="--g:12px">'+sq(x.icon||'bag','acc')+'<div class="grow" style="min-width:0"><div class="b ellip">'+lvEsc(x.name)+'</div><div class="s mut">'+lvEsc(x.cat||'')+'</div></div></div><div class="hrow sp" style="margin-top:14px"><span class="b num">'+F.eur(+x.price||0)+'</span><button class="btn dark sm" data-bq="'+lvEsc(x.id)+'">Commander</button></div></div>'}).join('')+'</div>':
+    '<div class="card">'+U.empty('shop','La boutique du club est vide','Le club n’a pas encore mis d’article en vente. Les cartes de séances et les stages apparaîtront ici.')+'</div>');
+  $$('[data-bq]',el).forEach(function(b){b.onclick=function(){var x=it.filter(function(y){return String(y.id)===b.getAttribute('data-bq')})[0];lvSend('Je souhaite commander : '+x.name+' ('+F.eur(+x.price||0)+').');b.disabled=true;b.textContent='Demande envoyée';P.toast('Commande transmise au club : la facture suivra',{icon:'bag'})}})};
+
+/* ---------- Pastilles du menu ---------- */
+LVB['adh-paiements']=function(){var d=lvDue();return d>0?{v:F.eur(d),hot:true}:null};
+LVB['adh-contrats']=function(){var n=lvContracts().filter(lvMustSign).length;return n?{v:n,hot:true}:null};
+['adh-demipension','adh-concours','adh-messages','adh-boutique','adh-reserver','adh-coachs','adh-cheval','adh-accueil','adh-progression','adh-profil'].forEach(function(k){LVB[k]=function(){return null}});
+
+if(!DEMO){
+  Object.keys(LV).forEach(function(id){var m=P.mods[id];if(!m)return;m.render=lvSafe(id,LV[id]);m.__lv=true});
+  Object.keys(LVB).forEach(function(id){var m=P.mods[id];if(m)m.badge=LVB[id]});
+  if(P.mods['adh-cheval']){P.mods['adh-cheval'].short='Cheval';P.mods['adh-cheval'].phoneTitle='Mon cheval'}
+  if(P.mods['adh-accueil'])P.mods['adh-accueil'].phoneTitle='Bonjour';
+  /* palette ⌘K, assistant et visite : seulement ce qui marche avec les vraies données */
+  for(var ai=P.actions.length-1;ai>=0;ai--)if(P.actions[ai].role==='adherent')P.actions.splice(ai,1);
+  P.actions.push({role:'adherent',label:'Réserver une reprise',icon:'calendar_add',run:function(){P.go('adh-reserver')}},{role:'adherent',label:'Payer mes factures',icon:'card',run:function(){P.go('adh-paiements')}},
+    {role:'adherent',label:'Signer mes documents',icon:'sign',run:function(){P.go('adh-contrats')}},{role:'adherent',label:'Écrire au club',icon:'chat',run:function(){P.go('adh-messages')}});
+  for(var bi=P.brain.length-1;bi>=0;bi--)if(P.brain[bi].role==='adherent')P.brain.splice(bi,1);
+  for(var ti=P.tourSteps.length-1;ti>=0;ti--)if(/^adh-/.test(P.tourSteps[ti].route||''))P.tourSteps.splice(ti,1);
+  if(P.suggestions&&P.suggestions.adherent)P.suggestions.adherent.length=0;
+}
+
 Object.keys(P.mods).forEach(function(k){var m=P.mods[k];if(!(m.role==='adherent')||m.__sf)return;m.__sf=1;var r=m.render;m.render=function(el,ctx){var o=r.apply(this,arguments);try{adSegs(el)}catch(e){}return o}});
 
 })();
