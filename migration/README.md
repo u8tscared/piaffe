@@ -2,7 +2,14 @@
 
 La passerelle récupère les données d'un club (cavaliers, familles, chevaux, forfaits, factures, règlements, reprises, soins, équipe) depuis son ancien logiciel et les prépare pour Piaffe. Elle tourne **sur l'ordinateur du club** : rien n'est envoyé tant que le gérant ne clique pas sur « Envoyer », et les fichiers d'origine ne sont jamais modifiés.
 
-Deux formes, un seul moteur (`core/`, JavaScript sans dépendance) :
+Quatre façons de récupérer les données, un seul moteur (`core/`, JavaScript sans dépendance), présentées sur l'écran « Changer de logiciel » (56 logiciels réels rangés par famille, avec leurs logos, et un champ « collez l'adresse de votre logiciel » pour ceux qu'on ne connaît pas) :
+
+1. **Robot navigateur** (`extension/`) : le gérant se connecte à son ancien logiciel, l'extension parcourt les pages et copie tout, même sur un logiciel inconnu (exploration automatique). Chaque exploration retient le chemin ; s'il casse, un incident est signalé.
+2. **Robot pour ordinateur** (`cli/`) pour les logiciels installés.
+3. **Confiez-nous l'accès** : identifiants chiffrés dans le navigateur, migration faite par notre robot (partie serveur à venir, voir `docs/CODES.md`).
+4. **Fichier** : CSV, Excel, liste FFE, agenda .ics.
+
+Bonus : lettre de résiliation de l'ancien abonnement, e-mails de bascule pour les adhérents (`docs/EMAILS-MIGRATION.md`).
 
 | Forme | Pour qui | Installation | Coût de fonctionnement |
 |---|---|---|---|
@@ -52,6 +59,10 @@ core/paquet.mjs     fusion et contrôles -> paquet piaffe-import 1.0
 core/rapport.mjs    rapport HTML et résumé
 core/vers-api.mjs   paquet -> lots pour POST /api/v1/import (voir app/ARCHITECTURE.md)
 cli/passerelle.mjs  robot pour ordinateur (chercher, convertir, envoyer)
+extension/          robot navigateur (extension Chrome), voir extension/LISEZMOI.md
+essais/             faux ancien logiciel web et essai de bout en bout du robot navigateur
+core/capture.mjs    lecture des captures du robot navigateur ; core/ics.mjs agendas
+core/logos.mjs      logos des logiciels ; core/acces.mjs chiffrement des identifiants ; core/resiliation.mjs lettre
 web/                version navigateur ; tools/construire.mjs en fait un seul fichier
 docs/ETUDE.md       comment chaque logiciel laisse sortir ses données, cadre légal
 docs/FORMAT.md      format du paquet
@@ -62,4 +73,6 @@ docs/FORMAT.md      format du paquet
 - Les intitulés de colonnes de Kavalog, Equimondo et Cavasoft sont **déduits**, pas relevés sur de vrais exports : il faut un vrai export de club pour calibrer (voir docs/ETUDE.md, « Ce qu'il faut à Marceau »).
 - L'ancien format Excel binaire `.xls` (avant 2007) n'est pas lu : la page demande de l'enregistrer en `.xlsx`.
 - Les bases locales (HFSQL, Access, Firebird) sont **repérées** par le robot, pas encore lues.
+- L'extension n'est pas encore publiée sur le Chrome Web Store (chargement manuel en mode développeur).
+- « Confiez-nous l'accès » attend les routes serveur ; le formulaire n'envoie rien en attendant.
 - Le robot demande Node.js ; le `.exe` Windows signé est l'étape suivante.

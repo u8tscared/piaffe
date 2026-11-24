@@ -3,6 +3,7 @@ import { decoder } from './texte.mjs';
 import { lireCSV } from './csv.mjs';
 import { lireXLSX } from './xlsx.mjs';
 import { estCapture, tablesDeCapture } from './capture.mjs';
+import { estICS, tableDeICS } from './ics.mjs';
 
 export async function lireFichier(nom, octets, { inflate } = {}) {
   const ext = (nom.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
@@ -16,6 +17,7 @@ export async function lireFichier(nom, octets, { inflate } = {}) {
   }
   const { texte, encodage } = decoder(b);
   if (estCapture(texte)) return tablesDeCapture(JSON.parse(texte), nom);
+  if (estICS(texte)) return [{ fichier: nom, lignes: tableDeICS(texte), encodage, type: 'reprises' }];
   if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Piaffe : ignoré.' }];
   if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
   const { lignes, separateur } = lireCSV(texte);

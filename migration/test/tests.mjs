@@ -44,3 +44,14 @@ t('lots API stables', () => {
   for (const r of refs) assert.ok(connus.has(r), 'référence orpheline ' + r);
 });
 console.log(`${n} contrôles réussis.`);
+
+// Agenda .ics et capture du robot navigateur
+{
+  const ics = await lireFichier('agenda.ics', fs.readFileSync(path.join(ici, '../essais/agenda.ics')), { inflate });
+  const cap = await lireFichier('capture-piaffe.json', fs.readFileSync(path.join(ici, '../essais/exemple-capture-robot.json')), { inflate });
+  const q = construirePaquet([...ics, ...cap], { aujourdhui: '2026-11-24' });
+  t('ics', () => { const r = q.reprises.find(x => x.libelle === 'Galop 5-6'); assert.equal(r.jour, 3); assert.equal(r.debut, '18:00'); assert.equal(r.duree_min, 60); });
+  t('capture robot', () => { assert.equal(q.controle.cavaliers, 62); assert.equal(q.controle.chevaux, 12); assert.equal(q.controle.factures, 34); assert.ok(q.personnes.find(p => p.adresse?.ville)); });
+  t('homonymes non fusionnés', () => assert.equal(q.personnes.filter(p => p.prenom === 'Léa' && p.nom === 'Martin').length, 2));
+  console.log(`${n} contrôles réussis (avec agenda et robot).`);
+}
