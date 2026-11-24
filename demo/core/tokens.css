@@ -255,7 +255,7 @@ svg.i.xl{width:32px;height:32px;stroke-width:1.7}
 .av svg.i{width:20px;height:20px}.av.sm svg.i{width:17px;height:17px}.av.lg svg.i{width:24px;height:24px}
 .av.horse{background:color-mix(in srgb,var(--c,var(--coat)) 16%,var(--surface));box-shadow:none;color:var(--c,var(--ink))}
 .av.horse svg{width:64%;height:64%}
-.avs{display:flex}.avs .av{box-shadow:0 0 0 2.5px var(--surface)}.avs .av+.av{margin-left:-9px}
+.avs{display:flex}.avs .av{box-shadow:0 0 0 2.5px var(--surface)}.avs .av+.av{margin-left:-5px}
 
 /* ---------- Tableaux ---------- */
 .tw{overflow:auto;min-width:0;border-radius:var(--r-lg)}

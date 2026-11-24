@@ -428,7 +428,7 @@ P.splash=splash;
 P.start=function(){
   var th=P.store.get('theme',null);if(th)document.documentElement.setAttribute('data-theme',th);
   var h=(location.hash||'').slice(1);if(h&&P.mods[h]){S.role=P.mods[h].role;S.route=h}else{S.route=P.roles[S.role].home}
-  buildDemo();P.renderShell();splash();
+  document.documentElement.lang='fr';buildDemo();P.renderShell();splash();
   document.addEventListener('click',glideWatch,true);document.addEventListener('click',onClick);
   if(window.PIAFFE_MENUS){demo.insertAdjacentHTML('beforeend',navSwitchHTML());demo.classList.add('has-navsw')}
   document.addEventListener('mouseover',function(e){if(!app||P.isMobile()||(P.navMode()!=='survol'&&!P.navMini()))return;var r=e.target.closest&&e.target.closest('[data-navfly]');if(r&&app.contains(r)){var g=r.getAttribute('data-navfly');if(navGroupsOf().by[g].length>1||P.navMini())P.navFly(g,r);else P.navFlyClose()}});
