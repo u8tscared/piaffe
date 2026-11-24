@@ -29,6 +29,10 @@ export interface Env {
   BILLING_ADMIN_SECRET?: string;
   /** "automatic" pour Stripe Tax, sinon absent. */
   STRIPE_TAX?: string;
+  /** Browser Rendering (robot de migration, lot F). */
+  BROWSER?: Fetcher;
+  /** Durable Object RobotSession : une session du robot de migration. */
+  ROBOT?: DurableObjectNamespace;
 }
 
 export type Role = "owner" | "manager" | "staff" | "coach" | "member" | "accountant";

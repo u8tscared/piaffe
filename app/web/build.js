@@ -156,7 +156,7 @@ fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('
 const PASS = migRead('dist/passerelle.html');
 if (PASS) {
   let ph = PASS.toString('utf8');
-  const robot = '<script>globalThis.PIAFFE_ROBOT="/api/v1/migration/robot";</script>';
+  const robot = '<script>globalThis.PIAFFE_ROBOT=location.origin;</script>';
   ph = /<head[^>]*>/i.test(ph) ? ph.replace(/<head[^>]*>/i, (m) => m + robot) : robot + ph;
   fs.mkdirSync(path.join(DIST, 'migration'), { recursive: true }); fs.writeFileSync(path.join(DIST, 'migration', 'index.html'), ph);
 }

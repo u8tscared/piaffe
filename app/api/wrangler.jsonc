@@ -7,6 +7,10 @@
   "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*"] },
   "d1_databases": [{ "binding": "DB", "database_name": "piaffe", "database_id": "REMPLACER_PAR_L_ID_D1", "migrations_dir": "migrations" }],
   "r2_buckets": [{ "binding": "FILES", "bucket_name": "piaffe-files" }],
+  // Robot de migration (lot F) : navigateur Browser Rendering et un Durable Object par session.
+  "browser": { "binding": "BROWSER" },
+  "durable_objects": { "bindings": [{ "name": "ROBOT", "class_name": "RobotSession" }] },
+  "migrations": [{ "tag": "robot-v1", "new_sqlite_classes": ["RobotSession"] }],
   "triggers": { "crons": ["*/10 * * * *", "0 6 * * *"] },
   "vars": {
     "APP_URL": "http://localhost:8787",
