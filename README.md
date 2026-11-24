@@ -11,6 +11,7 @@ La plateforme tout-en-un des centres équestres et des écuries : club, chevaux,
   - `MODULES.md` : le contrat que suit chaque écran.
   - `tools/build.js` assemble la démo en un seul fichier `demo/dist/piaffe.html`.
 - `brand/` : logo et identité.
+- `migration/` : passerelle de migration (page web et robot pour ordinateur) qui reprend les données d'un club depuis Kavalog, Equimondo, la FFE ou Excel. Voir `migration/README.md`.
 
 ## Lancer la démo
 

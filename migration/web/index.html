@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Passerelle Piaffe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a1636;--ink-2:#27314f;--mut:#59627c;--line:#e6e9f0;--bg:#f2f4f8;--card:#fff;--acc:#2448d8;--acc-pale:#e7ecff;--strass:#6d8bff;
+--hz-bg:#dcf3e4;--hz-ink:#0d5532;--rd-bg:#ece5ff;--rd-ink:#43249f;--mo-bg:#ffedcf;--mo-ink:#773f00;--tm-bg:#dbebff;--tm-ink:#0b448d;--cr-bg:#ffe3de;--cr-ink:#972414;--warn:#a85d00;--ok:#11864f;
+--ease:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--hz-bg:#123524;--hz-ink:#b9ecd0;--rd-bg:#2a2152;--rd-ink:#d9ceff;--mo-bg:#3d2a0c;--mo-ink:#ffd9a0;--tm-bg:#132d52;--tm-ink:#c4dcff;--cr-bg:#47201a;--cr-ink:#ffc6bc;--ink:#eef1fa;--mut:#a3abc4;--line:#2a3352;--bg:#0b1020;--card:#141a2e;--acc:#7d97ff;--acc-pale:#1d2750}}
+:root[data-theme=dark]{--hz-bg:#123524;--hz-ink:#b9ecd0;--rd-bg:#2a2152;--rd-ink:#d9ceff;--mo-bg:#3d2a0c;--mo-ink:#ffd9a0;--tm-bg:#132d52;--tm-ink:#c4dcff;--cr-bg:#47201a;--cr-ink:#ffc6bc;--ink:#eef1fa;--mut:#a3abc4;--line:#2a3352;--bg:#0b1020;--card:#141a2e;--acc:#7d97ff;--acc-pale:#1d2750}
+.hero{--ink:#0a1636}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:0 16px 96px}
+h1,h2,.big{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+.hero{background:#0a1636;color:#fff;border-radius:0 0 32px 32px;padding:44px 24px 40px;margin:0 -16px 28px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin:14px 0 10px;max-width:640px}
+.hero p{color:#c9d1ea;max-width:600px;margin:0;font-size:17px}
+.marque{display:flex;align-items:center;gap:10px;font-weight:700}.marque i{width:30px;height:30px;border-radius:9px;background:#fff;display:grid;place-items:center}
+.marque i::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--strass);box-shadow:0 0 12px var(--strass)}
+.garantie{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.garantie span{background:rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-size:14px}
+.flux{position:absolute;right:-40px;top:30px;width:340px;opacity:.5;pointer-events:none}
+.flux circle{animation:file 3.2s linear infinite}.flux circle:nth-child(2){animation-delay:-1s}.flux circle:nth-child(3){animation-delay:-2.1s}
+@keyframes file{from{offset-distance:0%}to{offset-distance:100%}}
+section{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;margin:0 0 16px;animation:mont .5s var(--ease) both}
+section h2{font-size:24px;margin:0 0 4px;display:flex;align-items:center;gap:12px}
+section h2 .n{width:32px;height:32px;border-radius:10px;background:var(--acc-pale);color:var(--acc);display:grid;place-items:center;font-size:16px;flex:none}
+.sous{color:var(--mut);margin:0 0 18px}
+@keyframes mont{from{opacity:0;transform:translateY(12px)}}
+#logiciels{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:inherit;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 16px 10px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(10,22,54,.08)}
+.chip.on{border-color:var(--acc);background:var(--acc-pale);color:var(--acc)}
+.pastille{width:30px;height:30px;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-family:'Bricolage Grotesque';font-weight:800;transition:transform .35s var(--ease)}
+.chip.on .pastille{background:var(--acc);color:#fff;transform:rotate(-8deg) scale(1.06)}
+.voie{background:var(--bg);border-radius:16px;padding:14px 18px;margin:0 0 10px}.voie h3{margin:0 0 6px;font-size:16px}.voie ol{margin:0;padding-left:20px}
+.astuce{background:var(--hz-bg);color:var(--hz-ink);border-radius:14px;padding:10px 14px;margin:10px 0 0}.astuce.discret{background:var(--bg);color:var(--mut)}
+#zone{border:2px dashed #c2cdfb;border-radius:20px;padding:36px 20px;text-align:center;background:var(--acc-pale);transition:transform .25s var(--ease),background .25s,border-color .25s}
+#zone.survol{transform:scale(1.015);background:var(--acc-pale);filter:brightness(.97);border-color:var(--acc)}
+#zone .icone{width:56px;height:56px;margin:0 auto 10px;border-radius:18px;background:var(--card);display:grid;place-items:center;animation:flotte 2.6s ease-in-out infinite}
+@keyframes flotte{50%{transform:translateY(-5px)}}
+#zone b{font-size:18px}#zone p{color:var(--mut);margin:6px 0 14px}
+.bouton{font:inherit;font-weight:600;border:0;border-radius:14px;padding:12px 18px;background:var(--acc);color:#fff;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:transform .15s var(--ease),background .2s}
+.bouton:hover{background:#1834b0}.bouton:active{transform:scale(.97)}.bouton.second{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+label.bouton input{display:none}
+.lien{background:none;border:0;color:var(--acc);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.fichier{border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin:0 0 10px;animation:mont .45s var(--ease) both;animation-delay:calc(var(--i)*60ms)}
+.fichier header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.fichier header small{display:block;color:var(--mut);font-size:13px}.fichier.ok{border-left:4px solid var(--ok)}.fichier.ko{border-left:4px solid var(--warn)}
+.mut{color:var(--mut)}
+select{font:inherit;font-size:14px;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--card);color:var(--ink);max-width:100%}
+details summary{cursor:pointer;color:var(--acc);font-weight:600;margin:10px 0 4px;font-size:14px}
+.fichier table{width:100%;border-collapse:collapse;font-size:14px}.fichier td{padding:6px 0;border-bottom:1px solid var(--line)}.fichier td small{display:block;color:var(--mut)}
+.fichier tr.nonpris b{color:var(--mut);font-weight:500}
+#tuiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:0 0 18px}
+.t{border-radius:20px;padding:16px;animation:mont .5s var(--ease) both;animation-delay:calc(var(--i)*70ms)}.t .big{font-size:32px;line-height:1.1;margin:4px 0 2px}.t small{opacity:.85;font-size:13px}
+.rd{background:var(--rd-bg);color:var(--rd-ink)}.hz{background:var(--hz-bg);color:var(--hz-ink)}.mo{background:var(--mo-bg);color:var(--mo-ink)}.tm{background:var(--tm-bg);color:var(--tm-ink)}.cr{background:var(--cr-bg);color:var(--cr-ink)}
+#avert h3{margin:0 0 8px;font-size:17px}#avert ul{margin:0;padding:0;list-style:none}#avert li{border-left:3px solid var(--warn);background:var(--bg);border-radius:10px;padding:8px 12px;margin:0 0 6px;font-size:15px}
+#avert ul.discret li{border-color:var(--line)}.bravo{background:var(--hz-bg);color:var(--hz-ink);border-radius:14px;padding:12px 16px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+#envoi{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin-top:10px}#envoi input[type=url],#envoi input[type=password]{font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+#envoi .ligne{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#envoi-sortie{grid-column:1/-1;white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:10px;font-size:13px;margin:0;max-height:220px;overflow:auto}
+#envoi-sortie:empty{display:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0a1636;color:#fff;border-radius:14px;padding:12px 18px;max-width:min(560px,calc(100% - 32px));animation:mont .3s var(--ease);transition:opacity .4s,transform .4s;z-index:9}
+.toast.part{opacity:0;transform:translate(-50%,10px)}
+footer{color:var(--mut);font-size:14px;text-align:center;padding:12px}
+@media (max-width:640px){#envoi{grid-template-columns:1fr}.flux{display:none}section{padding:18px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style></head><body><main>
+<div class="hero">
+  <div class="marque"><i></i> Piaffe</div>
+  <h1>Changez de logiciel sans rien ressaisir.</h1>
+  <p>Déposez les exports de votre ancien logiciel. La passerelle retrouve vos cavaliers, familles, chevaux, forfaits, factures et reprises, et prépare tout pour Piaffe en quelques secondes.</p>
+  <div class="garantie"><span>Rien ne quitte votre ordinateur</span><span>Vos fichiers ne sont pas modifiés</span><span>Gratuit</span></div>
+  <svg class="flux" viewBox="0 0 340 120" aria-hidden="true"><path id="chemin" d="M10 90 C 90 10, 200 130, 330 30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="4 6"/>
+    <circle r="5" fill="#6d8bff" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#dcf3e4" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#ffedcf" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/></svg>
+</div>
+
+<section id="etape-source"><h2><span class="n">1</span>Quel logiciel utilisez-vous aujourd’hui ?</h2><p class="sous">On vous montre comment sortir vos données, en deux minutes.</p><div id="logiciels"></div></section>
+<section id="etape-guide" hidden><h2><span class="n">2</span>Exportez vos données</h2><p class="sous">Les données sont à vous : chaque logiciel doit vous laisser les récupérer.</p><div id="guide"></div></section>
+<section id="etape-depot" hidden><h2><span class="n">3</span>Déposez vos fichiers</h2><p class="sous">CSV, Excel (.xlsx) ou export « Excel » d’un ancien logiciel. Plusieurs à la fois.</p>
+  <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls"></label>
+  <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></section>
+<section id="etape-fichiers" hidden><h2><span class="n">4</span>Ce que la passerelle a compris</h2><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></section>
+<section id="etape-resultat" hidden><h2><span class="n">5</span>Prêt pour Piaffe</h2><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
+  <div id="tuiles"></div><div id="avert"></div>
+  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Piaffe</button></div>
+  <details><summary>Envoyer directement à mon compte Piaffe</summary>
+  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
+  <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details>
+</section>
+<footer>Passerelle Piaffe · prototype. Les fichiers sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous ne cliquez pas sur « Envoyer ».</footer>
+</main>
+<script type="module" src="app.mjs"></script>
+</body></html>

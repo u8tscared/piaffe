@@ -1,0 +1,1553 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Passerelle Piaffe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a1636;--ink-2:#27314f;--mut:#59627c;--line:#e6e9f0;--bg:#f2f4f8;--card:#fff;--acc:#2448d8;--acc-pale:#e7ecff;--strass:#6d8bff;
+--hz-bg:#dcf3e4;--hz-ink:#0d5532;--rd-bg:#ece5ff;--rd-ink:#43249f;--mo-bg:#ffedcf;--mo-ink:#773f00;--tm-bg:#dbebff;--tm-ink:#0b448d;--cr-bg:#ffe3de;--cr-ink:#972414;--warn:#a85d00;--ok:#11864f;
+--ease:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--hz-bg:#123524;--hz-ink:#b9ecd0;--rd-bg:#2a2152;--rd-ink:#d9ceff;--mo-bg:#3d2a0c;--mo-ink:#ffd9a0;--tm-bg:#132d52;--tm-ink:#c4dcff;--cr-bg:#47201a;--cr-ink:#ffc6bc;--ink:#eef1fa;--mut:#a3abc4;--line:#2a3352;--bg:#0b1020;--card:#141a2e;--acc:#7d97ff;--acc-pale:#1d2750}}
+:root[data-theme=dark]{--hz-bg:#123524;--hz-ink:#b9ecd0;--rd-bg:#2a2152;--rd-ink:#d9ceff;--mo-bg:#3d2a0c;--mo-ink:#ffd9a0;--tm-bg:#132d52;--tm-ink:#c4dcff;--cr-bg:#47201a;--cr-ink:#ffc6bc;--ink:#eef1fa;--mut:#a3abc4;--line:#2a3352;--bg:#0b1020;--card:#141a2e;--acc:#7d97ff;--acc-pale:#1d2750}
+.hero{--ink:#0a1636}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:0 16px 96px}
+h1,h2,.big{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+.hero{background:#0a1636;color:#fff;border-radius:0 0 32px 32px;padding:44px 24px 40px;margin:0 -16px 28px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin:14px 0 10px;max-width:640px}
+.hero p{color:#c9d1ea;max-width:600px;margin:0;font-size:17px}
+.marque{display:flex;align-items:center;gap:10px;font-weight:700}.marque i{width:30px;height:30px;border-radius:9px;background:#fff;display:grid;place-items:center}
+.marque i::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--strass);box-shadow:0 0 12px var(--strass)}
+.garantie{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.garantie span{background:rgba(255,255,255,.1);border-radius:999px;padding:6px 12px;font-size:14px}
+.flux{position:absolute;right:-40px;top:30px;width:340px;opacity:.5;pointer-events:none}
+.flux circle{animation:file 3.2s linear infinite}.flux circle:nth-child(2){animation-delay:-1s}.flux circle:nth-child(3){animation-delay:-2.1s}
+@keyframes file{from{offset-distance:0%}to{offset-distance:100%}}
+section{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;margin:0 0 16px;animation:mont .5s var(--ease) both}
+section h2{font-size:24px;margin:0 0 4px;display:flex;align-items:center;gap:12px}
+section h2 .n{width:32px;height:32px;border-radius:10px;background:var(--acc-pale);color:var(--acc);display:grid;place-items:center;font-size:16px;flex:none}
+.sous{color:var(--mut);margin:0 0 18px}
+@keyframes mont{from{opacity:0;transform:translateY(12px)}}
+#logiciels{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:inherit;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 16px 10px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(10,22,54,.08)}
+.chip.on{border-color:var(--acc);background:var(--acc-pale);color:var(--acc)}
+.pastille{width:30px;height:30px;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-family:'Bricolage Grotesque';font-weight:800;transition:transform .35s var(--ease)}
+.chip.on .pastille{background:var(--acc);color:#fff;transform:rotate(-8deg) scale(1.06)}
+.voie{background:var(--bg);border-radius:16px;padding:14px 18px;margin:0 0 10px}.voie h3{margin:0 0 6px;font-size:16px}.voie ol{margin:0;padding-left:20px}
+.astuce{background:var(--hz-bg);color:var(--hz-ink);border-radius:14px;padding:10px 14px;margin:10px 0 0}.astuce.discret{background:var(--bg);color:var(--mut)}
+#zone{border:2px dashed #c2cdfb;border-radius:20px;padding:36px 20px;text-align:center;background:var(--acc-pale);transition:transform .25s var(--ease),background .25s,border-color .25s}
+#zone.survol{transform:scale(1.015);background:var(--acc-pale);filter:brightness(.97);border-color:var(--acc)}
+#zone .icone{width:56px;height:56px;margin:0 auto 10px;border-radius:18px;background:var(--card);display:grid;place-items:center;animation:flotte 2.6s ease-in-out infinite}
+@keyframes flotte{50%{transform:translateY(-5px)}}
+#zone b{font-size:18px}#zone p{color:var(--mut);margin:6px 0 14px}
+.bouton{font:inherit;font-weight:600;border:0;border-radius:14px;padding:12px 18px;background:var(--acc);color:#fff;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:transform .15s var(--ease),background .2s}
+.bouton:hover{background:#1834b0}.bouton:active{transform:scale(.97)}.bouton.second{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+label.bouton input{display:none}
+.lien{background:none;border:0;color:var(--acc);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.fichier{border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin:0 0 10px;animation:mont .45s var(--ease) both;animation-delay:calc(var(--i)*60ms)}
+.fichier header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.fichier header small{display:block;color:var(--mut);font-size:13px}.fichier.ok{border-left:4px solid var(--ok)}.fichier.ko{border-left:4px solid var(--warn)}
+.mut{color:var(--mut)}
+select{font:inherit;font-size:14px;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--card);color:var(--ink);max-width:100%}
+details summary{cursor:pointer;color:var(--acc);font-weight:600;margin:10px 0 4px;font-size:14px}
+.fichier table{width:100%;border-collapse:collapse;font-size:14px}.fichier td{padding:6px 0;border-bottom:1px solid var(--line)}.fichier td small{display:block;color:var(--mut)}
+.fichier tr.nonpris b{color:var(--mut);font-weight:500}
+#tuiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:0 0 18px}
+.t{border-radius:20px;padding:16px;animation:mont .5s var(--ease) both;animation-delay:calc(var(--i)*70ms)}.t .big{font-size:32px;line-height:1.1;margin:4px 0 2px}.t small{opacity:.85;font-size:13px}
+.rd{background:var(--rd-bg);color:var(--rd-ink)}.hz{background:var(--hz-bg);color:var(--hz-ink)}.mo{background:var(--mo-bg);color:var(--mo-ink)}.tm{background:var(--tm-bg);color:var(--tm-ink)}.cr{background:var(--cr-bg);color:var(--cr-ink)}
+#avert h3{margin:0 0 8px;font-size:17px}#avert ul{margin:0;padding:0;list-style:none}#avert li{border-left:3px solid var(--warn);background:var(--bg);border-radius:10px;padding:8px 12px;margin:0 0 6px;font-size:15px}
+#avert ul.discret li{border-color:var(--line)}.bravo{background:var(--hz-bg);color:var(--hz-ink);border-radius:14px;padding:12px 16px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+#envoi{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin-top:10px}#envoi input[type=url],#envoi input[type=password]{font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+#envoi .ligne{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#envoi-sortie{grid-column:1/-1;white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:10px;font-size:13px;margin:0;max-height:220px;overflow:auto}
+#envoi-sortie:empty{display:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0a1636;color:#fff;border-radius:14px;padding:12px 18px;max-width:min(560px,calc(100% - 32px));animation:mont .3s var(--ease);transition:opacity .4s,transform .4s;z-index:9}
+.toast.part{opacity:0;transform:translate(-50%,10px)}
+footer{color:var(--mut);font-size:14px;text-align:center;padding:12px}
+@media (max-width:640px){#envoi{grid-template-columns:1fr}.flux{display:none}section{padding:18px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style></head><body><main>
+<div class="hero">
+  <div class="marque"><i></i> Piaffe</div>
+  <h1>Changez de logiciel sans rien ressaisir.</h1>
+  <p>Déposez les exports de votre ancien logiciel. La passerelle retrouve vos cavaliers, familles, chevaux, forfaits, factures et reprises, et prépare tout pour Piaffe en quelques secondes.</p>
+  <div class="garantie"><span>Rien ne quitte votre ordinateur</span><span>Vos fichiers ne sont pas modifiés</span><span>Gratuit</span></div>
+  <svg class="flux" viewBox="0 0 340 120" aria-hidden="true"><path id="chemin" d="M10 90 C 90 10, 200 130, 330 30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="4 6"/>
+    <circle r="5" fill="#6d8bff" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#dcf3e4" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#ffedcf" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/></svg>
+</div>
+
+<section id="etape-source"><h2><span class="n">1</span>Quel logiciel utilisez-vous aujourd’hui ?</h2><p class="sous">On vous montre comment sortir vos données, en deux minutes.</p><div id="logiciels"></div></section>
+<section id="etape-guide" hidden><h2><span class="n">2</span>Exportez vos données</h2><p class="sous">Les données sont à vous : chaque logiciel doit vous laisser les récupérer.</p><div id="guide"></div></section>
+<section id="etape-depot" hidden><h2><span class="n">3</span>Déposez vos fichiers</h2><p class="sous">CSV, Excel (.xlsx) ou export « Excel » d’un ancien logiciel. Plusieurs à la fois.</p>
+  <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls"></label>
+  <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></section>
+<section id="etape-fichiers" hidden><h2><span class="n">4</span>Ce que la passerelle a compris</h2><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></section>
+<section id="etape-resultat" hidden><h2><span class="n">5</span>Prêt pour Piaffe</h2><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
+  <div id="tuiles"></div><div id="avert"></div>
+  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Piaffe</button></div>
+  <details><summary>Envoyer directement à mon compte Piaffe</summary>
+  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
+  <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details>
+</section>
+<footer>Passerelle Piaffe · prototype. Les fichiers sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous ne cliquez pas sur « Envoyer ».</footer>
+</main>
+<script>globalThis.EXEMPLES={"cavalerie.xlsx":"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","equipe-salaries.xls":"PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjwvaGVhZD48Ym9keT48dGFibGU+Cjx0cj48dGg+Tm9tPC90aD48dGg+UHLDqW5vbTwvdGg+PHRoPlBvc3RlPC90aD48dGg+Q29udHJhdDwvdGg+PHRoPkhldXJlcyBoZWJkbzwvdGg+PHRoPlTDqWzDqXBob25lPC90aD48L3RyPgo8dHI+PHRkPkJMQU5DPC90ZD48dGQ+SHVnbzwvdGQ+PHRkPk1vbml0ZXVyPC90ZD48dGQ+Q0RJPC90ZD48dGQ+MzU8L3RkPjx0ZD4wNiAwMSAwMiAwMyAwNDwvdGQ+PC90cj4KPHRyPjx0ZD5OSUNPTEFTPC90ZD48dGQ+SmFkZTwvdGQ+PHRkPkFwcHJlbnRpZSBCUEpFUFM8L3RkPjx0ZD5BcHByZW50aXNzYWdlPC90ZD48dGQ+MzU8L3RkPjx0ZD4wNiAwNSAwNiAwNyAwODwvdGQ+PC90cj4KPHRyPjx0ZD5HVcOJUklOPC90ZD48dGQ+VGhvbWFzPC90ZD48dGQ+TW9uaXRldXIgREVKRVBTPC90ZD48dGQ+Q0RJPC90ZD48dGQ+MzA8L3RkPjx0ZD48L3RkPjwvdHI+CjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=","ffe-licencies-2027.xlsx":"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","kavalog-cavaliers.csv":"TGlzdGUgZGVzIGNhdmFsaWVycyAtIEVjdXJpZSBkZSBkZW1vbnN0cmF0aW9uIC0gZWRpdGUgbGUgMjQvMTEvMjAyNg0KDQpDb2RlIGNhdmFsaWVyO05PTTtQculub207TukoZSkgbGU7QWRyZXNzZTtDUDtWaWxsZTtU6WwgcG9ydGFibGU7RS1tYWlsO06wIGxpY2VuY2U7R2Fsb3A7UmVzcG9uc2FibGUgbOlnYWw7VOlsIHJlc3BvbnNhYmxlO0ZvcmZhaXQ7U29sZGUNCkMwMDAxO01BUlRJTjtM6WE7MTQvMDMvMjAxMjszIHJ1ZSBkZXMgTGlsYXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs2IDEyIDM0IDU2IDc4O2ZhbWlsbGUubWFydGluQGV4ZW1wbGUuZnI7MTIzNDU2N0E7NDtNQVJUSU4gU29waGllOzA2IDExIDIyIDMzIDQ0O0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MCwwMA0KQzAwMDI7TUFSVElOO0h1Z287MDIvMDkvMjAxNTszIHJ1ZSBkZXMgTGlsYXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs7ZmFtaWxsZS5tYXJ0aW5AZXhlbXBsZS5mcjsxMjM0NTY4QjsyO01BUlRJTiBTb3BoaWU7MDYgMTEgMjIgMzMgNDQ7Rm9yZmFpdCBhbm51ZWwgMSBoIC8gc2VtYWluZTstMTk1LDAwDQpDMDAwMztMQVVSRU5UO0VtbWE7MjEvMDYvMjAwOTsxMiBhdmVudWUgZHUgUGFyYzs3ODEyMDtSYW1ib3VpbGxldDswNyA0NSA2NyA4OSAwMTtlbW1hLmxhdXJlbnRAZXhlbXBsZS5mcjsyMzQ1Njc4Qzs2Ozs7Rm9yZmFpdCBhbm51ZWwgMiBoIC8gc2VtYWluZTswLDAwDQpDMDAwNDtST1VTU0VBVTtDaGxv6TswNS8wMS8xOTg4OzggY2hlbWluIGRlcyBQculzOzc4NzMwO1JvY2hlZm9ydC1lbi1ZdmVsaW5lczswNi45OC43Ni41NC4zMjtjaGxvZS5yb3Vzc2VhdUBleGVtcGxlOzM0NTY3ODlEOzc7OztQcm9wcmnpdGFpcmUsIGFjY+hzIGluc3RhbGxhdGlvbnM7LTQyMCwwMA0KQzAwMDU7RkFVUkU7SnVsZXM7MzAvMTEvMjAxNzs7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs7OzsxOzs7QmFieSBwb25leSAodHJpbWVzdHJlKTswLDAwDQpDMDAwNjtHSVJBUkQ7TWFub247MTcvMDcvMjAwMTs0IHBsYWNlIGRlIGwnyWdsaXNlOzkxNDEwO0RvdXJkYW47MDYzNDU2Nzg5MDttYW5vbi5naXJhcmRAZXhlbXBsZS5mcjs0NTY3ODkwRTs1Ozs7Q2FydGUgMTAgc+lhbmNlczstNTgsMDANCkMwMDA3O0xBTUJFUlQ7SW7oczswOS8wMi8yMDEzOzE5IHJ1ZSBQYXN0ZXVyOzc4MTIwO1JhbWJvdWlsbGV0Ozs7NTY3ODkwMUY7MztMQU1CRVJUIEp1bGllbjswNiAyMiAzMyA0NCA1NTtGb3JmYWl0IGFubnVlbCAxIGggLyBzZW1haW5lOzAsMDANCkMwMDA4O0ZPTlRBSU5FO0NhbWlsbGU7MjMvMDQvMTk5NTsyIGFsbOllIGRlcyBDaOpuZXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczswNiA1NSA0NCAzMyAyMjtjYW1pbGxlLmZvbnRhaW5lQGV4ZW1wbGUuZnI7Njc4OTAxMkc7Nzs7O0RlbWktcGVuc2lvbiAyIGpvdXJzOzAsMDANCg==","kavalog-factures.csv":"TrAgZmFjdHVyZTtEYXRlO0NvZGUgY2xpZW50O0NsaWVudDtE6XNpZ25hdGlvbjtRdOk7UFUgVFRDO1RhdXggVFZBO1RvdGFsIFRUQztS6Wds6TtNb2RlIGRlIHLoZ2xlbWVudA0KRkEyMDI2LTA0MTI7MDEvMDkvMjAyNjtDMDAwMTtNQVJUSU4gU29waGllO0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MTs3ODAsMDA7NSw1JTs3ODAsMDA7NzgwLDAwO1By6WzodmVtZW50DQpGQTIwMjYtMDQxMjswMS8wOS8yMDI2O0MwMDAxO01BUlRJTiBTb3BoaWU7TGljZW5jZSBGRkUgMjAyNyBtb2lucyBkZSAxOCBhbnM7MTsyNSwwMDswJTsyNSwwMDsyNSwwMDtQculs6HZlbWVudA0KRkEyMDI2LTA0MTM7MDEvMDkvMjAyNjtDMDAwMjtNQVJUSU4gU29waGllO0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MTs3ODAsMDA7NSw1JTs3ODAsMDA7NTg1LDAwO0No6HF1ZQ0KRkEyMDI2LTA0MjA7MDEvMTEvMjAyNjtDMDAwNDtST1VTU0VBVSBDaGxv6TtQZW5zaW9uIGJveCBwYWRkb2NrIG5vdmVtYnJlOzE7NDIwLDAwOzIwJTs0MjAsMDA7MCwwMDtWaXJlbWVudA0KRkEyMDI2LTA0MjE7MDUvMTEvMjAyNjtDMDAwNjtHSVJBUkQgTWFub247Q2FydGUgMTAgc+lhbmNlczsxOzI5MCwwMDs1LDUlOzI5MCwwMDsyMzIsMDA7Q2FydGUgYmFuY2FpcmUNCkFWMjAyNi0wMDA3OzEwLzExLzIwMjY7QzAwMDM7TEFVUkVOVCBFbW1hO0F2b2lyIGNvdXJzIGFubnVs6TsxOy0zOCwwMDs1LDUlOy0zOCwwMDswLDAwOw0K","planning-reprises.csv":"Sm91cjtIZXVyZSBkw6lidXQ7SGV1cmUgZmluO1JlcHJpc2U7TW9uaXRldXI7Tml2ZWF1O0xpZXU7Q2F2YWxpZXI7Q2hldmFsCk1lcmNyZWRpOzE0aDAwOzE1aDAwO0dhbG9wIDMtNDtIdWdvO0dhbG9wIDMtNDtHcmFuZCBtYW7DqGdlO01BUlRJTiBMw6lhO1ZhbmlsbGUKTWVyY3JlZGk7MTRoMDA7MTVoMDA7R2Fsb3AgMy00O0h1Z287R2Fsb3AgMy00O0dyYW5kIG1hbsOoZ2U7TEFNQkVSVCBJbsOocztPcGFsZQpNZXJjcmVkaTsxNGgwMDsxNWgwMDtHYWxvcCAzLTQ7SHVnbztHYWxvcCAzLTQ7R3JhbmQgbWFuw6hnZTtDSEVWQUxJRVIgTmF0aGFuO1Rvcm5hZG8KU2FtZWRpOzEwOjAwOzEwOjQ1O0JhYnkgcG9uZXk7SmFkZTtEw6lidXRhbnQ7UGV0aXRlIGNhcnJpw6hyZTtGQVVSRSBKdWxlcztWYW5pbGxlClNhbWVkaTsxMDowMDsxMDo0NTtCYWJ5IHBvbmV5O0phZGU7RMOpYnV0YW50O1BldGl0ZSBjYXJyacOocmU7RFVQT05UIFJvc2U7Ck1hcmRpOzE4OjAwOzE5OjAwO0dhbG9wIDYtNyBDU087VGhvbWFzO0dhbG9wIDYtNztDYXJyacOocmUgZCdob25uZXVyO0xBVVJFTlQgRW1tYTtUb3JuYWRvCg==","tarifs.csv":"77u/RMOpc2lnbmF0aW9uLENhdMOpZ29yaWUsUHJpeCBUVEMsVFZBLE5iIHPDqWFuY2VzCiJGb3JmYWl0IGFubnVlbCAxIGggLyBzZW1haW5lIixFbnNlaWduZW1lbnQsIjc4MCwwMCIsNS41LDMzCiJGb3JmYWl0IGFubnVlbCAyIGggLyBzZW1haW5lIixFbnNlaWduZW1lbnQsIjEgMzkwLDAwIiw1LjUsNjYKQ2FydGUgMTAgc8OpYW5jZXMsRW5zZWlnbmVtZW50LCIyOTAsMDAiLDUuNSwxMAoiQmFieSBwb25leSAodHJpbWVzdHJlKSIsRW5zZWlnbmVtZW50LCIxOTUsMDAiLDUuNSwxMQpQZW5zaW9uIGJveCBwYWRkb2NrLFBlbnNpb24sIjQyMCwwMCIsMjAsCg=="}</script>
+<script type="module">
+const __m = {};
+__m["texte.mjs"] = (() => {
+// Décodage des fichiers texte exportés par les anciens logiciels.
+// Les logiciels Windows exportent souvent en Windows-1252 (ANSI), parfois en UTF-16 (Excel « texte Unicode »).
+
+function decoder(octets) {
+  const b = octets instanceof Uint8Array ? octets : new Uint8Array(octets);
+  if (b[0] === 0xef && b[1] === 0xbb && b[2] === 0xbf) return { texte: new TextDecoder('utf-8').decode(b.subarray(3)), encodage: 'utf-8' };
+  if (b[0] === 0xff && b[1] === 0xfe) return { texte: new TextDecoder('utf-16le').decode(b.subarray(2)), encodage: 'utf-16le' };
+  if (b[0] === 0xfe && b[1] === 0xff) return { texte: new TextDecoder('utf-16be').decode(b.subarray(2)), encodage: 'utf-16be' };
+  try {
+    return { texte: new TextDecoder('utf-8', { fatal: true }).decode(b), encodage: 'utf-8' };
+  } catch {
+    return { texte: new TextDecoder('windows-1252').decode(b), encodage: 'windows-1252' };
+  }
+}
+
+// Forme comparable d'un libellé : minuscules, sans accents, sans ponctuation.
+function cle(s) {
+  return String(s ?? '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/n°|no\b|num\b/g, 'numero')
+    .replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function vide(v) {
+  return v === undefined || v === null || String(v).trim() === '' || /^(null|n\/a|-+|\.)$/i.test(String(v).trim());
+}
+
+return { decoder, cle, vide };
+})();
+__m["csv.mjs"] = (() => {
+// Lecture CSV tolérante : séparateur deviné (; , tabulation |), guillemets RFC 4180, fins de ligne mixtes.
+
+const SEPARATEURS = [';', ',', '\t', '|'];
+
+function devinerSeparateur(texte) {
+  const lignes = texte.split(/\r?\n/).filter(l => l.trim()).slice(0, 20);
+  let meilleur = ';', score = -1;
+  for (const s of SEPARATEURS) {
+    const n = lignes.map(l => compterHorsGuillemets(l, s));
+    if (!n.length || n[0] === 0) continue;
+    const reguliers = n.filter(x => x === n[0]).length;
+    const sc = reguliers * 100 + n[0];
+    if (sc > score) { score = sc; meilleur = s; }
+  }
+  return meilleur;
+}
+
+function compterHorsGuillemets(l, s) {
+  let n = 0, q = false;
+  for (const c of l) { if (c === '"') q = !q; else if (c === s && !q) n++; }
+  return n;
+}
+
+function lireCSV(texte, sep = devinerSeparateur(texte)) {
+  const lignes = [];
+  let ligne = [], champ = '', q = false;
+  for (let i = 0; i < texte.length; i++) {
+    const c = texte[i];
+    if (q) {
+      if (c === '"') { if (texte[i + 1] === '"') { champ += '"'; i++; } else q = false; }
+      else champ += c;
+    } else if (c === '"' && champ === '') q = true;
+    else if (c === sep) { ligne.push(champ); champ = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && texte[i + 1] === '\n') i++;
+      ligne.push(champ); champ = '';
+      if (ligne.some(x => x.trim() !== '')) lignes.push(ligne);
+      ligne = [];
+    } else champ += c;
+  }
+  ligne.push(champ);
+  if (ligne.some(x => x.trim() !== '')) lignes.push(ligne);
+  return { separateur: sep, lignes };
+}
+
+return { devinerSeparateur, lireCSV };
+})();
+__m["xlsx.mjs"] = (() => {
+// Lecteur XLSX minimal sans dépendance. Un .xlsx est un zip de fichiers XML.
+// `inflate(octets) -> Promise<Uint8Array>` est fourni par l'hôte : zlib sous Node, DecompressionStream dans le navigateur.
+
+async function lireXLSX(octets, inflate) {
+  const zip = lireZip(octets);
+  const lire = async nom => {
+    const e = zip.get(nom);
+    if (!e) return null;
+    const brut = e.methode === 0 ? e.donnees : await inflate(e.donnees);
+    return new TextDecoder('utf-8').decode(brut);
+  };
+  const partages = [];
+  const ss = await lire('xl/sharedStrings.xml');
+  if (ss) for (const si of ss.matchAll(/<si>([\s\S]*?)<\/si>/g)) {
+    partages.push([...si[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map(m => xml(m[1])).join(''));
+  }
+  const classeur = (await lire('xl/workbook.xml')) || '';
+  const liens = (await lire('xl/_rels/workbook.xml.rels')) || '';
+  const cibles = {};
+  for (const r of liens.matchAll(/<Relationship\b[^>]*>/g)) {
+    const id = attr(r[0], 'Id'), t = attr(r[0], 'Target');
+    if (id && t) cibles[id] = t.replace(/^\/?(xl\/)?/, 'xl/');
+  }
+  const styles = (await lire('xl/styles.xml')) || '';
+  const stylesDate = stylesDeDate(styles);
+  const feuilles = [];
+  for (const s of classeur.matchAll(/<sheet\b[^>]*>/g)) {
+    const nom = xml(attr(s[0], 'name') || 'Feuille');
+    const rid = attr(s[0], 'r:id');
+    const chemin = cibles[rid] || `xl/worksheets/sheet${feuilles.length + 1}.xml`;
+    const x = await lire(chemin);
+    if (x) feuilles.push({ nom, lignes: lireFeuille(x, partages, stylesDate) });
+  }
+  return feuilles;
+}
+
+function lireFeuille(x, partages, stylesDate) {
+  const lignes = [];
+  for (const r of x.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)) {
+    const ligne = [];
+    for (const c of r[1].matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      const a = c[1], corps = c[2] || '';
+      const ref = attr(a, 'r') || '';
+      const col = colonne(ref.replace(/\d+/g, '')) ?? ligne.length;
+      const t = attr(a, 't'), s = Number(attr(a, 's') || -1);
+      let v = (corps.match(/<v>([\s\S]*?)<\/v>/) || [])[1];
+      if (t === 's') v = partages[Number(v)];
+      else if (t === 'inlineStr') v = [...corps.matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map(m => xml(m[1])).join('');
+      else if (t === 'b') v = v === '1' ? 'oui' : 'non';
+      else if (v !== undefined && stylesDate.has(s)) v = dateExcel(Number(v));
+      else if (v !== undefined) v = xml(v);
+      ligne[col] = v ?? '';
+    }
+    for (let i = 0; i < ligne.length; i++) if (ligne[i] === undefined) ligne[i] = '';
+    if (ligne.some(v => String(v).trim() !== '')) lignes.push(ligne);
+  }
+  return lignes;
+}
+
+function stylesDeDate(styles) {
+  const formatsDate = new Set([14, 15, 16, 17, 22, 27, 30, 36, 45, 46, 47, 50, 57]);
+  for (const f of styles.matchAll(/<numFmt\b[^>]*>/g)) {
+    const code = (attr(f[0], 'formatCode') || '').toLowerCase().replace(/"[^"]*"|\[[^\]]*\]/g, '');
+    if (/[dy]/.test(code) || /m{1,4}[\/\-.]/.test(code)) formatsDate.add(Number(attr(f[0], 'numFmtId')));
+  }
+  const res = new Set();
+  const xfs = (styles.match(/<cellXfs\b[\s\S]*?<\/cellXfs>/) || [''])[0];
+  let i = 0;
+  for (const xf of xfs.matchAll(/<xf\b[^>]*>/g)) { if (formatsDate.has(Number(attr(xf[0], 'numFmtId')))) res.add(i); i++; }
+  return res;
+}
+
+function dateExcel(n) {
+  const d = new Date(Math.round((n - 25569) * 86400000));
+  return d.toISOString().slice(0, 10);
+}
+
+function colonne(lettres) {
+  if (!lettres) return null;
+  let n = 0;
+  for (const ch of lettres) n = n * 26 + (ch.charCodeAt(0) - 64);
+  return n - 1;
+}
+function attr(tag, nom) {
+  const m = tag.match(new RegExp('\\b' + nom.replace(':', '\\:') + '="([^"]*)"'));
+  return m ? m[1] : null;
+}
+function xml(s) {
+  return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(n)).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16))).replace(/&amp;/g, '&');
+}
+
+// Lecture du répertoire central d'un zip (suffisant pour les fichiers Office).
+function lireZip(octets) {
+  const b = octets instanceof Uint8Array ? octets : new Uint8Array(octets);
+  const v = new DataView(b.buffer, b.byteOffset, b.byteLength);
+  let fin = -1;
+  for (let i = b.length - 22; i >= Math.max(0, b.length - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { fin = i; break; }
+  if (fin < 0) throw new Error('Fichier zip illisible');
+  const n = v.getUint16(fin + 10, true);
+  let p = v.getUint32(fin + 16, true);
+  const entrees = new Map();
+  for (let k = 0; k < n; k++) {
+    if (v.getUint32(p, true) !== 0x02014b50) break;
+    const methode = v.getUint16(p + 10, true), taille = v.getUint32(p + 20, true);
+    const ln = v.getUint16(p + 28, true), le = v.getUint16(p + 30, true), lc = v.getUint16(p + 32, true);
+    const local = v.getUint32(p + 42, true);
+    const nom = new TextDecoder().decode(b.subarray(p + 46, p + 46 + ln));
+    const debut = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+    entrees.set(nom, { methode, donnees: b.subarray(debut, debut + taille) });
+    p += 46 + ln + le + lc;
+  }
+  return entrees;
+}
+
+return { lireXLSX, dateExcel };
+})();
+__m["valeurs.mjs"] = (() => {
+// Mise au propre des valeurs : dates, téléphones, montants, oui/non, numéros FFE et SIRE.
+const { vide } = __m["texte.mjs"];
+const { dateExcel } = __m["xlsx.mjs"];
+
+function texte(v) { return vide(v) ? null : String(v).replace(/\s+/g, ' ').trim(); }
+
+function date(v) {
+  if (vide(v)) return null;
+  const s = String(v).trim();
+  let m;
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return iso(+m[1], +m[2], +m[3]);
+  if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) {
+    let a = +m[3]; if (a < 100) a += a > 40 ? 1900 : 2000;
+    return iso(a, +m[2], +m[1]);
+  }
+  if ((m = s.match(/^(\d{4})(\d{2})(\d{2})$/))) return iso(+m[1], +m[2], +m[3]);
+  if (/^\d{5}(\.\d+)?$/.test(s) && +s > 10000 && +s < 80000) return dateExcel(+s);
+  return null;
+}
+function iso(a, mo, j) {
+  if (mo < 1 || mo > 12 || j < 1 || j > 31 || a < 1900 || a > 2100) return null;
+  return `${a}-${String(mo).padStart(2, '0')}-${String(j).padStart(2, '0')}`;
+}
+
+function annee(v) {
+  if (vide(v)) return null;
+  const d = date(v); if (d) return +d.slice(0, 4);
+  const m = String(v).match(/\b(19|20)\d{2}\b/); return m ? +m[0] : null;
+}
+
+function heure(v) {
+  if (vide(v)) return null;
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})\s*[h:]\s*(\d{2})?/i);
+  if (m) return `${m[1].padStart(2, '0')}:${m[2] || '00'}`;
+  if (/^0?\.\d+$/.test(s)) { const min = Math.round(+s * 1440); return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`; }
+  return null;
+}
+
+function duree(v) {
+  if (vide(v)) return null;
+  const s = String(v).toLowerCase();
+  let m = s.match(/(\d+)\s*h\s*(\d+)?/); if (m) return +m[1] * 60 + (+m[2] || 0);
+  m = s.match(/^(\d+)\s*(min|mn)?$/); if (m) return +m[1];
+  m = s.match(/^(\d+):(\d{2})$/); if (m) return +m[1] * 60 + +m[2];
+  return null;
+}
+
+function telephone(v) {
+  if (vide(v)) return null;
+  let s = String(v).replace(/[^\d+]/g, '');
+  if (/^\d{9}$/.test(s) && /^[1-9]/.test(s)) s = '0' + s;          // zéro perdu par Excel
+  if (/^0\d{9}$/.test(s)) return '+33' + s.slice(1);
+  if (/^0033\d{9}$/.test(s)) return '+' + s.slice(2);
+  if (/^\+\d{8,15}$/.test(s)) return s;
+  if (/^33\d{9}$/.test(s)) return '+' + s;
+  return null;
+}
+function estMobile(tel) { return !!tel && /^\+33[67]/.test(tel); }
+
+function email(v) {
+  if (vide(v)) return null;
+  const s = String(v).trim().toLowerCase().replace(/^mailto:/, '');
+  return /^[^\s@;,]+@[^\s@;,]+\.[a-z]{2,}$/.test(s) ? s : null;
+}
+
+function montant(v) {
+  if (vide(v)) return null;
+  if (typeof v === 'number') return Math.round(v * 100) / 100;
+  let s = String(v).replace(/[€\s  ]|eur/gi, '');
+  const neg = /^\(.*\)$/.test(s) || /-$/.test(s);
+  s = s.replace(/[()]/g, '').replace(/-$/, '');
+  if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+  else s = s.replace(/,/g, '');
+  const n = parseFloat(s);
+  if (isNaN(n)) return null;
+  return Math.round((neg ? -n : n) * 100) / 100;
+}
+
+function taux(v) {
+  const n = montant(String(v ?? '').replace('%', ''));
+  if (n === null) return null;
+  return n < 1 && n > 0 ? Math.round(n * 1000) / 10 : n;
+}
+
+function ouiNon(v) {
+  if (vide(v)) return null;
+  const s = String(v).trim().toLowerCase();
+  if (/^(o|oui|x|1|vrai|true|y|yes|ok|fourni|valide|à jour|a jour)$/.test(s)) return true;
+  if (/^(n|non|0|faux|false|no|manquant)$/.test(s)) return false;
+  return null;
+}
+
+function entier(v) { const n = montant(v); return n === null ? null : Math.round(n); }
+
+// Numéro de licence FFE : 7 ou 8 chiffres suivis d'une lettre (forme observée, à confirmer sur un vrai fichier FFE).
+function licence(v) {
+  if (vide(v)) return null;
+  const s = String(v).toUpperCase().replace(/[\s.\-]/g, '');
+  return /^\d{6,8}[A-Z]$/.test(s) ? s : null;
+}
+
+// SIRE : 8 chiffres + lettre de contrôle. UELN : 15 caractères commençant par le pays (250 pour la France).
+function sire(v) {
+  if (vide(v)) return null;
+  const s = String(v).toUpperCase().replace(/[\s.\-]/g, '');
+  return /^\d{8}[A-Z]$/.test(s) ? s : null;
+}
+function ueln(v) {
+  if (vide(v)) return null;
+  const s = String(v).toUpperCase().replace(/[\s.\-]/g, '');
+  return /^\d{3}[0-9A-Z]{12}$/.test(s) ? s : null;
+}
+function puce(v) {
+  if (vide(v)) return null;
+  const s = String(v).replace(/\D/g, '');
+  return /^\d{15}$/.test(s) ? s : null;
+}
+
+function sexePersonne(v) {
+  const s = String(v ?? '').trim().toLowerCase();
+  if (/^(f|femme|féminin|feminin|mme|madame|mlle)/.test(s)) return 'F';
+  if (/^(m|h|homme|masculin|m\.|monsieur|mr)/.test(s)) return 'M';
+  return null;
+}
+function sexeCheval(v) {
+  const s = String(v ?? '').trim().toLowerCase();
+  if (/^(j|jument|f|femelle|mare)/.test(s)) return 'jument';
+  if (/^(h|hongre|gelding)/.test(s)) return 'hongre';
+  if (/^(e|é|etalon|étalon|m|male|mâle|stallion)/.test(s)) return 'etalon';
+  return null;
+}
+
+function taille(v) {
+  if (vide(v)) return null;
+  const n = montant(String(v).replace(/cm|m/gi, ''));
+  if (n === null) return null;
+  return n < 3 ? Math.round(n * 100) : Math.round(n);
+}
+
+function galop(v) {
+  if (vide(v)) return null;
+  const s = String(v).toLowerCase();
+  const m = s.match(/(\d{1,2})/);
+  if (/poney|bronze|argent|or/.test(s) && !m) return texte(v);
+  return m && +m[1] <= 9 ? +m[1] : null;
+}
+
+const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+function jour(v) {
+  if (vide(v)) return null;
+  const s = String(v).trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const i = JOURS.findIndex(j => s.startsWith(j.slice(0, 3)));
+  if (i >= 0) return i + 1;
+  const n = +s; return n >= 1 && n <= 7 ? n : null;
+}
+
+const MOYENS = [
+  [/carte|cb|tpe|visa|mastercard/, 'carte'], [/prelev|sepa/, 'prelevement'], [/vir/, 'virement'],
+  [/cheques?.?vac|ancv|ch.?vac/, 'cheque_vacances'], [/coupon.?sport/, 'coupon_sport'], [/pass.?sport/, 'pass_sport'],
+  [/cheq|chq|ch\b/, 'cheque'], [/esp|cash|liquide/, 'especes'], [/stripe|en ligne|web|internet|paypal/, 'en_ligne'],
+];
+function moyen(v) {
+  const s = String(v ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  for (const [re, m] of MOYENS) if (re.test(s)) return m;
+  return vide(v) ? null : 'autre';
+}
+
+// « MARTIN Léa », « Léa MARTIN », « Martin, Léa » -> { prenom, nom }
+function separerNom(v) {
+  const s = texte(v); if (!s) return {};
+  if (s.includes(',')) { const [n, p] = s.split(',').map(x => x.trim()); return { nom: n, prenom: p }; }
+  const mots = s.split(' ');
+  if (mots.length === 1) return { nom: s };
+  const majuscules = mots.filter(m => m.length > 1 && m === m.toUpperCase() && /[A-Z]/.test(m));
+  if (majuscules.length && majuscules.length < mots.length) {
+    return { nom: majuscules.join(' '), prenom: mots.filter(m => !majuscules.includes(m)).join(' ') };
+  }
+  return { prenom: mots[0], nom: mots.slice(1).join(' ') };
+}
+
+function joliNom(s) {
+  if (!s) return s;
+  if (s !== s.toUpperCase()) return s;
+  return s.toLowerCase().replace(/(^|[\s\-'’])(\p{L})/gu, (_, a, b) => a + b.toUpperCase())
+    .replace(/(?<=\S )(De|Du|Des|La|Le|Les|D’|D'|Et|Sur|Sous)(?= |’|'|$)/g, m => m.toLowerCase());
+}
+
+return { texte, date, annee, heure, duree, telephone, estMobile, email, montant, taux, ouiNon, entier, licence, sire, ueln, puce, sexePersonne, sexeCheval, taille, galop, jour, moyen, separerNom, joliNom };
+})();
+__m["champs.mjs"] = (() => {
+// Dictionnaire des colonnes : pour chaque type de fichier, les champs Piaffe et les intitulés qu'on rencontre
+// dans les exports (Kavalog, Equimondo, Cavasoft, FFE, tableurs maison). Les intitulés sont comparés après `cle()`.
+const { cle } = __m["texte.mjs"];
+
+const TYPES = {
+  adherents: {
+    libelle: 'Adhérents et cavaliers',
+    indices: ['cavalier', 'adherent', 'licence', 'galop', 'eleve', 'client'],
+    champs: {
+      id_source: ['id', 'code', 'code client', 'code cavalier', 'numero client', 'numero adherent', 'ref', 'reference', 'identifiant', 'id client'],
+      nom_complet: ['cavalier', 'nom prenom', 'nom et prenom', 'adherent', 'client', 'eleve', 'nom complet'],
+      nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage'],
+      prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent'],
+      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'date naissance', 'ddn', 'birth', 'date de naiss'],
+      sexe: ['sexe', 'civilite', 'genre'],
+      email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier'],
+      telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1'],
+      telephone2: ['telephone 2', 'tel fixe', 'fixe', 'tel domicile', 'telephone fixe', 'autre telephone'],
+      adresse: ['adresse', 'adresse 1', 'rue', 'adresse postale', 'voie'],
+      adresse2: ['adresse 2', 'complement adresse', 'complement'],
+      code_postal: ['code postal', 'cp', 'cp ville'],
+      ville: ['ville', 'commune', 'localite'],
+      licence: ['licence', 'numero licence', 'numero de licence', 'licence ffe', 'n licence', 'num licence', 'numero ffe'],
+      licence_annee: ['millesime', 'annee licence', 'saison licence', 'licence valide', 'validite licence', 'licence 2027', 'licence 2026'],
+      licence_type: ['type licence', 'categorie licence', 'type de licence'],
+      galop: ['galop', 'niveau', 'niveau galop', 'galop obtenu', 'degre'],
+      certificat: ['certificat medical', 'certificat', 'date certificat', 'certif medical', 'qs sport', 'questionnaire sante'],
+      droit_image: ['droit image', 'droit a l image', 'autorisation photo', 'photo'],
+      responsable_nom: ['responsable', 'nom responsable', 'responsable legal', 'parent', 'nom parent', 'representant legal', 'payeur', 'nom du payeur', 'contact'],
+      responsable_email: ['email responsable', 'mail parent', 'email parent', 'mail responsable', 'email payeur'],
+      responsable_telephone: ['tel responsable', 'telephone responsable', 'tel parent', 'telephone parent', 'portable parent', 'tel payeur'],
+      famille: ['famille', 'code famille', 'foyer', 'groupe familial', 'numero famille'],
+      forfait: ['forfait', 'formule', 'abonnement', 'carte', 'prestation', 'cours'],
+      solde: ['solde', 'reste du', 'reste a payer', 'du', 'impaye', 'balance', 'solde du'],
+      inscription: ['date inscription', 'inscrit le', 'date adhesion', 'adherent depuis', 'date creation', 'premiere inscription'],
+      notes: ['notes', 'remarques', 'commentaire', 'commentaires', 'observations', 'info'],
+    },
+  },
+  chevaux: {
+    libelle: 'Chevaux et poneys',
+    indices: ['cheval', 'equide', 'poney', 'sire', 'robe', 'race', 'box'],
+    champs: {
+      id_source: ['id', 'code', 'code cheval', 'ref', 'reference', 'identifiant', 'numero cheval'],
+      nom: ['nom', 'nom cheval', 'nom du cheval', 'cheval', 'equide', 'nom equide', 'poney', 'nom poney', 'monture'],
+      sire: ['sire', 'numero sire', 'n sire', 'numero sire ifce', 'immatriculation'],
+      ueln: ['ueln', 'numero ueln'],
+      puce: ['puce', 'transpondeur', 'numero transpondeur', 'puce electronique', 'microchip'],
+      naissance: ['date de naissance', 'naissance', 'annee', 'annee de naissance', 'ne en', 'age'],
+      sexe: ['sexe'],
+      race: ['race', 'stud book', 'studbook', 'origine'],
+      robe: ['robe', 'couleur'],
+      taille: ['taille', 'toise', 'hauteur', 'taille cm'],
+      type: ['type', 'statut', 'categorie', 'utilisation', 'type de cheval', 'appartenance'],
+      proprietaire: ['proprietaire', 'nom proprietaire', 'owner', 'propriétaire'],
+      box: ['box', 'numero box', 'boxe', 'stalle', 'logement', 'pre'],
+      arrivee: ['date arrivee', 'arrive le', 'entree', 'date entree'],
+      pension: ['pension', 'formule pension', 'type pension', 'tarif pension'],
+      notes: ['notes', 'remarques', 'commentaire', 'observations', 'caractere'],
+    },
+  },
+  prestations: {
+    libelle: 'Forfaits, cartes et tarifs',
+    indices: ['tarif', 'forfait', 'prix', 'tva', 'prestation', 'article'],
+    champs: {
+      id_source: ['id', 'code', 'code article', 'ref', 'reference', 'code prestation'],
+      libelle: ['libelle', 'designation', 'nom', 'prestation', 'article', 'forfait', 'intitule', 'produit'],
+      categorie: ['categorie', 'famille', 'type', 'rubrique'],
+      prix_ttc: ['prix ttc', 'tarif ttc', 'prix', 'tarif', 'montant ttc', 'pu ttc', 'montant'],
+      prix_ht: ['prix ht', 'tarif ht', 'pu ht', 'montant ht'],
+      tva: ['tva', 'taux tva', 'taux', 'tx tva'],
+      seances: ['nombre de seances', 'seances', 'nb seances', 'nb cours', 'nombre cours', 'unites'],
+      duree_validite: ['validite', 'duree validite', 'valable', 'duree'],
+      compte: ['compte', 'compte comptable', 'compte produit', 'imputation'],
+    },
+  },
+  factures: {
+    libelle: 'Factures et lignes de facture',
+    indices: ['facture', 'avoir', 'ttc', 'echeance', 'piece'],
+    champs: {
+      numero: ['numero facture', 'facture', 'n facture', 'numero', 'num facture', 'piece', 'numero piece', 'ref facture'],
+      date: ['date', 'date facture', 'date piece', 'date emission', 'emise le'],
+      echeance: ['echeance', 'date echeance', 'a payer avant', 'date limite'],
+      client_id: ['code client', 'id client', 'numero client', 'code cavalier', 'code adherent'],
+      client_nom: ['client', 'nom client', 'cavalier', 'adherent', 'destinataire', 'tiers', 'payeur'],
+      libelle: ['libelle', 'designation', 'prestation', 'article', 'detail', 'description', 'objet'],
+      quantite: ['quantite', 'qte', 'qt', 'nombre'],
+      prix_unitaire: ['prix unitaire', 'pu', 'pu ttc', 'prix'],
+      tva: ['tva', 'taux tva', 'taux'],
+      total_ht: ['total ht', 'montant ht', 'ht'],
+      total_ttc: ['total ttc', 'montant ttc', 'ttc', 'montant', 'total'],
+      paye: ['regle', 'paye', 'montant regle', 'deja paye', 'encaisse', 'reglement'],
+      reste: ['reste du', 'reste a payer', 'solde', 'du', 'restant'],
+      statut: ['statut', 'etat', 'situation'],
+      moyen: ['mode de reglement', 'mode reglement', 'moyen de paiement', 'mode paiement', 'reglement par'],
+    },
+  },
+  reglements: {
+    libelle: 'Règlements et encaissements',
+    indices: ['reglement', 'encaissement', 'paiement', 'remise', 'banque'],
+    champs: {
+      date: ['date', 'date reglement', 'date encaissement', 'date paiement', 'encaisse le'],
+      client_id: ['code client', 'id client', 'numero client'],
+      client_nom: ['client', 'nom client', 'cavalier', 'adherent', 'tiers', 'payeur', 'tireur'],
+      montant: ['montant', 'montant regle', 'somme', 'credit', 'encaisse'],
+      moyen: ['mode', 'mode de reglement', 'moyen', 'moyen de paiement', 'type reglement', 'mode paiement'],
+      facture: ['facture', 'numero facture', 'piece', 'n facture'],
+      reference: ['numero cheque', 'reference', 'n cheque', 'banque', 'ref'],
+      remise: ['remise', 'bordereau', 'numero remise', 'date remise'],
+    },
+  },
+  reprises: {
+    libelle: 'Planning des reprises',
+    indices: ['reprise', 'cours', 'creneau', 'jour', 'heure', 'moniteur'],
+    champs: {
+      id_source: ['id', 'code', 'code reprise', 'ref'],
+      libelle: ['reprise', 'cours', 'libelle', 'intitule', 'activite', 'nom reprise', 'creneau'],
+      jour: ['jour', 'jour semaine', 'jour de la semaine'],
+      date: ['date', 'date cours', 'le'],
+      debut: ['heure', 'debut', 'heure debut', 'de', 'horaire'],
+      fin: ['fin', 'heure fin', 'a', 'jusqu a'],
+      duree: ['duree', 'duree min', 'temps'],
+      moniteur: ['moniteur', 'monitrice', 'enseignant', 'prof', 'coach', 'encadrant', 'animateur'],
+      niveau: ['niveau', 'galop', 'public', 'groupe'],
+      lieu: ['lieu', 'carriere', 'manege', 'piste', 'terrain'],
+      places: ['places', 'capacite', 'nb places', 'effectif max', 'max'],
+      inscrits: ['inscrits', 'cavaliers', 'participants', 'eleves'],
+      cavalier: ['cavalier', 'nom cavalier', 'eleve', 'adherent'],
+      cheval: ['cheval', 'poney', 'monture', 'equide'],
+    },
+  },
+  equipe: {
+    libelle: 'Équipe',
+    indices: ['salarie', 'employe', 'poste', 'contrat', 'diplome'],
+    champs: {
+      nom: ['nom', 'nom salarie'],
+      prenom: ['prenom'],
+      poste: ['poste', 'fonction', 'emploi', 'role'],
+      email: ['email', 'mail', 'courriel'],
+      telephone: ['telephone', 'tel', 'portable', 'mobile'],
+      contrat: ['contrat', 'type contrat', 'type de contrat'],
+      heures: ['heures', 'heures hebdo', 'duree hebdomadaire', 'temps de travail'],
+      diplome: ['diplome', 'diplomes', 'qualification'],
+      entree: ['date entree', 'embauche', 'date embauche'],
+    },
+  },
+  soins: {
+    libelle: 'Soins et registre d’élevage',
+    indices: ['soin', 'vaccin', 'vermifuge', 'marechal', 'veterinaire', 'traitement'],
+    champs: {
+      cheval: ['cheval', 'nom cheval', 'equide', 'poney'],
+      date: ['date', 'date soin', 'date intervention', 'fait le'],
+      type: ['type', 'soin', 'intervention', 'acte', 'nature', 'type de soin'],
+      detail: ['detail', 'produit', 'description', 'libelle', 'traitement', 'medicament'],
+      intervenant: ['intervenant', 'veterinaire', 'praticien', 'marechal', 'par'],
+      prochain: ['prochain', 'rappel', 'prochaine date', 'a refaire le', 'date rappel'],
+      cout: ['cout', 'montant', 'prix', 'tarif'],
+    },
+  },
+};
+
+// Index des synonymes, comparés sous leur forme `cle()`.
+const INDEX = {};
+for (const [t, def] of Object.entries(TYPES)) {
+  INDEX[t] = [];
+  for (const [champ, syn] of Object.entries(def.champs)) {
+    for (const s of [champ.replace(/_/g, ' '), ...syn]) INDEX[t].push({ champ, s: cle(s) });
+  }
+}
+
+// Associe chaque colonne à un champ. Correspondance exacte d'abord, puis « contient », puis mots en commun.
+function associer(type, entetes) {
+  const res = {}, pris = new Set(), confiance = {};
+  const cles = entetes.map(cle);
+  const passes = [
+    (h, s) => h === s ? 1 : 0,
+    (h, s) => (s.length > 3 && (h.startsWith(s + ' ') || h.endsWith(' ' + s))) ? 0.8 : 0,
+    (h, s) => (s.length > 4 && h.includes(s)) ? 0.6 : 0,
+  ];
+  for (const passe of passes) {
+    cles.forEach((h, i) => {
+      if (i in res || !h) return;
+      for (const { champ, s } of INDEX[type]) {
+        if (pris.has(champ)) continue;
+        const sc = passe(h, s);
+        if (sc) { res[i] = champ; pris.add(champ); confiance[i] = sc; break; }
+      }
+    });
+  }
+  return { colonnes: res, confiance };
+}
+
+// Devine le type d'un tableau à partir de ses en-têtes et du nom du fichier.
+function devinerType(entetes, nomFichier = '') {
+  const nf = cle(nomFichier);
+  const scores = Object.entries(TYPES).map(([t, def]) => {
+    const { colonnes, confiance } = associer(t, entetes);
+    let sc = Object.values(confiance).reduce((a, b) => a + b, 0);
+    const champs = new Set(Object.values(colonnes));
+    for (const i of def.indices) { if (nf.includes(i)) sc += 2; if (entetes.some(e => cle(e).includes(i))) sc += 0.5; }
+    // champs qui signent un type
+    const signes = { adherents: ['licence', 'galop', 'prenom'], chevaux: ['sire', 'robe', 'race', 'puce'], factures: ['numero', 'total_ttc'],
+      reglements: ['moyen', 'montant'], prestations: ['prix_ttc', 'tva'], reprises: ['jour', 'debut', 'moniteur'], equipe: ['poste', 'contrat'], soins: ['cheval', 'type'] }[t];
+    sc += signes.filter(c => champs.has(c)).length * 1.5;
+    return { type: t, score: sc, colonnes };
+  }).sort((a, b) => b.score - a.score);
+  return scores;
+}
+
+// Trouve la ligne d'en-tête : les exports ont parfois un titre, une date ou des lignes vides au-dessus.
+function ligneEntete(lignes) {
+  let meilleure = 0, score = -1;
+  for (let i = 0; i < Math.min(lignes.length, 15); i++) {
+    const l = lignes[i];
+    const remplies = l.filter(v => String(v).trim()).length;
+    const textes = l.filter(v => /[a-zA-Zéè]/.test(String(v)) && !/@/.test(String(v)) && String(v).length < 40).length;
+    const sc = textes * 2 + remplies - (i * 0.1);
+    if (remplies >= 2 && sc > score) { score = sc; meilleure = i; }
+  }
+  return meilleure;
+}
+
+return { TYPES, associer, devinerType, ligneEntete };
+})();
+__m["logiciels.mjs"] = (() => {
+// Ce que l'on sait de chaque logiciel du marché : comment le club sort ses données, et à quoi reconnaître ses fichiers.
+// « confirme: false » = déduit de sources publiques, à vérifier sur un vrai export de club.
+
+const LOGICIELS = {
+  kavalog: {
+    nom: 'Kavalog', editeur: 'AEXAE',
+    reconnaitre: { fichier: /kavalog|aexae|kvl/i, entetes: ['code cavalier', 'cavalier', 'reprise'] },
+    voies: [
+      { mode: 'export', titre: 'Exports intégrés', etapes: ['Dans Kavalog, ouvrez la liste des cavaliers, puis Exporter (Excel ou CSV).', 'Faites de même pour les équidés, les forfaits et les factures de la saison.', 'Déposez les fichiers dans la passerelle Piaffe.'] },
+      { mode: 'base_locale', titre: 'Pas d’export sous la main ? (version bureau, bientôt)', etapes: ['Le petit robot Piaffe pour Windows repère tout seul les exports et le dossier de données de Kavalog sur cet ordinateur.', 'Il ne lit qu’une copie, avec votre accord, et ne modifie rien.'] },
+    ],
+    confirme: false,
+  },
+  equimondo: {
+    nom: 'Equimondo', editeur: 'Equimondo',
+    reconnaitre: { fichier: /equimondo/i, entetes: [] },
+    voies: [{ mode: 'export', titre: 'Export standard', etapes: ['Depuis Equimondo, téléchargez l’export standard (clients, chevaux, factures).', 'Déposez les fichiers dans la passerelle Piaffe.'] }],
+    confirme: false,
+  },
+  cavasoft: {
+    nom: 'Cavasoft', editeur: 'Cavasoft',
+    reconnaitre: { fichier: /cavasoft/i, entetes: [] },
+    voies: [{ mode: 'export', titre: 'Export Excel', etapes: ['Exportez les listes (cavaliers, chevaux, factures) au format Excel.', 'Déposez-les dans la passerelle Piaffe.'] }],
+    confirme: false,
+  },
+  gecurie: {
+    nom: 'Gecurie', editeur: 'Gecurie',
+    reconnaitre: { fichier: /gecurie/i, entetes: [] },
+    voies: [{ mode: 'export', titre: 'Export complet Excel', etapes: ['Utilisez « export complet des données » en Excel.', 'Déposez le fichier dans la passerelle Piaffe.'] }],
+    confirme: false,
+  },
+  hoofplanner: {
+    nom: 'HoofPlanner', editeur: 'HoofPlanner',
+    reconnaitre: { fichier: /hoof/i, entetes: [] },
+    voies: [{ mode: 'export', titre: 'Export CSV', etapes: ['Exportez chaque liste en CSV.', 'Déposez les fichiers dans la passerelle Piaffe.'] }],
+    confirme: false,
+  },
+  ffe: {
+    nom: 'FFE Club SIF', editeur: 'Fédération française d’équitation',
+    reconnaitre: { fichier: /ffe|sif|licenci/i, entetes: ['numero licence', 'licence', 'millesime'] },
+    voies: [{ mode: 'export', titre: 'Liste des licenciés', etapes: ['Dans FFE Club SIF, exportez la liste des licenciés de la saison (Excel).', 'Déposez-la avec les autres fichiers : Piaffe rapproche les licences des fiches adhérents.'] }],
+    confirme: false,
+  },
+  tableur: {
+    nom: 'Tableur (Excel, Google Sheets, Numbers)', editeur: '',
+    reconnaitre: { fichier: /./, entetes: [] },
+    voies: [{ mode: 'export', titre: 'Votre fichier', etapes: ['Enregistrez chaque onglet en .xlsx ou .csv (Google Sheets : Fichier, Télécharger).', 'Une ligne par personne ou par cheval, une ligne de titres en haut.'] }],
+    confirme: true,
+  },
+};
+
+function reconnaitreLogiciel(nomFichier, entetes = []) {
+  for (const [id, l] of Object.entries(LOGICIELS)) {
+    if (id === 'tableur') continue;
+    if (l.reconnaitre.fichier.test(nomFichier)) return id;
+  }
+  return null;
+}
+
+// Fichiers de base de données qu'un ancien logiciel peut laisser sur le poste. On les signale, on ne les ouvre qu'en lecture.
+const BASES_LOCALES = [
+  { ext: /\.(fic|ndx|mmo)$/i, moteur: 'HFSQL (WINDEV)', lecture: 'Pilote ODBC HFSQL gratuit de PC SOFT, en lecture seule, sur une copie.' },
+  { ext: /\.(mdb|accdb)$/i, moteur: 'Microsoft Access', lecture: 'Lecture d’une copie avec mdb-tools ou le pilote Access de Windows.' },
+  { ext: /\.(fdb|gdb)$/i, moteur: 'Firebird / InterBase', lecture: 'Lecture d’une copie avec le client Firebird.' },
+  { ext: /\.(sqlite|sqlite3|db3)$/i, moteur: 'SQLite', lecture: 'Lue directement par la passerelle (copie en lecture seule).' },
+  { ext: /\.(mdf)$/i, moteur: 'SQL Server', lecture: 'Export depuis SQL Server Express (sauvegarde .bak ou requête), avec l’accord du club.' },
+  { ext: /\.(dbf)$/i, moteur: 'dBase / FoxPro', lecture: 'Lisible directement (format ouvert), à ajouter à la passerelle si un club en a.' },
+];
+
+return { LOGICIELS, reconnaitreLogiciel, BASES_LOCALES };
+})();
+__m["lire.mjs"] = (() => {
+// Point d'entrée commun : un fichier (nom + octets) -> liste de tables.
+const { decoder } = __m["texte.mjs"];
+const { lireCSV } = __m["csv.mjs"];
+const { lireXLSX } = __m["xlsx.mjs"];
+
+async function lireFichier(nom, octets, { inflate } = {}) {
+  const ext = (nom.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
+  const b = octets instanceof Uint8Array ? octets : new Uint8Array(octets);
+  if (ext === 'xlsx' || ext === 'xlsm' || (b[0] === 0x50 && b[1] === 0x4b)) {
+    const feuilles = await lireXLSX(b, inflate);
+    return feuilles.map(f => ({ fichier: nom, feuille: feuilles.length > 1 ? f.nom : null, lignes: f.lignes }));
+  }
+  if (ext === 'xls' && b[0] === 0xd0 && b[1] === 0xcf) {
+    return [{ fichier: nom, lignes: [], erreur: 'Ancien format Excel (.xls) : ouvrez-le dans Excel ou LibreOffice et enregistrez-le en .xlsx ou .csv.' }];
+  }
+  const { texte, encodage } = decoder(b);
+  if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
+  const { lignes, separateur } = lireCSV(texte);
+  return [{ fichier: nom, lignes, encodage, separateur }];
+}
+
+// Beaucoup de vieux logiciels « exportent en Excel » un tableau HTML renommé en .xls.
+function tableauHTML(t) {
+  const lignes = [];
+  for (const tr of t.matchAll(/<tr\b[\s\S]*?<\/tr>/gi)) {
+    lignes.push([...tr[0].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m => m[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim()));
+  }
+  return lignes;
+}
+
+return { lireFichier };
+})();
+__m["paquet.mjs"] = (() => {
+// Assemble les tableaux lus en un « paquet Piaffe » (format piaffe-import 1.0) :
+// une seule fiche par personne, familles reliées, chevaux reliés à leur propriétaire, factures regroupées.
+const { cle, vide } = __m["texte.mjs"];
+const V = __m["valeurs.mjs"];
+const { TYPES, associer, devinerType, ligneEntete } = __m["champs.mjs"];
+const { reconnaitreLogiciel } = __m["logiciels.mjs"];
+
+const VERSION_FORMAT = '1.0';
+const VERSION_OUTIL = '0.1.0';
+
+// tables : [{ fichier, feuille?, lignes: string[][], type?, colonnes?: {index: champ} }]
+function construirePaquet(tables, options = {}) {
+  const aujourdhui = options.aujourdhui || new Date().toISOString().slice(0, 10);
+  const P = new Paquet(aujourdhui);
+  const lues = [];
+  for (const t of tables) {
+    const r = analyserTable(t);
+    if (!r) { P.avertir('info', 'table_vide', `« ${nomTable(t)} » ne contient pas de tableau exploitable.`, t.fichier); continue; }
+    P.sources.push(r.source);
+    if (r.source.type === null) { P.avertir('attention', 'type_inconnu', `Je n’ai pas reconnu le contenu de « ${nomTable(t)} ». Choisissez son type à la main.`, t.fichier); continue; }
+    lues.push(r);
+  }
+  // Ordre utile : les personnes d'abord, puis ce qui s'y rattache.
+  const ordre = ['adherents', 'equipe', 'prestations', 'chevaux', 'factures', 'reglements', 'reprises', 'soins'];
+  lues.sort((a, b) => ordre.indexOf(a.source.type) - ordre.indexOf(b.source.type));
+  for (const r of lues) P['ajouter_' + r.source.type](r);
+  P.finaliser();
+  return P.json();
+}
+
+function nomTable(t) { return t.feuille ? `${t.fichier} › ${t.feuille}` : t.fichier; }
+
+function analyserTable(t) {
+  const lignes = (t.lignes || []).filter(l => l.some(v => !vide(v)));
+  if (lignes.length < 2) return null;
+  const h = t.ligneEntete ?? ligneEntete(lignes);
+  const entetes = lignes[h].map(v => String(v ?? '').trim());
+  const candidats = devinerType(entetes, (t.fichier || '') + ' ' + (t.feuille || ''));
+  let type = t.type || null, colonnes = t.colonnes || null;
+  if (!type) {
+    const [a, b] = candidats;
+    if (a.score >= 3 && Object.keys(a.colonnes).length >= 2) type = a.type;
+    if (b && a.score - b.score < 0.5 && !t.type) type = type; // ex aequo : on garde le premier mais on le signale
+  }
+  if (type && !colonnes) colonnes = associer(type, entetes).colonnes;
+  const corps = lignes.slice(h + 1).map((l, i) => ({ l, n: h + i + 2 }));
+  const ignorees = entetes.filter((e, i) => e && !(colonnes && i in colonnes));
+  return {
+    source: {
+      fichier: t.fichier, feuille: t.feuille || null, logiciel: t.logiciel || reconnaitreLogiciel(t.fichier || '', entetes),
+      type, lignes: corps.length, ligne_entete: h + 1,
+      colonnes: colonnes ? Object.fromEntries(Object.entries(colonnes).map(([i, c]) => [entetes[i], c])) : {},
+      ignorees, candidats: candidats.slice(0, 3).map(c => ({ type: c.type, score: Math.round(c.score * 10) / 10 })),
+    },
+    entetes, colonnes: colonnes || {}, corps, fichier: t.fichier,
+  };
+}
+
+// Transforme une ligne brute en objet {champ: valeur brute}.
+function enregistrement(r, ligne) {
+  const o = {};
+  for (const [i, champ] of Object.entries(r.colonnes)) if (!vide(ligne[i])) o[champ] = ligne[i];
+  return o;
+}
+
+class Paquet {
+  constructor(aujourdhui) {
+    this.aujourdhui = aujourdhui;
+    this.sources = []; this.avertissements = [];
+    this.personnes = []; this.chevaux = []; this.prestations = []; this.abonnements = [];
+    this.factures = []; this.reglements = []; this.reprises = []; this.equipe = []; this.soins = [];
+    this.idx = { licence: new Map(), email: new Map(), nomNaiss: new Map(), nom: new Map(), idSource: new Map(), famille: new Map() };
+    this.fusions = 0;
+  }
+  avertir(niveau, code, message, fichier = null, ligne = null) { this.avertissements.push({ niveau, code, message, fichier, ligne }); }
+
+  // ---------- Personnes ----------
+  trouverPersonne(c) {
+    const k = [];
+    if (c.licence?.numero) k.push(this.idx.licence.get(c.licence.numero));
+    if (c._idSource) k.push(this.idx.idSource.get(c._idSource));
+    if (c.nom && c.prenom && c.naissance) k.push(this.idx.nomNaiss.get(cle(c.nom + ' ' + c.prenom + ' ' + c.naissance)));
+    if (c.email && c.prenom) k.push(this.idx.email.get(c.email + '|' + cle(c.prenom)));
+    if (c.nom && c.prenom) {
+      const p = this.idx.nom.get(cle(c.nom + ' ' + c.prenom));
+      if (p && (!p.naissance || !c.naissance || p.naissance === c.naissance)) k.push(p);
+    }
+    return k.find(Boolean) || null;
+  }
+  indexer(p) {
+    if (p.licence?.numero) this.idx.licence.set(p.licence.numero, p);
+    for (const s of p._idSources || []) this.idx.idSource.set(s, p);
+    if (p.nom && p.prenom) {
+      this.idx.nom.set(cle(p.nom + ' ' + p.prenom), p);
+      if (p.naissance) this.idx.nomNaiss.set(cle(p.nom + ' ' + p.prenom + ' ' + p.naissance), p);
+    }
+    if (p.email && p.prenom) this.idx.email.set(p.email + '|' + cle(p.prenom), p);
+  }
+  fusionnerPersonne(c, origine) {
+    let p = this.trouverPersonne(c);
+    if (!p) {
+      p = { ref: 'p' + String(this.personnes.length + 1).padStart(4, '0'), roles: [], responsables: [], origine: [], _idSources: [] };
+      this.personnes.push(p);
+    } else if (origine && !p.origine.some(o => o.fichier === origine.fichier)) this.fusions++;
+    for (const [k, v] of Object.entries(c)) {
+      if (k === '_idSource') { if (v && !p._idSources.includes(v)) p._idSources.push(v); continue; }
+      if (v === null || v === undefined) continue;
+      if (k === 'roles') { for (const r of v) if (!p.roles.includes(r)) p.roles.push(r); continue; }
+      if (k === 'adresse' || k === 'licence') { p[k] = { ...(p[k] || {}), ...Object.fromEntries(Object.entries(v).filter(([, x]) => x !== null)) }; continue; }
+      if (p[k] === undefined || p[k] === null) p[k] = v;
+      else if (JSON.stringify(p[k]) !== JSON.stringify(v) && ['naissance', 'email'].includes(k)) {
+        this.avertir('attention', 'conflit', `${p.prenom || ''} ${p.nom || ''} : ${k} différent selon les fichiers (${p[k]} / ${v}). J’ai gardé ${p[k]}.`, origine?.fichier, origine?.ligne);
+      }
+    }
+    if (origine) p.origine.push(origine);
+    this.indexer(p);
+    return p;
+  }
+
+  ajouter_adherents(r) {
+    const annee = +this.aujourdhui.slice(0, 4);
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      let nom = V.texte(e.nom), prenom = V.texte(e.prenom);
+      if ((!nom || !prenom) && e.nom_complet) { const s = V.separerNom(e.nom_complet); nom = nom || s.nom; prenom = prenom || s.prenom; }
+      if (!nom && !prenom) continue;
+      const origine = { fichier: r.fichier, ligne: n };
+      let cp = V.texte(e.code_postal), ville = V.texte(e.ville);
+      if (cp && !ville && /^\d{5}\s+\S/.test(cp)) { ville = cp.slice(6).trim(); cp = cp.slice(0, 5); }
+      const telBrut = V.telephone(e.telephone), tel2 = V.telephone(e.telephone2);
+      const mail = V.email(e.email);
+      if (e.email && !mail) this.avertir('attention', 'email_invalide', `${V.joliNom(prenom)} ${V.joliNom(nom)} : adresse e-mail illisible « ${e.email} ».`, r.fichier, n);
+      const naissance = V.date(e.naissance);
+      const licAnnee = V.annee(e.licence_annee) ?? (V.ouiNon(e.licence_annee) ? annee + (this.aujourdhui.slice(5) >= '09' ? 1 : 0) : null);
+      const c = {
+        _idSource: e.id_source ? r.fichier + '#' + e.id_source : null,
+        nom: V.joliNom(nom), prenom: V.joliNom(prenom), naissance, sexe: V.sexePersonne(e.sexe),
+        email: mail, telephone: telBrut || tel2, telephone2: telBrut ? tel2 : null,
+        adresse: (e.adresse || cp || ville) ? { ligne1: V.texte(e.adresse), ligne2: V.texte(e.adresse2), code_postal: cp, ville: ville ? V.joliNom(ville) : null } : null,
+        licence: V.licence(e.licence) ? { numero: V.licence(e.licence), annee: licAnnee, type: V.texte(e.licence_type) } : null,
+        galop: V.galop(e.galop), certificat_medical: V.date(e.certificat) || (V.ouiNon(e.certificat) ? 'fourni' : null),
+        droit_image: V.ouiNon(e.droit_image), inscription: V.date(e.inscription), solde: V.montant(e.solde),
+        famille: V.texte(e.famille), notes: V.texte(e.notes), roles: ['cavalier'],
+      };
+      if (e.licence && !c.licence) this.avertir('info', 'licence_illisible', `${c.prenom} ${c.nom} : numéro de licence « ${e.licence} » au format inattendu, gardé en note.`, r.fichier, n);
+      if (e.licence && !c.licence) c.notes = [c.notes, 'Licence : ' + e.licence].filter(Boolean).join(' · ');
+      const p = this.fusionnerPersonne(c, origine);
+      if (e.id_source) this.idx.idSource.set('id#' + V.texte(e.id_source), p);
+      // Responsable légal ou payeur
+      if (e.responsable_nom || e.responsable_email || e.responsable_telephone) {
+        const s = V.separerNom(e.responsable_nom);
+        const rp = this.fusionnerPersonne({
+          nom: V.joliNom(s.nom || nom), prenom: V.joliNom(s.prenom || null), email: V.email(e.responsable_email),
+          telephone: V.telephone(e.responsable_telephone), roles: ['responsable'],
+        }, origine);
+        if (rp !== p && !p.responsables.includes(rp.ref)) p.responsables.push(rp.ref);
+      }
+      if (e.forfait) this.abonnements.push({ personne: p.ref, libelle: V.texte(e.forfait), prestation: null, _o: origine });
+    }
+  }
+
+  ajouter_equipe(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      if (!e.nom && !e.prenom) continue;
+      const p = this.fusionnerPersonne({ nom: V.joliNom(V.texte(e.nom)), prenom: V.joliNom(V.texte(e.prenom)), email: V.email(e.email), telephone: V.telephone(e.telephone), roles: ['equipe'] }, { fichier: r.fichier, ligne: n });
+      this.equipe.push({ personne: p.ref, poste: V.texte(e.poste), contrat: V.texte(e.contrat), heures_semaine: V.montant(e.heures), diplomes: V.texte(e.diplome), entree: V.date(e.entree) });
+    }
+  }
+
+  // ---------- Prestations ----------
+  ajouter_prestations(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const libelle = V.texte(e.libelle); if (!libelle) continue;
+      const tva = V.taux(e.tva);
+      let ttc = V.montant(e.prix_ttc);
+      const ht = V.montant(e.prix_ht);
+      if (ttc === null && ht !== null) ttc = Math.round(ht * (1 + (tva ?? 20) / 100) * 100) / 100;
+      this.prestations.push({
+        ref: 'f' + String(this.prestations.length + 1).padStart(3, '0'), libelle, categorie: V.texte(e.categorie),
+        type: typePrestation(libelle + ' ' + (e.categorie || '')), prix_ttc: ttc, tva, seances: V.entier(e.seances),
+        validite: V.texte(e.duree_validite), compte_comptable: V.texte(e.compte), origine: [{ fichier: r.fichier, ligne: n }],
+      });
+    }
+  }
+  prestationParLibelle(libelle) {
+    const k = cle(libelle);
+    let f = this.prestations.find(p => cle(p.libelle) === k);
+    if (!f) {
+      f = { ref: 'f' + String(this.prestations.length + 1).padStart(3, '0'), libelle, categorie: null, type: typePrestation(libelle), prix_ttc: null, tva: null, seances: null, validite: null, compte_comptable: null, origine: [], deduite: true };
+      this.prestations.push(f);
+    }
+    return f;
+  }
+
+  // ---------- Chevaux ----------
+  ajouter_chevaux(r) {
+    const annee = +this.aujourdhui.slice(0, 4);
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const nom = V.texte(e.nom); if (!nom) continue;
+      let naissance = V.annee(e.naissance);
+      if (!naissance && /^\d{1,2}\s*(ans)?$/.test(String(e.naissance || '').trim())) naissance = annee - parseInt(e.naissance);
+      let sire = V.sire(e.sire), ueln = V.ueln(e.ueln) || (!sire ? V.ueln(e.sire) : null);
+      if (e.sire && !sire && !ueln) this.avertir('attention', 'sire_illisible', `${nom} : numéro SIRE « ${e.sire} » au format inattendu.`, r.fichier, n);
+      const typeTxt = cle(e.type || '') + ' ' + cle(e.pension || '');
+      let type = /demi/.test(typeTxt) ? 'demi_pension' : /propri|pension|prive/.test(typeTxt) ? 'proprietaire' : /club|ecole|cavalerie|reprise/.test(typeTxt) ? 'club' : null;
+      let proprietaire = null;
+      if (e.proprietaire && !/club|ecurie|centre/i.test(cle(e.proprietaire))) {
+        const s = V.separerNom(e.proprietaire);
+        const p = this.fusionnerPersonne({ nom: V.joliNom(s.nom), prenom: V.joliNom(s.prenom || null), roles: ['proprietaire'] }, { fichier: r.fichier, ligne: n });
+        proprietaire = p.ref; type = type || 'proprietaire';
+      }
+      const existant = this.chevaux.find(c => (sire && c.sire === sire) || cle(c.nom) === cle(nom));
+      const c = existant || { ref: 'c' + String(this.chevaux.length + 1).padStart(4, '0'), origine: [] };
+      Object.assign(c, Object.fromEntries(Object.entries({
+        nom: V.joliNom(nom), sire, ueln, puce: V.puce(e.puce), naissance, sexe: V.sexeCheval(e.sexe), race: V.texte(e.race), robe: V.texte(e.robe),
+        taille_cm: V.taille(e.taille), type: type || 'club', proprietaire, box: V.texte(e.box), arrivee: V.date(e.arrivee), pension: V.texte(e.pension), notes: V.texte(e.notes),
+      }).filter(([k, v]) => v !== null && (c[k] === undefined || c[k] === null || k === 'proprietaire'))));
+      c.origine.push({ fichier: r.fichier, ligne: n });
+      if (!existant) this.chevaux.push(c);
+      if (c.type === 'club' && c.pony === undefined && c.taille_cm) c.poney = c.taille_cm <= 148;
+    }
+  }
+  chevalParNom(nom) {
+    const k = cle(nom);
+    return this.chevaux.find(c => cle(c.nom) === k) || this.chevaux.find(c => cle(c.nom).startsWith(k + ' ')) || null;
+  }
+
+  // ---------- Factures ----------
+  client(e, fichier, ligne) {
+    if (e.client_id) {
+      const p = this.idx.idSource.get('id#' + V.texte(e.client_id));
+      if (p && e.client_nom) {
+        // Le code renvoie souvent au cavalier, le nom au payeur (parent) : on facture le payeur s'il est connu.
+        const s = V.separerNom(e.client_nom);
+        const payeur = s.nom && this.trouverPersonne({ nom: V.joliNom(s.nom), prenom: V.joliNom(s.prenom || '') });
+        if (payeur && payeur !== p) return payeur;
+      }
+      if (p) return p;
+    }
+    if (e.client_nom) {
+      const s = V.separerNom(e.client_nom);
+      if (s.nom) return this.fusionnerPersonne({ nom: V.joliNom(s.nom), prenom: V.joliNom(s.prenom || null), roles: ['client'] }, { fichier, ligne });
+    }
+    return null;
+  }
+  ajouter_factures(r) {
+    const parNumero = new Map();
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const numero = V.texte(e.numero) || `sans-numero-${n}`;
+      let f = parNumero.get(numero);
+      if (!f) {
+        const p = this.client(e, r.fichier, n);
+        f = { ref: 'fa' + String(this.factures.length + 1).padStart(5, '0'), numero, date: V.date(e.date), echeance: V.date(e.echeance), client: p?.ref || null,
+          client_nom: V.texte(e.client_nom), lignes: [], total_ttc: 0, paye: null, reste: null, statut: null, moyen: V.moyen(e.moyen), origine: [] };
+        parNumero.set(numero, f); this.factures.push(f);
+        if (!p) this.avertir('attention', 'facture_sans_client', `Facture ${numero} : client introuvable.`, r.fichier, n);
+      }
+      const q = V.montant(e.quantite) ?? 1, pu = V.montant(e.prix_unitaire), ttc = V.montant(e.total_ttc) ?? (pu !== null ? Math.round(pu * q * 100) / 100 : null);
+      if (e.libelle || ttc !== null) f.lignes.push({ libelle: V.texte(e.libelle) || 'Prestation', quantite: q, prix_unitaire_ttc: pu ?? (ttc !== null ? Math.round(ttc / q * 100) / 100 : null), tva: V.taux(e.tva), total_ttc: ttc });
+      if (e.paye !== undefined) f.paye = (f.paye || 0) + (V.montant(e.paye) || 0);
+      if (e.reste !== undefined) f.reste = V.montant(e.reste);
+      if (e.statut) f.statut = statutFacture(e.statut);
+      f.origine.push({ fichier: r.fichier, ligne: n });
+    }
+    for (const f of parNumero.values()) {
+      f.total_ttc = Math.round(f.lignes.reduce((a, x) => a + (x.total_ttc || 0), 0) * 100) / 100;
+      if (f.reste === null && f.paye !== null) f.reste = Math.round((f.total_ttc - f.paye) * 100) / 100;
+      if (f.paye === null && f.reste !== null) f.paye = Math.round((f.total_ttc - f.reste) * 100) / 100;
+      if (!f.statut) f.statut = f.reste === null ? 'inconnu' : f.reste <= 0.009 ? 'payee' : f.paye > 0 ? 'partielle' : 'due';
+      if (f.total_ttc < 0) { f.avoir = true; f.statut = 'avoir'; f.reste = 0; }
+    }
+  }
+  ajouter_reglements(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const montant = V.montant(e.montant); if (montant === null) continue;
+      const p = this.client(e, r.fichier, n);
+      this.reglements.push({ ref: 'rg' + String(this.reglements.length + 1).padStart(5, '0'), date: V.date(e.date), client: p?.ref || null, montant, moyen: V.moyen(e.moyen),
+        facture: V.texte(e.facture), reference: V.texte(e.reference), remise: V.texte(e.remise), origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
+
+  // ---------- Planning ----------
+  ajouter_reprises(r) {
+    const groupes = new Map();
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const date = V.date(e.date);
+      const jour = V.jour(e.jour) ?? (date ? ((new Date(date + 'T12:00:00Z').getUTCDay() + 6) % 7) + 1 : null);
+      const debut = V.heure(e.debut);
+      const libelle = V.texte(e.libelle) || [V.texte(e.niveau), debut].filter(Boolean).join(' ') || null;
+      if (!libelle && !debut) continue;
+      const k = cle([libelle, jour, debut, e.moniteur].join('|'));
+      let rep = groupes.get(k);
+      if (!rep) {
+        const fin = V.heure(e.fin);
+        let duree = V.duree(e.duree);
+        if (!duree && debut && fin) duree = (+fin.slice(0, 2) * 60 + +fin.slice(3)) - (+debut.slice(0, 2) * 60 + +debut.slice(3));
+        rep = { ref: 'r' + String(this.reprises.length + 1).padStart(4, '0'), libelle, jour, date: e.jour ? null : date, debut, duree_min: duree || 60,
+          moniteur: V.texte(e.moniteur), niveau: V.texte(e.niveau), lieu: V.texte(e.lieu), places: V.entier(e.places), inscrits: [], origine: [] };
+        groupes.set(k, rep); this.reprises.push(rep);
+      }
+      const noms = e.cavalier ? [e.cavalier] : e.inscrits ? String(e.inscrits).split(/[,;\/]| et /) : [];
+      for (const nm of noms) {
+        const s = V.separerNom(nm); if (!s.nom) continue;
+        const p = this.trouverPersonne({ nom: V.joliNom(s.nom), prenom: V.joliNom(s.prenom || '') }) ||
+          this.personnes.find(x => cle(x.prenom + ' ' + x.nom) === cle(nm) || cle(x.nom + ' ' + x.prenom) === cle(nm));
+        if (p) { if (!rep.inscrits.some(i => i.personne === p.ref)) rep.inscrits.push({ personne: p.ref, cheval: e.cheval ? this.chevalParNom(e.cheval)?.ref || null : null }); }
+        else this.avertir('info', 'inscrit_inconnu', `Reprise « ${libelle} » : cavalier « ${String(nm).trim()} » absent des fiches adhérents.`, r.fichier, n);
+      }
+      rep.origine.push({ fichier: r.fichier, ligne: n });
+    }
+  }
+
+  ajouter_soins(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const c = e.cheval ? this.chevalParNom(e.cheval) : null;
+      if (!c) { if (e.cheval) this.avertir('info', 'soin_cheval_inconnu', `Soin pour « ${e.cheval} » : cheval absent de la liste des chevaux.`, r.fichier, n); continue; }
+      this.soins.push({ cheval: c.ref, date: V.date(e.date), type: typeSoin(e.type || e.detail), detail: V.texte(e.detail) || V.texte(e.type), intervenant: V.texte(e.intervenant), prochain: V.date(e.prochain), cout: V.montant(e.cout), origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
+
+  // ---------- Fin ----------
+  finaliser() {
+    // Familles : code famille commun, sinon même e-mail ou même responsable.
+    const fam = new Map();
+    const familleDe = p => p.famille || (p.responsables[0] && 'resp:' + p.responsables[0]) || (p.email && 'mail:' + p.email);
+    for (const p of this.personnes) { const k = familleDe(p); if (k) { if (!fam.has(k)) fam.set(k, []); fam.get(k).push(p); } }
+    let nf = 0;
+    for (const [, membres] of fam) {
+      const tous = new Set(membres.map(m => m.ref));
+      for (const m of membres) for (const r of m.responsables) tous.add(r);
+      if (tous.size < 2) continue;
+      const code = 'F' + String(++nf).padStart(3, '0');
+      for (const ref of tous) { const p = this.personnes.find(x => x.ref === ref); p.foyer = p.foyer || code; }
+    }
+    // Abonnements reliés aux prestations
+    for (const a of this.abonnements) { a.prestation = this.prestationParLibelle(a.libelle).ref; delete a._o; }
+    // Contrôles
+    const age = d => d ? (+this.aujourdhui.slice(0, 4) - +d.slice(0, 4) - (this.aujourdhui.slice(5) < d.slice(5) ? 1 : 0)) : null;
+    for (const p of this.personnes) {
+      p.mineur = p.naissance ? age(p.naissance) < 18 : null;
+      if (p.roles.includes('cavalier')) {
+        if (p.mineur && !p.responsables.length && !p.email) this.avertir('attention', 'mineur_sans_contact', `${p.prenom} ${p.nom} est mineur et n’a ni responsable ni e-mail : la famille ne recevra pas son invitation.`, p.origine[0]?.fichier, p.origine[0]?.ligne);
+        else if (!p.email && !p.telephone && !p.responsables.length) this.avertir('attention', 'sans_contact', `${p.prenom} ${p.nom} n’a ni e-mail ni téléphone.`, p.origine[0]?.fichier, p.origine[0]?.ligne);
+        if (p.licence?.annee && p.licence.annee < +this.aujourdhui.slice(0, 4) + (this.aujourdhui.slice(5) >= '09' ? 1 : 0)) this.avertir('info', 'licence_ancienne', `${p.prenom} ${p.nom} : licence ${p.licence.annee}, à renouveler.`, p.origine[0]?.fichier, p.origine[0]?.ligne);
+      }
+      p.ids_source = p._idSources; delete p._idSources;
+    }
+    for (const c of this.chevaux) if (!c.sire && !c.ueln) this.avertir('info', 'cheval_sans_sire', `${c.nom} n’a pas de numéro SIRE : Piaffe ne pourra pas pré-remplir sa fiche IFCE.`, c.origine[0]?.fichier, c.origine[0]?.ligne);
+    for (const f of this.prestations) if (f.deduite) this.avertir('info', 'tarif_manquant', `Forfait « ${f.libelle} » trouvé sur des fiches mais sans tarif : à compléter.`);
+  }
+
+  json() {
+    const impayes = this.factures.filter(f => f.reste > 0).reduce((a, f) => a + f.reste, 0);
+    const soldes = this.personnes.filter(p => p.solde < 0).reduce((a, p) => a + p.solde, 0);
+    return {
+      format: 'piaffe-import', version: VERSION_FORMAT, genere_le: new Date().toISOString(), outil: { nom: 'Passerelle Piaffe', version: VERSION_OUTIL },
+      sources: this.sources,
+      personnes: this.personnes, chevaux: this.chevaux, prestations: this.prestations, abonnements: this.abonnements,
+      factures: this.factures, reglements: this.reglements, reprises: this.reprises, equipe: this.equipe, soins: this.soins,
+      controle: {
+        personnes: this.personnes.length, cavaliers: this.personnes.filter(p => p.roles.includes('cavalier')).length,
+        responsables: this.personnes.filter(p => p.roles.includes('responsable')).length,
+        foyers: new Set(this.personnes.map(p => p.foyer).filter(Boolean)).size,
+        fiches_fusionnees: this.fusions,
+        chevaux: this.chevaux.length, chevaux_proprietaires: this.chevaux.filter(c => c.type !== 'club').length,
+        prestations: this.prestations.length, factures: this.factures.length,
+        chiffre_factures_ttc: Math.round(this.factures.reduce((a, f) => a + f.total_ttc, 0) * 100) / 100,
+        impayes_factures_ttc: Math.round(impayes * 100) / 100, soldes_negatifs_fiches: Math.round(soldes * 100) / 100,
+        reglements: this.reglements.length, encaisse_ttc: Math.round(this.reglements.reduce((a, r) => a + r.montant, 0) * 100) / 100,
+        reprises: this.reprises.length, soins: this.soins.length,
+        sans_email: this.personnes.filter(p => p.roles.includes('cavalier') && !p.email && !p.responsables.length).length,
+      },
+      avertissements: this.avertissements,
+    };
+  }
+}
+
+function typePrestation(s) {
+  const k = cle(s);
+  if (/demi pension/.test(k)) return 'demi_pension';
+  if (/pension|box|hebergement/.test(k)) return 'pension';
+  if (/carte|seances|ticket/.test(k)) return 'carte';
+  if (/stage|vacances/.test(k)) return 'stage';
+  if (/licence/.test(k)) return 'licence';
+  if (/cotisation|adhesion/.test(k)) return 'cotisation';
+  if (/forfait|annuel|trimestre|abonnement|semaine/.test(k)) return 'forfait';
+  if (/particulier|cours/.test(k)) return 'cours';
+  return 'autre';
+}
+function statutFacture(s) {
+  const k = cle(s);
+  if (/partiel/.test(k)) return 'partielle';
+  if (/regle|paye|solde|acquitte/.test(k) && !/non|impaye/.test(k)) return 'payee';
+  if (/annul/.test(k)) return 'annulee';
+  if (/avoir/.test(k)) return 'avoir';
+  return 'due';
+}
+function typeSoin(s) {
+  const k = cle(s);
+  if (/vaccin|grippe|tetanos|rhino/.test(k)) return 'vaccin';
+  if (/vermif/.test(k)) return 'vermifuge';
+  if (/ferr|marechal|parage/.test(k)) return 'marechal';
+  if (/dent/.test(k)) return 'dentiste';
+  if (/osteo/.test(k)) return 'osteopathe';
+  if (/veto|veterinaire|consult|visite/.test(k)) return 'veterinaire';
+  return 'autre';
+}
+
+return { VERSION_FORMAT, VERSION_OUTIL, construirePaquet, analyserTable };
+})();
+__m["rapport.mjs"] = (() => {
+// Rapport de migration lisible par le gérant : ce qui a été repris, ce qu'il faut vérifier.
+const { TYPES } = __m["champs.mjs"];
+const { LOGICIELS } = __m["logiciels.mjs"];
+
+const eur = n => (n ?? 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function resumeTexte(p) {
+  const c = p.controle;
+  const l = [
+    `Paquet Piaffe prêt (${p.sources.length} tableaux lus).`,
+    `  ${c.cavaliers} cavaliers, ${c.responsables} responsables, ${c.foyers} familles (${c.fiches_fusionnees} fiches fusionnées entre fichiers)`,
+    `  ${c.chevaux} chevaux dont ${c.chevaux_proprietaires} de propriétaires, ${c.soins} soins`,
+    `  ${c.prestations} forfaits et tarifs, ${c.reprises} reprises au planning`,
+    `  ${c.factures} factures pour ${eur(c.chiffre_factures_ttc)}, dont ${eur(c.impayes_factures_ttc)} restant à encaisser`,
+  ];
+  const n = { erreur: 0, attention: 0, info: 0 };
+  for (const a of p.avertissements) n[a.niveau]++;
+  l.push(`  À vérifier : ${n.attention} points importants, ${n.info} remarques.`);
+  return l.join('\n');
+}
+
+function rapportHTML(p) {
+  const c = p.controle;
+  const tuiles = [
+    ['Cavaliers', c.cavaliers, `${c.foyers} familles reliées`, 'rd'],
+    ['Chevaux', c.chevaux, `${c.chevaux_proprietaires} de propriétaires`, 'hz'],
+    ['Factures', c.factures, eur(c.chiffre_factures_ttc), 'mo'],
+    ['Reste à encaisser', eur(c.impayes_factures_ttc), 'à comparer avec l’ancien logiciel', 'cr'],
+    ['Forfaits et tarifs', c.prestations, `${c.reprises} reprises au planning`, 'tm'],
+  ];
+  const groupe = { attention: [], info: [], erreur: [] };
+  for (const a of p.avertissements) groupe[a.niveau].push(a);
+  const ligneAv = a => `<li><span>${esc(a.message)}</span>${a.fichier ? `<small>${esc(a.fichier)}${a.ligne ? ', ligne ' + a.ligne : ''}</small>` : ''}</li>`;
+  const sources = p.sources.map(s => `<tr><td><b>${esc(s.fichier)}</b>${s.feuille ? ` › ${esc(s.feuille)}` : ''}<br><small>${s.logiciel ? esc(LOGICIELS[s.logiciel]?.nom || s.logiciel) + ' · ' : ''}${s.lignes} lignes</small></td>
+    <td>${s.type ? esc(TYPES[s.type].libelle) : '<em>non reconnu</em>'}</td>
+    <td>${Object.entries(s.colonnes).map(([e, ch]) => `<span class="tag">${esc(e)} → ${esc(ch)}</span>`).join(' ')}${s.ignorees.length ? `<br><small>Non reprises : ${s.ignorees.map(esc).join(', ')}</small>` : ''}</td></tr>`).join('');
+  const personnes = p.personnes.filter(x => x.roles.includes('cavalier')).slice(0, 400).map(x => {
+    const resp = x.responsables.map(r => p.personnes.find(y => y.ref === r)).filter(Boolean).map(y => `${y.prenom || ''} ${y.nom}`).join(', ');
+    return `<tr><td>${esc(x.prenom)} ${esc(x.nom)}</td><td>${x.naissance ? x.naissance.split('-').reverse().join('/') : '—'}</td><td>${esc(x.licence?.numero || '—')}${x.licence?.annee ? ' · ' + x.licence.annee : ''}</td><td>${x.galop ?? '—'}</td><td>${esc(x.email || '—')}</td><td>${esc(resp || '—')}</td><td>${x.foyer || ''}</td></tr>`;
+  }).join('');
+  const chevaux = p.chevaux.map(x => {
+    const pr = x.proprietaire ? p.personnes.find(y => y.ref === x.proprietaire) : null;
+    return `<tr><td>${esc(x.nom)}</td><td>${esc(x.sire || x.ueln || '—')}</td><td>${esc(x.race || '—')}</td><td>${x.naissance || '—'}</td><td>${esc({ club: 'Club', proprietaire: 'Propriétaire', demi_pension: 'Demi-pension' }[x.type] || x.type)}</td><td>${pr ? esc((pr.prenom || '') + ' ' + pr.nom) : '—'}</td></tr>`;
+  }).join('');
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapport de migration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0a1636;--mut:#59627c;--line:#e6e9f0;--bg:#f2f4f8;--acc:#2448d8;--hz-bg:#dcf3e4;--hz-ink:#0d5532;--rd-bg:#ece5ff;--rd-ink:#43249f;--mo-bg:#ffedcf;--mo-ink:#773f00;--tm-bg:#dbebff;--tm-ink:#0b448d;--cr-bg:#ffe3de;--cr-ink:#972414}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+main{max-width:1120px;margin:0 auto;padding:32px 16px 64px}h1,h2,.big{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+h1{font-size:34px;margin:0 0 4px}h2{font-size:22px;margin:36px 0 12px}.sub{color:var(--mut);margin:0 0 24px}
+.tuiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.t{border-radius:20px;padding:18px;animation:mont .5s cubic-bezier(.2,.8,.2,1) both}.t:nth-child(2){animation-delay:.06s}.t:nth-child(3){animation-delay:.12s}.t:nth-child(4){animation-delay:.18s}.t:nth-child(5){animation-delay:.24s}
+.t .big{font-size:34px;line-height:1.1;margin:6px 0 2px}.t small{opacity:.85}
+@keyframes mont{from{opacity:0;transform:translateY(10px)}}
+@media (prefers-reduced-motion:reduce){.t{animation:none}}
+.rd{background:var(--rd-bg);color:var(--rd-ink)}.hz{background:var(--hz-bg);color:var(--hz-ink)}.mo{background:var(--mo-bg);color:var(--mo-ink)}.tm{background:var(--tm-bg);color:var(--tm-ink)}.cr{background:var(--cr-bg);color:var(--cr-ink)}
+.carte{background:#fff;border:1px solid var(--line);border-radius:20px;padding:4px 0;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mut);font-weight:600;font-size:13px}tr:last-child td{border:0}
+small{color:var(--mut);font-size:13px}.tag{display:inline-block;background:var(--bg);border-radius:8px;padding:2px 8px;margin:2px 0;font-size:13px}
+ul.av{list-style:none;margin:0;padding:0}ul.av li{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:0 0 8px;display:flex;flex-direction:column;gap:2px}
+ul.av.attention li{border-left:4px solid #a85d00}
+.ctrl{background:#0a1636;color:#fff;border-radius:20px;padding:20px 22px}.ctrl b{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800}
+details summary{cursor:pointer;font-weight:600;margin:8px 0}
+</style></head><body><main>
+<h1>Rapport de migration</h1>
+<p class="sub">Préparé par la passerelle Piaffe le ${new Date(p.genere_le).toLocaleString('fr-FR')}. Tout a été lu sur votre ordinateur ; vos fichiers d’origine n’ont pas été modifiés.</p>
+<div class="tuiles">${tuiles.map(([t, v, s, k]) => `<div class="t ${k}"><div>${t}</div><div class="big">${v}</div><small>${s}</small></div>`).join('')}</div>
+<h2>Les trois chiffres à comparer avec votre ancien logiciel</h2>
+<div class="ctrl">Ouvrez votre ancien logiciel à côté et vérifiez : <b>${c.cavaliers}</b> cavaliers actifs, <b>${c.chevaux}</b> chevaux, <b>${eur(c.impayes_factures_ttc)}</b> restant dû sur les factures${c.soldes_negatifs_fiches ? ` (les fiches adhérents indiquent ${eur(-c.soldes_negatifs_fiches)} de soldes débiteurs)` : ''}. S’ils sont identiques, la reprise est complète.</div>
+<h2>À vérifier avant d’importer (${groupe.attention.length})</h2>
+${groupe.attention.length ? `<ul class="av attention">${groupe.attention.map(ligneAv).join('')}</ul>` : '<p>Rien de bloquant.</p>'}
+${groupe.info.length ? `<details><summary>Remarques (${groupe.info.length})</summary><ul class="av">${groupe.info.map(ligneAv).join('')}</ul></details>` : ''}
+<h2>Fichiers lus</h2><div class="carte"><table><tr><th>Fichier</th><th>Contenu reconnu</th><th>Colonnes reprises</th></tr>${sources}</table></div>
+<h2>Cavaliers (${c.cavaliers})</h2><div class="carte"><table><tr><th>Cavalier</th><th>Naissance</th><th>Licence</th><th>Galop</th><th>E-mail</th><th>Responsable</th><th>Famille</th></tr>${personnes}</table></div>
+<h2>Chevaux (${c.chevaux})</h2><div class="carte"><table><tr><th>Nom</th><th>SIRE</th><th>Race</th><th>Né en</th><th>Statut</th><th>Propriétaire</th></tr>${chevaux}</table></div>
+</main></body></html>`;
+}
+
+return { resumeTexte, rapportHTML };
+})();
+__m["vers-api.mjs"] = (() => {
+// Traduit un paquet piaffe-import 1.0 en lots pour l'API d'import du serveur Piaffe
+// (POST /api/v1/import/jobs/:id/items {coll, items:[{external_id, data}]}, voir app/ARCHITECTURE.md).
+// `data` suit la forme de demo/core/data.js ; les références s'écrivent "ext:<external_id>".
+// Les external_id sont stables d'une passe à l'autre (licence, SIRE, numéro de facture…) pour que
+// relancer la migration mette à jour au lieu de créer des doublons.
+const { cle } = __m["texte.mjs"];
+
+const SEXE = { hongre: 'Hongre', jument: 'Jument', etalon: 'Étalon' };
+const KIND = { club: 'club', proprietaire: 'proprietaire', demi_pension: 'demi' };
+const SOIN = { vaccin: 'Vaccin', vermifuge: 'Vermifuge', marechal: 'Maréchal', dentiste: 'Dentiste', osteopathe: 'Ostéopathe', veterinaire: 'Vétérinaire', autre: 'Autre' };
+const MOYEN = { carte: 'Carte bancaire', prelevement: 'Prélèvement SEPA', virement: 'Virement', cheque: 'Chèque', especes: 'Espèces', cheque_vacances: 'Chèques-vacances ANCV', coupon_sport: 'Coupon sport', pass_sport: "Pass'Sport", en_ligne: 'Paiement en ligne', autre: 'Autre' };
+const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+function idPersonne(p) {
+  if (p.licence?.numero) return 'lic:' + p.licence.numero;
+  if (p.ids_source?.length) return 'src:' + cle(p.ids_source[0]).replace(/ /g, '-');
+  return 'np:' + cle([p.nom, p.prenom, p.naissance].filter(Boolean).join(' ')).replace(/ /g, '-');
+}
+function idCheval(c) { return c.sire ? 'sire:' + c.sire : c.ueln ? 'ueln:' + c.ueln : 'nom:' + cle(c.nom).replace(/ /g, '-'); }
+
+function versLots(paquet, aujourdhui = new Date().toISOString().slice(0, 10)) {
+  const P = new Map(paquet.personnes.map(p => [p.ref, idPersonne(p)]));
+  const C = new Map(paquet.chevaux.map(c => [c.ref, idCheval(c)]));
+  const F = new Map(paquet.prestations.map(f => [f.ref, 'tarif:' + cle(f.libelle).replace(/ /g, '-')]));
+  const ext = (m, ref) => ref && m.get(ref) ? 'ext:' + m.get(ref) : null;
+  const an = +aujourdhui.slice(0, 4);
+  const age = d => d ? an - +d.slice(0, 4) - (aujourdhui.slice(5) < d.slice(5) ? 1 : 0) : null;
+  const equipe = new Set(paquet.equipe.map(e => e.personne));
+
+  const members = paquet.personnes.filter(p => !(equipe.has(p.ref) && p.roles.length === 1)).map(p => {
+    const ab = paquet.abonnements.find(a => a.personne === p.ref);
+    return { external_id: P.get(p.ref), data: clean({
+      first: p.prenom, last: p.nom, birth: p.naissance, age: age(p.naissance), minor: p.mineur, sex: p.sexe,
+      email: p.email, phone: p.telephone, phone2: p.telephone2, address: p.adresse,
+      galop: typeof p.galop === 'number' ? p.galop : null, lic: p.licence?.numero, licence: p.licence?.annee ? String(p.licence.annee) : (p.licence ? 'À renouveler' : null),
+      licenceType: p.licence?.type, cert: p.certificat_medical ? true : null, certDate: /^\d{4}/.test(p.certificat_medical || '') ? p.certificat_medical : null,
+      photo: p.droit_image, fam: p.foyer, guardians: p.responsables.map(r => ext(P, r)).filter(Boolean),
+      roles: p.roles, forfait: ab ? ext(F, ab.prestation) : null, balance: p.solde ?? 0,
+      since: p.inscription ? +p.inscription.slice(0, 4) : null, notes: p.notes,
+    }) };
+  });
+  const horses = paquet.chevaux.map(c => ({ external_id: C.get(c.ref), data: clean({
+    name: c.nom, breed: c.race, coat: c.robe, sex: SEXE[c.sexe], born: c.naissance, age: c.naissance ? an - c.naissance : null,
+    height: c.taille_cm, pony: c.taille_cm ? c.taille_cm <= 148 : null, kind: KIND[c.type] || 'club', owner: ext(P, c.proprietaire),
+    box: c.box, sire: c.sire || c.ueln, chip: c.puce, since: c.arrivee, pension: c.pension, notes: c.notes,
+  }) }));
+  const staff = paquet.equipe.map(e => { const p = paquet.personnes.find(x => x.ref === e.personne); return { external_id: P.get(e.personne), data: clean({
+    first: p.prenom, last: p.nom, role: e.poste, contract: e.contrat, hours: e.heures_semaine, dip: e.diplomes, email: p.email, phone: p.telephone, since: e.entree }) }; });
+  const forfaits = paquet.prestations.map(f => ({ external_id: F.get(f.ref), data: clean({
+    name: f.libelle, price: f.prix_ttc, vat: f.tva, kind: f.type === 'forfait' ? 'annuel' : f.type, sessions: f.seances, category: f.categorie, account: f.compte_comptable, toComplete: f.prix_ttc === null }) }));
+  const lessons = paquet.reprises.filter(r => r.jour).map(r => ({ external_id: 'reprise:' + cle([r.libelle, r.jour, r.debut].join(' ')).replace(/ /g, '-'), data: clean({
+    dow: r.jour % 7, day: JOURS[r.jour - 1], start: r.debut, dur: r.duree_min, title: r.libelle, coachName: r.moniteur, arenaName: r.lieu, level: r.niveau,
+    cap: r.places || Math.max(r.inscrits.length, 8), riders: r.inscrits.map(i => ext(P, i.personne)).filter(Boolean),
+    horses: Object.fromEntries(r.inscrits.filter(i => i.cheval).map(i => [ext(P, i.personne), ext(C, i.cheval)])), status: 'prévue' }) }));
+  const care = paquet.soins.map((s, i) => ({ external_id: 'soin:' + C.get(s.cheval) + ':' + (s.date || i) + ':' + s.type, data: clean({
+    horse: ext(C, s.cheval), kind: SOIN[s.type], who: s.intervenant, date: s.date, note: s.detail, next: s.prochain, cost: s.cout, status: s.date && s.date > aujourdhui ? 'planifié' : 'fait' }) }));
+  const invoices = paquet.factures.map(f => ({ external_id: 'facture:' + f.numero, data: clean({
+    id: f.numero, member: ext(P, f.client), label: f.lignes.map(l => l.libelle).join(', '), amount: f.total_ttc,
+    vat: f.lignes.length === 1 ? f.lignes[0].tva : null, lines: f.lignes, date: f.date, due: f.echeance || f.date,
+    status: f.statut === 'payee' ? 'payée' : f.statut === 'annulee' ? 'annulée' : f.avoir ? 'avoir' : (f.echeance || f.date) < aujourdhui ? 'en retard' : 'envoyée',
+    paid: f.paye, rest: f.reste, method: MOYEN[f.moyen] || null, imported: true }) }));
+  const payments = paquet.reglements.map(r => ({ external_id: 'reglement:' + [r.date, r.montant, r.reference || r.ref].join(':'), data: clean({
+    date: r.date, member: ext(P, r.client), amount: r.montant, method: MOYEN[r.moyen] || null, invoice: r.facture ? 'ext:facture:' + r.facture : null, ref: r.reference, deposit: r.remise }) }));
+  // Ordre d'envoi : ce qui est référencé avant ce qui référence.
+  return [['staff', staff], ['forfaits', forfaits], ['members', members], ['horses', horses], ['lessons', lessons], ['care', care], ['invoices', invoices], ['payments', payments]]
+    .filter(([, items]) => items.length).map(([coll, items]) => ({ coll, items }));
+}
+
+function clean(o) {
+  return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== null && v !== undefined && !(Array.isArray(v) && !v.length) && !(typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length)));
+}
+
+// Envoi vers le serveur : crée le job, pousse par paquets de 500, valide. `fetch` est celui de l'hôte.
+async function envoyer(paquet, { url, cle: cleApi, essai = true, source = 'passerelle', journal = () => {} }) {
+  const h = { 'content-type': 'application/json', authorization: 'Bearer ' + cleApi };
+  const appel = async (chemin, corps) => {
+    const r = await fetch(url.replace(/\/$/, '') + chemin, { method: 'POST', headers: h, body: JSON.stringify(corps || {}) });
+    const t = await r.text(); let j; try { j = JSON.parse(t); } catch { j = { brut: t }; }
+    if (!r.ok) throw new Error(`${chemin} → ${r.status} ${j.error || j.message || t.slice(0, 200)}`);
+    return j;
+  };
+  const logiciel = paquet.sources.find(s => s.logiciel)?.logiciel || 'csv';
+  const { job_id } = await appel('/api/v1/import/jobs', { source: source === 'passerelle' ? logiciel : source, dry_run: essai });
+  journal(`Import ${job_id} ouvert (${essai ? 'essai, rien ne sera enregistré' : 'réel'}).`);
+  for (const { coll, items } of versLots(paquet)) {
+    for (let i = 0; i < items.length; i += 500) {
+      await appel(`/api/v1/import/jobs/${job_id}/items`, { coll, items: items.slice(i, i + 500) });
+      journal(`  ${coll} : ${Math.min(i + 500, items.length)}/${items.length}`);
+    }
+  }
+  const res = await appel(`/api/v1/import/jobs/${job_id}/commit`);
+  return { job_id, ...res };
+}
+
+return { idPersonne, idCheval, versLots, envoyer };
+})();
+__m["app.mjs"] = (() => {
+// Passerelle Piaffe dans le navigateur : rien n'est envoyé, tout est lu sur place.
+const { lireFichier } = __m["lire.mjs"];
+const { construirePaquet, analyserTable } = __m["paquet.mjs"];
+const { TYPES } = __m["champs.mjs"];
+const { LOGICIELS } = __m["logiciels.mjs"];
+const { rapportHTML } = __m["rapport.mjs"];
+const { envoyer } = __m["vers-api.mjs"];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const eur = n => (n ?? 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+const inflate = async b => new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+
+const etat = { logiciel: null, tables: [], paquet: null };
+
+// 1. D'où venez-vous ?
+const ORDRE = ['kavalog', 'equimondo', 'cavasoft', 'gecurie', 'hoofplanner', 'ffe', 'tableur'];
+$('#logiciels').innerHTML = ORDRE.map(id => `<button class="chip" data-l="${id}"><span class="pastille">${esc(LOGICIELS[id].nom[0])}</span>${esc(LOGICIELS[id].nom.replace(/ \(.*/, ''))}</button>`).join('');
+$('#logiciels').addEventListener('click', e => {
+  const b = e.target.closest('[data-l]'); if (!b) return;
+  etat.logiciel = b.dataset.l;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));
+  const l = LOGICIELS[etat.logiciel];
+  $('#guide').innerHTML = l.voies.map(v => `<div class="voie"><h3>${esc(v.titre)}</h3><ol>${v.etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`).join('') +
+    (etat.logiciel !== 'ffe' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Piaffe rapproche les licences et complète les fiches.</p>` : '') +
+    (!l.confirme ? `<p class="astuce discret">Les noms de menus peuvent varier selon votre version. En cas de doute, déposez ce que vous avez : la passerelle reconnaît les colonnes toute seule.</p>` : '');
+  $('#etape-guide').hidden = false; $('#etape-depot').hidden = false;
+  $('#etape-guide').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// 2. Dépôt des fichiers
+const zone = $('#zone');
+['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('survol'); }));
+['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('survol'); }));
+zone.addEventListener('drop', e => ajouter([...e.dataTransfer.files]));
+$('#choisir').addEventListener('change', e => ajouter([...e.target.files]));
+$('#exemple').addEventListener('click', async () => {
+  const noms = ['kavalog-cavaliers.csv', 'ffe-licencies-2027.xlsx', 'cavalerie.xlsx', 'kavalog-factures.csv', 'planning-reprises.csv', 'tarifs.csv', 'equipe-salaries.xls'];
+  const lire = async n => globalThis.EXEMPLES ? Uint8Array.from(atob(globalThis.EXEMPLES[n]), c => c.charCodeAt(0)) : await (await fetch('../fixtures/' + n)).arrayBuffer();
+  const fichiers = await Promise.all(noms.map(async n => new File([await lire(n)], n)));
+  ajouter(fichiers);
+});
+
+async function ajouter(fichiers) {
+  for (const f of fichiers) {
+    try {
+      const tables = await lireFichier(f.name, await f.arrayBuffer(), { inflate });
+      for (const t of tables) {
+        if (t.erreur) { toast(`${f.name} : ${t.erreur}`); continue; }
+        if (etat.logiciel && etat.logiciel !== 'tableur' && !/ffe|sif|licenci/i.test(f.name)) t.logiciel = etat.logiciel;
+        etat.tables.push(t);
+      }
+    } catch (err) { toast(`${f.name} : fichier illisible (${err.message}).`); }
+  }
+  recalculer();
+}
+
+function recalculer() {
+  etat.paquet = construirePaquet(etat.tables.filter(t => !t.ignorer));
+  dessinerFichiers(); dessinerResultat();
+  $('#etape-fichiers').hidden = !etat.tables.length; $('#etape-resultat').hidden = !etat.tables.length;
+}
+
+function dessinerFichiers() {
+  $('#fichiers').innerHTML = etat.tables.map((t, i) => {
+    const a = analyserTable(t);
+    if (!a) return '';
+    const opts = ['', ...Object.keys(TYPES)].map(k => `<option value="${k}" ${k === (a.source.type || '') ? 'selected' : ''}>${k ? esc(TYPES[k].libelle) : 'Ne pas importer'}</option>`).join('');
+    const champs = a.source.type ? Object.keys(TYPES[a.source.type].champs) : [];
+    const cols = a.entetes.map((h, j) => {
+      if (!h) return '';
+      const c = a.colonnes[j] || '';
+      const ex = a.corps.slice(0, 2).map(r => r.l[j]).filter(Boolean).join(' · ');
+      return `<tr class="${c ? '' : 'nonpris'}"><td><b>${esc(h)}</b><small>${esc(String(ex).slice(0, 60))}</small></td><td>${a.source.type ? `<select data-t="${i}" data-c="${j}"><option value="">Ignorer</option>${champs.map(ch => `<option ${ch === c ? 'selected' : ''}>${ch}</option>`).join('')}</select>` : ''}</td></tr>`;
+    }).join('');
+    const ok = a.source.type ? Object.keys(a.colonnes).length : 0;
+    return `<article class="fichier ${a.source.type ? 'ok' : 'ko'}" style="--i:${i}">
+      <header><div><b>${esc(t.fichier)}</b>${t.feuille ? ` <span class="mut">› ${esc(t.feuille)}</span>` : ''}<small>${a.source.lignes} lignes · ${ok} colonnes reconnues sur ${a.entetes.filter(Boolean).length}${t.encodage ? ' · ' + t.encodage : ''}</small></div>
+      <select data-type="${i}">${opts}</select></header>
+      <details><summary>Voir et corriger les colonnes</summary><table>${cols}</table></details></article>`;
+  }).join('');
+}
+$('#fichiers').addEventListener('change', e => {
+  const s = e.target;
+  if (s.dataset.type !== undefined) { const t = etat.tables[+s.dataset.type]; t.type = s.value || null; t.colonnes = null; if (!s.value) t.ignorer = true; else delete t.ignorer; }
+  if (s.dataset.t !== undefined) {
+    const t = etat.tables[+s.dataset.t]; const a = analyserTable(t);
+    t.type = a.source.type; t.colonnes = { ...a.colonnes };
+    for (const [k, v] of Object.entries(t.colonnes)) if (v === s.value) delete t.colonnes[k];
+    if (s.value) t.colonnes[s.dataset.c] = s.value; else delete t.colonnes[s.dataset.c];
+  }
+  if (s.dataset.type !== undefined) recalculer();
+  else { etat.paquet = construirePaquet(etat.tables.filter(t => !t.ignorer)); dessinerResultat(); }
+});
+
+function dessinerResultat() {
+  const p = etat.paquet, c = p.controle;
+  const tuiles = [['Cavaliers', c.cavaliers, `${c.foyers} familles`, 'rd'], ['Chevaux', c.chevaux, `${c.chevaux_proprietaires} de propriétaires`, 'hz'],
+    ['Factures', c.factures, eur(c.chiffre_factures_ttc), 'mo'], ['Reste dû', eur(c.impayes_factures_ttc), 'à comparer', 'cr'], ['Planning', c.reprises, 'reprises', 'tm']];
+  $('#tuiles').innerHTML = tuiles.map(([t, v, s, k], i) => `<div class="t ${k}" style="--i:${i}"><div>${t}</div><div class="big" data-n="${typeof v === 'number' ? v : ''}">${v}</div><small>${s}</small></div>`).join('');
+  document.querySelectorAll('.big[data-n]').forEach(compter);
+  const att = p.avertissements.filter(a => a.niveau === 'attention'), inf = p.avertissements.filter(a => a.niveau !== 'attention');
+  $('#avert').innerHTML = (att.length ? `<h3>À vérifier (${att.length})</h3><ul>${att.map(a => `<li>${esc(a.message)}</li>`).join('')}</ul>` : '<p class="bravo">Rien de bloquant : vous pouvez importer.</p>') +
+    (inf.length ? `<details><summary>Remarques (${inf.length})</summary><ul class="discret">${inf.map(a => `<li>${esc(a.message)}</li>`).join('')}</ul></details>` : '');
+}
+function compter(el) {
+  const n = +el.dataset.n; if (!n || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const t0 = performance.now();
+  const pas = t => { const k = Math.min(1, (t - t0) / 700); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(pas); };
+  requestAnimationFrame(pas);
+}
+
+function telecharger(nom, contenu, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([contenu], { type })); a.download = nom; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('#dl-paquet').addEventListener('click', () => telecharger('paquet-piaffe.json', JSON.stringify(etat.paquet, null, 2), 'application/json'));
+$('#dl-rapport').addEventListener('click', () => telecharger('rapport-migration.html', rapportHTML(etat.paquet), 'text/html'));
+$('#envoi').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = new FormData(e.target), sortie = $('#envoi-sortie');
+  sortie.textContent = 'Envoi…';
+  try {
+    const r = await envoyer(etat.paquet, { url: f.get('url'), cle: f.get('cle'), essai: !f.get('reel'), journal: m => { sortie.textContent += '\n' + m; } });
+    sortie.textContent += '\n' + JSON.stringify(r, null, 2);
+  } catch (err) { sortie.textContent += '\nÉchec : ' + err.message; }
+});
+
+function toast(m) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.append(t);
+  setTimeout(() => t.classList.add('part'), 4200); setTimeout(() => t.remove(), 4700);
+}
+
+return {  };
+})();
+
+</script>
+</body></html>
