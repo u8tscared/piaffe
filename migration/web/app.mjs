@@ -245,7 +245,22 @@ document.addEventListener('click', async e => {
   if (robot?.ouvrir) { b.disabled = true; try { await robot.ouvrir(b.dataset.adresse, { nom: b.dataset.nom }); } finally { b.disabled = false; } }
   else $('#robot-info').textContent = 'Bientôt disponible. En attendant, utilisez l’export de fichier ci-dessous.';
 });
-window.addEventListener('piaffe:capture', e => { if (e.detail?.fichier) ajouter([e.detail.fichier]); });
+window.addEventListener('piaffe:capture', async e => {
+  if (!e.detail?.fichier) return;
+  const avant = etat.tables.length;
+  await ajouter([e.detail.fichier]);
+  // Job déjà ouvert en simulation par le robot : réutilisable tant qu'aucun autre fichier n'a été ajouté.
+  etat.jobRobot = e.detail.job?.job_id && e.detail.job.confirmer ? { ...e.detail.job, tables: etat.tables.length, seul: avant === 0 } : null;
+});
+const jobRobotUtilisable = () => etat.jobRobot?.seul && etat.jobRobot.tables === etat.tables.length;
+async function confirmerJobRobot() {
+  const { chemin, corps } = etat.jobRobot.confirmer;
+  if (!/^\/api\/v1\/import\/jobs\/[\w-]+\/commit$/.test(chemin)) throw new Error('Confirmation inattendue.');
+  const r = await fetch(location.origin + chemin, { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json', 'x-requested-with': 'piaffe' }, body: JSON.stringify(corps || { dry_run: false }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error?.message || `Le serveur a répondu ${r.status}.`);
+  return { job_id: etat.jobRobot.job_id, ...j };
+}
 document.addEventListener('submit', async e => {
   if (e.target.id !== 'codes') return;
   e.preventDefault();
@@ -288,7 +303,8 @@ function signaler(etatFin, job_id = null, controle = null) {
 $('#importer').addEventListener('click', async () => {
   const s = $('#importer-sortie'), b = $('#importer'); b.disabled = true; s.textContent = 'Essai en cours…';
   try {
-    const r = await envoyer(etat.paquet, { essai: true, journal: m => { s.textContent += '\n' + m; } });
+    const r = jobRobotUtilisable() ? (s.textContent += '\nLe robot a déjà fait l’essai (' + etat.jobRobot.job_id + ').', etat.jobRobot)
+      : await envoyer(etat.paquet, { essai: true, journal: m => { s.textContent += '\n' + m; } });
     s.textContent += '\nEssai réussi : rien n’a encore été enregistré. Vérifiez les chiffres, puis confirmez.';
     $('#confirmer').hidden = false; b.hidden = true; etat.essai = r;
   } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
@@ -296,7 +312,8 @@ $('#importer').addEventListener('click', async () => {
 $('#confirmer').addEventListener('click', async () => {
   const s = $('#importer-sortie'), b = $('#confirmer'); b.disabled = true; s.textContent = 'Import en cours…';
   try {
-    const r = await envoyer(etat.paquet, { essai: false, journal: m => { s.textContent += '\n' + m; } });
+    const r = jobRobotUtilisable() ? await confirmerJobRobot()
+      : await envoyer(etat.paquet, { essai: false, journal: m => { s.textContent += '\n' + m; } });
     s.textContent += '\nC’est fait : vos données sont dans Piaffe.';
     signaler('termine', r.job_id, etat.paquet.controle);
   } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
