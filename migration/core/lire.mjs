@@ -2,6 +2,7 @@
 import { decoder } from './texte.mjs';
 import { lireCSV } from './csv.mjs';
 import { lireXLSX } from './xlsx.mjs';
+import { estCapture, tablesDeCapture } from './capture.mjs';
 
 export async function lireFichier(nom, octets, { inflate } = {}) {
   const ext = (nom.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
@@ -14,6 +15,8 @@ export async function lireFichier(nom, octets, { inflate } = {}) {
     return [{ fichier: nom, lignes: [], erreur: 'Ancien format Excel (.xls) : ouvrez-le dans Excel ou LibreOffice et enregistrez-le en .xlsx ou .csv.' }];
   }
   const { texte, encodage } = decoder(b);
+  if (estCapture(texte)) return tablesDeCapture(JSON.parse(texte), nom);
+  if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Piaffe : ignoré.' }];
   if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
   const { lignes, separateur } = lireCSV(texte);
   return [{ fichier: nom, lignes, encodage, separateur }];

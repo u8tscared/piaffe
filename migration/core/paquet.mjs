@@ -85,7 +85,13 @@ class Paquet {
       const p = this.idx.nom.get(cle(c.nom + ' ' + c.prenom));
       if (p && (!p.naissance || !c.naissance || p.naissance === c.naissance)) k.push(p);
     }
-    return k.find(Boolean) || null;
+    // Deux homonymes ne sont pas la même personne si un identifiant les distingue.
+    return k.filter(Boolean).find(p => !(
+      (p.licence?.numero && c.licence?.numero && p.licence.numero !== c.licence.numero) ||
+      (p.naissance && c.naissance && p.naissance !== c.naissance) ||
+      (p.email && c.email && p.email !== c.email && !(c.licence?.numero && p.licence?.numero === c.licence.numero)) ||
+      (c._origine && !c.licence?.numero && p.origine.some(o => o.fichier === c._origine.fichier && o.ligne !== c._origine.ligne) && !(c._idSource && p._idSources?.includes(c._idSource)))
+    )) || null;
   }
   indexer(p) {
     if (p.licence?.numero) this.idx.licence.set(p.licence.numero, p);
@@ -97,7 +103,7 @@ class Paquet {
     if (p.email && p.prenom) this.idx.email.set(p.email + '|' + cle(p.prenom), p);
   }
   fusionnerPersonne(c, origine) {
-    let p = this.trouverPersonne(c);
+    let p = this.trouverPersonne({ ...c, _origine: c.roles?.includes('cavalier') ? origine : null });
     if (!p) {
       p = { ref: 'p' + String(this.personnes.length + 1).padStart(4, '0'), roles: [], responsables: [], origine: [], _idSources: [] };
       this.personnes.push(p);
@@ -242,6 +248,8 @@ class Paquet {
     }
     if (e.client_nom) {
       const s = V.separerNom(e.client_nom);
+      const homonymes = this.personnes.filter(x => s.nom && cle(x.nom) === cle(s.nom) && cle(x.prenom || '') === cle(s.prenom || ''));
+      if (homonymes.length > 1) this.avertir('attention', 'client_homonyme', `« ${V.joliNom(String(e.client_nom))} » : ${homonymes.length} personnes portent ce nom, vérifiez à qui rattacher cette facture.`, fichier, ligne);
       if (s.nom) return this.fusionnerPersonne({ nom: V.joliNom(s.nom), prenom: V.joliNom(s.prenom || null), roles: ['client'] }, { fichier, ligne });
     }
     return null;
@@ -268,6 +276,8 @@ class Paquet {
     }
     for (const f of parNumero.values()) {
       f.total_ttc = Math.round(f.lignes.reduce((a, x) => a + (x.total_ttc || 0), 0) * 100) / 100;
+      if (f.reste === null && f.paye === null && f.statut === 'payee') f.paye = f.total_ttc;
+      if (f.reste === null && f.paye === null && f.statut === 'due') f.reste = f.total_ttc;
       if (f.reste === null && f.paye !== null) f.reste = Math.round((f.total_ttc - f.paye) * 100) / 100;
       if (f.paye === null && f.reste !== null) f.paye = Math.round((f.total_ttc - f.reste) * 100) / 100;
       if (!f.statut) f.statut = f.reste === null ? 'inconnu' : f.reste <= 0.009 ? 'payee' : f.paye > 0 ? 'partielle' : 'due';

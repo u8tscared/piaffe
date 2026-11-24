@@ -16,7 +16,7 @@ import { devinerType, ligneEntete } from '../core/champs.mjs';
 import { lireCSV } from '../core/csv.mjs';
 
 const inflate = async b => new Uint8Array(zlib.inflateRawSync(b));
-const EXT_TABLES = /\.(csv|txt|tsv|xlsx|xlsm|xls)$/i;
+const EXT_TABLES = /\.(csv|txt|tsv|xlsx|xlsm|xls|json)$/i;
 const [, , commande, ...reste] = process.argv;
 
 const opts = { sortie: null }, cibles = [];

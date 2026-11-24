@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Piaffe : changer de logiciel",
+  "short_name": "Piaffe",
+  "version": "0.1.0",
+  "description": "Copie vos données depuis votre ancien logiciel, sur votre ordinateur, pour les reprendre dans Piaffe. Vous vous connectez vous-même ; rien n'est envoyé sans vous.",
+  "action": { "default_popup": "popup.html", "default_title": "Piaffe : copier mes données", "default_icon": { "32": "icones/32.png", "128": "icones/128.png" } },
+  "icons": { "32": "icones/32.png", "128": "icones/128.png" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"]
+}
