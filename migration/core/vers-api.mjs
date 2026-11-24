@@ -73,7 +73,7 @@ function clean(o) {
 // Envoi vers le serveur : crée le job, pousse par paquets de 500, valide. `fetch` est celui de l'hôte.
 export async function envoyer(paquet, { url = null, cle: cleApi = null, essai = true, source = 'passerelle', journal = () => {} }) {
   // Sans clé (page ouverte depuis l'appli, même origine) : la session du gérant sert d'authentification.
-  const h = { 'content-type': 'application/json' };
+  const h = { 'content-type': 'application/json', 'x-requested-with': 'piaffe' };   // accepté par la protection CSRF même si Origin arrive à « null »
   if (cleApi) h.authorization = 'Bearer ' + cleApi;
   const base = (url || globalThis.location?.origin || '').replace(/\/$/, '');
   const appel = async (chemin, corps) => {

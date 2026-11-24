@@ -37,7 +37,7 @@ function el(tag, attrs = {}, ...enfants) {
 
 async function appel(chemin, options = {}) {
   const r = await fetch(BASE() + '/api/v1/migration/robot' + chemin, {
-    credentials: 'include', headers: { 'content-type': 'application/json' }, ...options,
+    credentials: 'include', headers: { 'content-type': 'application/json', 'x-requested-with': 'piaffe' }, ...options,
   });
   const corps = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(corps?.error?.message || `Le robot ne répond pas (${r.status}).`);
@@ -122,7 +122,9 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
       try {
         const capture = await appel('/' + id + '/capture');
         const fichier = new File([JSON.stringify(capture)], 'capture-' + (capture.logiciel || 'logiciel') + '.json', { type: 'application/json' });
-        if (surCapture) surCapture(fichier); else window.dispatchEvent(new CustomEvent('piaffe:capture', { detail: { fichier } }));
+        // En production, le robot a déjà ouvert l'import en simulation (job_id) : la page le confirme au lieu d'en refaire un.
+        const job = e.job_id ? { job_id: e.job_id, confirmer: e.confirmer || null, controle: e.controle || null } : null;
+        if (surCapture) surCapture(fichier, job); else window.dispatchEvent(new CustomEvent('piaffe:capture', { detail: { fichier, job } }));
         resoudre(capture);
       } catch (err) { voileTexte.textContent = err.message; resoudre(null); }
     }
