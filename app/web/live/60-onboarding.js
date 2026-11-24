@@ -88,9 +88,11 @@ var STEPS=[
  {id:'toolsplan',skip:function(){return MG().uses!==true||!MG().tools.length},render:function(){var M=MG();
    return '<div class="eyebrow">Vos outils</div><h1>Que faisons-nous de chacun ?</h1><p class="lv-sub">Nous avons présélectionné le choix le plus courant. Remplacer : nous récupérons vos données dans '+esc(PL.brandName())+'. Garder : '+esc(PL.brandName())+' s’y connecte et vous continuez à l’utiliser.</p>'+
    '<div class="lv-toolplan">'+M.tools.map(function(t,i){return '<div class="lv-tp" style="--i:'+i+'"><span class="ico">'+PL.mig.icon(t.id)+'</span><b class="grow">'+esc(t.name)+'</b>'+
-     '<div class="lv-seg" role="group" aria-label="'+esc(t.name)+'">'+[['replace','Le remplacer par '+esc(PL.brandName())],['integrate','Le garder et le connecter']].map(function(c){return '<button type="button" data-manual data-k="'+i+'" data-a="'+c[0]+'" aria-pressed="'+(t.action===c[0])+'">'+c[1]+'</button>'}).join('')+'</div></div>'}).join('')+'</div>'},
+     (function(){var ok=PL.mig.possible(t.id);if(ok.indexOf(t.action)<0)t.action=ok[0];var fx=PL.mig.effect(t.id,t.action);
+       return (ok.length>1?'<div class="lv-seg" role="group" aria-label="'+esc(t.name)+'">'+[['replace','Le remplacer par '+esc(PL.brandName())],['integrate','Le garder et le connecter']].map(function(c){return '<button type="button" data-manual data-k="'+i+'" data-a="'+c[0]+'" aria-pressed="'+(t.action===c[0])+'">'+c[1]+'</button>'}).join('')+'</div>'
+         :'<span class="lv-tp-only">'+(t.action==='replace'?'Remplacé par '+esc(PL.brandName()):'Gardé et connecté')+'</span>')+(fx?'<small class="lv-tp-fx" data-fx="'+i+'">'+esc(fx)+'</small>':'<small class="lv-tp-fx" data-fx="'+i+'"></small>')})()+'</div>'}).join('')+'</div>'},
    bind:function(q){var M=MG();q.querySelectorAll('[data-a]').forEach(function(b){b.onclick=function(){var t=M.tools[+b.getAttribute('data-k')];t.action=b.getAttribute('data-a');
-     q.querySelectorAll('[data-k="'+b.getAttribute('data-k')+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot()}})},
+     q.querySelectorAll('[data-k="'+b.getAttribute('data-k')+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});var fx=q.querySelector('[data-fx="'+b.getAttribute('data-k')+'"]');if(fx)fx.textContent=PL.mig.effect(t.id,t.action);saveLocal();foot()}})},
    ok:function(){return true},leave:function(){var M=MG();M.plan=PL.mig.plan(M);saveLocal();return Promise.resolve()}},
  {id:'recuperer',skip:function(){return MG().uses!==true||!replacing().length},render:function(){var M=MG(),R=replacing(),web=R.some(function(t){return ['excel','papier','autre'].indexOf(t.id)<0});
    if(M.job_id&&M.etat==='termine')return '<div class="eyebrow">Vos données</div><h1>Récupération terminée.</h1><div class="lv-bilan-box" style="max-width:560px"><div class="lv-dots" style="padding:12px"><i></i><i></i><i></i></div></div>';
@@ -101,7 +103,7 @@ var STEPS=[
      var box=q.querySelector('.lv-bilan-box');if(box)PL.mig.job(M.job_id).then(function(j){box.innerHTML=PL.mig.bilanHTML(j)},function(){box.innerHTML='<div class="lv-msg ok">'+ICON('checkc','sm')+'<span>Vos données ont été envoyées. Le bilan détaillé sera dans votre liste de démarrage.</span></div>'});
      q.querySelectorAll('[data-w]').forEach(function(b){b.onclick=function(){M.when=b.getAttribute('data-w');q.querySelectorAll('[data-w]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();
        if(M.when==='later'){setTimeout(next,280);return}
-       var R=replacing();persist();PL.mig.open({source:R[0].id,adresse:M.adresse,outils:R.map(function(t){return t.id}),retour:location.origin+'/?migration=retour&onb=1',title:'Depuis '+names(R)}).then(function(v){
+       var R=replacing();persist();PL.mig.open({source:R[0].id,adresse:M.adresse,outils:R.map(function(t){return t.id}),retour:location.origin+'/configuration',title:'Depuis '+names(R)}).then(function(v){
          M.etat=v.etat;if(v.job_id)M.job_id=v.job_id;saveLocal();persist();draw()},function(e){
          if(e&&e.unavailable){M.when='later';saveLocal();toastLocal('La récupération guidée arrive très bientôt : elle vous attend dans votre liste de démarrage.');draw();return}toastLocal(PL.msg(e))})}})},
    ok:function(){var M=MG();return !!M.when||M.etat==='termine'}},
@@ -156,7 +158,7 @@ function draw(){var v=visible(),s=cur(),pct=Math.round(stepIdx/(v.length-1)*100)
   el.querySelector('.lv-prog i').style.setProperty('--v',Math.max(4,pct)+'%');el.querySelector('.lv-ob-step').textContent=stepIdx?('Étape '+stepIdx+' sur '+(v.length-1)):'';
   var body=el.querySelector('.lv-ob-body');body.innerHTML='<div class="lv-q '+dir+'" data-step="'+s.id+'">'+s.render()+'</div>';body.scrollTop=0;
   var q=body.querySelector('.lv-q');if(s.bind)s.bind(q);foot();
-  var first=q.querySelector('input.in');if(first&&!PL.isTouch())setTimeout(function(){first.focus()},80)}
+  var first=q.querySelector('input.in');if(first&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!q.contains(a))first.focus()},80)}
 function persist(){if(!PL.clubId)return Promise.resolve();return PL.put('/api/onboarding',{answers:A,step:cur().id}).catch(function(){})}
 function next(){var s=cur();if(s.ok&&!s.ok())return;var go=function(){var v=visible();if(stepIdx>=v.length-1){finish();return}stepIdx++;dir='fwd';saveLocal();persist();draw()};
   if(s.leave){var b=el.querySelector('[data-next]');if(b){b.classList.add('busy');b.disabled=true}s.leave().then(function(){if(b)b.classList.remove('busy');go()},function(e){if(b){b.classList.remove('busy');b.disabled=false}P.toast?toastLocal(PL.msg(e)):alert(PL.msg(e))})}else go()}
@@ -191,7 +193,7 @@ PL.onboarding=function(o){o=o||{};loadLocal();if(o.answers&&Object.keys(o.answer
   if(o.step){var v=visible(),i=v.map(function(s){return s.id}).indexOf(o.step);if(i>0)stepIdx=i}
   if(o.skipHello&&stepIdx===0)stepIdx=1;
   document.body.classList.add('lv-booting');document.title='Configuration · '+PL.brandName();
-  var r=document.getElementById('lv-root');r.innerHTML='<div class="lv-ob"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="lv-prog" role="progressbar" aria-label="Avancement"><i></i></div><span class="lv-ob-step"></span></header><main class="lv-ob-body"></main>'+
+  var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';document.body.appendChild(r)}r.innerHTML='<div class="lv-ob"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="lv-prog" role="progressbar" aria-label="Avancement"><i></i></div><span class="lv-ob-step"></span></header><main class="lv-ob-body"></main>'+
     '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer></div>';
   el=r.firstChild;el.querySelector('[data-next]').onclick=next;el.querySelector('[data-back]').onclick=back;
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.target.closest('button,[data-find]')&&e.target.id!=='ob-siret'){e.preventDefault();next()}});

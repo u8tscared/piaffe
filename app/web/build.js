@@ -43,19 +43,32 @@ const liveScripts = liveMid.concat(liveBoot).map((f) => '<script>/* ===== live/'
    fonctions, exposés sous window.PIAFFE_MIG = {LOGICIELS, FAMILLES, QUESTIONS?, planDeBascule?, LOGOS?}.
    Absents : l'onboarding prend son catalogue de repli. */
 const MIG = path.join(ROOT, 'migration');
+/* Source : migration/ local ; en attendant la fusion, la version de origin/main si elle est plus complète
+   (lecture seule par git show, rien n'est modifié dans le dépôt). --local-mig force le local. */
+const migCache = {};
+function migRead(rel) {
+  if (rel in migCache) return migCache[rel];
+  let out = null;
+  if (!process.argv.includes('--local-mig')) {
+    try { out = require('child_process').execFileSync('git', ['show', 'origin/main:migration/' + rel], { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 << 20 }); } catch (e) { out = null; }
+  }
+  if (!out && exists(path.join(MIG, rel))) out = fs.readFileSync(path.join(MIG, rel));
+  return (migCache[rel] = out);
+}
+const migHas = (rel) => !!migRead(rel);
 function bundleMig() {
-  const want = ['logiciels.mjs', 'parcours.mjs', 'logos.mjs'].filter((f) => exists(path.join(MIG, 'core', f)));
+  const want = ['logiciels.mjs', 'parcours.mjs', 'logos.mjs'].filter((f) => migHas('core/' + f));
   if (!want.length) return '';
   const done = {}, order = [];
   const visit = (f) => {
     if (done[f] !== undefined) return; done[f] = false;
-    const src = rd(path.join(MIG, 'core', f));
-    for (const m of src.matchAll(/^\s*import\s+[^;]*?from\s+['"]\.\/([\w.-]+\.mjs)['"]/gm)) if (exists(path.join(MIG, 'core', m[1]))) visit(m[1]);
+    const src = migRead('core/' + f).toString('utf8');
+    for (const m of src.matchAll(/^\s*import\s+[^;]*?from\s+['"]\.\/([\w.-]+\.mjs)['"]/gm)) if (migHas('core/' + m[1])) visit(m[1]);
     done[f] = true; order.push(f);
   };
   want.forEach(visit);
   const parts = order.map((f) => {
-    let src = rd(path.join(MIG, 'core', f));
+    let src = migRead('core/' + f).toString('utf8');
     const names = [];
     src = src.replace(/^\s*import\s+\{([^}]*)\}\s*from\s+['"]\.\/([\w.-]+\.mjs)['"];?/gm, (_, list, dep) =>
       list.split(',').map((x) => x.trim()).filter(Boolean).map((x) => { const [a, b] = x.split(/\s+as\s+/); return 'const ' + (b || a) + ' = M[' + JSON.stringify(dep) + '].' + a + ';'; }).join(' '));
@@ -139,7 +152,13 @@ const manifest = {
 fs.writeFileSync(path.join(DIST, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
 fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION));
 /* passerelle de migration (fil migration) servie sur /migration/ */
-const PASS = path.join(MIG, 'dist', 'passerelle.html');
-if (exists(PASS)) { fs.mkdirSync(path.join(DIST, 'migration'), { recursive: true }); fs.copyFileSync(PASS, path.join(DIST, 'migration', 'index.html')); }
+/* le robot à distance prend globalThis.PIAFFE_ROBOT comme base d'URL */
+const PASS = migRead('dist/passerelle.html');
+if (PASS) {
+  let ph = PASS.toString('utf8');
+  const robot = '<script>globalThis.PIAFFE_ROBOT="/api/v1/migration/robot";</script>';
+  ph = /<head[^>]*>/i.test(ph) ? ph.replace(/<head[^>]*>/i, (m) => m + robot) : robot + ph;
+  fs.mkdirSync(path.join(DIST, 'migration'), { recursive: true }); fs.writeFileSync(path.join(DIST, 'migration', 'index.html'), ph);
+}
 for (const f of fs.readdirSync(DIST)) if (/^\.|^404\.html$/.test(f)) fs.rmSync(path.join(DIST, f));
-console.log('OK', 'app/web/dist/index.html', (html.length / 1024).toFixed(0) + ' Ko', coreFiles.length + ' fichiers du socle,', mods.length + ' modules,', liveAll.length + ' scripts live,', migScript ? 'catalogue migration intégré,' : 'sans catalogue migration,', exists(PASS) ? 'passerelle /migration/' : 'sans passerelle', PROBE ? '(sonde : three.js local)' : '');
+console.log('OK', 'app/web/dist/index.html', (html.length / 1024).toFixed(0) + ' Ko', coreFiles.length + ' fichiers du socle,', mods.length + ' modules,', liveAll.length + ' scripts live,', migScript ? 'catalogue migration intégré,' : 'sans catalogue migration,', PASS ? 'passerelle /migration/' : 'sans passerelle', PROBE ? '(sonde : three.js local)' : '');

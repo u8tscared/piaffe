@@ -77,6 +77,17 @@ PL.setColl=function(k,val){var cur=D[k];
   D[k]=val;return val};
 
 /* ---------- Valeurs sûres avant les modules ---------- */
+/* collections que les modules créent avec des données fictives (« D.x = D.x || [...] » ou « if(!D.x) »),
+   relevées par la sonde ?probe=demo. Posées vides AVANT les modules : leurs jeux d'exemple ne s'exécutent pas. */
+PL.MODKEYS={A:'planExtras planStages planCatch rapAct rapN1 rapSched rapCohorts rapLeave comThreads comCamps comPins comPolls practitioners tours pharmacy register journalMore boxGuests boxRequests camEvents recurring creditNotes schedules cards cheques receipts nights leaves reviews quotes coachBookings coachReviews entriesMore coachStables coachStudents coachLessons coachLapsed adhFamily adhNews adhStages adhInvoices adhReviews adhOffers adhResults empTasks empHugo empPresence empConsignes empCare empRegister empShifts empNights empThreads empLeaves empDocs empIncidents aiAutomations aiLog mcpClients mcpCalls apiKeys webhooks webhookLog importLots pfTarifs'.split(' '),
+  O:'rapFill breeding bankSuggest hr shifts coachDeals homeShow empNotes'.split(' ')};
+PL.preseed=function(data){data=data||{};
+  PL.MODKEYS.A.forEach(function(k){D[k]=Array.isArray(data[k])?data[k].slice():[]});
+  PL.MODKEYS.O.forEach(function(k){D[k]=data[k]&&typeof data[k]==='object'&&!Array.isArray(data[k])?data[k]:{}});
+  D._lotB=true;
+  /* fiches RH et plannings par salarié : un salarié sans fiche reçoit une fiche vide au lieu de casser l'écran Équipe */
+  var dflt={hr:function(){return {since:'',cls:'',gross:0,cp:[25,0],rec:0,ot:0,dip:[]}},shifts:function(){return []}};
+  if(typeof Proxy==='function')Object.keys(dflt).forEach(function(k){var t=D[k];D[k]=new Proxy(t,{get:function(o,p){if(typeof p==='string'&&!(p in o)&&(D.staff||[]).some(function(x){return x.id===p}))o[p]=dflt[k]();return o[p]}})})};
 PL.safeDefaults=function(){
   ['staff','coaches','horses','forfaits','members','halfboard','halfboardOffers','lessons','invoices','bank','competitions','entries','vans','carpool','care','journal','tasks','stock','equipment','cameras','sensors','contracts','threads','notifs','declarations','trackBookings']
     .forEach(function(k){if(!Array.isArray(D[k]))D[k]=[]});
@@ -145,6 +156,7 @@ PL.applyBoot=function(b){
   Object.keys(data).forEach(function(k){if(k==='club')return;PL.setColl(k,data[k])});
   if(Array.isArray(st.templates)&&st.templates.length)D.templates=st.templates.slice();
   D.facts={};D.weather=PL.neutralWeather();D.bank=[];
+  if(!(st&&st.sandbox))PL.preseed(data);
   PL.setPeople(b.me||{});
 };
 function unblob(arr){return arr}

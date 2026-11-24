@@ -318,7 +318,7 @@ function batchStats(){var s={n:BATCH.length,ttc:sum(BATCH,function(x){return x.a
   BATCH.forEach(function(x){var pre=sum(x.pre||[],function(p){return p[1]});s.cat[x.cat].n++;s.cat[x.cat].ttc+=x.amount-pre;if(pre){s.cat.presta.n+=x.pre.length;s.cat.presta.ttc+=pre}});
   s.sepa=BATCH.filter(function(x){return /SEPA/.test(x.method)});s.sepaSum=sum(s.sepa,function(x){return x.amount});return s}
 var CHECKS=[
- {id:'c1',tone:'warn',icon:'bank',t:'Mandat SEPA non signé',s:D.name(F12[2].id)+' : le mandat envoyé le 9 novembre n’est pas signé.',b:'Passer en lien de paiement',done:'La facture partira avec un lien de paiement par carte.'},
+ {id:'c1',tone:'warn',icon:'bank',t:'Mandat SEPA non signé',s:D.name((F12[2]||{}).id)+' : le mandat envoyé le 9 novembre n’est pas signé.',b:'Passer en lien de paiement',done:'La facture partira avec un lien de paiement par carte.'},
  {id:'c2',tone:'acc',icon:'percent',t:'Prorata à confirmer',s:'Étoile est arrivée le 8 novembre : 23 jours de pension sur 30 à régulariser.',b:'Appliquer le prorata',done:'Régularisation de 121 € ajoutée à la facture.'},
  {id:'c3',tone:'bad',icon:'alert',t:'Facture précédente impayée',s:'Léa Martin doit encore '+F.eur(LI.left)+' sur la facture '+LI.id+' de '+F.eur(LI.total)+' (novembre : prélèvement rejeté, acompte de '+F.eur(LI.total-LI.left)+' réglé par carte).',b:'Ajouter le rappel sur la facture',done:'Le solde de novembre figure sur la facture de décembre.'}];
 
@@ -386,7 +386,7 @@ function openPay(v){var list=late().concat(D.invoices.filter(function(i){return 
   lab();return sh}
 
 var CATALOG=[['Cours particulier, 1 heure',45,5.5],['Carte 10 séances',290,5.5],['Stage de Noël, 1 journée',65,5.5],['Pension complète, 1 mois',520,'pension'],['Demi-pension, 1 mois',180,20],['Tonte complète',70,20],['Transport en concours',60,20],['Licence FFE 2027',36,0]];
-function openNew(o){o=o||{};var lines=[{k:o.kind==='d'?1:0,q:o.kind==='d'?3:2}],who=F12[5].id,kind=o.kind||'f',tp=null,tpOn=!!o.tiers,tm='pct',tv=null,valid=30,eng='EJ-2026-00418';
+function openNew(o){o=o||{};var lines=[{k:o.kind==='d'?1:0,q:o.kind==='d'?3:2}],who=(F12[5]||D.members[0]||{}).id,kind=o.kind||'f',tp=null,tpOn=!!o.tiers,tm='pct',tv=null,valid=30,eng='EJ-2026-00418';
   if(tpOn)tp=TIERS[o.tiers==='mairie'?1:0];
   function total(){return sum(lines,function(l){return CATALOG[l.k][1]*l.q})}
   function tiersPart(tot){if(!tpOn||!tp)return 0;var v=tv==null?(tm==='pct'?tp.pct:Math.round(tot*tp.pct/100)):tv;return Math.max(0,Math.min(tot,tm==='pct'?Math.round(tot*Math.min(100,v))/100:v))}
@@ -590,7 +590,7 @@ function faEncaisser(){var M=[['Prélèvement SEPA','bank',19840,212],['Carte ba
      D.cheques.filter(function(q){return q.later}).map(function(q){return '<div class="li">'+sq('hourglass','mut','sm')+'<div class="grow"><div class="t">'+D.name(q.member)+'</div><div class="s">Chèque différé, à encaisser le '+F.date(q.cash)+'</div></div><b class="num s mut">'+F.eur(q.amount)+'</b></div>'}).join('')+'</div>'+
      (SF.remis?'':'<div class="cf"><span class="s grow"><b class="num">'+F.eur(sum(selq,function(q){return q.amount}))+'</b> <span class="mut">en '+selq.length+' chèques</span></span><button class="btn sm pri" data-a="bord"'+(selq.length?'':' disabled')+'>Générer le bordereau</button></div>')+'</div>'+
    '<div class="card"><div class="ch"><div><h3>Caisse en espèces</h3><div class="xs mut">Journal horodaté et non modifiable</div></div><b class="disp num" style="font-size:20px">312,50 €</b></div><div class="list" style="padding:6px 0">'+
-     [['Carte 10 séances, '+D.name(F3[3].id),'aujourd’hui à 9 h 12',145],['Boutique, bombe et gants','hier à 17 h 40',64],['Dépôt en banque','hier à 12 h 05',-400],['Balade en forêt, 3 cavaliers','dimanche à 10 h 02',105]].map(function(x){return '<div class="li"><div class="grow"><div class="t">'+x[0]+'</div><div class="s">'+x[1]+'</div></div><b class="num s '+(x[2]<0?'':'okc')+'">'+(x[2]>0?'+':'')+F.eur(x[2])+'</b></div>'}).join('')+'</div>'+
+     [['Carte 10 séances, '+D.name((F3[3]||{}).id),'aujourd’hui à 9 h 12',145],['Boutique, bombe et gants','hier à 17 h 40',64],['Dépôt en banque','hier à 12 h 05',-400],['Balade en forêt, 3 cavaliers','dimanche à 10 h 02',105]].map(function(x){return '<div class="li"><div class="grow"><div class="t">'+x[0]+'</div><div class="s">'+x[1]+'</div></div><b class="num s '+(x[2]<0?'':'okc')+'">'+(x[2]>0?'+':'')+F.eur(x[2])+'</b></div>'}).join('')+'</div>'+
      '<div class="cf"><span class="s mut grow">Dernière clôture hier à 19 h 10</span><button class="btn sm" data-a="caisse">Clôturer la caisse du jour</button></div></div></div>'}
 function faRelances(){var lt=late(),by=[0,0,0,0],wait=0;lt.forEach(function(i){var s=stage(i);if(s<0)wait++;else by[s]++});var todo=lt.filter(function(i){return stage(i)>=0&&!SF.rel[i.id]});
   return '<div class="card" style="margin-bottom:14px"><div class="ch"><div><h3>Scénario de relance gradué</h3><div class="xs mut">Il démarre seul après l’échéance et s’arrête dès que la facture est payée</div></div>'+U.tog(true)+'</div><div class="cb"><div class="fa-steps">'+
@@ -1009,7 +1009,7 @@ var SH={M:{l:'Matin',t:'7 h – 12 h 30',h:5.5,c:'var(--c4)'},S:{l:'Soir',t:'13 
 var DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],DAYL=['lundi 16','mardi 17','mercredi 18','jeudi 19','vendredi 20','samedi 21','dimanche 22'];
 var FEM={s01:1,s03:1,s06:1,s08:1,s09:1},PUNCH={s01:'8 h 24',s04:'8 h 52',s05:'6 h 56',s06:'8 h 27',s07:'8 h 31',s09:'8 h 58'},PDEC={s01:8.4,s04:8.87,s05:6.93,s06:8.45,s07:8.52,s09:8.97};
 var STABLE=['s05','s06','s07'],GRP={all:null,ens:['s02','s03','s04','s08'],ecu:STABLE,adm:['s01','s09']};
-function planned(id){return sum(D.shifts[id],function(k){return SH[k].h})}
+function planned(id){return sum(D.shifts[id]||[],function(k){return SH[k].h})}
 function stNow(id){var k=D.shifts[id][1],e=FEM[id]?'e':'';if(PUNCH[id]&&'JCMELA'.indexOf(k)>=0)return ['ok','Présent'+e+' depuis '+PUNCH[id]];if(k==='S')return ['acc','Attendu'+e+' à 13 h 30'];if(k==='F')return ['warn','En formation au CFA'];if(k==='P')return ['mut','En congé'];if(k==='R')return ['mut','De repos aujourd’hui'];return ['acc','Attendu'+e+' ce matin']}
 function tone(t){return t==='mut'?'var(--mut-2)':'var(--'+t+')'}
 function worst(id){var d=D.hr[id].dip.filter(function(x){return (x[1]==='bad'||x[1]==='warn')&&!SE.dip[id+x[0]]});return d.sort(function(a,b){return a[1]==='bad'?-1:1})[0]}

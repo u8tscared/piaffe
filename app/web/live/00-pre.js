@@ -54,7 +54,9 @@ PL.renderEmpty=function(el,m,err){var e=PL.emptyFor(m),btn='';
   if(e[3])btn='<button class="btn pri lg lv-empty-go" data-lv-empty="'+e[3]+'">'+ICON(/^go:/.test(e[3])?'right':'plus','sm')+'<span>'+e[4]+'</span></button>';
   el.innerHTML='<div class="lv-empty rise">'+(window.ILLU&&ILLU.cheval?'<div class="lv-empty-illu">'+(m.id==='facturation'||m.id==='compta'?ILLU.pieces({size:120}):m.id==='soins'?ILLU.seau({size:120}):m.id==='competitions'?ILLU.trophee({size:120}):m.id==='contrats'?ILLU.contrat({size:120}):ILLU.cheval({size:120}))+'</div>':'<span class="ico lg">'+ICON(e[0])+'</span>')+
     '<h2>'+e[1]+'</h2><p>'+e[2]+'</p>'+btn+(err&&PL.debug?'<pre class="lv-err">'+PL.esc(String(err&&err.stack||err)).slice(0,600)+'</pre>':'')+'</div>';
-  var b=el.querySelector('[data-lv-empty]');if(b)b.onclick=function(){var a=b.getAttribute('data-lv-empty');if(/^go:/.test(a)){var r=a.slice(3);if(P.mods[r])P.go(r);return}if(PL.forms&&PL.forms[a])PL.forms[a]();}};
+  var b=el.querySelector('[data-lv-empty]');if(b)b.onclick=function(){var a=b.getAttribute('data-lv-empty');if(/^go:/.test(a)){var r=a.slice(3);if(P.mods[r])P.go(r);return}var own=PL.OWN_FLOW[a]&&P.actions.filter(function(x){return !x.lv&&(x.role===PL.view||!x.role)&&x.label===PL.OWN_FLOW[a]})[0];if(own){own.run();return}if(PL.forms&&PL.forms[a])PL.forms[a]();}};
+/* parcours propres aux modules, préférés à nos formulaires quand ils existent (ils créent un vrai objet dans DATA) */
+PL.OWN_FLOW={member:'Ajouter un adhérent'};
 
 /* un écran « vide » au sens des données : la démo ne prévoit pas toujours ce cas, on le traite avant le rendu */
 var NEEDS={chevaux:'horses',alimentation:'horses',ecurie3d:'horses',pensions:'horses',adherents:'members',planning:'lessons',soins:'care',equipe:'staff',coachs:'coaches',competitions:'competitions'};
@@ -68,7 +70,7 @@ P.mod=function(m){
       if(PL.isEmptyFor(m)&&!(ctx&&ctx.params&&ctx.params.force)){PL.renderEmpty(el,m);return}
       try{r0.call(this,el,ctx);
         /* un écran de la démo qui attrape lui-même son erreur affiche « … erreur » : même traitement */
-      }catch(e){PL.renderErrors[m.id]=String(e&&e.message||e);console.warn('[live] écran '+m.id+' :',e);PL.renderEmpty(el,m,e)}
+      }catch(e){PL.renderErrors[m.id]=String(e&&e.message||e);PL.renderStacks=PL.renderStacks||{};PL.renderStacks[m.id]=String(e&&e.stack||'').split('\n').slice(1,3).join(' ');console.warn('[live] écran '+m.id+' :',e);PL.renderEmpty(el,m,e)}
     }}
   if(m&&typeof m.badge==='function'){var b0=m.badge;m.badge=function(){try{return b0.apply(this,arguments)}catch(e){return null}}}
   return mod0.call(P,m)};

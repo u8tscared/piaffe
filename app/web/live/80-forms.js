@@ -71,5 +71,5 @@ PL.forms={
   invoice:function(){PL.invoiceForm?PL.invoiceForm():P.toast('La facturation se prépare.',{icon:'info'})}
 };
 /* les actions de la palette ⌘K pour aller vite */
-[['Ajouter un cheval','horse','horse'],['Ajouter un adhérent','members','member'],['Créer une reprise','planning','lesson'],['Planifier un soin','care','care']].forEach(function(a){P.actions.push({role:'gerant',label:a[0],icon:a[1],run:function(){PL.forms[a[2]]()}})});
+[['Ajouter un cheval','horse','horse'],['Ajouter un adhérent','members','member'],['Créer une reprise','planning','lesson'],['Planifier un soin','care','care']].forEach(function(a){if(P.actions.some(function(x){return x.role==='gerant'&&x.label===a[0]}))return;P.actions.push({role:'gerant',label:a[0],icon:a[1],lv:true,run:function(){PL.forms[a[2]]()}})});
 })();

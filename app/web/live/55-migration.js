@@ -24,10 +24,16 @@ var ICO={equestre:'stable',tableurs:'grid',papier:'doc',compta:'accounting',banq
 function cat(){return MIG().LOGICIELS||{}}
 function fam(id){var l=cat()[id];return (l&&l.famille)||FALLBACK[id]||'equestre'}
 function nameOf(id,fb){var p=PICK.filter(function(x){return x[0]===id})[0];if(p)return p[1];var l=cat()[id];return (l&&l.nom)||fb||id}
-/* recommandation : relation du catalogue (remplace, branche, au_choix), sinon règle par famille */
-function recommend(id){var l=cat()[id],r=l&&l.relation;
-  if(r==='remplace')return 'replace';if(r==='branche')return 'integrate';
+/* recommandation : parcours.mjs (decisionRecommandee, selon la relation du catalogue), sinon règle par famille.
+   Demande explicite de Marceau : un agenda, un outil de compta, de banque, d'encaissement ou la FFE se garde et se connecte. */
+var KEEP_IDS={pennylane:1,tiime:1,indy:1,qonto:1,sumup:1,helloasso:1,ffe:1,'google-agenda':1};
+function recommend(id){if(KEEP_IDS[id]&&possible(id).indexOf('integrate')>=0)return 'integrate';
+  var f=MIG().decisionRecommandee;if(typeof f==='function'&&cat()[id]){try{var d=f(id);if(d==='changer')return 'replace';if(d==='integrer')return 'integrate'}catch(e){}}
+  var l=cat()[id],r=l&&l.relation;if(r==='remplace')return 'replace';if(r==='branche')return 'integrate';
   return REPLACE_FAM[fam(id)]?'replace':'integrate'}
+/* décisions permises pour un outil (un logiciel de gestion équestre ne se « connecte » pas) */
+function possible(id){var f=MIG().decisionsPossibles;if(typeof f==='function'&&cat()[id]){try{var l=f(id).map(function(d){return d==='changer'?'replace':'integrate'});if(l.length)return l}catch(e){}}return ['replace','integrate']}
+function effect(id,action){var f=MIG().effetPour;if(typeof f!=='function')return '';try{return f(id,action==='replace'?'changer':'integrer')||''}catch(e){return ''}}
 function logo(id){var L=MIG().LOGOS;var v=L&&L[id];if(!v)return '';if(typeof v==='object')v=v.svg||v.src||v.data||'';if(!v)return '';
   if(/^\s*<svg/i.test(v))return '<span class="lv-logo" aria-hidden="true">'+v+'</span>';
   if(/^(data:|https?:|\/)/.test(v))return '<img class="lv-logo" alt="" src="'+esc(v)+'">';return ''}
@@ -37,12 +43,19 @@ function icon(id){return logo(id)||ICON(ICO[fam(id)]||'swap')}
 function search(q){q=(q||'').trim().toLowerCase();if(q.length<2)return [];var out=[];
   Object.keys(cat()).forEach(function(id){var l=cat()[id];if((l.nom||'').toLowerCase().indexOf(q)>=0||id.indexOf(q)>=0)out.push({id:id,nom:l.nom,famille:l.famille})});return out.slice(0,6)}
 
-/* plan de bascule : celui du fil migration s'il est livré, sinon calcul local de même forme */
-function plan(M){var tools=(M&&M.tools)||[];
-  var f=MIG().planDeBascule;
-  if(typeof f==='function'){try{var reponses={vient_d_un_logiciel:!!M.uses,utilise:!!M.uses,logiciels:tools.map(function(t){return t.id}),
-      outils:tools.map(function(t){return {id:t.id,nom:t.name,choix:t.action==='replace'?'changer':'integrer',action:t.action}})};
-    var r=f(reponses);if(r&&typeof r==='object')return r}catch(e){console.warn('planDeBascule',e)}}
+/* réponses au format de migration/core/parcours.mjs :
+   {depart:'oui'|'zero'|'tableur', principal, adresse, outils:[id], choix:{id:'changer'|'integrer'}} */
+function reponses(M){var tools=(M&&M.tools)||[];if(!M||!M.uses||!tools.length)return {depart:'zero',outils:[],choix:{}};
+  var known=tools.filter(function(t){return cat()[t.id]});
+  var main=known.filter(function(t){return t.action==='replace'&&fam(t.id)==='equestre'})[0];
+  var sheet=!main&&known.filter(function(t){return t.action==='replace'&&(fam(t.id)==='tableurs'||fam(t.id)==='papier')})[0];
+  var r={depart:main?'oui':sheet?'tableur':'oui',principal:main?main.id:null,adresse:M.adresse||null,outils:[],choix:{}};
+  if(!main&&!sheet&&tools.some(function(t){return t.id==='autre'&&t.action==='replace'})&&M.adresse)r.depart='oui';
+  known.forEach(function(t){if(main&&t.id===main.id)return;r.outils.push(t.id);r.choix[t.id]=t.action==='replace'?'changer':'integrer'});
+  return r}
+/* plan de bascule : planDeBascule du fil migration s'il est livré, sinon calcul local ; ids pour le serveur, détail pour l'écran */
+function plan(M){var tools=(M&&M.tools)||[],f=MIG().planDeBascule,ids=function(l){return (l||[]).map(function(x){return x&&typeof x==='object'?x.id:x}).filter(Boolean)};
+  if(typeof f==='function'){try{var p=f(reponses(M));if(p&&typeof p==='object')return {recuperer:ids(p.recuperer),brancher:ids(p.brancher),resilier:ids(p.resilier),detail:p}}catch(e){console.warn('planDeBascule',e)}}
   var rec=tools.filter(function(t){return t.action==='replace'}),br=tools.filter(function(t){return t.action==='integrate'});
   return {recuperer:rec.map(function(t){return t.id}),brancher:br.map(function(t){return t.id}),
     resilier:rec.filter(function(t){return ['excel','google-sheets','papier'].indexOf(t.id)<0}).map(function(t){return t.id}),local:true}}
@@ -52,7 +65,7 @@ var passOK=null;
 function available(){if(passOK!==null)return Promise.resolve(passOK);
   return fetch('/migration/',{credentials:'same-origin'}).then(function(r){if(!r.ok)return false;return r.text().then(function(t){return !/name="piaffe-version"/.test(t)})}).catch(function(){return false}).then(function(v){passOK=v;return v})}
 function url(o){var q=new URLSearchParams();q.set('source',o.source||'autre');if(o.adresse)q.set('adresse',o.adresse);
-  q.set('retour',o.retour||location.origin+'/?migration=retour');if(o.outils&&o.outils.length)q.set('outils',o.outils.join(','));return '/migration/?'+q.toString()}
+  q.set('retour',o.retour||location.origin+'/donnees-reprises');if(o.outils&&o.outils.length)q.set('outils',o.outils.join(','));return '/migration/?'+q.toString()}
 /* ouvre la passerelle en plein écran ; résout {etat, job_id, controle} */
 function open(o){o=o||{};return available().then(function(ok){
   if(!ok){var e=PL.err(404,'unavailable','',{unavailable:true});throw e}
@@ -62,12 +75,13 @@ function open(o){o=o||{};return available().then(function(ok){
     document.body.appendChild(w);document.documentElement.classList.add('lv-noscroll');
     var done=false;function end(v){if(done)return;done=true;window.removeEventListener('message',onMsg);document.removeEventListener('keydown',onKey);w.classList.add('out');setTimeout(function(){w.remove();document.documentElement.classList.remove('lv-noscroll')},260);res(v)}
     function onMsg(ev){if(ev.origin!==location.origin)return;var d=ev.data;if(!d||d.type!=='piaffe-migration')return;
-      if(d.etat==='termine'||d.etat==='abandon')end({etat:d.etat,job_id:d.job_id||null,controle:d.controle||null})}
+      /* contrat : etat « fini » (valeur actuelle) ou « termine » (première version), ou « abandon » */
+      if(d.etat==='fini'||d.etat==='termine')end({etat:'termine',job_id:d.job_id||null,controle:d.controle||null});else if(d.etat==='abandon')end({etat:'abandon',job_id:d.job_id||null})}
     function onKey(ev){if(ev.key==='Escape')end({etat:'abandon'})}
     window.addEventListener('message',onMsg);document.addEventListener('keydown',onKey);
     w.querySelector('[data-close]').onclick=function(){end({etat:'abandon'})};
     /* la passerelle peut aussi revenir par redirection dans l'iframe : on la repère */
-    var f=w.querySelector('iframe');f.addEventListener('load',function(){try{var l=f.contentWindow.location;if(l.origin===location.origin&&/[?&]migration=/.test(l.search)){var p=new URLSearchParams(l.search);end({etat:p.get('migration')==='termine'?'termine':'abandon',job_id:p.get('job')})}}catch(x){}});
+    var f=w.querySelector('iframe');f.addEventListener('load',function(){try{var l=f.contentWindow.location;if(l.origin===location.origin&&/[?&]migration=/.test(l.search)){var p=new URLSearchParams(l.search);end({etat:/^(termine|fini)$/.test(p.get('migration'))?'termine':'abandon',job_id:p.get('job')})}}catch(x){}});
   })})}
 
 function job(id){return PL.get('/api/v1/import/jobs/'+encodeURIComponent(id))}
@@ -83,13 +97,13 @@ function bilanHTML(j){var r=j&&(j.report||j)||{},c=r.counts||{},t=r.totals||{};
 /* lancement depuis l'application (liste de démarrage, palette, écran Import) */
 function launch(o){o=o||{};var M=(PL.onbData&&PL.onbData.answers&&PL.onbData.answers.migration)||{};
   var rec=(M.tools||[]).filter(function(t){return t.action==='replace'});var src=o.source||(rec[0]&&rec[0].id)||'autre';
-  return open({source:src,adresse:o.adresse||M.adresse,outils:o.outils||rec.map(function(t){return t.id}),retour:location.origin+'/?migration=retour',title:'Depuis '+nameOf(src,'votre ancien logiciel')}).then(function(v){
+  return open({source:src,adresse:o.adresse||M.adresse,outils:o.outils||rec.map(function(t){return t.id}),retour:location.origin+'/donnees-reprises',title:'Depuis '+nameOf(src,'votre ancien logiciel')}).then(function(v){
     if(v.etat==='termine'){if(PL.doneTask)try{PL.doneTask('migration')}catch(e){}return showBilan(v.job_id)}},
     function(e){if(e&&e.unavailable){try{P.toast('La récupération guidée arrive très bientôt : en attendant, déposez votre fichier d’export.',{icon:'info',ms:5200})}catch(x){}P.go('import');return}PL.fail(e,'Migration')})}
 function showBilan(id){if(!id){if(PL.reloadData)PL.reloadData();return}
   return job(id).then(function(j){var sh=P.sheet({title:'Bilan de la récupération',icon:'import',body:bilanHTML(j),foot:(j&&j.status==='committed'&&PL.campaignSheet?'<button class="btn ghost" data-cp>Prévenir mes adhérents</button>':'')+'<button class="btn pri" data-ok>Voir mes données</button>'});var b=sh.querySelector('[data-ok]');if(b)b.onclick=function(){sh.close()};var cp=sh.querySelector('[data-cp]');if(cp)cp.onclick=function(){PL.campaignSheet({source:j.source})};if(PL.reloadData)PL.reloadData()},function(){if(PL.reloadData)PL.reloadData()})}
 
-PL.mig={PICK:PICK,fam:fam,nameOf:nameOf,recommend:recommend,icon:icon,search:search,plan:plan,available:available,url:url,open:open,job:job,bilanHTML:bilanHTML,launch:launch,showBilan:showBilan,
+PL.mig={PICK:PICK,fam:fam,nameOf:nameOf,recommend:recommend,possible:possible,effect:effect,reponses:reponses,icon:icon,search:search,plan:plan,available:available,url:url,open:open,job:job,bilanHTML:bilanHTML,launch:launch,showBilan:showBilan,
   hasCatalogue:function(){return !!MIG().LOGICIELS}};
 })();
 /* campagne d'accueil des adhérents après une migration (lot D : POST/GET /api/migration/campagne) */

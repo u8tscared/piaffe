@@ -298,7 +298,7 @@ export function buildPlan(a: Answers): Plan {
   if ((a.staff ?? 0) > 0) tasks.push({ id: "team", title: "Inviter votre équipe", sub: a.staff + (a.staff === 1 ? " salarié annoncé" : " salariés annoncés") + " : chacun a son espace sur téléphone.", icon: "team", go: "lv-acces" });
   if (a.online_payments !== false) tasks.push({ id: "payments", title: "Activer les paiements en ligne", sub: "Carte et prélèvement SEPA, l’argent arrive sur votre compte.", icon: "card", go: "lv-paiements" });
   if (a.accountant) tasks.push({ id: "accountant", title: a.accountant_email ? "Votre comptable est invité" : "Inviter votre comptable", sub: a.accountant_einvoice === "yes" ? "Il reçoit vos factures électroniques et les exports FEC." : "Il accède aux exports FEC, CSV et aux PDF.", icon: "accounting", go: "lv-comptable" });
-  tasks.push({ id: "calendar", title: "Ajouter le planning à votre agenda", sub: "Google Agenda, Apple Calendrier ou Outlook.", icon: "calendar_add", go: "lv-calendriers" });
+  if (!tasks.some((t) => t.id === "connect_google-agenda")) tasks.push({ id: "calendar", title: "Ajouter le planning à votre agenda", sub: "Google Agenda, Apple Calendrier ou Outlook.", icon: "calendar_add", go: "lv-calendriers" });
   tasks.push({ id: "plan", title: "Choisir votre abonnement", sub: "Trente jours d’essai complet, puis l’offre adaptée à votre taille.", icon: "card", go: "lv-abonnement" });
 
   return {

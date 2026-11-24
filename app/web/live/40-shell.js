@@ -33,7 +33,10 @@ PL.applyModulesOff=function(off){off=off||{};Object.keys(P.roles).forEach(functi
 PL.isManager=function(){return PL.role==='owner'||PL.role==='manager'};
 
 /* ---------- Écrans de la démo remplacés ou retouchés après chargement ---------- */
-PL.patchModules=function(){var first=(PL.user&&PL.user.first)||'';
+PL.patchModules=function(){
+  /* palette : nos actions de secours s'effacent devant celles des modules qui portent le même nom */
+  for(var ai=P.actions.length-1;ai>=0;ai--){var A0=P.actions[ai];if(A0.lv&&P.actions.some(function(x){return !x.lv&&x.role===A0.role&&x.label===A0.label}))P.actions.splice(ai,1)}
+var first=(PL.user&&PL.user.first)||'';
   Object.keys(P.mods).forEach(function(id){var m=P.mods[id];if(m.phoneTitle&&/^Bonjour\b/.test(m.phoneTitle))m.phoneTitle=first?'Bonjour '+first:'Bonjour'});
   if(P.mods['adh-cheval']){var mine=(D.horses||[]).filter(function(h){return PL.personRef&&h.owner===PL.personRef})[0];P.mods['adh-cheval'].short=mine?mine.name.split(' ')[0]:'Mon cheval';P.mods['adh-cheval'].phoneTitle=mine?mine.name:'Mon cheval'}
   if(P.mods.assistant){P.mods.assistant.title='Assistant';P.mods.assistant.short='Assistant';P.mods.assistant.phoneTitle='Assistant'}

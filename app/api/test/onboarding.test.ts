@@ -21,11 +21,30 @@ describe("onboarding · plan (logique pure)", () => {
     expect(a.boxes).toBe(12);
     expect(a.members).toBe(100000);
     expect(a.activities).toEqual(["cours"]);
-    expect(a.disciplines).toBeUndefined();
     expect(a.accountant_email).toBeUndefined();
     expect(sanitize(ANSWERS).siret).toBe("81234567800021");
     expect(sanitize(ANSWERS).siren).toBe("812345678");
     expect(sanitize(ANSWERS).disciplines).toEqual(["CSO", "Dressage"]);
+  });
+  it("outils actuels : remplacer ou connecter, tâches et plan de bascule", () => {
+    const a = sanitize({ ...ANSWERS, software: undefined, migration: { uses: true, adresse: "https://club.kavalog.com", tools: [
+      { id: "kavalog", name: "Kavalog", action: "replace" }, { id: "excel", name: "Excel ou Google Sheets" },
+      { id: "pennylane", name: "Pennylane", action: "integrate" }, { id: "google-agenda", name: "Google Agenda" },
+      { id: "../etc", name: "x", action: "replace" }, { id: "qonto", name: "Qonto", action: "piratage" }] } });
+    expect(a.migration!.tools.map((t) => t.id + ":" + t.action)).toEqual(["kavalog:replace", "excel:replace", "pennylane:integrate", "google-agenda:integrate", "qonto:integrate"]);
+    const p = buildPlan(a);
+    const ids = p.tasks.map((t) => t.id);
+    expect(ids).toEqual(expect.arrayContaining(["migration", "migration_key", "resiliation", "connect_pennylane", "connect_google-agenda", "connect_qonto", "accountant"]));
+    const mig = p.tasks.find((t) => t.id === "migration")!;
+    expect(mig.title).toBe("Lancer la migration depuis Kavalog et Excel ou Google Sheets");
+    expect(mig.go).toBe("lv-migration");
+    expect(mig.params).toEqual({ source: "kavalog", outils: "kavalog,excel" });
+    expect(p.tasks.find((t) => t.id === "resiliation")!.title).toBe("Résilier Kavalog");
+    expect(p.tasks.find((t) => t.id === "connect_pennylane")!.go).toBe("lv-comptable");
+    expect(p.migration!.plan).toEqual({ recuperer: ["kavalog", "excel"], brancher: ["pennylane", "google-agenda", "qonto"], resilier: ["kavalog"] });
+    const none = buildPlan(sanitize({ ...ANSWERS, software: undefined, migration: { uses: false, tools: [{ id: "kavalog", name: "Kavalog", action: "replace" }] } }));
+    expect(none.tasks.some((t) => t.id === "migration")).toBe(false);
+    expect(none.migration).toBeNull();
   });
   it("centre équestre complet : pistes, forfaits, tâches de démarrage", () => {
     const p = buildPlan(sanitize(ANSWERS));

@@ -5,11 +5,11 @@
    ===================================================================== */
 (function(){
 var P=window.P,PL=window.PL,esc=P.fmt.esc;
-var root=function(){return document.getElementById('lv-root')};
+var root=function(){var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';r.setAttribute('aria-live','polite');document.body.appendChild(r)}return r};
 
 /* ---------- Marque (remplaçable : window.BRAND = {name, logo}) ---------- */
 PL.brandName=function(){var B=window.BRAND||{};return B.name||'Piaffe'};
-PL.brandLogo=function(size,col){var B=window.BRAND||{},l=B.logo||B.logoSvg||B.svg;size=size||28;
+PL.brandLogo=function(size,col){var B=window.BRAND||{},l=B.logo||B.logoSvg||B.svg||B.src;size=size||28;
   if(typeof l==='function'){try{return l(size,col)}catch(e){}}
   if(typeof l==='string'&&/^\s*</.test(l))return l;
   if(typeof l==='string'&&l)return '<img src="'+esc(l)+'" alt="" style="height:'+size+'px;width:auto">';
@@ -35,7 +35,7 @@ function bindCommon(el){
   el.querySelectorAll('[data-eye]').forEach(function(b){b.onclick=function(){var i=b.parentNode.querySelector('input');i.type=i.type==='password'?'text':'password';b.title=i.type==='password'?'Afficher le mot de passe':'Masquer le mot de passe'}});
   el.querySelectorAll('[data-view]').forEach(function(b){b.onclick=function(e){e.preventDefault();PL.auth(b.getAttribute('data-view'),{email:(el.querySelector('#lv-email')||{}).value})}});
   var g=el.querySelector('[data-google]');if(g)g.onclick=function(){var next=PL.authNext||'/';location.href='/auth/google/start?next='+encodeURIComponent(next)};
-  var f=el.querySelector('input:not([type=hidden])');if(f&&!PL.isTouch())setTimeout(function(){f.focus()},60);
+  var f=el.querySelector('input:not([type=hidden])');if(f&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!el.contains(a))f.focus()},60);
 }
 PL.isTouch=function(){return matchMedia('(pointer:coarse)').matches};
 function strength(v){var s=0;if(v.length>=8)s++;if(v.length>=12)s++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;return Math.min(4,s)}

@@ -790,7 +790,7 @@ var CX={open:{'Écurie':1,'Facturation':1},tab:'mcp',cat:'Tous',st:'all',q:'',tf
 function scenarios(){
   var by={},late=D.invoices.filter(function(i){return i.status==='en retard'});late.forEach(function(i){by[i.member]=(by[i.member]||0)+i.amount});
   var top=Object.keys(by).sort(function(a,b){return by[b]-by[a]}).slice(0,3),tot=sum(late,function(i){return i.amount});
-  var l5=D.lessons.filter(function(x){return x.dow===2})[1],vac=D.care.filter(function(c){return c.kind==='Vaccin'&&F.days(c.date)>=0})[0];
+  var l5=D.lessons.filter(function(x){return x.dow===2})[1],vac=D.care.filter(function(c){return c.kind==='Vaccin'&&F.days(c.date)>=0})[0]||{horse:''};
   return [
    {t:'Lire',steps:[{u:'Qui n’a pas payé sa pension ou son forfait de novembre ?'},{tool:'ecurie_apercu',args:'{}',ms:88},{tool:'impayes_lister',args:'{"anciennete_min_jours":1}',ms:212},
      {a:'<b>'+Object.keys(by).length+' familles doivent '+F.eur(tot)+'</b> aux Tilleuls. Les trois plus gros retards :'},

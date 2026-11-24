@@ -27,7 +27,7 @@ var GRIP='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle class="f
 
 /* ---------- Données propres à la vue adhérent ---------- */
 /* Emma Moreau (m019), Hélène Girard (m078) et Alice Vincent (m044) sont fixées dans core/data.js. */
-var ME=D.member('m001'),UL=D.horse('h01'),DP=D.halfboard.find(function(x){return x.id==='dp1'}),DPR=D.member(DP.rider);
+var ME=D.member('m001'),UL=D.horse('h01'),DP=D.halfboard.find(function(x){return x.id==='dp1'})||{},DPR=D.member(DP.rider);
 var PONY=D.horse('h08');
 /* Faits de référence partagés (core/data.js) : un seul chiffre partout */
 var FX=D.facts||{},RB=FX.leaRambouillet||{passage:'11:42',order:'14e sur 32',bib:214,recon:'11:10',warmup:'11:20',paddock:'B',classe:'Club Élite · 115 cm'};

@@ -268,7 +268,9 @@ P.mod({id:'cpt-factures',role:'comptable',group:'Comptabilité',title:'Factures'
 P.mod({id:'cpt-exports',role:'comptable',group:'Comptabilité',title:'Exports',icon:'download',n:30,short:'Exports',render:renderCptExp});
 P.mod({id:'cpt-cal',role:'comptable',group:'Compte',title:'Abonnement du club',icon:'card',n:40,render:renderAbo});
 /* écrans de la démo remplacés par leur version branchée (même identifiant : les liens croisés continuent de marcher) */
-PL.replaced=[{id:'facturation',render:renderInvoices},{id:'import',render:renderImport,title:'Importer'},{id:'adh-paiements',render:renderMyInvoices}];
+/* Comptabilité : la démo affiche un compte bancaire fictif ; tant qu'aucune banque n'est reliée, on montre l'espace comptable réel */
+function renderCompta(el,ctx){el.innerHTML='<div class="lv-msg info" style="margin-bottom:16px">'+ICON('info','sm')+'<span>Le rapprochement bancaire automatique arrive bientôt : aucun compte n’est encore relié à '+esc(PL.brandName())+'. Vos factures, encaissements et exports comptables sont ci-dessous.</span></div><div data-cpt></div>';renderAccountant(el.querySelector('[data-cpt]'),ctx)}
+PL.replaced=[{id:'compta',render:renderCompta},{id:'facturation',render:renderInvoices},{id:'import',render:renderImport,title:'Importer'},{id:'adh-paiements',render:renderMyInvoices}];
 /* chemins de retour de Stripe et liens directs */
 PL.PATHS={'/abonnement':'lv-abonnement','/paiements-en-ligne':'lv-paiements','/mes-factures':'adh-paiements','/factures':'facturation','/calendriers':'lv-calendriers'};
 PL.planBanner=function(m){if(document.querySelector('.lv-planbar'))return;var v=P.app()&&P.app().querySelector('.main .view');if(!v)return;var b=document.createElement('div');b.className='lv-banner lv-planbar';b.style.margin='10px 16px 0';b.style.background='var(--bad-pale)';b.style.color='var(--bad)';

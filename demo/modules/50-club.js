@@ -436,26 +436,26 @@ function signupRows(){var p=pending();if(!p.length)return U.empty('checkc','Tout
 /* ---------- Ajouter un adhérent : cavalier, formule, vérification et mail de bienvenue ---------- */
 var LICP={j:25,a:36};
 function hhm(t){var p=t.split(':');return +p[0]+' h'+(p[1]&&p[1]!=='00'?' '+p[1]:'')}
-function ageFrom(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||''))return null;var b=new Date(iso+'T12:00:00'),t=new Date(2026,10,17),a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
+function ageFrom(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||''))return null;var b=new Date(iso+'T12:00:00'),t=D.today instanceof Date?D.today:new Date(),a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
 function okMail(s){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(s||'').trim())}
 function okTel(s){var d=String(s||'').replace(/[\s.\-]/g,'').replace(/^\+33/,'0');return /^0[1-9]\d{8}$/.test(d)}
 function fmtTel(s){var d=String(s||'').replace(/[\s.\-]/g,'').replace(/^\+33/,'0');return okTel(s)?d.replace(/(\d{2})(?=\d)/g,'$1 '):String(s||'').trim()}
 function famPayers(){var seen={},out=[];D.members.forEach(function(m){if(seen[m.fam])return;var f=famOf(m);if(f.length<2&&!f.some(function(x){return x.minor}))return;seen[m.fam]=1;out.push({fam:m.fam,label:famName(m),pay:X(m).pay})});return out.sort(function(a,b){return a.label.localeCompare(b.label,'fr')}).slice(0,40)}
 function lessonsFor(g){return D.lessons.filter(function(l){var t=l.title,n=(t.match(/\d/g)||[]).map(Number);if(g===0)return /débutant|baby|poney|initiation/i.test(t);return n.length&&n.indexOf(g)>=0||(n.length===2&&g>=n[0]&&g<=n[1])}).sort(function(a,b){return (b.cap-b.riders.length)-(a.cap-a.riders.length)}).slice(0,3)}
 function welcomeMail(n,o){var who=o.minor?(n.pFirst||'Bonjour'):n.first,to=o.minor?n.pEmail:n.email,L=n.les&&D.lessons.filter(function(l){return l.id===n.les})[0];
-  return '<div class="cln-mail"><div class="cln-mh"><div class="cln-mr"><span>De</span><b>'+E(D.club.name)+'</b><span class="mut cln-from">bonjour@tilleuls.piaffe.example</span></div><div class="cln-mr"><span>À</span><b>'+E(to||'adresse à renseigner')+'</b></div><div class="cln-mr"><span>Objet</span><b>Bienvenue à l’Écurie des Tilleuls'+(n.first?', '+E(n.first):'')+'</b></div></div>'+
+  return '<div class="cln-mail"><div class="cln-mh"><div class="cln-mr"><span>De</span><b>'+E(D.club.name)+'</b><span class="mut cln-from">'+E(D.club.email||'')+'</span></div><div class="cln-mr"><span>À</span><b>'+E(to||'adresse à renseigner')+'</b></div><div class="cln-mr"><span>Objet</span><b>Bienvenue à '+E(D.club.name)+(n.first?', '+E(n.first):'')+'</b></div></div>'+
    '<div class="cln-mb"><div class="cln-brand">'+LOGO(26,'var(--ink)','var(--strass)')+'<b>'+E(D.club.name)+'</b></div>'+
    '<p>Bonjour '+E(who)+',</p><p>'+(o.minor?E(n.first)+' fait désormais partie du club, nous sommes ravis de l’accueillir.':'Vous faites désormais partie du club, nous sommes ravis de vous accueillir.')+' Voici les trois étapes pour bien démarrer.</p>'+
    '<ol class="cln-ol"><li><b>Compléter le dossier en ligne</b><span>'+(o.minor?'Questionnaire de santé, autorisation parentale, droit à l’image':'Questionnaire de santé ou certificat, droit à l’image')+(n.sepa?' et mandat SEPA':'')+'. Cinq minutes suffisent.</span></li>'+
    '<li><b>'+(L?'Première reprise '+DWL[(L.dow+6)%7]+' à '+hhm(L.start)+'':'Choisir sa reprise')+'</b><span>'+(L?E(L.title)+', avec '+E(D.staffer(L.coach).first)+'. Arrivez 15 minutes avant pour préparer votre cheval.':'Les créneaux libres de votre niveau sont dans votre espace.')+'</span></li>'+
    '<li><b>Installer l’application</b><span>Planning, réservations, factures et messages du club au même endroit.</span></li></ol>'+
-   '<span class="cln-cta">Compléter mon dossier</span><p class="mut">À très vite au club,<br>Claire Dumont, gérante</p></div></div>'}
+   '<span class="cln-cta">Compléter mon dossier</span><p class="mut">À très vite au club,<br>L’équipe de '+E(D.club.name)+'</p></div></div>'}
 function sheetNewMember(prefill){
-  var n=Object.assign({first:'',last:'',birth:'',email:'',phone:'',fam:'new',pFirst:'',pLast:'',pEmail:'',pPhone:'',forfait:'f1',galop:0,les:null,lic:true,dossier:true,sepa:true,mail:true},prefill||{}),step=1,errs={},created=null;
+  var n=Object.assign({first:'',last:'',birth:'',email:'',phone:'',fam:'new',pFirst:'',pLast:'',pEmail:'',pPhone:'',forfait:(D.forfaits[0]||{id:'f1'}).id,galop:0,les:null,lic:true,dossier:true,sepa:true,mail:true},prefill||{}),step=1,errs={},created=null;
   var sh=P.sheet({title:'Ajouter un adhérent',icon:'plus',body:function(){},foot:'<span data-foot style="display:contents"></span>'});
   function age(){return ageFrom(n.birth)}
   function minor(){var a=age();return a!=null&&a<18}
-  function fo(){return D.forfaits.filter(function(f){return f.id===n.forfait})[0]}
+  function fo(){return D.forfaits.filter(function(f){return f.id===n.forfait})[0]||{id:'',name:'Sans formule',price:0,kind:''}}
   function lic(){return n.lic?(minor()?LICP.j:LICP.a):0}
   function fee(){return minor()?35:45}
   function total(){return (fo().price||0)+fee()+lic()}
@@ -524,7 +524,7 @@ function sheetNewMember(prefill){
   on(sh,'[data-mk]',function(b){create(b)});
   on(sh,'[data-link]',function(){P.toast('Lien d’inscription copié : tilleuls.piaffe.example/inscription',{icon:'link'})});
   on(sh,'[data-open]',function(b){var id=b.getAttribute('data-open');sh.close();P.go('adherent',{id:id})});
-  on(sh,'[data-again]',function(){n={first:'',last:'',birth:'',email:'',phone:'',fam:'new',pFirst:'',pLast:'',pEmail:'',pPhone:'',forfait:'f1',galop:0,les:null,lic:true,dossier:true,sepa:true,mail:true};errs={};created=null;step=1;sh._min=false;draw(-1)});
+  on(sh,'[data-again]',function(){n={first:'',last:'',birth:'',email:'',phone:'',fam:'new',pFirst:'',pLast:'',pEmail:'',pPhone:'',forfait:(D.forfaits[0]||{id:'f1'}).id,galop:0,les:null,lic:true,dossier:true,sepa:true,mail:true};errs={};created=null;step=1;sh._min=false;draw(-1)});
   draw(0);setTimeout(function(){var f=$('[data-n="first"]',sh);if(f&&!P.isMobile())f.focus()},320);return sh}
 /* ---------- Vues enregistrées (filtre, recherche, tri, colonnes ; personnelle ou partagée) ---------- */
 var COLS=[['galop','Galop'],['forfait','Forfait et séances'],['lic','Licence FFE'],['dossier','Dossier'],['last','Dernière venue'],['bal','Solde']];
