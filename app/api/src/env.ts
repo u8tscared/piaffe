@@ -7,6 +7,8 @@ export interface Env {
   MAIL_FROM: string;
   MAIL_PROVIDER: string; // log | resend | brevo
   MAIL_API_KEY?: string;
+  /** whsec_… de Resend, ou jeton Bearer déclaré chez Brevo */
+  MAIL_WEBHOOK_SECRET?: string;
   EINVOICE_PROVIDER: string; // sandbox | <plateforme agréée>
   EINVOICE_API_KEY?: string;
   PLATFORM_LEGAL_NAME: string;
@@ -23,6 +25,10 @@ export interface Env {
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_CONNECT_WEBHOOK_SECRET?: string;
+  /** Secret des routes /admin/billing/* (24 caractères ou plus). */
+  BILLING_ADMIN_SECRET?: string;
+  /** "automatic" pour Stripe Tax, sinon absent. */
+  STRIPE_TAX?: string;
 }
 
 export type Role = "owner" | "manager" | "staff" | "coach" | "member" | "accountant";

@@ -9,7 +9,11 @@ import type { Env } from "../env";
  *  - user.signed_up  {user_id, email, via:'password'|'google'}
  *  - member.invited  {club_id, email, role, invitation_url, inviter_name}
  *  - invoice.issued  {club_id, invoice_id}
- *  - invoice.paid    {club_id, invoice_id, amount_cents, method}
+ *  - invoice.paid    {club_id, invoice_id, amount_cents, method, stripe_ref?, payment_id?}
+ *  - payment.refunded {club_id, invoice_id, amount_cents, stripe_ref, payment_id}
+ *  - subscription.paid {club_id, stripe_invoice_id, number, amount_cents, tax_cents, period_start, period_end, plan}
+ *  - trial.ending    {club_id, days_left}
+ *  - mandate.revoked {club_id, mandate_id, person_ref}
  *  - payment.failed  {club_id, invoice_id|null, reason}
  *  - club.created    {club_id, user_id}
  *  - subscription.changed {club_id, plan, status}

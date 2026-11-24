@@ -1,6 +1,15 @@
-import { Hono } from "hono";
 import type { AppEnv } from "../env";
-const app = new Hono<AppEnv>();
+import app, { cronImpl } from "./routes-impl";
+import { registerHooks } from "./hooks";
+
+/*
+ * Lot C : factures, avoirs, acomptes, paiements, PDF Factur-X, facture électronique (plateforme agréée),
+ * accès comptable et exports, factures de Piaffe aux clubs. Détails métier et sources : REGLES.md.
+ */
+registerHooks();
 export default app;
-/** Tâche planifiée facultative du lot (appelée par le cron du Worker). */
-export async function cron(_env: AppEnv["Bindings"], _cron: string): Promise<void> {}
+
+/** Cron : toutes les 10 minutes (envoi B2B, statuts), et chaque jour à 6 h UTC (retards, relances, e-reporting, réception). */
+export async function cron(env: AppEnv["Bindings"], expr: string): Promise<void> {
+  await cronImpl(env, expr);
+}
