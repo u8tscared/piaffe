@@ -1,0 +1,101 @@
+# Piaffe, le vrai logiciel : architecture
+
+La démo (`demo/`) reste la vitrine publique sur GitHub Pages. Le logiciel vendu aux écuries vit dans `app/` :
+
+- `app/api/` : un seul Cloudflare Worker (TypeScript, Hono) qui sert **l'API** et **l'application web** (même origine, donc cookies simples et pas de CORS).
+- `app/web/` : l'application web. Elle réutilise le moteur et les écrans de la démo (`demo/core`, `demo/modules`) et ajoute une couche « live » qui remplace les données fictives par les vraies données du club, enregistre chaque modification, et ajoute les écrans qui n'existent pas dans la démo (connexion, onboarding, abonnement, paiements en ligne, comptable, calendriers, clés d'API).
+
+## Pourquoi Cloudflare
+
+| Besoin | Service | Coût |
+|---|---|---|
+| Serveur + appli web | Workers (+ assets statiques) | Gratuit jusqu'à 100 000 requêtes/jour. **Workers Paid 5 $/mois** conseillé dès le premier client (limite CPU 10 ms → 30 s, utile pour le hachage des mots de passe et les PDF). |
+| Base de données | D1 (SQLite) | Inclus : 5 Go, des milliards de lectures. |
+| Fichiers (PDF, logos, pièces) | R2 | 10 Go gratuits, sortie gratuite. |
+| Tâches planifiées | Cron Triggers | Inclus. |
+| E-mails | Resend (3 000/mois gratuits) ou Brevo (300/jour gratuits), interchangeables | 0 € au départ. |
+| Paiements | Stripe Billing + Stripe Connect (comptes des clubs, frais payés par le club) | Aucun abonnement, frais par transaction uniquement. |
+| Facture électronique | Plateforme agréée par API (voir `invoicing/`) | Selon la plateforme retenue. |
+| Connexion Google | Google OAuth (OpenID Connect) | Gratuit. |
+
+Pas de serveur à gérer, pas de base qui s'endort (contrairement au palier gratuit de Supabase), une seule commande de déploiement.
+
+## Découpage et propriété des fichiers
+
+Chaque lot possède ses dossiers et n'écrit **jamais** dans ceux des autres. Le socle (`src/index.ts`, `src/env.ts`, `src/lib/*`, `src/routes-registry.ts`, `migrations/0001_init.sql`, `test/helpers.ts`, `test/setup.ts`) appartient à l'orchestrateur : si un lot a besoin d'y changer quelque chose, il le note dans son compte rendu (ou ajoute un fichier à lui).
+
+| Lot | Dossiers | Migration |
+|---|---|---|
+| A · comptes et données | `src/auth/`, `src/records/`, `test/auth*.test.ts`, `test/records*.test.ts` | `0002_auth.sql` |
+| B · Stripe | `src/billing/`, `test/billing*.test.ts` | `0003_billing.sql` |
+| C · factures et comptable | `src/invoicing/`, `test/invoicing*.test.ts`, `assets/fonts/` | `0004_invoicing.sql` |
+| D · e-mails, ICS, import | `src/mail/`, `src/ics/`, `src/import/`, `test/mail*`, `test/ics*`, `test/import*` | `0005_mail_ics_import.sql` |
+| E · appli web et onboarding | `app/web/`, `src/onboarding/`, `test/onboarding*` | `0006_onboarding.sql` |
+
+Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la racine (les chemins complets sont écrits dans le lot, ex. `app.post("/auth/login", …)`) et une fonction `cron(env, expr)` appelée par les Cron Triggers (`*/10 * * * *` et `0 6 * * *`).
+
+## Conventions
+
+- Identifiants : `newId("clb")` → `clb_…`. Dates ISO UTC en TEXT. **Montants en centimes** (INTEGER) côté serveur ; l'interface (données de la démo) manipule des euros : la conversion se fait à la frontière (records restent en euros comme la démo, les tables typées factures et paiements sont en centimes).
+- Erreurs : `throw new ApiError(status, code, "Message en français pour l'utilisateur")` ou `bad()`, `forbidden()`, `notFound()`. Réponse `{ error: { code, message, details } }`.
+- Authentification : le middleware `loadAuth` (lib/auth.ts) pose `c.get("user")`, `c.get("club")`, `c.get("membership")` (`role`, `person_ref`), `c.get("apiKey")`. Protégez avec `requireUser`, `requireRole("owner","manager")` (owner passe partout où manager passe), `requireScope("import")` (clé d'API ou gérant).
+- Club courant : celui de la session, ou l'en-tête `X-Piaffe-Club`.
+- Événements entre lots : `emit(env, c.executionCtx, {type:"invoice.paid", …})` et `on("invoice.paid", handler)` (lib/events.ts, liste des événements en tête du fichier). Un lot qui réagit à un événement d'un autre lot enregistre son gestionnaire dans un fichier `src/<lot>/hooks.ts` importé par son `routes.ts`.
+- E-mails : `sendMail(env, {to, template, data, club_id})` (src/mail/send.ts, contrat fixe).
+- Audit : `audit(db, {club_id, user_id, action, target, data})` pour toute action sensible.
+- Tests : Vitest dans le runtime Workers (`npm test`), base D1 locale migrée à chaque fichier de test. `seed(role)` (test/helpers.ts) crée club + utilisateur + session ; `call(path, {json, token, club})` appelle le Worker. Les appels sortants (Stripe, Google, e-mail, plateforme) doivent être simulés dans les tests (`fetchMock` n'existe plus : injectez un `fetch` via une fonction `setFetch()` de votre lot, ou testez la logique pure).
+- Pas de dépendance lourde. Déjà installés : `hono`, `pdf-lib`, `@pdf-lib/fontkit`. Stripe et Google s'appellent en `fetch` direct (pas de SDK).
+- Français impeccable dans tous les messages et e-mails (espaces insécables avant : ; ? ! €, pas de tiret cadratin en ponctuation, vouvoiement).
+
+## Contrats d'API (ce que l'appli web appelle)
+
+### Comptes (lot A)
+- `POST /auth/signup` `{email, password, first, last}` → crée l'utilisateur, ouvre la session (cookie `piaffe_s`), envoie `verify_email`. 201 `{user}`.
+- `POST /auth/login` `{email, password}` → `{user, clubs}`. Limité à 10 essais / 15 min par IP et par e-mail.
+- `POST /auth/logout`.
+- `GET /auth/google/start?next=/…` → redirection Google (PKCE + state) ; `GET /auth/google/callback` → crée ou relie le compte (par `google_sub`, sinon par e-mail vérifié), ouvre la session, redirige vers `next`.
+- `POST /auth/verify` `{token}` ; `POST /auth/verify/resend`.
+- `POST /auth/password/forgot` `{email}` (réponse identique que l'e-mail existe ou non) ; `POST /auth/password/reset` `{token, password}`.
+- `POST /auth/magic` `{email}` lien de connexion sans mot de passe (pratique pour les parents) ; `GET /auth/magic/callback?token=`.
+- `GET /api/me` → `{user, clubs:[{id,name,role,person_ref}], current_club_id}` ; `PATCH /api/me` ; `POST /api/me/club` `{club_id}` change de club courant.
+- `POST /api/clubs` `{name, kind, …}` → crée un club, l'appelant devient `owner`, essai de 30 jours. Émet `club.created`.
+- Invitations : `POST /api/invitations` `{email, role, person_ref?, first?, last?}` (gérant) → e-mail `invitation` ; `GET /auth/invitations/:token` (aperçu public : club, rôle) ; `POST /auth/invitations/:token/accept` (connecté, ou avec `{password, first, last}` pour créer le compte au passage). `GET /api/invitations`, `DELETE /api/invitations/:id`.
+- Équipe d'accès : `GET /api/club/users`, `PATCH /api/club/users/:userId` `{role, status}`, `DELETE …`.
+- Clés d'API : `GET/POST /api/api-keys` `{name, scopes}` (le jeton complet n'est montré qu'une fois), `DELETE /api/api-keys/:id`.
+
+### Données du club (lot A)
+- `GET /api/club/bootstrap` → `{club, me:{user, role, person_ref}, data:{<coll>:[…]}, versions:{"<coll>/<id>":n}, server_time}` : toutes les collections que ce rôle a le droit de lire, au format exact de `window.DATA` de la démo.
+- `POST /api/records/batch` `{ops:[{op:"upsert"|"delete", coll, id, data?, version?}]}` → `{results:[{coll,id,ok,version,conflict?}]}`. Si `version` est fourni et ne correspond pas : `conflict:true` + la version serveur.
+- `GET /api/records/changes?since=ISO` → objets modifiés depuis (synchro entre appareils).
+- Politique d'accès par rôle et par collection dans `src/records/policy.ts` (gérant : tout ; employé : chevaux, soins, tâches, stocks, planning, présences ; coach : ses reprises et ses élèves ; adhérent : sa fiche et sa famille, ses chevaux, les reprises, ses factures, ses contrats, ses messages ; comptable : rien dans records, seulement factures et exports).
+- Déclencheurs (`src/records/triggers.ts`) : nouvel adhérent avec e-mail → invitation et e-mail de bienvenue (si l'option du club est active) ; réservation d'une reprise → `booking_confirmed` ; place libérée → `waitlist_spot`.
+
+### Stripe (lot B)
+- Abonnement des clubs à Piaffe (vendeur : Marceau Ruis EI) : `GET /api/billing/plans`, `POST /api/billing/checkout` `{plan, interval:"month"|"year"}` → URL Stripe Checkout ; `POST /api/billing/portal` → URL du portail client ; `GET /api/billing/subscription`.
+- Paiements des adhérents vers le club (Stripe Connect, le club encaisse sur son propre compte) : `POST /api/connect/onboard` → lien d'activation Stripe ; `GET /api/connect/status` ; `POST /api/pay/invoice/:id` → URL Checkout (carte, SEPA) pour une facture du club ; `POST /api/pay/mandate` → mise en place d'un prélèvement SEPA pour les échéances ; `POST /api/pay/link` (gérant) lien de paiement à envoyer.
+- `POST /webhooks/stripe` (plateforme) et `POST /webhooks/stripe-connect` (comptes connectés), signatures vérifiées, idempotents. Émettent `subscription.changed`, `invoice.paid`, `payment.failed`.
+
+### Factures, facture électronique, comptable (lot C)
+- `GET /api/invoices?status=&member=&from=&to=`, `POST /api/invoices` (brouillon), `PATCH /api/invoices/:id` (brouillon seulement), `POST /api/invoices/:id/issue` (numérotation légale continue, gel, PDF Factur-X dans R2, envoi), `POST /api/invoices/:id/credit-note` (avoir), `POST /api/invoices/:id/payments` (paiement manuel : chèque, espèces, ANCV, virement), `GET /api/invoices/:id/pdf`, `GET /api/invoices/:id/facturx.xml`.
+- Facture électronique : adaptateur de plateforme agréée (`src/invoicing/pa/`), transmission des factures B2B, e-reporting des ventes aux particuliers, réception des factures fournisseurs, statuts de cycle de vie. Fournisseur `sandbox` pour les tests.
+- Comptable : rôle `accountant` (invité par le gérant), `GET /api/accounting/exports/fec?year=` (FEC conforme), `GET /api/accounting/exports/sales.csv`, `GET /api/accounting/exports/pdfs.zip?month=`, journal des ventes et des encaissements.
+- Factures de Piaffe aux clubs (vendeur Marceau Ruis EI) générées au même format à partir des paiements Stripe.
+
+### E-mails, calendriers, import (lot D)
+- `sendMail` + modèles HTML et texte (charte Piaffe, logo remplaçable), fournisseurs `log`, `resend`, `brevo`, file d'attente `email_outbox` avec reprise par le cron, `POST /webhooks/mail` (rebonds), désinscription des e-mails non essentiels.
+- ICS : `GET /api/calendars` (liens de l'utilisateur) ; `POST /api/calendars` `{scope}` ; flux `GET /ics/:token.ics` (adhérent : ses reprises et ses rendez-vous ; coach : son agenda ; gérant : planning du club, soins, concours ; cheval : soins et maréchal). Compatible Google Agenda, Apple Calendrier, Outlook.
+- Import (utilisé par l'outil de migration depuis Kavalog et par l'import de fichiers) : voir « API d'import » ci-dessous.
+
+### Onboarding et appli web (lot E)
+- `GET /api/onboarding` / `PUT /api/onboarding` `{answers}` / `POST /api/onboarding/complete` : questionnaire adaptatif (type de structure, nombre de chevaux, de boxes, d'adhérents, de salariés, disciplines, logiciel actuel, comptable, encaissement en ligne) ; à la fin, le serveur prépare le club : modules actifs, forfaits types, installations, modèles de contrats, rappels, et propose l'import.
+- Appli web : écrans de connexion, inscription, Google, mot de passe oublié, invitation, onboarding, puis la démo branchée sur les vraies données.
+
+## API d'import (pour l'outil de migration)
+
+Authentification : clé d'API du club avec le scope `import` (`Authorization: Bearer pk_live_…`), créée par le gérant dans Réglages, ou session gérant.
+
+- `POST /api/v1/import/jobs` `{source:"kavalog"|"equimondo"|"csv"|…, dry_run?:bool}` → `{job_id}`.
+- `POST /api/v1/import/jobs/:id/items` `{coll, items:[{external_id, data}]}` (jusqu'à 500 objets par appel, répétable). `coll` ∈ `members, horses, staff, coaches, forfaits, lessons, halfboard, care, contracts, competitions, invoices, payments, stock`. `data` au format de la démo (voir `demo/core/data.js`). Les références entre objets utilisent les `external_id` de la source préfixés par `ext:` (ex. `owner:"ext:K-1234"`) : le serveur les traduit.
+- `POST /api/v1/import/jobs/:id/commit` → applique (ou simule si `dry_run`) : création ou mise à jour idempotente grâce à la table de correspondance `(club, source, coll, external_id) → id Piaffe`. Réponse : compte par collection, avertissements (doublons, champs manquants), erreurs par objet.
+- `GET /api/v1/import/jobs/:id` → état et rapport. `POST /api/v1/import/jobs/:id/rollback` → supprime ce que ce job a créé.
+- `POST /api/v1/import/csv` (multipart) : import de fichiers CSV/Excel exportés d'un autre logiciel, avec détection des colonnes.

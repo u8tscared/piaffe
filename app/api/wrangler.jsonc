@@ -1,0 +1,21 @@
+{
+  // Piaffe : API + application web servies par un seul Worker (même origine, cookies simples).
+  "name": "piaffe",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*"] },
+  "d1_databases": [{ "binding": "DB", "database_name": "piaffe", "database_id": "REMPLACER_PAR_L_ID_D1", "migrations_dir": "migrations" }],
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "piaffe-files" }],
+  "triggers": { "crons": ["*/10 * * * *", "0 6 * * *"] },
+  "vars": {
+    "APP_URL": "http://localhost:8787",
+    "MAIL_FROM": "Piaffe <bonjour@piaffe.fr>",
+    "MAIL_PROVIDER": "log",
+    "EINVOICE_PROVIDER": "sandbox",
+    "PLATFORM_LEGAL_NAME": "Marceau Ruis (EI)",
+    "PLATFORM_SIREN": "934733122"
+  }
+  // Secrets (wrangler secret put …) : SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+  // STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, MAIL_API_KEY, EINVOICE_API_KEY
+}
