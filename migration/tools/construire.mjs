@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const ici = path.dirname(new URL(import.meta.url).pathname), racine = path.join(ici, '..');
-const ordre = ['core/texte.mjs', 'core/csv.mjs', 'core/xlsx.mjs', 'core/valeurs.mjs', 'core/champs.mjs', 'core/logiciels.mjs', 'core/capture.mjs', 'core/ics.mjs', 'core/lire.mjs', 'core/paquet.mjs', 'core/rapport.mjs', 'core/vers-api.mjs', 'core/logos.mjs', 'core/acces.mjs', 'core/resiliation.mjs', 'web/app.mjs'];
+const ordre = ['core/texte.mjs', 'core/csv.mjs', 'core/xlsx.mjs', 'core/valeurs.mjs', 'core/champs.mjs', 'core/logiciels.mjs', 'core/capture.mjs', 'core/ics.mjs', 'core/lire.mjs', 'core/paquet.mjs', 'core/rapport.mjs', 'core/vers-api.mjs', 'core/logos.mjs', 'core/acces.mjs', 'core/resiliation.mjs', 'core/parcours.mjs', 'web/robot-distant.mjs', 'web/app.mjs'];
 let js = 'const __m = {};\n';
 for (const f of ordre) {
   let src = fs.readFileSync(path.join(racine, f), 'utf8');

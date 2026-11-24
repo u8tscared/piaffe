@@ -71,12 +71,15 @@ function clean(o) {
 }
 
 // Envoi vers le serveur : crée le job, pousse par paquets de 500, valide. `fetch` est celui de l'hôte.
-export async function envoyer(paquet, { url, cle: cleApi, essai = true, source = 'passerelle', journal = () => {} }) {
-  const h = { 'content-type': 'application/json', authorization: 'Bearer ' + cleApi };
+export async function envoyer(paquet, { url = null, cle: cleApi = null, essai = true, source = 'passerelle', journal = () => {} }) {
+  // Sans clé (page ouverte depuis l'appli, même origine) : la session du gérant sert d'authentification.
+  const h = { 'content-type': 'application/json' };
+  if (cleApi) h.authorization = 'Bearer ' + cleApi;
+  const base = (url || globalThis.location?.origin || '').replace(/\/$/, '');
   const appel = async (chemin, corps) => {
-    const r = await fetch(url.replace(/\/$/, '') + chemin, { method: 'POST', headers: h, body: JSON.stringify(corps || {}) });
+    const r = await fetch(base + chemin, { method: 'POST', headers: h, body: JSON.stringify(corps || {}), ...(cleApi ? {} : { credentials: 'include' }) });
     const t = await r.text(); let j; try { j = JSON.parse(t); } catch { j = { brut: t }; }
-    if (!r.ok) throw new Error(`${chemin} → ${r.status} ${j.error || j.message || t.slice(0, 200)}`);
+    if (!r.ok) throw new Error(`${chemin} → ${r.status} ${j.error?.message || (typeof j.error === "string" ? j.error : "") || j.message || t.slice(0, 200)}`);
     return j;
   };
   const logiciel = paquet.sources.find(s => s.logiciel)?.logiciel || 'csv';

@@ -1,4 +1,6 @@
-// Passerelle Piaffe dans le navigateur : rien n'est envoyé, tout est lu sur place.
+// Passer à Piaffe : parcours pas à pas (une question par écran), puis récupération des données.
+// Mode intégré (ouvert depuis l'onboarding de l'appli) : ?source=<id>&adresse=<url>&outils=<ids>&retour=<url>
+// saute les questions et va droit à la récupération ; l'import se fait sur la session du gérant (même origine).
 import { lireFichier } from '../core/lire.mjs';
 import { construirePaquet, analyserTable } from '../core/paquet.mjs';
 import { TYPES } from '../core/champs.mjs';
@@ -6,6 +8,7 @@ import { LOGICIELS, FAMILLES, reconnaitreAdresse } from '../core/logiciels.mjs';
 import { LOGOS } from '../core/logos.mjs';
 import { envoyerAcces } from '../core/acces.mjs';
 import { lettreResiliation } from '../core/resiliation.mjs';
+import { QUESTIONS, FAMILLES_OUTILS, questionsActives, decisionsPossibles, decision, planDeBascule, reponsesDepuisLien } from '../core/parcours.mjs';
 import { rapportHTML } from '../core/rapport.mjs';
 import { envoyer } from '../core/vers-api.mjs';
 
@@ -13,89 +16,205 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const eur = n => (n ?? 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
 const inflate = async b => new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+const cleRecherche = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const calme = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const etat = { logiciel: null, tables: [], paquet: null };
-
-// 1. Changer de logiciel : catalogue, recherche, adresse collée
-const LIEN_EXTENSION = 'https://github.com/u8tscared/piaffe/tree/main/migration/extension';
-const LIEN_MODE_EMPLOI = 'https://github.com/u8tscared/piaffe/blob/main/migration/extension/LISEZMOI.md';
+const etat = { tables: [], paquet: null };
+const rep = { depart: null, principal: null, adresse: null, outils: [], choix: {} };
 const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // vide tant que le serveur n'ouvre pas la reprise par codes
 const COULEURS = { equestre: 'hz', federation: 'tm', adhesions: 'mo', agenda: 'rd', compta: 'mo', rh: 'tm', tableurs: 'hz', papier: 'pf' };
-let famille = 'tous';
+const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Piaffe', au_choix: 'Au choix' };
+const COURT = { depart: 'Départ', principal: 'Logiciel', outils: 'Outils', choix: 'Choix', plan: 'Plan', recuperation: 'Récupération' };
 
-function vignette(l) {
+// Mode intégré
+const params = new URLSearchParams(location.search);
+const integre = !!params.get('source');
+if (integre) { Object.assign(rep, reponsesDepuisLien(params)); document.body.classList.add('integre'); }
+
+function pastille(l, taille = 40) {
   const logo = LOGOS[l.id];
-  const pastille = logo ? `<span class="logo"><img src="${logo}" alt="" loading="lazy" width="40" height="40"></span>`
+  return logo ? `<span class="logo"><img src="${logo}" alt="" loading="lazy" width="${taille}" height="${taille}"></span>`
     : `<span class="logo initiale ${COULEURS[l.famille] || 'pf'}">${esc(l.nom.replace(/^[^A-Za-zÀ-ÿ0-9]+/, '')[0])}</span>`;
-  const forme = { web: 'En ligne', bureau: 'Sur ordinateur', 'les-deux': 'En ligne et sur ordinateur' }[l.forme] || '';
-  return `<button class="carte-l ${etat.logiciel === l.id ? 'on' : ''}" data-l="${l.id}" type="button">${pastille}<span class="nom">${esc(l.nom)}</span><small>${esc(forme || FAMILLES.find(f => f.id === l.famille).nom)}</small><i class="coche" aria-hidden="true"></i></button>`;
+}
+
+// ---------- Navigation ----------
+let ici = integre ? 'recuperation' : 'depart';
+function ecransActifs() { return questionsActives(rep).map(q => q.id); }
+function aller(id, sens = 'avant') {
+  ici = id;
+  document.querySelectorAll('.ecran').forEach(e => {
+    const actif = e.dataset.ecran === id;
+    e.hidden = !actif; e.classList.remove('avant', 'arriere');
+    if (actif) { void e.offsetWidth; e.classList.add(sens); }
+  });
+  ({ depart: dessinerDepart, principal: dessinerCatalogue, outils: dessinerOutils, choix: dessinerDecisions, plan: dessinerPlan, recuperation: dessinerRecuperation })[id]();
+  majNav();
+  const e = document.querySelector(`.ecran[data-ecran="${id}"]`);
+  e.focus({ preventScroll: true });
+  if (!integre) requestAnimationFrame(() => window.scrollTo({ top: Math.min(window.scrollY, $('.progres').offsetTop), behavior: calme() ? 'auto' : 'smooth' }));
+}
+function majNav() {
+  const liste = ecransActifs(), i = liste.indexOf(ici);
+  $('#rempli').style.width = ((i + 1) / liste.length * 100) + '%';
+  $('#etapes').innerHTML = liste.map((id, k) => `<span class="${k < i ? 'fait' : k === i ? 'ici' : ''}">${COURT[id]}</span>`).join('');
+  $('#ou').innerHTML = `Étape <b>${i + 1}</b> sur ${liste.length} · ${COURT[ici]}`;
+  $('#retour').hidden = i <= 0 || integre;
+  const c = $('#continuer');
+  c.hidden = ici === 'recuperation';
+  c.disabled = (ici === 'depart' && !rep.depart) || (ici === 'principal' && !rep.principal && !rep.adresse);
+  c.textContent = ici === 'outils' && !rep.outils.length ? 'Je n’en utilise pas d’autre' : ici === 'plan' ? (planDeBascule(rep).recuperer.length ? 'Récupérer mes données' : 'Terminer') : 'Continuer';
+}
+$('#continuer').addEventListener('click', () => { const l = ecransActifs(); const s = l[l.indexOf(ici) + 1]; if (s) aller(s, 'avant'); });
+$('#retour').addEventListener('click', () => { const l = ecransActifs(); const s = l[l.indexOf(ici) - 1]; if (s) aller(s, 'arriere'); });
+$('#passer').addEventListener('click', e => { e.preventDefault(); signaler('abandon'); });
+
+// ---------- 1. Venez-vous d'un autre logiciel ? ----------
+const ICONES_DEPART = {
+  oui: ['tm', '<path d="M4 12h12m0 0-4-4m4 4-4 4"/><path d="M20 5v14"/>'],
+  zero: ['hz', '<path d="M12 5v14M5 12h14"/>'],
+  tableur: ['mo', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/>'],
+};
+function dessinerDepart() {
+  $('#options-depart').innerHTML = QUESTIONS[0].options.map((o, i) => { const [c, p] = ICONES_DEPART[o.valeur];
+    return `<button class="option ${rep.depart === o.valeur ? 'on' : ''}" data-depart="${o.valeur}" type="button" style="--i:${i}"><span class="oi ${c}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span><b>${esc(o.libelle)}</b><small>${esc(o.detail)}</small></button>`; }).join('');
+}
+$('#options-depart').addEventListener('click', e => {
+  const b = e.target.closest('[data-depart]'); if (!b) return;
+  const avant = rep.depart; rep.depart = b.dataset.depart;
+  if (avant !== rep.depart) { rep.principal = null; rep.adresse = null; $('#adresse').value = ''; $('#adresse-info').textContent = ''; }
+  document.querySelectorAll('.option').forEach(x => x.classList.toggle('on', x === b)); majNav();
+  setTimeout(() => $('#continuer').click(), calme() ? 0 : 260);
+});
+
+// ---------- 2. Lequel gère votre club ? ----------
+let famille = 'tous';
+function famillesPrincipales() { return QUESTIONS.find(q => q.id === 'principal').familles(rep); }
+function vignette(l, on, extra = '') {
+  const forme = { web: 'En ligne', bureau: 'Sur ordinateur', 'les-deux': 'En ligne et sur ordinateur' }[l.forme] || FAMILLES.find(f => f.id === l.famille).nom;
+  return `<button class="carte-l ${on ? 'on' : ''}" data-l="${l.id}" type="button" aria-pressed="${on}">${pastille(l)}<span class="nom">${esc(l.nom)}</span><small>${esc(forme)}</small>${extra}<i class="coche" aria-hidden="true"></i></button>`;
 }
 function dessinerCatalogue() {
+  const fams = famillesPrincipales();
+  if (famille !== 'tous' && !fams.includes(famille)) famille = 'tous';
+  const tous = Object.values(LOGICIELS).filter(l => fams.includes(l.famille));
+  $('#familles').hidden = fams.length < 2;
+  $('#familles').innerHTML = [{ id: 'tous', nom: 'Tous' }, ...FAMILLES.filter(f => fams.includes(f.id))].map(f =>
+    `<button class="fam ${f.id === famille ? 'on' : ''}" data-f="${f.id}" type="button">${esc(f.nom)} <span>${f.id === 'tous' ? tous.length : tous.filter(l => l.famille === f.id).length}</span></button>`).join('');
   const q = cleRecherche($('#recherche').value);
-  const liste = Object.values(LOGICIELS).filter(l => (famille === 'tous' || l.famille === famille) && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
-  $('#catalogue').innerHTML = liste.map(vignette).join('') || `<p class="vide">Aucun logiciel ne correspond. Collez son adresse au-dessus : le robot sait explorer un logiciel qu’il ne connaît pas.</p>`;
+  const liste = tous.filter(l => (famille === 'tous' || l.famille === famille) && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
+  $('#catalogue').innerHTML = liste.map(l => vignette(l, rep.principal === l.id)).join('') || `<p class="vide">Aucun logiciel ne correspond. Collez son adresse juste en dessous : le robot sait explorer un logiciel qu’il ne connaît pas.</p>`;
   $('#catalogue').querySelectorAll('.carte-l').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 24)));
 }
-const cleRecherche = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-$('#familles').innerHTML = [{ id: 'tous', nom: 'Tous' }, ...FAMILLES].map(f => {
-  const n = f.id === 'tous' ? Object.keys(LOGICIELS).length : Object.values(LOGICIELS).filter(l => l.famille === f.id).length;
-  return `<button class="fam ${f.id === 'tous' ? 'on' : ''}" data-f="${f.id}" type="button">${esc(f.nom)} <span>${n}</span></button>`;
-}).join('');
-$('#familles').addEventListener('click', e => {
-  const b = e.target.closest('[data-f]'); if (!b) return;
-  famille = b.dataset.f;
-  document.querySelectorAll('.fam').forEach(x => x.classList.toggle('on', x === b));
-  dessinerCatalogue();
-});
+$('#familles').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; famille = b.dataset.f; dessinerCatalogue(); });
 $('#recherche').addEventListener('input', dessinerCatalogue);
 $('#catalogue').addEventListener('click', e => {
   const b = e.target.closest('[data-l]'); if (!b) return;
-  choisir(b.dataset.l);
+  rep.principal = b.dataset.l; rep.adresse = null; $('#adresse').value = ''; $('#adresse-info').textContent = '';
+  rep.outils = rep.outils.filter(x => x !== rep.principal);
+  dessinerCatalogue(); majNav();
+  setTimeout(() => { if (ici === 'principal') $('#continuer').click(); }, calme() ? 0 : 420);
 });
 let minuterie;
 $('#adresse').addEventListener('input', () => { clearTimeout(minuterie); minuterie = setTimeout(lireAdresse, 350); });
-$('#adresse-form').addEventListener('submit', e => { e.preventDefault(); lireAdresse(); });
+$('#adresse-form').addEventListener('submit', e => { e.preventDefault(); lireAdresse(); if (!$('#continuer').disabled) $('#continuer').click(); });
 function lireAdresse() {
   const v = $('#adresse').value.trim(), info = $('#adresse-info');
-  if (!v) { info.textContent = ''; info.className = ''; return; }
+  if (!v) { info.textContent = ''; info.className = ''; if (!rep.principal) rep.adresse = null; majNav(); return; }
   const l = reconnaitreAdresse(v);
-  if (l) {
-    info.className = 'ok'; info.textContent = `C’est ${l.nom} : on le connaît.`;
-    famille = 'tous'; document.querySelectorAll('.fam').forEach(x => x.classList.toggle('on', x.dataset.f === 'tous'));
-    $('#recherche').value = ''; choisir(l.id, v);
-  } else if (/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/i.test(v)) {
-    info.className = 'neuf'; info.textContent = 'Logiciel inconnu : le robot va l’explorer pour vous.';
-    choisir(null, v);
-  } else { info.className = ''; info.textContent = 'Collez une adresse complète, par exemple https://app.monlogiciel.fr'; }
+  if (l) { info.className = 'ok'; info.textContent = `C’est ${l.nom} : on le connaît.`; rep.principal = l.id; rep.adresse = v; famille = 'tous'; $('#recherche').value = ''; }
+  else if (/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/i.test(v)) { info.className = 'neuf'; info.textContent = 'Logiciel inconnu : le robot va l’explorer pour vous.'; rep.principal = null; rep.adresse = v; }
+  else { info.className = ''; info.textContent = 'Collez une adresse complète, par exemple https://app.monlogiciel.fr'; rep.adresse = null; }
+  dessinerCatalogue(); majNav();
 }
 
-function choisir(id, adresse) {
-  etat.logiciel = id; etat.adresse = adresse || null;
-  dessinerCatalogue();
-  const l = id ? LOGICIELS[id] : null;
-  $('#guide-titre').textContent = l ? `Récupérer vos données de ${l.nom}` : 'Exploration automatique de votre logiciel';
-  $('#guide').innerHTML = l ? cartesModes(l) : carteExploration(adresse);
-  $('#etape-guide').hidden = false; $('#etape-depot').hidden = false; $('#etape-bonus').hidden = !l || ['papier', 'excel', 'numbers', 'libreoffice', 'google-sheets', 'sire'].includes(l.id);
-  if (l) { $('#r-logiciel').value = l.nom; $('#r-editeur').value = l.editeur || l.nom; }
-  requestAnimationFrame(() => $('#etape-guide').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+// ---------- 3. Vos autres outils ----------
+function dessinerOutils() {
+  const q = cleRecherche($('#recherche-outils').value);
+  const html = FAMILLES_OUTILS.map(fid => {
+    const liste = Object.values(LOGICIELS).filter(l => l.famille === fid && l.id !== rep.principal && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
+    if (!liste.length) return '';
+    return `<h3 class="famille-titre">${esc(FAMILLES.find(f => f.id === fid).nom)}</h3><div class="grille">${liste.map(l => { const on = rep.outils.includes(l.id);
+      return vignette(l, on, on ? `<span class="rel ${l.relation}">${NOM_REL[l.relation]}</span>` : ''); }).join('')}</div>`;
+  }).join('');
+  $('#outils').innerHTML = html || '<p class="vide">Aucun outil ne correspond.</p>';
+  $('#outils').querySelectorAll('.carte-l').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 24)));
 }
+$('#recherche-outils').addEventListener('input', dessinerOutils);
+$('#outils').addEventListener('click', e => {
+  const b = e.target.closest('[data-l]'); if (!b) return;
+  const id = b.dataset.l, l = LOGICIELS[id];
+  rep.outils = rep.outils.includes(id) ? rep.outils.filter(x => x !== id) : [...rep.outils, id];
+  const on = rep.outils.includes(id);
+  b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  b.querySelector('.rel')?.remove();
+  if (on) b.querySelector('small').insertAdjacentHTML('afterend', `<span class="rel ${l.relation}">${NOM_REL[l.relation]}</span>`);
+  majNav();
+});
 
+// ---------- 4. Changer ou intégrer ----------
+function dessinerDecisions() {
+  $('#decisions').innerHTML = rep.outils.map((id, i) => {
+    const l = LOGICIELS[id], possibles = decisionsPossibles(id), d = decision(rep, id);
+    const commande = possibles.length > 1
+      ? `<div class="seg" role="radiogroup" aria-label="${esc(l.nom)}">${possibles.map(p => `<button type="button" role="radio" aria-checked="${p === d}" class="${p === d ? 'on' : ''}" data-id="${id}" data-d="${p}">${p === 'changer' ? 'Changer' : 'Intégrer'}</button>`).join('')}</div>`
+      : `<span class="fixe rel ${d === 'changer' ? 'remplace' : 'branche'}">${d === 'changer' ? 'Remplacé par Piaffe' : 'Gardé et branché'}</span>`;
+    return `<div class="decision" style="--i:${i}">${pastille(l, 36)}<span class="nom">${esc(l.nom)}</span>${commande}<p class="effet" id="effet-${id}">${esc(l.effets[d])}</p></div>`;
+  }).join('');
+}
+$('#decisions').addEventListener('click', e => {
+  const b = e.target.closest('[data-d]'); if (!b) return;
+  const { id, d } = b.dataset; rep.choix[id] = d;
+  b.parentNode.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); });
+  const p = document.getElementById('effet-' + id); p.style.opacity = 0;
+  setTimeout(() => { p.textContent = LOGICIELS[id].effets[d]; p.style.opacity = 1; }, calme() ? 0 : 150);
+});
+
+// ---------- 5. Plan de bascule ----------
+function itemResil(x, j) {
+  return `<li style="--j:${j}"><b>${esc(x.nom)}</b>${x.lettre
+    ? `<small>Après vérification de la reprise.</small><button class="lien" type="button" data-lettre="${esc(x.id || '')}" data-nom="${esc(x.nom)}" data-editeur="${esc(x.editeur || '')}">Préparer la lettre</button>`
+    : '<small>Gratuit : arrêtez simplement de vous en servir une fois la reprise vérifiée.</small>'}</li>`;
+}
+function dessinerPlan() {
+  const p = planDeBascule(rep);
+  const col = (cls, i, icone, titre, sous, items, rien) => `<div class="col ${cls}" style="--i:${i}"><h3><i>${icone}</i>${titre}</h3><p>${sous}</p>${items.length ? `<ul>${items.join('')}</ul>` : `<p class="rien">${rien}</p>`}</div>`;
+  $('#plan').innerHTML =
+    col('c-rec', 0, '↓', 'À récupérer', 'On copie tout dans Piaffe.', p.recuperer.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.quoi)}${x.garde ? ' (l’outil est gardé)' : ''}</small></li>`), 'Rien : vous partez de zéro.') +
+    col('c-bra', 1, '⇄', 'À brancher', 'Vous les gardez, on les relie.', p.brancher.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.effet)}</small></li>`), 'Aucun outil à garder.') +
+    col('c-res', 2, '✕', 'À résilier', 'Une fois la reprise vérifiée.', p.resilier.map(itemResil), 'Rien à résilier.');
+  $('#etape-bonus').hidden = true;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-lettre]'); if (!b) return;
+  const zone = $('#etape-bonus');
+  b.closest('.ecran').append(zone);
+  zone.hidden = false; $('#lettre-zone').hidden = true;
+  $('#lettre-pour').textContent = b.dataset.nom;
+  $('#r-logiciel').value = b.dataset.lettre ? b.dataset.nom : ''; $('#r-editeur').value = b.dataset.editeur;
+  zone.scrollIntoView({ behavior: calme() ? 'auto' : 'smooth', block: 'start' });
+});
+
+// ---------- 6. Récupération (logiciel principal) ----------
 const MODES = {
-  robot: { badge: 'Le plus magique', titre: 'Le robot navigateur', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 8h18M8.5 13.5l2 2 4.5-4.5"/></svg>' },
+  robot: { badge: 'Rien à installer', titre: 'Connexion assistée', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 8h18M8.5 13.5l2 2 4.5-4.5"/></svg>' },
   ordinateur: { badge: 'Logiciel installé', titre: 'Le robot pour ordinateur', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>' },
   codes: { badge: 'Sans rien faire', titre: 'Donnez-nous vos codes', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>' },
   export: { badge: 'Le plus sûr', titre: 'Export de fichier', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg>' },
 };
-function lienExt(adresse) { return adresse ? '?adresse=' + encodeURIComponent(adresse) : ''; }
+const EXPORT_GENERIQUE = ['Dans votre logiciel, cherchez Exporter, Excel ou CSV sur la liste des clients ou cavaliers.', 'Faites de même pour les chevaux, les tarifs, les factures et le planning.', 'Déposez les fichiers ici.'];
 function carteMode(mode, corps, i) {
   const m = MODES[mode];
   return `<article class="mode m-${mode}" style="--i:${i}"><header><span class="mi" aria-hidden="true">${m.icone}</span><div><span class="badge">${m.badge}</span><h3>${m.titre}</h3></div></header>${corps}</article>`;
 }
+const ASSISTEE = 'Le robot Piaffe ouvre votre logiciel sur nos serveurs ; vous vous connectez ici même, dans cette page, double authentification comprise ; il copie tout et vous montre le résultat. Rien à installer.';
+function blocAssistee(nom, adresse, inconnu) {
+  return `<p>${ASSISTEE}</p>${inconnu ? `<p class="fine">Nous ne connaissons pas encore ce logiciel : le robot explore seul les menus de <b>${esc(adresse)}</b>, et garde le chemin pour le prochain club.</p>` : ''}
+    <p class="actions-m"><button class="bouton" type="button" id="ouvrir-robot" data-adresse="${esc(adresse || '')}" data-nom="${esc(nom)}">Ouvrir mon logiciel</button></p><div id="robot-distant"></div><p class="fine" id="robot-info"></p>`;
+}
 function cartesModes(l) {
-  const a = etat.adresse;
+  const adresse = rep.adresse || (l.site ? 'https://' + l.site : '');
   const blocs = {
-    robot: `<ol><li>Installez l’extension Piaffe pour Chrome (gratuite).</li><li>Connectez-vous normalement à ${esc(l.nom)}, double authentification comprise.</li><li>Cliquez sur « Copier » : le robot parcourt les pages et copie cavaliers, chevaux, factures, planning.</li><li>Déposez ici le fichier <code>capture-piaffe.json</code> qu’il produit.</li></ol>
-      <p class="actions-m"><a class="bouton" href="${LIEN_EXTENSION}${lienExt(a)}" target="_blank" rel="noopener">Installer l’extension</a><a class="lien" href="${LIEN_MODE_EMPLOI}${lienExt(a)}" target="_blank" rel="noopener">Mode d’emploi</a></p><p class="fine">Tout tourne sur votre ordinateur : vos mots de passe ne nous sont jamais transmis.</p>`,
+    robot: blocAssistee(l.nom, adresse, false),
     ordinateur: `<ol><li>Téléchargez le robot Piaffe pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Piaffe et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
     codes: `<p>Confiez-nous l’accès : notre robot fait la migration à votre place, puis efface vos identifiants.</p>
       ${SERVEUR_MIGRATION ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
@@ -104,29 +223,41 @@ function cartesModes(l) {
       <button class="bouton second plein" ${SERVEUR_MIGRATION ? '' : 'disabled'}>Envoyer de façon chiffrée</button><p class="fine plein" id="codes-sortie">Chiffré dans votre navigateur avant envoi, effacé après la migration.</p></form>`,
     export: `<ol>${l.voies[0].etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` +
       (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Piaffe rapproche les licences et complète les fiches.</p>` : '') +
-      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, la passerelle reconnaît les colonnes toute seule.</p>` : ''),
+      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Piaffe reconnaît les colonnes tout seul.</p>` : ''),
   };
   return `<div class="modes">${['robot', 'ordinateur', 'codes', 'export'].filter(m => l.modes.includes(m)).map((m, i) => carteMode(m, blocs[m], i)).join('')}</div>`;
 }
-function carteExploration(adresse) {
-  return `<div class="modes">${carteMode('robot', `<p>Nous ne connaissons pas encore ce logiciel : le robot l’explore pour vous.</p><ol><li>Installez l’extension Piaffe pour Chrome.</li><li>Elle ouvre <b>${esc(adresse)}</b> : connectez-vous normalement.</li><li>Cliquez sur « Explorer » : le robot parcourt seul les menus et copie tout ce qu’il trouve (listes, fiches, tableaux).</li><li>Déposez ici le fichier <code>capture-piaffe.json</code>. Le chemin suivi est gardé : le prochain club qui vient de ce logiciel ira plus vite.</li></ol>
-    <p class="actions-m"><a class="bouton" href="${LIEN_EXTENSION}${lienExt(adresse)}" target="_blank" rel="noopener">Installer l’extension</a><a class="lien" href="${LIEN_MODE_EMPLOI}${lienExt(adresse)}" target="_blank" rel="noopener">Mode d’emploi</a></p>`, 0)}
-    ${carteMode('export', `<ol>${EXPORT_GENERIQUE.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`, 1)}</div>`;
+function dessinerRecuperation() {
+  const l = rep.principal && LOGICIELS[rep.principal];
+  const plan = planDeBascule(rep);
+  if (l) { $('#guide-titre').textContent = `Récupérer vos données de ${l.nom}`; $('#guide').innerHTML = cartesModes(l); }
+  else if (rep.adresse && rep.depart !== 'zero') { $('#guide-titre').textContent = 'Récupérer vos données'; $('#guide').innerHTML = `<div class="modes">${carteMode('robot', blocAssistee('votre logiciel', rep.adresse, true), 0)}${carteMode('export', `<ol>${EXPORT_GENERIQUE.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`, 1)}</div>`; }
+  else { $('#guide-titre').textContent = plan.recuperer.length ? 'Récupérer vos autres outils' : 'Rien à récupérer'; $('#guide').innerHTML = plan.recuperer.length ? '' : '<p class="bravo">Vous partez de zéro : il n’y a rien à reprendre. Vous pouvez tout de même déposer un fichier si vous en avez un.</p>'; }
+  const autres = plan.recuperer.filter(x => !x.principal && x.id);
+  $('#autres').innerHTML = autres.length ? `<div class="bloc"><h3>Et vos autres outils</h3><p class="sous">Un export suffit pour chacun ; déposez-les avec le reste.</p>${autres.map(x => `<details class="voie"><summary>${esc(x.nom)} : ${esc(x.quoi)}</summary><ol>${LOGICIELS[x.id].voies[0].etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></details>`).join('')}</div>` : '';
+  const aResilier = integre ? plan.resilier : [];
+  $('#resil-integre').innerHTML = aResilier.length ? `<div class="bloc col c-res" style="--i:0"><h3><i>✕</i>À résilier ensuite</h3><p>Une fois la reprise vérifiée, la lettre est prête.</p><ul>${aResilier.map(itemResil).join('')}</ul></div>` : '';
+  $('#importer-zone').hidden = !integre; $('#envoi-details').hidden = integre;
 }
-const EXPORT_GENERIQUE = ['Dans votre logiciel, cherchez Exporter, Excel ou CSV sur la liste des clients ou cavaliers.', 'Faites de même pour les chevaux, les tarifs, les factures et le planning.', 'Déposez les fichiers ici.'];
+document.addEventListener('click', async e => {
+  const b = e.target.closest('#ouvrir-robot'); if (!b) return;
+  const robot = globalThis.PiaffeRobot;
+  if (robot?.ouvrir) { b.disabled = true; try { await robot.ouvrir(b.dataset.adresse, { nom: b.dataset.nom }); } finally { b.disabled = false; } }
+  else $('#robot-info').textContent = 'Bientôt disponible. En attendant, utilisez l’export de fichier ci-dessous.';
+});
+window.addEventListener('piaffe:capture', e => { if (e.detail?.fichier) ajouter([e.detail.fichier]); });
 document.addEventListener('submit', async e => {
   if (e.target.id !== 'codes') return;
   e.preventDefault();
   const f = new FormData(e.target), s = $('#codes-sortie');
   try {
-    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: etat.logiciel, adresse: etat.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
+    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
     s.textContent = 'Reçu et chiffré. Nous vous prévenons dès que la migration est prête (' + (r.statut || 'en attente') + ').';
     e.target.reset();
   } catch (err) { s.textContent = err.code === 'indisponible' ? 'Bientôt disponible : rien n’a été envoyé.' : 'Échec : ' + err.message; }
 });
-dessinerCatalogue();
 
-// Bonus : lettre de résiliation
+// Lettre de résiliation
 $('#resiliation').addEventListener('submit', e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target));
@@ -138,7 +269,40 @@ $('#copier-lettre').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText($('#lettre').value); toast('Lettre copiée.'); }
   catch { $('#lettre').select(); toast('Sélectionnée : faites Ctrl+C (ou Cmd+C).'); }
 });
-$('#dl-lettre').addEventListener('click', () => telecharger('lettre-resiliation.txt', $('#lettre').value, 'text/plain'));
+$('#dl-lettre').addEventListener('click', () => telecharger('lettre-resiliation-' + cleRecherche($('#r-logiciel').value || 'logiciel').replace(/[^a-z0-9]+/g, '-') + '.txt', $('#lettre').value, 'text/plain'));
+
+// Fin du parcours intégré : on prévient l'appli (iframe) ou on y retourne.
+function signaler(etatFin, job_id = null, controle = null) {
+  if (window.parent !== window) {
+    try { window.parent.postMessage({ type: 'piaffe-migration', etat: etatFin, job_id, controle }, location.origin); } catch {}
+    return;
+  }
+  const retour = params.get('retour'); if (!retour) return;
+  try {
+    const u = new URL(retour, location.href);
+    if (u.origin !== location.origin) return;           // pas de redirection vers un autre site
+    u.searchParams.set('migration', etatFin); if (job_id) u.searchParams.set('job', job_id);
+    location.href = u.href;
+  } catch {}
+}
+$('#importer').addEventListener('click', async () => {
+  const s = $('#importer-sortie'), b = $('#importer'); b.disabled = true; s.textContent = 'Essai en cours…';
+  try {
+    const r = await envoyer(etat.paquet, { essai: true, journal: m => { s.textContent += '\n' + m; } });
+    s.textContent += '\nEssai réussi : rien n’a encore été enregistré. Vérifiez les chiffres, puis confirmez.';
+    $('#confirmer').hidden = false; b.hidden = true; etat.essai = r;
+  } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
+});
+$('#confirmer').addEventListener('click', async () => {
+  const s = $('#importer-sortie'), b = $('#confirmer'); b.disabled = true; s.textContent = 'Import en cours…';
+  try {
+    const r = await envoyer(etat.paquet, { essai: false, journal: m => { s.textContent += '\n' + m; } });
+    s.textContent += '\nC’est fait : vos données sont dans Piaffe.';
+    signaler('termine', r.job_id, etat.paquet.controle);
+  } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
+});
+
+aller(ici);
 
 // 2. Dépôt des fichiers
 const zone = $('#zone');
@@ -159,7 +323,7 @@ async function ajouter(fichiers) {
       const tables = await lireFichier(f.name, await f.arrayBuffer(), { inflate });
       for (const t of tables) {
         if (t.erreur) { toast(`${f.name} : ${t.erreur}`); continue; }
-        if (etat.logiciel && LOGICIELS[etat.logiciel]?.famille === 'equestre' && !/ffe|sif|licenci/i.test(f.name)) t.logiciel = etat.logiciel;
+        if (rep.principal && LOGICIELS[rep.principal]?.famille === 'equestre' && !/ffe|sif|licenci/i.test(f.name)) t.logiciel = rep.principal;
         etat.tables.push(t);
       }
     } catch (err) { toast(`${f.name} : fichier illisible (${err.message}).`); }

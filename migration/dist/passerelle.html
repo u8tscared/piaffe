@@ -113,40 +113,111 @@ footer{color:var(--mut);font-size:14px;text-align:center;padding:12px;line-heigh
 
 @media (max-width:640px){#envoi{grid-template-columns:1fr}.flux{display:none}section{padding:18px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Parcours pas à pas */
+.hero{padding:34px 24px 32px;margin-bottom:18px}
+.progres{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);margin:0 -16px 14px;padding:10px 16px 12px}
+.progres .piste{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.progres .rempli{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--strass));transition:width .5s var(--ease)}
+.progres .etapes{display:flex;justify-content:space-between;gap:6px;margin-top:8px;font-size:13px;color:var(--mut)}
+.progres .etapes span{white-space:nowrap;transition:color .3s}.progres .etapes span.fait{color:var(--ink)}.progres .etapes span.ici{color:var(--acc);font-weight:700}
+.progres .ou{display:none;font-size:13px;color:var(--mut);margin-top:6px}.progres .ou b{color:var(--ink)}
+.ecran{min-height:340px}
+.ecran:focus{outline:none}
+.ecran.avant{animation:avant .45s var(--ease) both}.ecran.arriere{animation:arriere .45s var(--ease) both}
+@keyframes avant{from{opacity:0;transform:translateX(28px)}}@keyframes arriere{from{opacity:0;transform:translateX(-28px)}}
+.ecran h2{font-size:clamp(24px,4vw,30px)}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.nav .bouton:disabled{opacity:.45;cursor:not-allowed}.nav .retour{visibility:visible}.nav .retour[hidden]{display:inline-flex;visibility:hidden}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.option{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:6px;animation:mont .45s var(--ease) both;animation-delay:calc(var(--i)*70ms);transition:transform .25s var(--ease),border-color .2s,box-shadow .25s,background .2s}
+.option:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(10,22,54,.10)}
+.option b{font-size:18px}.option small{color:var(--mut)}
+.option .oi{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:6px}
+.option.on{border-color:var(--acc);background:var(--acc-pale)}
+.famille-titre{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:20px 0 10px}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.carte-l .rel{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;align-self:flex-start;margin-top:6px}
+.rel.branche{background:var(--hz-bg);color:var(--hz-ink)}.rel.remplace{background:var(--rd-bg);color:var(--rd-ink)}.rel.au_choix{background:var(--mo-bg);color:var(--mo-ink)}
+.decisions{display:grid;gap:10px}
+.decision{display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:center;border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;animation:mont .4s var(--ease) both;animation-delay:calc(var(--i)*60ms)}
+.decision .logo{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;overflow:hidden;background:#fff;box-shadow:0 0 0 1px var(--line);grid-row:span 2}
+.decision .logo img{width:36px;height:36px;object-fit:contain}.decision .logo.initiale{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;box-shadow:none}
+.decision .nom{font-weight:700}.decision .effet{grid-column:2/-1;color:var(--mut);font-size:15px;margin:0;transition:opacity .2s}
+.seg{display:inline-flex;background:var(--bg);border-radius:12px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:14px;font-weight:600;border:0;border-radius:9px;padding:7px 12px;background:transparent;color:var(--mut);cursor:pointer;transition:background .2s,color .2s}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(10,22,54,.12)}
+.fixe{font-size:13px;font-weight:700;border-radius:99px;padding:5px 10px;white-space:nowrap}
+.plan{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.col{border-radius:20px;padding:16px;background:var(--bg);animation:mont .5s var(--ease) both;animation-delay:calc(var(--i)*120ms)}
+.col h3{margin:0 0 2px;font-size:18px;display:flex;align-items:center;gap:8px}.col h3 i{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-style:normal}
+.col>p{margin:0 0 12px;color:var(--mut);font-size:14px}
+.col ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.col li{background:var(--card);border-radius:14px;padding:10px 12px;font-size:15px;animation:mont .4s var(--ease) both;animation-delay:calc(var(--i)*120ms + var(--j)*70ms + 200ms)}
+.col li b{display:block}.col li small{color:var(--mut);display:block;margin-top:2px}.col li .lien{padding:0;margin-top:6px;font-size:14px}
+.col .rien{color:var(--mut);font-size:14px}
+.c-rec h3 i{background:var(--tm-bg);color:var(--tm-ink)}.c-bra h3 i{background:var(--hz-bg);color:var(--hz-ink)}.c-res h3 i{background:var(--cr-bg);color:var(--cr-ink)}
+.bloc{margin-top:22px}.bloc>h3{font-size:19px;margin:0 0 4px}.bloc>.sous{margin-bottom:12px}
+#etape-bonus{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}#etape-bonus h3{margin:0 0 4px}
+.bouton[hidden]{display:none}
+.passer{display:none;margin-left:auto}.integre .passer{display:inline}
+.integre .hero{display:none}.integre .progres{display:none}
+.importer{background:var(--acc-pale);border-radius:18px;padding:16px;margin-top:18px}.importer h3{margin:0 0 6px}
+.importer pre{white-space:pre-wrap;font-size:13px;margin:10px 0 0;background:var(--card);border-radius:12px;padding:10px;max-height:200px;overflow:auto}.importer pre:empty{display:none}
+#robot-distant:empty{display:none}#robot-distant{margin:10px 0}
+@media (max-width:760px){.plan{grid-template-columns:1fr}.options{grid-template-columns:1fr}.progres .etapes{display:none}.progres .ou{display:block}}
+@media (max-width:640px){.grille{grid-template-columns:repeat(2,minmax(0,1fr))}.decision{grid-template-columns:auto 1fr}.decision .seg,.decision .fixe{grid-column:1/-1;justify-self:start}.decision .logo{grid-row:auto}.decision .effet{grid-column:1/-1}}
 </style></head><body><main>
 <div class="hero">
   <div class="marque"><i></i> Piaffe</div>
-  <h1>Changez de logiciel sans rien ressaisir.</h1>
-  <p>Choisissez votre ancien logiciel : un robot récupère vos cavaliers, familles, chevaux, forfaits, factures et reprises, ou vous déposez simplement vos exports. Piaffe range tout en quelques secondes.</p>
-  <div class="garantie"><span>Rien ne quitte votre ordinateur</span><span>Vos fichiers ne sont pas modifiés</span><span>Gratuit</span></div>
+  <h1>Passez à Piaffe sans rien ressaisir.</h1>
+  <p>On récupère tout de votre ancien logiciel, on branche les outils que vous gardez.</p>
+  <div class="garantie"><span>Rien à installer</span><span>Vos données restent à vous</span><span>Gratuit</span></div>
   <svg class="flux" viewBox="0 0 340 120" aria-hidden="true"><path id="chemin" d="M10 90 C 90 10, 200 130, 330 30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="4 6"/>
     <circle r="5" fill="#6d8bff" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#dcf3e4" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#ffedcf" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/></svg>
 </div>
+<div class="progres" aria-hidden="true"><div class="piste"><div class="rempli" id="rempli"></div></div><div class="etapes" id="etapes"></div><div class="ou" id="ou"></div></div>
 
-<section id="etape-source" class="vitrine"><h2><span class="n">1</span>Changer de logiciel</h2><p class="sous">Choisissez celui que vous quittez : on vous montre la façon la plus simple d’en sortir vos données.</p>
-  <form id="adresse-form" class="adresse"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-    <label for="adresse">Votre logiciel n’est pas dans la liste ? Collez son adresse</label><input id="adresse" type="url" inputmode="url" placeholder="https://…" autocomplete="off"><span id="adresse-info" aria-live="polite"></span></form>
-  <div class="filtres"><input id="recherche" type="search" placeholder="Rechercher : Kavalog, HelloAsso, Pennylane…" aria-label="Rechercher un logiciel"><div id="familles" role="tablist"></div></div>
-  <div id="catalogue"></div></section>
-<section id="etape-guide" hidden><h2><span class="n">2</span><span id="guide-titre">Récupérez vos données</span></h2><p class="sous">Trois façons, de la plus magique à la plus sûre. Les données sont à vous : chaque logiciel doit vous laisser les récupérer.</p><div id="guide"></div></section>
-<section id="etape-depot" hidden><h2><span class="n">3</span>Déposez vos fichiers</h2><p class="sous">CSV, Excel (.xlsx) ou export « Excel » d’un ancien logiciel. Plusieurs à la fois.</p>
-  <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
-  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls,.json,.ics"></label>
-  <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></section>
-<section id="etape-fichiers" hidden><h2><span class="n">4</span>Ce que la passerelle a compris</h2><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></section>
-<section id="etape-resultat" hidden><h2><span class="n">5</span>Prêt pour Piaffe</h2><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
-  <div id="tuiles"></div><div id="avert"></div>
-  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Piaffe</button></div>
-  <details><summary>Envoyer directement à mon compte Piaffe</summary>
-  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
-  <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details>
-</section>
-<section id="etape-bonus" hidden><h2><span class="n">★</span>Bonus : résilier l’ancien abonnement</h2><p class="sous">Piaffe prépare la lettre recommandée, avec la demande de restitution de vos données.</p>
+<section class="ecran" data-ecran="depart" tabindex="-1"><h2>Venez-vous d’un autre logiciel ?</h2><p class="sous">On adapte la suite à votre point de départ.</p><div class="options" id="options-depart"></div></section>
+
+<section class="ecran" data-ecran="principal" tabindex="-1" hidden><h2>Lequel gère votre club aujourd’hui ?</h2><p class="sous">C’est celui qu’on vide entièrement, puis que vous résiliez.</p>
+  <div class="filtres"><input id="recherche" type="search" placeholder="Rechercher : Kavalog, Equimondo…" aria-label="Rechercher un logiciel"><div id="familles" role="tablist"></div></div>
+  <div id="catalogue" class="grille"></div>
+  <form id="adresse-form" class="adresse" style="margin-top:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+    <label for="adresse">Autre logiciel ? Collez son adresse</label><input id="adresse" type="url" inputmode="url" placeholder="https://…" autocomplete="off"><span id="adresse-info" aria-live="polite"></span></form></section>
+
+<section class="ecran" data-ecran="outils" tabindex="-1" hidden><h2>Quels autres outils utilisez-vous ?</h2><p class="sous">Cochez tout ce qui sert au club : paiements, comptabilité, fédération, agenda… À l’étape suivante, vous choisirez lesquels garder.</p>
+  <input id="recherche-outils" type="search" placeholder="Rechercher : SumUp, HelloAsso, Pennylane…" aria-label="Rechercher un outil" style="font:inherit;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card);color:var(--ink);width:100%">
+  <div id="outils"></div></section>
+
+<section class="ecran" data-ecran="choix" tabindex="-1" hidden><h2>Pour chacun : on change ou on intègre ?</h2><p class="sous">Le choix recommandé est déjà fait. <b>Changer</b> : Piaffe le remplace, on récupère et vous résiliez. <b>Intégrer</b> : vous le gardez, on le branche.</p><div class="decisions" id="decisions"></div></section>
+
+<section class="ecran" data-ecran="plan" tabindex="-1" hidden><h2>Votre plan de bascule</h2><p class="sous">Voici exactement ce qui va se passer.</p><div class="plan" id="plan"></div>
+  <div id="etape-bonus" hidden><h3>Lettre de résiliation : <span id="lettre-pour"></span></h3><p class="sous">Piaffe prépare la lettre recommandée, avec la demande de restitution de vos données.</p>
   <form id="resiliation" class="resil"><input name="club" placeholder="Nom du club" required><input name="siret" placeholder="SIRET"><input name="adresse" class="plein" placeholder="Adresse du club"><input name="ville" placeholder="Ville (pour la date)"><input name="signataire" placeholder="Signataire (nom, qualité)">
   <input id="r-logiciel" name="logiciel" placeholder="Logiciel"><input id="r-editeur" name="editeur" placeholder="Éditeur"><input name="adresse_editeur" class="plein" placeholder="Adresse de l’éditeur (sur votre contrat ou vos factures)"><input name="numero_client" placeholder="Numéro client"><label class="date">Date d’effet souhaitée <input name="date_effet" type="date"></label>
   <button class="bouton plein">Préparer la lettre</button></form>
-  <div id="lettre-zone" hidden><p class="relire">À relire avant envoi : vérifiez le préavis prévu par votre contrat.</p><textarea id="lettre" spellcheck="true"></textarea><div class="actions"><button class="bouton" id="copier-lettre" type="button">Copier</button><button class="bouton second" id="dl-lettre" type="button">Télécharger (.txt)</button></div></div></section>
-<footer>Les marques et logos cités appartiennent à leurs propriétaires ; Piaffe n’est pas affilié à ces éditeurs.<br>Passerelle Piaffe · prototype. Les fichiers sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous ne cliquez pas sur « Envoyer ».</footer>
+  <div id="lettre-zone" hidden><p class="relire">À relire avant envoi : vérifiez le préavis prévu par votre contrat.</p><textarea id="lettre" spellcheck="true"></textarea><div class="actions"><button class="bouton" id="copier-lettre" type="button">Copier</button><button class="bouton second" id="dl-lettre" type="button">Télécharger (.txt)</button></div></div></div></section>
+
+<section class="ecran" data-ecran="recuperation" tabindex="-1" hidden><h2 id="guide-titre">Récupération</h2><p class="sous" id="guide-sous">Choisissez comment on sort vos données. Elles sont à vous : chaque logiciel doit vous laisser les récupérer.</p>
+  <div id="guide"></div><div id="autres"></div><div id="resil-integre"></div>
+  <div class="bloc" id="etape-depot"><h3>Déposez vos fichiers</h3><p class="sous">CSV, Excel (.xlsx), agenda (.ics) ou fichier du robot. Plusieurs à la fois.</p>
+  <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls,.json,.ics"></label>
+  <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></div>
+  <div class="bloc" id="etape-fichiers" hidden><h3>Ce que Piaffe a compris</h3><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></div>
+  <div class="bloc" id="etape-resultat" hidden><h3>Prêt pour Piaffe</h3><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
+  <div id="tuiles"></div><div id="avert"></div>
+  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Piaffe</button></div>
+  <div class="importer" id="importer-zone" hidden><h3>Importer dans Piaffe</h3><p class="fine">On fait d’abord un essai : rien n’est enregistré tant que vous ne confirmez pas.</p>
+    <div class="actions"><button class="bouton" id="importer" type="button">Importer dans Piaffe</button><button class="bouton" id="confirmer" type="button" hidden>Confirmer l’import</button></div><pre id="importer-sortie"></pre></div>
+  <details id="envoi-details"><summary>Envoyer directement à mon compte Piaffe</summary>
+  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
+  <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details></div>
+</section>
+
+<div class="nav" id="nav"><button class="bouton second retour" id="retour" type="button">Retour</button><a class="lien passer" id="passer" href="#">Passer cette étape</a><button class="bouton" id="continuer" type="button">Continuer</button></div>
+<footer>Les marques et logos cités appartiennent à leurs propriétaires ; Piaffe n’est pas affilié à ces éditeurs.<br>Passerelle Piaffe · prototype. Les fichiers déposés sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous n’importez pas.</footer>
 </main>
 <script>globalThis.EXEMPLES={"cavalerie.xlsx":"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","equipe-salaries.xls":"PGh0bWw+PGhlYWQ+PG1ldGEgY2hhcnNldD0idXRmLTgiPjwvaGVhZD48Ym9keT48dGFibGU+Cjx0cj48dGg+Tm9tPC90aD48dGg+UHLDqW5vbTwvdGg+PHRoPlBvc3RlPC90aD48dGg+Q29udHJhdDwvdGg+PHRoPkhldXJlcyBoZWJkbzwvdGg+PHRoPlTDqWzDqXBob25lPC90aD48L3RyPgo8dHI+PHRkPkJMQU5DPC90ZD48dGQ+SHVnbzwvdGQ+PHRkPk1vbml0ZXVyPC90ZD48dGQ+Q0RJPC90ZD48dGQ+MzU8L3RkPjx0ZD4wNiAwMSAwMiAwMyAwNDwvdGQ+PC90cj4KPHRyPjx0ZD5OSUNPTEFTPC90ZD48dGQ+SmFkZTwvdGQ+PHRkPkFwcHJlbnRpZSBCUEpFUFM8L3RkPjx0ZD5BcHByZW50aXNzYWdlPC90ZD48dGQ+MzU8L3RkPjx0ZD4wNiAwNSAwNiAwNyAwODwvdGQ+PC90cj4KPHRyPjx0ZD5HVcOJUklOPC90ZD48dGQ+VGhvbWFzPC90ZD48dGQ+TW9uaXRldXIgREVKRVBTPC90ZD48dGQ+Q0RJPC90ZD48dGQ+MzA8L3RkPjx0ZD48L3RkPjwvdHI+CjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=","ffe-licencies-2027.xlsx":"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","kavalog-cavaliers.csv":"TGlzdGUgZGVzIGNhdmFsaWVycyAtIEVjdXJpZSBkZSBkZW1vbnN0cmF0aW9uIC0gZWRpdGUgbGUgMjQvMTEvMjAyNg0KDQpDb2RlIGNhdmFsaWVyO05PTTtQculub207TukoZSkgbGU7QWRyZXNzZTtDUDtWaWxsZTtU6WwgcG9ydGFibGU7RS1tYWlsO06wIGxpY2VuY2U7R2Fsb3A7UmVzcG9uc2FibGUgbOlnYWw7VOlsIHJlc3BvbnNhYmxlO0ZvcmZhaXQ7U29sZGUNCkMwMDAxO01BUlRJTjtM6WE7MTQvMDMvMjAxMjszIHJ1ZSBkZXMgTGlsYXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs2IDEyIDM0IDU2IDc4O2ZhbWlsbGUubWFydGluQGV4ZW1wbGUuZnI7MTIzNDU2N0E7NDtNQVJUSU4gU29waGllOzA2IDExIDIyIDMzIDQ0O0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MCwwMA0KQzAwMDI7TUFSVElOO0h1Z287MDIvMDkvMjAxNTszIHJ1ZSBkZXMgTGlsYXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs7ZmFtaWxsZS5tYXJ0aW5AZXhlbXBsZS5mcjsxMjM0NTY4QjsyO01BUlRJTiBTb3BoaWU7MDYgMTEgMjIgMzMgNDQ7Rm9yZmFpdCBhbm51ZWwgMSBoIC8gc2VtYWluZTstMTk1LDAwDQpDMDAwMztMQVVSRU5UO0VtbWE7MjEvMDYvMjAwOTsxMiBhdmVudWUgZHUgUGFyYzs3ODEyMDtSYW1ib3VpbGxldDswNyA0NSA2NyA4OSAwMTtlbW1hLmxhdXJlbnRAZXhlbXBsZS5mcjsyMzQ1Njc4Qzs2Ozs7Rm9yZmFpdCBhbm51ZWwgMiBoIC8gc2VtYWluZTswLDAwDQpDMDAwNDtST1VTU0VBVTtDaGxv6TswNS8wMS8xOTg4OzggY2hlbWluIGRlcyBQculzOzc4NzMwO1JvY2hlZm9ydC1lbi1ZdmVsaW5lczswNi45OC43Ni41NC4zMjtjaGxvZS5yb3Vzc2VhdUBleGVtcGxlOzM0NTY3ODlEOzc7OztQcm9wcmnpdGFpcmUsIGFjY+hzIGluc3RhbGxhdGlvbnM7LTQyMCwwMA0KQzAwMDU7RkFVUkU7SnVsZXM7MzAvMTEvMjAxNzs7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczs7OzsxOzs7QmFieSBwb25leSAodHJpbWVzdHJlKTswLDAwDQpDMDAwNjtHSVJBUkQ7TWFub247MTcvMDcvMjAwMTs0IHBsYWNlIGRlIGwnyWdsaXNlOzkxNDEwO0RvdXJkYW47MDYzNDU2Nzg5MDttYW5vbi5naXJhcmRAZXhlbXBsZS5mcjs0NTY3ODkwRTs1Ozs7Q2FydGUgMTAgc+lhbmNlczstNTgsMDANCkMwMDA3O0xBTUJFUlQ7SW7oczswOS8wMi8yMDEzOzE5IHJ1ZSBQYXN0ZXVyOzc4MTIwO1JhbWJvdWlsbGV0Ozs7NTY3ODkwMUY7MztMQU1CRVJUIEp1bGllbjswNiAyMiAzMyA0NCA1NTtGb3JmYWl0IGFubnVlbCAxIGggLyBzZW1haW5lOzAsMDANCkMwMDA4O0ZPTlRBSU5FO0NhbWlsbGU7MjMvMDQvMTk5NTsyIGFsbOllIGRlcyBDaOpuZXM7Nzg3MzA7U2FpbnQtQXJub3VsdC1lbi1ZdmVsaW5lczswNiA1NSA0NCAzMyAyMjtjYW1pbGxlLmZvbnRhaW5lQGV4ZW1wbGUuZnI7Njc4OTAxMkc7Nzs7O0RlbWktcGVuc2lvbiAyIGpvdXJzOzAsMDANCg==","kavalog-factures.csv":"TrAgZmFjdHVyZTtEYXRlO0NvZGUgY2xpZW50O0NsaWVudDtE6XNpZ25hdGlvbjtRdOk7UFUgVFRDO1RhdXggVFZBO1RvdGFsIFRUQztS6Wds6TtNb2RlIGRlIHLoZ2xlbWVudA0KRkEyMDI2LTA0MTI7MDEvMDkvMjAyNjtDMDAwMTtNQVJUSU4gU29waGllO0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MTs3ODAsMDA7NSw1JTs3ODAsMDA7NzgwLDAwO1By6WzodmVtZW50DQpGQTIwMjYtMDQxMjswMS8wOS8yMDI2O0MwMDAxO01BUlRJTiBTb3BoaWU7TGljZW5jZSBGRkUgMjAyNyBtb2lucyBkZSAxOCBhbnM7MTsyNSwwMDswJTsyNSwwMDsyNSwwMDtQculs6HZlbWVudA0KRkEyMDI2LTA0MTM7MDEvMDkvMjAyNjtDMDAwMjtNQVJUSU4gU29waGllO0ZvcmZhaXQgYW5udWVsIDEgaCAvIHNlbWFpbmU7MTs3ODAsMDA7NSw1JTs3ODAsMDA7NTg1LDAwO0No6HF1ZQ0KRkEyMDI2LTA0MjA7MDEvMTEvMjAyNjtDMDAwNDtST1VTU0VBVSBDaGxv6TtQZW5zaW9uIGJveCBwYWRkb2NrIG5vdmVtYnJlOzE7NDIwLDAwOzIwJTs0MjAsMDA7MCwwMDtWaXJlbWVudA0KRkEyMDI2LTA0MjE7MDUvMTEvMjAyNjtDMDAwNjtHSVJBUkQgTWFub247Q2FydGUgMTAgc+lhbmNlczsxOzI5MCwwMDs1LDUlOzI5MCwwMDsyMzIsMDA7Q2FydGUgYmFuY2FpcmUNCkFWMjAyNi0wMDA3OzEwLzExLzIwMjY7QzAwMDM7TEFVUkVOVCBFbW1hO0F2b2lyIGNvdXJzIGFubnVs6TsxOy0zOCwwMDs1LDUlOy0zOCwwMDswLDAwOw0K","planning-reprises.csv":"Sm91cjtIZXVyZSBkw6lidXQ7SGV1cmUgZmluO1JlcHJpc2U7TW9uaXRldXI7Tml2ZWF1O0xpZXU7Q2F2YWxpZXI7Q2hldmFsCk1lcmNyZWRpOzE0aDAwOzE1aDAwO0dhbG9wIDMtNDtIdWdvO0dhbG9wIDMtNDtHcmFuZCBtYW7DqGdlO01BUlRJTiBMw6lhO1ZhbmlsbGUKTWVyY3JlZGk7MTRoMDA7MTVoMDA7R2Fsb3AgMy00O0h1Z287R2Fsb3AgMy00O0dyYW5kIG1hbsOoZ2U7TEFNQkVSVCBJbsOocztPcGFsZQpNZXJjcmVkaTsxNGgwMDsxNWgwMDtHYWxvcCAzLTQ7SHVnbztHYWxvcCAzLTQ7R3JhbmQgbWFuw6hnZTtDSEVWQUxJRVIgTmF0aGFuO1Rvcm5hZG8KU2FtZWRpOzEwOjAwOzEwOjQ1O0JhYnkgcG9uZXk7SmFkZTtEw6lidXRhbnQ7UGV0aXRlIGNhcnJpw6hyZTtGQVVSRSBKdWxlcztWYW5pbGxlClNhbWVkaTsxMDowMDsxMDo0NTtCYWJ5IHBvbmV5O0phZGU7RMOpYnV0YW50O1BldGl0ZSBjYXJyacOocmU7RFVQT05UIFJvc2U7Ck1hcmRpOzE4OjAwOzE5OjAwO0dhbG9wIDYtNyBDU087VGhvbWFzO0dhbG9wIDYtNztDYXJyacOocmUgZCdob25uZXVyO0xBVVJFTlQgRW1tYTtUb3JuYWRvCg==","tarifs.csv":"77u/RMOpc2lnbmF0aW9uLENhdMOpZ29yaWUsUHJpeCBUVEMsVFZBLE5iIHPDqWFuY2VzCiJGb3JmYWl0IGFubnVlbCAxIGggLyBzZW1haW5lIixFbnNlaWduZW1lbnQsIjc4MCwwMCIsNS41LDMzCiJGb3JmYWl0IGFubnVlbCAyIGggLyBzZW1haW5lIixFbnNlaWduZW1lbnQsIjEgMzkwLDAwIiw1LjUsNjYKQ2FydGUgMTAgc8OpYW5jZXMsRW5zZWlnbmVtZW50LCIyOTAsMDAiLDUuNSwxMAoiQmFieSBwb25leSAodHJpbWVzdHJlKSIsRW5zZWlnbmVtZW50LCIxOTUsMDAiLDUuNSwxMQpQZW5zaW9uIGJveCBwYWRkb2NrLFBlbnNpb24sIjQyMCwwMCIsMjAsCg=="}</script>
 <script type="module">
@@ -876,6 +947,55 @@ for (const [id, nom, famille, forme, site, domaines, confirme, etapes, editeur] 
   };
 }
 
+// Que devient chaque outil quand le club passe à Piaffe.
+//   relation 'remplace' : Piaffe fait le même travail ; on récupère, puis le club résilie (choix recommandé « Changer »).
+//   relation 'branche'  : on le garde et on le relie à Piaffe (choix recommandé « Intégrer »).
+//   relation 'au_choix' : les deux se tiennent ; « Intégrer » est présélectionné.
+// effets.changer / effets.integrer : phrase affichée selon le choix ; null = choix impossible (Piaffe ne sait pas le faire).
+// Statuts vérifiés dans demo/modules/95-plateforme.js (connecteurs) : ce qui n'y est pas actif est dit « bientôt » ou « par export ».
+const CHANGE_GESTION = l => `On récupère tout de ${l.nom} (cavaliers, familles, chevaux, forfaits, factures, planning), puis vous résiliez avec la lettre prête.`;
+const COMPTA_EXPORT = 'Gardé. Piaffe prépare l’export des écritures (FEC) pour votre comptable ; l’envoi direct arrive bientôt.';
+const PAIE_EXPORT = 'Gardé. Piaffe prépare chaque mois l’export des heures et variables de paie ; l’envoi direct arrive bientôt.';
+const TABLEUR = 'Changé. On reprend le tableau dans Piaffe : plus besoin de le tenir à jour à côté.';
+const R = {
+  ffe: ['branche', null, 'Gardé. On récupère vos licenciés (export Club SIF) pour compléter les fiches ; la prise de licence depuis Piaffe viendra avec l’agrément FFE.', 'la liste des licenciés'],
+  ffecompet: ['branche', null, 'Gardé. On reprend vos engagements et résultats par export ; le branchement direct viendra avec l’agrément FFE.', null],
+  sire: ['branche', null, 'Gardé. Piaffe pré-remplit chaque cheval depuis son numéro SIRE (données ouvertes de l’IFCE).', null],
+  helloasso: ['au_choix', 'Changé. Piaffe encaisse en ligne lui-même (carte et prélèvement) ; on reprend l’historique des adhésions.', 'Gardé. On reprend vos membres et l’historique des adhésions ; les nouvelles adhésions arrivent par export, branchement direct bientôt.', 'l’historique des adhésions'],
+  assoconnect: ['au_choix', 'Changé. Piaffe gère adhésions et paiements en ligne ; on reprend membres et historique, puis vous résiliez.', 'Gardé. On reprend vos membres et l’historique des adhésions ; les nouvelles arrivent par export, branchement direct bientôt.', 'l’historique des adhésions'],
+  simpliasso: ['au_choix', 'Changé. Piaffe gère adhésions et paiements en ligne ; on reprend membres et historique, puis vous résiliez.', 'Gardé. On reprend vos membres et l’historique des adhésions par export.', 'l’historique des adhésions'],
+  stripe: ['branche', null, 'Gardé et branché. Vos paiements en ligne passent par votre compte Stripe et sont rapprochés des factures.', null],
+  sumup: ['branche', null, 'Gardé. Vos encaissements par carte au club arrivent dans Piaffe et sont rapprochés des factures.', null],
+  gocardless: ['branche', null, 'Gardé. Vos mandats et prélèvements SEPA continuent ; les encaissements sont rapprochés des factures.', null],
+  paypal: ['branche', 'Changé. Piaffe encaisse en ligne lui-même ; on reprend l’historique des paiements, puis vous fermez le compte.', 'Gardé. On reprend l’historique par export ; le branchement direct arrive bientôt.', null],
+  'google-agenda': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements et les reprises récurrentes.', 'Gardé. Piaffe publie son planning dans votre Google Agenda.', null],
+  outlook: ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Outlook s’abonne au planning Piaffe (lien d’agenda) ; envoi direct bientôt.', null],
+  'apple-calendrier': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Calendrier Apple s’abonne au planning Piaffe (flux d’agenda), sur iPhone et Mac.', null],
+  calendly: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
+  planity: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
+  pennylane: ['branche', null, 'Gardé. Piaffe envoie factures et encaissements à votre comptable.', null],
+  tiime: ['branche', null, COMPTA_EXPORT, null], indy: ['branche', null, COMPTA_EXPORT, null], sage: ['branche', null, COMPTA_EXPORT, null],
+  ebp: ['branche', null, COMPTA_EXPORT, null], cegid: ['branche', null, COMPTA_EXPORT, null], ciel: ['branche', null, COMPTA_EXPORT, null],
+  quickbooks: ['branche', null, COMPTA_EXPORT, null], isagri: ['branche', null, COMPTA_EXPORT, null],
+  axonaut: ['remplace', 'Changé. Piaffe fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
+  henrri: ['remplace', 'Changé. Piaffe fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
+  payfit: ['branche', null, 'Gardé. Piaffe envoie chaque mois les heures et variables de paie à PayFit.', null],
+  silae: ['branche', null, PAIE_EXPORT, null], skello: ['branche', null, 'Gardé. Piaffe exporte les heures de l’équipe ; le branchement direct arrive bientôt.', null],
+  combo: ['branche', null, 'Gardé. Piaffe exporte les heures de l’équipe ; le branchement direct arrive bientôt.', null],
+  'google-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
+  'outlook-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
+};
+// Gratuits ou inclus ailleurs : rien à résilier par lettre, il suffit d'arrêter de s'en servir.
+const SANS_LETTRE = new Set(['helloasso', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
+for (const l of Object.values(LOGICIELS)) {
+  let r = R[l.id];
+  if (!r) r = ['remplace', l.famille === 'equestre' ? CHANGE_GESTION(l) : l.id === 'papier' ? 'Changé. On vous aide à tout mettre dans Piaffe : modèle Excel à remplir ou saisie guidée à l’accueil.' : TABLEUR, null, null];
+  const [relation, changer, integrer, historique] = r;
+  Object.assign(l, { relation, effets: { changer, integrer }, effet: relation === 'branche' || relation === 'au_choix' ? integrer : changer, historique, lettre: !SANS_LETTRE.has(l.id) });
+}
+// Logiciels proposés comme « logiciel principal » (celui qu'on vide et qu'on résilie).
+const PRINCIPAUX = { oui: ['equestre'], tableur: ['tableurs', 'papier'] };
+
 function reconnaitreLogiciel(nomFichier, entetes = []) {
   for (const [id, l] of Object.entries(LOGICIELS)) {
     if (['excel', 'papier', 'numbers', 'libreoffice'].includes(id)) continue;
@@ -901,7 +1021,7 @@ const BASES_LOCALES = [
   { ext: /\.(dbf)$/i, moteur: 'dBase / FoxPro', lecture: 'Lisible directement (format ouvert), à ajouter à la passerelle si un club en a.' },
 ];
 
-return { FAMILLES, LOGICIELS, reconnaitreLogiciel, reconnaitreAdresse, BASES_LOCALES };
+return { FAMILLES, LOGICIELS, PRINCIPAUX, reconnaitreLogiciel, reconnaitreAdresse, BASES_LOCALES };
 })();
 __m["capture.mjs"] = (() => {
 // Fichier produit par le robot navigateur (format piaffe-capture 1.0) -> tableaux lisibles par la passerelle.
@@ -1571,12 +1691,15 @@ function clean(o) {
 }
 
 // Envoi vers le serveur : crée le job, pousse par paquets de 500, valide. `fetch` est celui de l'hôte.
-async function envoyer(paquet, { url, cle: cleApi, essai = true, source = 'passerelle', journal = () => {} }) {
-  const h = { 'content-type': 'application/json', authorization: 'Bearer ' + cleApi };
+async function envoyer(paquet, { url = null, cle: cleApi = null, essai = true, source = 'passerelle', journal = () => {} }) {
+  // Sans clé (page ouverte depuis l'appli, même origine) : la session du gérant sert d'authentification.
+  const h = { 'content-type': 'application/json' };
+  if (cleApi) h.authorization = 'Bearer ' + cleApi;
+  const base = (url || globalThis.location?.origin || '').replace(/\/$/, '');
   const appel = async (chemin, corps) => {
-    const r = await fetch(url.replace(/\/$/, '') + chemin, { method: 'POST', headers: h, body: JSON.stringify(corps || {}) });
+    const r = await fetch(base + chemin, { method: 'POST', headers: h, body: JSON.stringify(corps || {}), ...(cleApi ? {} : { credentials: 'include' }) });
     const t = await r.text(); let j; try { j = JSON.parse(t); } catch { j = { brut: t }; }
-    if (!r.ok) throw new Error(`${chemin} → ${r.status} ${j.error || j.message || t.slice(0, 200)}`);
+    if (!r.ok) throw new Error(`${chemin} → ${r.status} ${j.error?.message || (typeof j.error === "string" ? j.error : "") || j.message || t.slice(0, 200)}`);
     return j;
   };
   const logiciel = paquet.sources.find(s => s.logiciel)?.logiciel || 'csv';
@@ -1731,8 +1854,248 @@ function lettreResiliation(f = {}) {
 
 return { lettreResiliation };
 })();
+__m["parcours.mjs"] = (() => {
+// Parcours « Passer à Piaffe » : les questions posées une à une et le plan de bascule qui en découle.
+// Partagé par la page autonome (web/app.mjs) et l'onboarding de l'appli : même logique, mêmes réponses.
+//
+// reponses = {
+//   depart: 'oui' | 'zero' | 'tableur',
+//   principal: id du catalogue | null,     // logiciel qui gère le club aujourd'hui
+//   adresse: 'https://…' | null,           // adresse collée (logiciel inconnu ou connu)
+//   outils: [id…],                          // autres outils cochés
+//   choix: { id: 'changer' | 'integrer' },  // décision par outil ; absente = recommandée
+// }
+const { LOGICIELS, PRINCIPAUX } = __m["logiciels.mjs"];
+
+const FAMILLES_OUTILS = ['federation', 'adhesions', 'agenda', 'compta', 'rh', 'tableurs'];
+
+const QUESTIONS = [
+  { id: 'depart', titre: 'Venez-vous d’un autre logiciel ?', sous: 'On adapte la suite à votre point de départ.', type: 'choix', options: [
+    { valeur: 'oui', libelle: 'Oui', detail: 'Un logiciel de gestion équestre gère le club aujourd’hui.' },
+    { valeur: 'zero', libelle: 'Non, je pars de zéro', detail: 'Nouveau club, ou rien à reprendre.' },
+    { valeur: 'tableur', libelle: 'J’utilise surtout Excel ou du papier', detail: 'Tableurs, cahiers, fiches.' },
+  ] },
+  { id: 'principal', titre: 'Lequel gère votre club aujourd’hui ?', sous: 'C’est celui qu’on vide entièrement, puis que vous résiliez.', type: 'logiciel',
+    si: r => r.depart && r.depart !== 'zero', familles: r => PRINCIPAUX[r.depart] || PRINCIPAUX.oui, adresse: true },
+  { id: 'outils', titre: 'Quels autres outils utilisez-vous ?', sous: 'Cochez tout ce qui sert au club : paiements, comptabilité, fédération, agenda…', type: 'cases', familles: FAMILLES_OUTILS },
+  { id: 'choix', titre: 'Pour chacun : on change ou on intègre ?', sous: 'Le choix recommandé est déjà fait. « Changer » : Piaffe le remplace. « Intégrer » : vous le gardez, on le branche.', type: 'decisions',
+    si: r => (r.outils || []).length > 0 },
+  { id: 'plan', titre: 'Votre plan de bascule', sous: 'Voici exactement ce qui va se passer.', type: 'plan' },
+  { id: 'recuperation', titre: 'Récupération', sous: 'Choisissez comment on sort vos données.', type: 'recuperation' },
+];
+
+function questionsActives(reponses = {}) { return QUESTIONS.filter(q => !q.si || q.si(reponses)); }
+
+function decisionsPossibles(id) {
+  const l = LOGICIELS[id]; if (!l) return [];
+  return ['changer', 'integrer'].filter(d => l.effets?.[d]);
+}
+function decisionRecommandee(id) {
+  const l = LOGICIELS[id]; if (!l) return null;
+  const possibles = decisionsPossibles(id);
+  const voulu = l.relation === 'remplace' ? 'changer' : 'integrer';
+  return possibles.includes(voulu) ? voulu : possibles[0] || null;
+}
+function decision(reponses, id) {
+  const d = reponses.choix?.[id];
+  return d && decisionsPossibles(id).includes(d) ? d : decisionRecommandee(id);
+}
+function effetPour(id, d) { return LOGICIELS[id]?.effets?.[d] || ''; }
+
+const QUOI = { equestre: 'cavaliers, familles, chevaux, forfaits, factures, planning', adhesions: 'membres et paiements', agenda: 'événements et reprises',
+  compta: 'clients et factures', rh: 'équipe', tableurs: 'lignes du tableau', papier: 'fiches à saisir', federation: 'licenciés' };
+
+// Le plan : ce qu'on récupère, ce qu'on branche, ce que le club résilie.
+function planDeBascule(reponses = {}) {
+  const recuperer = [], brancher = [], resilier = [];
+  const p = reponses.principal && LOGICIELS[reponses.principal];
+  if (p) {
+    recuperer.push({ id: p.id, nom: p.nom, quoi: QUOI[p.famille] || 'données', principal: true });
+    resilier.push({ id: p.id, nom: p.nom, editeur: p.editeur || p.nom, lettre: p.lettre, principal: true });
+  } else if (reponses.depart !== 'zero' && reponses.adresse) {
+    recuperer.push({ id: null, nom: 'Votre logiciel', adresse: reponses.adresse, quoi: QUOI.equestre, principal: true });
+    resilier.push({ id: null, nom: 'Votre logiciel', editeur: '', lettre: true, principal: true });
+  }
+  for (const id of [...new Set(reponses.outils || [])]) {
+    const l = LOGICIELS[id]; if (!l || id === reponses.principal) continue;
+    const d = decision(reponses, id);
+    if (d === 'changer') {
+      recuperer.push({ id, nom: l.nom, quoi: QUOI[l.famille] || 'données' });
+      resilier.push({ id, nom: l.nom, editeur: l.editeur || l.nom, lettre: l.lettre });
+    } else if (d === 'integrer') {
+      brancher.push({ id, nom: l.nom, effet: l.effets.integrer });
+      if (l.historique) recuperer.push({ id, nom: l.nom, quoi: l.historique, garde: true });
+    }
+  }
+  return { recuperer, brancher, resilier };
+}
+
+// Réponses toutes faites pour le mode intégré (?source=…&outils=…) : les outils listés sont remplacés.
+function reponsesDepuisLien(params) {
+  const g = k => params.get(k) || null;
+  const source = g('source');
+  const outils = (g('outils') || '').split(',').map(s => s.trim()).filter(id => LOGICIELS[id]);
+  return {
+    depart: source && LOGICIELS[source]?.famille !== 'equestre' ? 'tableur' : 'oui',
+    principal: LOGICIELS[source] ? source : null, adresse: g('adresse'),
+    outils, choix: Object.fromEntries(outils.filter(id => decisionsPossibles(id).includes('changer')).map(id => [id, 'changer'])),
+  };
+}
+
+return { FAMILLES_OUTILS, QUESTIONS, questionsActives, decisionsPossibles, decisionRecommandee, decision, effetPour, planDeBascule, reponsesDepuisLien };
+})();
+__m["robot-distant.mjs"] = (() => {
+// Connexion assistée : le navigateur Piaffe (côté serveur) ouvre l'ancien logiciel, le gérant voit son écran
+// dans la page et s'y connecte lui-même (double authentification comprise). Rien à installer.
+// Contrat HTTP : robot/serveur-local.mjs (mêmes routes en production sous /api/v1/migration/robot).
+// Les touches tapées partent directement au navigateur distant : elles ne sont ni stockées ni journalisées.
+
+const BASE = () => (globalThis.PIAFFE_ROBOT || '').replace(/\/$/, '');
+
+const STYLE = `
+.rd{border:1px solid var(--ligne,#e3e6ee);border-radius:18px;overflow:hidden;background:#0f1626;color:#fff;margin:14px 0}
+.rd-barre{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#151e33;font:500 14px/1.3 Inter,system-ui,sans-serif}
+.rd-point{width:9px;height:9px;border-radius:50%;background:#f5b638;box-shadow:0 0 0 4px #f5b63833;flex:none}
+.rd[data-phase=copie] .rd-point{background:#3ccf8e;box-shadow:0 0 0 4px #3ccf8e33;animation:rdp 1.2s infinite}
+.rd[data-phase=termine] .rd-point{background:#3ccf8e}
+.rd[data-phase=erreur] .rd-point{background:#ff5d5d}
+@keyframes rdp{50%{box-shadow:0 0 0 8px #3ccf8e00}}
+.rd-titre{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd-btn{border:0;border-radius:999px;padding:7px 14px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;background:#ffffff1a;color:#fff}
+.rd-btn.principal{background:#fff;color:#0f1626}
+.rd-ecran{position:relative;aspect-ratio:1280/800;background:#0b101c;outline:none;cursor:pointer}
+.rd-ecran img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.rd-attente{position:absolute;inset:0;display:grid;place-items:center;font:500 15px Inter,system-ui,sans-serif;color:#c8d0e4}
+.rd-voile{position:absolute;inset:0;display:none;place-items:center;background:#0f1626d9;text-align:center;padding:24px;font:500 15px/1.5 Inter,system-ui,sans-serif}
+.rd[data-phase=copie] .rd-voile,.rd[data-phase=termine] .rd-voile,.rd[data-phase=erreur] .rd-voile{display:grid}
+.rd-voile b{display:block;font:800 22px/1.2 'Bricolage Grotesque',Inter,sans-serif;margin-bottom:6px}
+.rd-jauge{height:6px;border-radius:9px;background:#ffffff22;overflow:hidden;width:min(360px,80%);margin:14px auto 0}
+.rd-jauge i{display:block;height:100%;width:8%;background:#3ccf8e;transition:width .4s}
+.rd-aide{padding:10px 14px;font:400 13px/1.45 Inter,system-ui,sans-serif;color:#aab4cc;background:#151e33}
+.rd-saisie{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+`;
+
+function el(tag, attrs = {}, ...enfants) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === 'class' ? n.className = v : n.setAttribute(k, v);
+  for (const e of enfants) n.append(e);
+  return n;
+}
+
+async function appel(chemin, options = {}) {
+  const r = await fetch(BASE() + '/api/v1/migration/robot' + chemin, {
+    credentials: 'include', headers: { 'content-type': 'application/json' }, ...options,
+  });
+  const corps = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(corps?.error?.message || `Le robot ne répond pas (${r.status}).`);
+  return corps;
+}
+
+const TOUCHES = new Set(['Enter', 'Tab', 'Backspace', 'Delete', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']);
+
+/**
+ * ouvrir(adresse, { cible, nom, surCapture }) : affiche l'écran distant dans `cible` (par défaut #robot-distant).
+ * surCapture(file) reçoit la capture (fichier piaffe-capture JSON) ; par défaut, on émet l'événement
+ * « piaffe:capture » sur window avec { detail: { fichier } }.
+ */
+async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {}) {
+  const zone = cible || document.getElementById('robot-distant');
+  if (!zone) throw new Error('Zone #robot-distant absente.');
+  if (!document.getElementById('rd-style')) document.head.append(el('style', { id: 'rd-style' }, STYLE));
+  zone.hidden = false; zone.replaceChildren();
+  if (!BASE()) {
+    zone.append(el('div', { class: 'rd' }, el('div', { class: 'rd-aide' },
+      'La connexion assistée arrive bientôt. En attendant, déposez un export de ' + nom + ' ci-dessous.')));
+    return null;
+  }
+
+  const titre = el('span', { class: 'rd-titre' }, 'Ouverture de ' + nom + '…');
+  const btnFini = el('button', { class: 'rd-btn principal', type: 'button' }, 'Je suis connecté');
+  const btnStop = el('button', { class: 'rd-btn', type: 'button' }, 'Annuler');
+  const img = el('img', { alt: 'Écran de ' + nom + ' ouvert par Piaffe' });
+  const attente = el('div', { class: 'rd-attente' }, 'Le navigateur Piaffe ouvre ' + adresse + '…');
+  const voileTitre = el('b', {}, 'Copie en cours');
+  const voileTexte = el('span', {}, 'Le robot parcourt ' + nom + ' en lecture seule. Vous pouvez fermer cet onglet, il continue.');
+  const jauge = el('i');
+  const voile = el('div', { class: 'rd-voile' }, el('div', {}, voileTitre, voileTexte, el('div', { class: 'rd-jauge' }, jauge)));
+  const saisie = el('input', { class: 'rd-saisie', type: 'text', autocomplete: 'off', 'aria-label': 'Saisie vers ' + nom });
+  const ecran = el('div', { class: 'rd-ecran', tabindex: '0', role: 'application', 'aria-label': 'Écran distant : cliquez puis tapez' }, attente, img, voile, saisie);
+  const boite = el('div', { class: 'rd', 'data-phase': 'connexion' },
+    el('div', { class: 'rd-barre' }, el('span', { class: 'rd-point' }), titre, btnFini, btnStop),
+    ecran,
+    el('div', { class: 'rd-aide' }, 'Connectez-vous comme d’habitude, directement dans cet écran. Piaffe ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.'));
+  zone.append(boite);
+
+  let session;
+  try { session = await appel('', { method: 'POST', body: JSON.stringify({ adresse }) }); }
+  catch (err) { attente.textContent = err.message; boite.dataset.phase = 'erreur'; return null; }
+  const { id, largeur = 1280, hauteur = 800 } = session;
+  titre.textContent = nom + ' : connectez-vous';
+
+  const envoyer = e => appel('/' + id + '/entree', { method: 'POST', body: JSON.stringify(e) }).catch(() => {});
+  const coord = ev => {
+    const r = img.getBoundingClientRect();
+    // l'image garde le ratio (object-fit: contain) : on retire les bandes éventuelles
+    const k = Math.min(r.width / largeur, r.height / hauteur), ox = (r.width - largeur * k) / 2, oy = (r.height - hauteur * k) / 2;
+    return { x: Math.round((ev.clientX - r.left - ox) / k), y: Math.round((ev.clientY - r.top - oy) / k) };
+  };
+  const enConnexion = () => boite.dataset.phase === 'connexion';
+  ecran.addEventListener('click', ev => { if (!enConnexion()) return; saisie.focus({ preventScroll: true }); envoyer({ type: 'clic', ...coord(ev) }); });
+  ecran.addEventListener('wheel', ev => { if (!enConnexion()) return; ev.preventDefault(); envoyer({ type: 'defiler', dy: Math.round(ev.deltaY) }); }, { passive: false });
+  // Le texte passe par un champ caché (claviers mobiles, accents, collage) et part par petits morceaux.
+  let tampon = '', minuterie;
+  const vider = () => { if (tampon) { envoyer({ type: 'texte', texte: tampon }); tampon = ''; } };
+  saisie.addEventListener('input', () => { tampon += saisie.value; saisie.value = ''; clearTimeout(minuterie); minuterie = setTimeout(vider, 60); });
+  saisie.addEventListener('keydown', ev => {
+    if (!TOUCHES.has(ev.key)) return;
+    ev.preventDefault(); clearTimeout(minuterie); vider(); envoyer({ type: 'touche', touche: ev.key });
+  });
+
+  let resoudre; const fin = new Promise(r => { resoudre = r; });
+  const flux = new EventSource(BASE() + '/api/v1/migration/robot/' + id + '/flux', { withCredentials: true });
+  flux.addEventListener('image', ev => { img.src = 'data:image/jpeg;base64,' + JSON.parse(ev.data); attente.remove(); });
+  flux.addEventListener('etat', async ev => {
+    const e = JSON.parse(ev.data);
+    boite.dataset.phase = e.phase;
+    if (e.phase === 'copie') {
+      titre.textContent = 'Connecté : copie de ' + nom; btnFini.hidden = true; saisie.blur();
+      const vus = (e.lignes ? e.lignes + ' lignes copiées' : '') + (e.fiches ? (e.lignes ? ', ' : '') + e.fiches + ' fiches' : '');
+      voileTexte.textContent = (e.progression || 'Le robot parcourt ' + nom + ' en lecture seule.') + (vus ? ' · ' + vus + '.' : '');
+      if (e.pages) jauge.style.width = Math.min(95, 8 + e.pages * 3) + '%';
+    }
+    if (e.phase === 'termine') {
+      flux.close(); jauge.style.width = '100%'; titre.textContent = 'Copie terminée'; btnStop.hidden = true;
+      voileTitre.textContent = 'Tout est copié'; voileTexte.textContent = 'Le navigateur Piaffe est fermé. Vérifiez le résultat juste en dessous.';
+      try {
+        const capture = await appel('/' + id + '/capture');
+        const fichier = new File([JSON.stringify(capture)], 'capture-' + (capture.logiciel || 'logiciel') + '.json', { type: 'application/json' });
+        if (surCapture) surCapture(fichier); else window.dispatchEvent(new CustomEvent('piaffe:capture', { detail: { fichier } }));
+        resoudre(capture);
+      } catch (err) { voileTexte.textContent = err.message; resoudre(null); }
+    }
+    if (e.phase === 'erreur') {
+      flux.close(); titre.textContent = 'Le robot s’est arrêté';
+      voileTitre.textContent = 'Copie interrompue';
+      voileTexte.textContent = (e.message || 'Erreur inconnue') + ' L’équipe Piaffe est prévenue. Vous pouvez réessayer ou déposer un export.';
+      resoudre(null);
+    }
+  });
+  flux.onerror = () => { if (boite.dataset.phase === 'connexion') titre.textContent = nom + ' : reconnexion…'; };
+
+  btnFini.onclick = () => appel('/' + id + '/demarrer', { method: 'POST' }).catch(() => {});
+  btnStop.onclick = () => { flux.close(); appel('/' + id, { method: 'DELETE' }).catch(() => {}); zone.replaceChildren(); zone.hidden = true; resoudre(null); };
+  setTimeout(() => saisie.focus({ preventScroll: true }), 300);
+  return fin;
+}
+
+globalThis.PiaffeRobot = { ouvrir, disponible: () => !!BASE() };
+
+return { ouvrir };
+})();
 __m["app.mjs"] = (() => {
-// Passerelle Piaffe dans le navigateur : rien n'est envoyé, tout est lu sur place.
+// Passer à Piaffe : parcours pas à pas (une question par écran), puis récupération des données.
+// Mode intégré (ouvert depuis l'onboarding de l'appli) : ?source=<id>&adresse=<url>&outils=<ids>&retour=<url>
+// saute les questions et va droit à la récupération ; l'import se fait sur la session du gérant (même origine).
 const { lireFichier } = __m["lire.mjs"];
 const { construirePaquet, analyserTable } = __m["paquet.mjs"];
 const { TYPES } = __m["champs.mjs"];
@@ -1740,6 +2103,7 @@ const { LOGICIELS, FAMILLES, reconnaitreAdresse } = __m["logiciels.mjs"];
 const { LOGOS } = __m["logos.mjs"];
 const { envoyerAcces } = __m["acces.mjs"];
 const { lettreResiliation } = __m["resiliation.mjs"];
+const { QUESTIONS, FAMILLES_OUTILS, questionsActives, decisionsPossibles, decision, planDeBascule, reponsesDepuisLien } = __m["parcours.mjs"];
 const { rapportHTML } = __m["rapport.mjs"];
 const { envoyer } = __m["vers-api.mjs"];
 
@@ -1747,89 +2111,205 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const eur = n => (n ?? 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
 const inflate = async b => new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+const cleRecherche = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const calme = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const etat = { logiciel: null, tables: [], paquet: null };
-
-// 1. Changer de logiciel : catalogue, recherche, adresse collée
-const LIEN_EXTENSION = 'https://github.com/u8tscared/piaffe/tree/main/migration/extension';
-const LIEN_MODE_EMPLOI = 'https://github.com/u8tscared/piaffe/blob/main/migration/extension/LISEZMOI.md';
+const etat = { tables: [], paquet: null };
+const rep = { depart: null, principal: null, adresse: null, outils: [], choix: {} };
 const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // vide tant que le serveur n'ouvre pas la reprise par codes
 const COULEURS = { equestre: 'hz', federation: 'tm', adhesions: 'mo', agenda: 'rd', compta: 'mo', rh: 'tm', tableurs: 'hz', papier: 'pf' };
-let famille = 'tous';
+const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Piaffe', au_choix: 'Au choix' };
+const COURT = { depart: 'Départ', principal: 'Logiciel', outils: 'Outils', choix: 'Choix', plan: 'Plan', recuperation: 'Récupération' };
 
-function vignette(l) {
+// Mode intégré
+const params = new URLSearchParams(location.search);
+const integre = !!params.get('source');
+if (integre) { Object.assign(rep, reponsesDepuisLien(params)); document.body.classList.add('integre'); }
+
+function pastille(l, taille = 40) {
   const logo = LOGOS[l.id];
-  const pastille = logo ? `<span class="logo"><img src="${logo}" alt="" loading="lazy" width="40" height="40"></span>`
+  return logo ? `<span class="logo"><img src="${logo}" alt="" loading="lazy" width="${taille}" height="${taille}"></span>`
     : `<span class="logo initiale ${COULEURS[l.famille] || 'pf'}">${esc(l.nom.replace(/^[^A-Za-zÀ-ÿ0-9]+/, '')[0])}</span>`;
-  const forme = { web: 'En ligne', bureau: 'Sur ordinateur', 'les-deux': 'En ligne et sur ordinateur' }[l.forme] || '';
-  return `<button class="carte-l ${etat.logiciel === l.id ? 'on' : ''}" data-l="${l.id}" type="button">${pastille}<span class="nom">${esc(l.nom)}</span><small>${esc(forme || FAMILLES.find(f => f.id === l.famille).nom)}</small><i class="coche" aria-hidden="true"></i></button>`;
+}
+
+// ---------- Navigation ----------
+let ici = integre ? 'recuperation' : 'depart';
+function ecransActifs() { return questionsActives(rep).map(q => q.id); }
+function aller(id, sens = 'avant') {
+  ici = id;
+  document.querySelectorAll('.ecran').forEach(e => {
+    const actif = e.dataset.ecran === id;
+    e.hidden = !actif; e.classList.remove('avant', 'arriere');
+    if (actif) { void e.offsetWidth; e.classList.add(sens); }
+  });
+  ({ depart: dessinerDepart, principal: dessinerCatalogue, outils: dessinerOutils, choix: dessinerDecisions, plan: dessinerPlan, recuperation: dessinerRecuperation })[id]();
+  majNav();
+  const e = document.querySelector(`.ecran[data-ecran="${id}"]`);
+  e.focus({ preventScroll: true });
+  if (!integre) requestAnimationFrame(() => window.scrollTo({ top: Math.min(window.scrollY, $('.progres').offsetTop), behavior: calme() ? 'auto' : 'smooth' }));
+}
+function majNav() {
+  const liste = ecransActifs(), i = liste.indexOf(ici);
+  $('#rempli').style.width = ((i + 1) / liste.length * 100) + '%';
+  $('#etapes').innerHTML = liste.map((id, k) => `<span class="${k < i ? 'fait' : k === i ? 'ici' : ''}">${COURT[id]}</span>`).join('');
+  $('#ou').innerHTML = `Étape <b>${i + 1}</b> sur ${liste.length} · ${COURT[ici]}`;
+  $('#retour').hidden = i <= 0 || integre;
+  const c = $('#continuer');
+  c.hidden = ici === 'recuperation';
+  c.disabled = (ici === 'depart' && !rep.depart) || (ici === 'principal' && !rep.principal && !rep.adresse);
+  c.textContent = ici === 'outils' && !rep.outils.length ? 'Je n’en utilise pas d’autre' : ici === 'plan' ? (planDeBascule(rep).recuperer.length ? 'Récupérer mes données' : 'Terminer') : 'Continuer';
+}
+$('#continuer').addEventListener('click', () => { const l = ecransActifs(); const s = l[l.indexOf(ici) + 1]; if (s) aller(s, 'avant'); });
+$('#retour').addEventListener('click', () => { const l = ecransActifs(); const s = l[l.indexOf(ici) - 1]; if (s) aller(s, 'arriere'); });
+$('#passer').addEventListener('click', e => { e.preventDefault(); signaler('abandon'); });
+
+// ---------- 1. Venez-vous d'un autre logiciel ? ----------
+const ICONES_DEPART = {
+  oui: ['tm', '<path d="M4 12h12m0 0-4-4m4 4-4 4"/><path d="M20 5v14"/>'],
+  zero: ['hz', '<path d="M12 5v14M5 12h14"/>'],
+  tableur: ['mo', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/>'],
+};
+function dessinerDepart() {
+  $('#options-depart').innerHTML = QUESTIONS[0].options.map((o, i) => { const [c, p] = ICONES_DEPART[o.valeur];
+    return `<button class="option ${rep.depart === o.valeur ? 'on' : ''}" data-depart="${o.valeur}" type="button" style="--i:${i}"><span class="oi ${c}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span><b>${esc(o.libelle)}</b><small>${esc(o.detail)}</small></button>`; }).join('');
+}
+$('#options-depart').addEventListener('click', e => {
+  const b = e.target.closest('[data-depart]'); if (!b) return;
+  const avant = rep.depart; rep.depart = b.dataset.depart;
+  if (avant !== rep.depart) { rep.principal = null; rep.adresse = null; $('#adresse').value = ''; $('#adresse-info').textContent = ''; }
+  document.querySelectorAll('.option').forEach(x => x.classList.toggle('on', x === b)); majNav();
+  setTimeout(() => $('#continuer').click(), calme() ? 0 : 260);
+});
+
+// ---------- 2. Lequel gère votre club ? ----------
+let famille = 'tous';
+function famillesPrincipales() { return QUESTIONS.find(q => q.id === 'principal').familles(rep); }
+function vignette(l, on, extra = '') {
+  const forme = { web: 'En ligne', bureau: 'Sur ordinateur', 'les-deux': 'En ligne et sur ordinateur' }[l.forme] || FAMILLES.find(f => f.id === l.famille).nom;
+  return `<button class="carte-l ${on ? 'on' : ''}" data-l="${l.id}" type="button" aria-pressed="${on}">${pastille(l)}<span class="nom">${esc(l.nom)}</span><small>${esc(forme)}</small>${extra}<i class="coche" aria-hidden="true"></i></button>`;
 }
 function dessinerCatalogue() {
+  const fams = famillesPrincipales();
+  if (famille !== 'tous' && !fams.includes(famille)) famille = 'tous';
+  const tous = Object.values(LOGICIELS).filter(l => fams.includes(l.famille));
+  $('#familles').hidden = fams.length < 2;
+  $('#familles').innerHTML = [{ id: 'tous', nom: 'Tous' }, ...FAMILLES.filter(f => fams.includes(f.id))].map(f =>
+    `<button class="fam ${f.id === famille ? 'on' : ''}" data-f="${f.id}" type="button">${esc(f.nom)} <span>${f.id === 'tous' ? tous.length : tous.filter(l => l.famille === f.id).length}</span></button>`).join('');
   const q = cleRecherche($('#recherche').value);
-  const liste = Object.values(LOGICIELS).filter(l => (famille === 'tous' || l.famille === famille) && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
-  $('#catalogue').innerHTML = liste.map(vignette).join('') || `<p class="vide">Aucun logiciel ne correspond. Collez son adresse au-dessus : le robot sait explorer un logiciel qu’il ne connaît pas.</p>`;
+  const liste = tous.filter(l => (famille === 'tous' || l.famille === famille) && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
+  $('#catalogue').innerHTML = liste.map(l => vignette(l, rep.principal === l.id)).join('') || `<p class="vide">Aucun logiciel ne correspond. Collez son adresse juste en dessous : le robot sait explorer un logiciel qu’il ne connaît pas.</p>`;
   $('#catalogue').querySelectorAll('.carte-l').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 24)));
 }
-const cleRecherche = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-$('#familles').innerHTML = [{ id: 'tous', nom: 'Tous' }, ...FAMILLES].map(f => {
-  const n = f.id === 'tous' ? Object.keys(LOGICIELS).length : Object.values(LOGICIELS).filter(l => l.famille === f.id).length;
-  return `<button class="fam ${f.id === 'tous' ? 'on' : ''}" data-f="${f.id}" type="button">${esc(f.nom)} <span>${n}</span></button>`;
-}).join('');
-$('#familles').addEventListener('click', e => {
-  const b = e.target.closest('[data-f]'); if (!b) return;
-  famille = b.dataset.f;
-  document.querySelectorAll('.fam').forEach(x => x.classList.toggle('on', x === b));
-  dessinerCatalogue();
-});
+$('#familles').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; famille = b.dataset.f; dessinerCatalogue(); });
 $('#recherche').addEventListener('input', dessinerCatalogue);
 $('#catalogue').addEventListener('click', e => {
   const b = e.target.closest('[data-l]'); if (!b) return;
-  choisir(b.dataset.l);
+  rep.principal = b.dataset.l; rep.adresse = null; $('#adresse').value = ''; $('#adresse-info').textContent = '';
+  rep.outils = rep.outils.filter(x => x !== rep.principal);
+  dessinerCatalogue(); majNav();
+  setTimeout(() => { if (ici === 'principal') $('#continuer').click(); }, calme() ? 0 : 420);
 });
 let minuterie;
 $('#adresse').addEventListener('input', () => { clearTimeout(minuterie); minuterie = setTimeout(lireAdresse, 350); });
-$('#adresse-form').addEventListener('submit', e => { e.preventDefault(); lireAdresse(); });
+$('#adresse-form').addEventListener('submit', e => { e.preventDefault(); lireAdresse(); if (!$('#continuer').disabled) $('#continuer').click(); });
 function lireAdresse() {
   const v = $('#adresse').value.trim(), info = $('#adresse-info');
-  if (!v) { info.textContent = ''; info.className = ''; return; }
+  if (!v) { info.textContent = ''; info.className = ''; if (!rep.principal) rep.adresse = null; majNav(); return; }
   const l = reconnaitreAdresse(v);
-  if (l) {
-    info.className = 'ok'; info.textContent = `C’est ${l.nom} : on le connaît.`;
-    famille = 'tous'; document.querySelectorAll('.fam').forEach(x => x.classList.toggle('on', x.dataset.f === 'tous'));
-    $('#recherche').value = ''; choisir(l.id, v);
-  } else if (/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/i.test(v)) {
-    info.className = 'neuf'; info.textContent = 'Logiciel inconnu : le robot va l’explorer pour vous.';
-    choisir(null, v);
-  } else { info.className = ''; info.textContent = 'Collez une adresse complète, par exemple https://app.monlogiciel.fr'; }
+  if (l) { info.className = 'ok'; info.textContent = `C’est ${l.nom} : on le connaît.`; rep.principal = l.id; rep.adresse = v; famille = 'tous'; $('#recherche').value = ''; }
+  else if (/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/i.test(v)) { info.className = 'neuf'; info.textContent = 'Logiciel inconnu : le robot va l’explorer pour vous.'; rep.principal = null; rep.adresse = v; }
+  else { info.className = ''; info.textContent = 'Collez une adresse complète, par exemple https://app.monlogiciel.fr'; rep.adresse = null; }
+  dessinerCatalogue(); majNav();
 }
 
-function choisir(id, adresse) {
-  etat.logiciel = id; etat.adresse = adresse || null;
-  dessinerCatalogue();
-  const l = id ? LOGICIELS[id] : null;
-  $('#guide-titre').textContent = l ? `Récupérer vos données de ${l.nom}` : 'Exploration automatique de votre logiciel';
-  $('#guide').innerHTML = l ? cartesModes(l) : carteExploration(adresse);
-  $('#etape-guide').hidden = false; $('#etape-depot').hidden = false; $('#etape-bonus').hidden = !l || ['papier', 'excel', 'numbers', 'libreoffice', 'google-sheets', 'sire'].includes(l.id);
-  if (l) { $('#r-logiciel').value = l.nom; $('#r-editeur').value = l.editeur || l.nom; }
-  requestAnimationFrame(() => $('#etape-guide').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+// ---------- 3. Vos autres outils ----------
+function dessinerOutils() {
+  const q = cleRecherche($('#recherche-outils').value);
+  const html = FAMILLES_OUTILS.map(fid => {
+    const liste = Object.values(LOGICIELS).filter(l => l.famille === fid && l.id !== rep.principal && (!q || cleRecherche(l.nom + ' ' + (l.editeur || '')).includes(q)));
+    if (!liste.length) return '';
+    return `<h3 class="famille-titre">${esc(FAMILLES.find(f => f.id === fid).nom)}</h3><div class="grille">${liste.map(l => { const on = rep.outils.includes(l.id);
+      return vignette(l, on, on ? `<span class="rel ${l.relation}">${NOM_REL[l.relation]}</span>` : ''); }).join('')}</div>`;
+  }).join('');
+  $('#outils').innerHTML = html || '<p class="vide">Aucun outil ne correspond.</p>';
+  $('#outils').querySelectorAll('.carte-l').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 24)));
 }
+$('#recherche-outils').addEventListener('input', dessinerOutils);
+$('#outils').addEventListener('click', e => {
+  const b = e.target.closest('[data-l]'); if (!b) return;
+  const id = b.dataset.l, l = LOGICIELS[id];
+  rep.outils = rep.outils.includes(id) ? rep.outils.filter(x => x !== id) : [...rep.outils, id];
+  const on = rep.outils.includes(id);
+  b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  b.querySelector('.rel')?.remove();
+  if (on) b.querySelector('small').insertAdjacentHTML('afterend', `<span class="rel ${l.relation}">${NOM_REL[l.relation]}</span>`);
+  majNav();
+});
 
+// ---------- 4. Changer ou intégrer ----------
+function dessinerDecisions() {
+  $('#decisions').innerHTML = rep.outils.map((id, i) => {
+    const l = LOGICIELS[id], possibles = decisionsPossibles(id), d = decision(rep, id);
+    const commande = possibles.length > 1
+      ? `<div class="seg" role="radiogroup" aria-label="${esc(l.nom)}">${possibles.map(p => `<button type="button" role="radio" aria-checked="${p === d}" class="${p === d ? 'on' : ''}" data-id="${id}" data-d="${p}">${p === 'changer' ? 'Changer' : 'Intégrer'}</button>`).join('')}</div>`
+      : `<span class="fixe rel ${d === 'changer' ? 'remplace' : 'branche'}">${d === 'changer' ? 'Remplacé par Piaffe' : 'Gardé et branché'}</span>`;
+    return `<div class="decision" style="--i:${i}">${pastille(l, 36)}<span class="nom">${esc(l.nom)}</span>${commande}<p class="effet" id="effet-${id}">${esc(l.effets[d])}</p></div>`;
+  }).join('');
+}
+$('#decisions').addEventListener('click', e => {
+  const b = e.target.closest('[data-d]'); if (!b) return;
+  const { id, d } = b.dataset; rep.choix[id] = d;
+  b.parentNode.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); });
+  const p = document.getElementById('effet-' + id); p.style.opacity = 0;
+  setTimeout(() => { p.textContent = LOGICIELS[id].effets[d]; p.style.opacity = 1; }, calme() ? 0 : 150);
+});
+
+// ---------- 5. Plan de bascule ----------
+function itemResil(x, j) {
+  return `<li style="--j:${j}"><b>${esc(x.nom)}</b>${x.lettre
+    ? `<small>Après vérification de la reprise.</small><button class="lien" type="button" data-lettre="${esc(x.id || '')}" data-nom="${esc(x.nom)}" data-editeur="${esc(x.editeur || '')}">Préparer la lettre</button>`
+    : '<small>Gratuit : arrêtez simplement de vous en servir une fois la reprise vérifiée.</small>'}</li>`;
+}
+function dessinerPlan() {
+  const p = planDeBascule(rep);
+  const col = (cls, i, icone, titre, sous, items, rien) => `<div class="col ${cls}" style="--i:${i}"><h3><i>${icone}</i>${titre}</h3><p>${sous}</p>${items.length ? `<ul>${items.join('')}</ul>` : `<p class="rien">${rien}</p>`}</div>`;
+  $('#plan').innerHTML =
+    col('c-rec', 0, '↓', 'À récupérer', 'On copie tout dans Piaffe.', p.recuperer.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.quoi)}${x.garde ? ' (l’outil est gardé)' : ''}</small></li>`), 'Rien : vous partez de zéro.') +
+    col('c-bra', 1, '⇄', 'À brancher', 'Vous les gardez, on les relie.', p.brancher.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.effet)}</small></li>`), 'Aucun outil à garder.') +
+    col('c-res', 2, '✕', 'À résilier', 'Une fois la reprise vérifiée.', p.resilier.map(itemResil), 'Rien à résilier.');
+  $('#etape-bonus').hidden = true;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-lettre]'); if (!b) return;
+  const zone = $('#etape-bonus');
+  b.closest('.ecran').append(zone);
+  zone.hidden = false; $('#lettre-zone').hidden = true;
+  $('#lettre-pour').textContent = b.dataset.nom;
+  $('#r-logiciel').value = b.dataset.lettre ? b.dataset.nom : ''; $('#r-editeur').value = b.dataset.editeur;
+  zone.scrollIntoView({ behavior: calme() ? 'auto' : 'smooth', block: 'start' });
+});
+
+// ---------- 6. Récupération (logiciel principal) ----------
 const MODES = {
-  robot: { badge: 'Le plus magique', titre: 'Le robot navigateur', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 8h18M8.5 13.5l2 2 4.5-4.5"/></svg>' },
+  robot: { badge: 'Rien à installer', titre: 'Connexion assistée', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2.5"/><path d="M3 8h18M8.5 13.5l2 2 4.5-4.5"/></svg>' },
   ordinateur: { badge: 'Logiciel installé', titre: 'Le robot pour ordinateur', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>' },
   codes: { badge: 'Sans rien faire', titre: 'Donnez-nous vos codes', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>' },
   export: { badge: 'Le plus sûr', titre: 'Export de fichier', icone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg>' },
 };
-function lienExt(adresse) { return adresse ? '?adresse=' + encodeURIComponent(adresse) : ''; }
+const EXPORT_GENERIQUE = ['Dans votre logiciel, cherchez Exporter, Excel ou CSV sur la liste des clients ou cavaliers.', 'Faites de même pour les chevaux, les tarifs, les factures et le planning.', 'Déposez les fichiers ici.'];
 function carteMode(mode, corps, i) {
   const m = MODES[mode];
   return `<article class="mode m-${mode}" style="--i:${i}"><header><span class="mi" aria-hidden="true">${m.icone}</span><div><span class="badge">${m.badge}</span><h3>${m.titre}</h3></div></header>${corps}</article>`;
 }
+const ASSISTEE = 'Le robot Piaffe ouvre votre logiciel sur nos serveurs ; vous vous connectez ici même, dans cette page, double authentification comprise ; il copie tout et vous montre le résultat. Rien à installer.';
+function blocAssistee(nom, adresse, inconnu) {
+  return `<p>${ASSISTEE}</p>${inconnu ? `<p class="fine">Nous ne connaissons pas encore ce logiciel : le robot explore seul les menus de <b>${esc(adresse)}</b>, et garde le chemin pour le prochain club.</p>` : ''}
+    <p class="actions-m"><button class="bouton" type="button" id="ouvrir-robot" data-adresse="${esc(adresse || '')}" data-nom="${esc(nom)}">Ouvrir mon logiciel</button></p><div id="robot-distant"></div><p class="fine" id="robot-info"></p>`;
+}
 function cartesModes(l) {
-  const a = etat.adresse;
+  const adresse = rep.adresse || (l.site ? 'https://' + l.site : '');
   const blocs = {
-    robot: `<ol><li>Installez l’extension Piaffe pour Chrome (gratuite).</li><li>Connectez-vous normalement à ${esc(l.nom)}, double authentification comprise.</li><li>Cliquez sur « Copier » : le robot parcourt les pages et copie cavaliers, chevaux, factures, planning.</li><li>Déposez ici le fichier <code>capture-piaffe.json</code> qu’il produit.</li></ol>
-      <p class="actions-m"><a class="bouton" href="${LIEN_EXTENSION}${lienExt(a)}" target="_blank" rel="noopener">Installer l’extension</a><a class="lien" href="${LIEN_MODE_EMPLOI}${lienExt(a)}" target="_blank" rel="noopener">Mode d’emploi</a></p><p class="fine">Tout tourne sur votre ordinateur : vos mots de passe ne nous sont jamais transmis.</p>`,
+    robot: blocAssistee(l.nom, adresse, false),
     ordinateur: `<ol><li>Téléchargez le robot Piaffe pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Piaffe et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
     codes: `<p>Confiez-nous l’accès : notre robot fait la migration à votre place, puis efface vos identifiants.</p>
       ${SERVEUR_MIGRATION ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
@@ -1838,29 +2318,41 @@ function cartesModes(l) {
       <button class="bouton second plein" ${SERVEUR_MIGRATION ? '' : 'disabled'}>Envoyer de façon chiffrée</button><p class="fine plein" id="codes-sortie">Chiffré dans votre navigateur avant envoi, effacé après la migration.</p></form>`,
     export: `<ol>${l.voies[0].etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` +
       (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Piaffe rapproche les licences et complète les fiches.</p>` : '') +
-      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, la passerelle reconnaît les colonnes toute seule.</p>` : ''),
+      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Piaffe reconnaît les colonnes tout seul.</p>` : ''),
   };
   return `<div class="modes">${['robot', 'ordinateur', 'codes', 'export'].filter(m => l.modes.includes(m)).map((m, i) => carteMode(m, blocs[m], i)).join('')}</div>`;
 }
-function carteExploration(adresse) {
-  return `<div class="modes">${carteMode('robot', `<p>Nous ne connaissons pas encore ce logiciel : le robot l’explore pour vous.</p><ol><li>Installez l’extension Piaffe pour Chrome.</li><li>Elle ouvre <b>${esc(adresse)}</b> : connectez-vous normalement.</li><li>Cliquez sur « Explorer » : le robot parcourt seul les menus et copie tout ce qu’il trouve (listes, fiches, tableaux).</li><li>Déposez ici le fichier <code>capture-piaffe.json</code>. Le chemin suivi est gardé : le prochain club qui vient de ce logiciel ira plus vite.</li></ol>
-    <p class="actions-m"><a class="bouton" href="${LIEN_EXTENSION}${lienExt(adresse)}" target="_blank" rel="noopener">Installer l’extension</a><a class="lien" href="${LIEN_MODE_EMPLOI}${lienExt(adresse)}" target="_blank" rel="noopener">Mode d’emploi</a></p>`, 0)}
-    ${carteMode('export', `<ol>${EXPORT_GENERIQUE.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`, 1)}</div>`;
+function dessinerRecuperation() {
+  const l = rep.principal && LOGICIELS[rep.principal];
+  const plan = planDeBascule(rep);
+  if (l) { $('#guide-titre').textContent = `Récupérer vos données de ${l.nom}`; $('#guide').innerHTML = cartesModes(l); }
+  else if (rep.adresse && rep.depart !== 'zero') { $('#guide-titre').textContent = 'Récupérer vos données'; $('#guide').innerHTML = `<div class="modes">${carteMode('robot', blocAssistee('votre logiciel', rep.adresse, true), 0)}${carteMode('export', `<ol>${EXPORT_GENERIQUE.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`, 1)}</div>`; }
+  else { $('#guide-titre').textContent = plan.recuperer.length ? 'Récupérer vos autres outils' : 'Rien à récupérer'; $('#guide').innerHTML = plan.recuperer.length ? '' : '<p class="bravo">Vous partez de zéro : il n’y a rien à reprendre. Vous pouvez tout de même déposer un fichier si vous en avez un.</p>'; }
+  const autres = plan.recuperer.filter(x => !x.principal && x.id);
+  $('#autres').innerHTML = autres.length ? `<div class="bloc"><h3>Et vos autres outils</h3><p class="sous">Un export suffit pour chacun ; déposez-les avec le reste.</p>${autres.map(x => `<details class="voie"><summary>${esc(x.nom)} : ${esc(x.quoi)}</summary><ol>${LOGICIELS[x.id].voies[0].etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol></details>`).join('')}</div>` : '';
+  const aResilier = integre ? plan.resilier : [];
+  $('#resil-integre').innerHTML = aResilier.length ? `<div class="bloc col c-res" style="--i:0"><h3><i>✕</i>À résilier ensuite</h3><p>Une fois la reprise vérifiée, la lettre est prête.</p><ul>${aResilier.map(itemResil).join('')}</ul></div>` : '';
+  $('#importer-zone').hidden = !integre; $('#envoi-details').hidden = integre;
 }
-const EXPORT_GENERIQUE = ['Dans votre logiciel, cherchez Exporter, Excel ou CSV sur la liste des clients ou cavaliers.', 'Faites de même pour les chevaux, les tarifs, les factures et le planning.', 'Déposez les fichiers ici.'];
+document.addEventListener('click', async e => {
+  const b = e.target.closest('#ouvrir-robot'); if (!b) return;
+  const robot = globalThis.PiaffeRobot;
+  if (robot?.ouvrir) { b.disabled = true; try { await robot.ouvrir(b.dataset.adresse, { nom: b.dataset.nom }); } finally { b.disabled = false; } }
+  else $('#robot-info').textContent = 'Bientôt disponible. En attendant, utilisez l’export de fichier ci-dessous.';
+});
+window.addEventListener('piaffe:capture', e => { if (e.detail?.fichier) ajouter([e.detail.fichier]); });
 document.addEventListener('submit', async e => {
   if (e.target.id !== 'codes') return;
   e.preventDefault();
   const f = new FormData(e.target), s = $('#codes-sortie');
   try {
-    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: etat.logiciel, adresse: etat.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
+    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
     s.textContent = 'Reçu et chiffré. Nous vous prévenons dès que la migration est prête (' + (r.statut || 'en attente') + ').';
     e.target.reset();
   } catch (err) { s.textContent = err.code === 'indisponible' ? 'Bientôt disponible : rien n’a été envoyé.' : 'Échec : ' + err.message; }
 });
-dessinerCatalogue();
 
-// Bonus : lettre de résiliation
+// Lettre de résiliation
 $('#resiliation').addEventListener('submit', e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target));
@@ -1872,7 +2364,40 @@ $('#copier-lettre').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText($('#lettre').value); toast('Lettre copiée.'); }
   catch { $('#lettre').select(); toast('Sélectionnée : faites Ctrl+C (ou Cmd+C).'); }
 });
-$('#dl-lettre').addEventListener('click', () => telecharger('lettre-resiliation.txt', $('#lettre').value, 'text/plain'));
+$('#dl-lettre').addEventListener('click', () => telecharger('lettre-resiliation-' + cleRecherche($('#r-logiciel').value || 'logiciel').replace(/[^a-z0-9]+/g, '-') + '.txt', $('#lettre').value, 'text/plain'));
+
+// Fin du parcours intégré : on prévient l'appli (iframe) ou on y retourne.
+function signaler(etatFin, job_id = null, controle = null) {
+  if (window.parent !== window) {
+    try { window.parent.postMessage({ type: 'piaffe-migration', etat: etatFin, job_id, controle }, location.origin); } catch {}
+    return;
+  }
+  const retour = params.get('retour'); if (!retour) return;
+  try {
+    const u = new URL(retour, location.href);
+    if (u.origin !== location.origin) return;           // pas de redirection vers un autre site
+    u.searchParams.set('migration', etatFin); if (job_id) u.searchParams.set('job', job_id);
+    location.href = u.href;
+  } catch {}
+}
+$('#importer').addEventListener('click', async () => {
+  const s = $('#importer-sortie'), b = $('#importer'); b.disabled = true; s.textContent = 'Essai en cours…';
+  try {
+    const r = await envoyer(etat.paquet, { essai: true, journal: m => { s.textContent += '\n' + m; } });
+    s.textContent += '\nEssai réussi : rien n’a encore été enregistré. Vérifiez les chiffres, puis confirmez.';
+    $('#confirmer').hidden = false; b.hidden = true; etat.essai = r;
+  } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
+});
+$('#confirmer').addEventListener('click', async () => {
+  const s = $('#importer-sortie'), b = $('#confirmer'); b.disabled = true; s.textContent = 'Import en cours…';
+  try {
+    const r = await envoyer(etat.paquet, { essai: false, journal: m => { s.textContent += '\n' + m; } });
+    s.textContent += '\nC’est fait : vos données sont dans Piaffe.';
+    signaler('termine', r.job_id, etat.paquet.controle);
+  } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
+});
+
+aller(ici);
 
 // 2. Dépôt des fichiers
 const zone = $('#zone');
@@ -1893,7 +2418,7 @@ async function ajouter(fichiers) {
       const tables = await lireFichier(f.name, await f.arrayBuffer(), { inflate });
       for (const t of tables) {
         if (t.erreur) { toast(`${f.name} : ${t.erreur}`); continue; }
-        if (etat.logiciel && LOGICIELS[etat.logiciel]?.famille === 'equestre' && !/ffe|sif|licenci/i.test(f.name)) t.logiciel = etat.logiciel;
+        if (rep.principal && LOGICIELS[rep.principal]?.famille === 'equestre' && !/ffe|sif|licenci/i.test(f.name)) t.logiciel = rep.principal;
         etat.tables.push(t);
       }
     } catch (err) { toast(`${f.name} : fichier illisible (${err.message}).`); }
