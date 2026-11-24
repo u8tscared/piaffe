@@ -15,7 +15,7 @@ export const ARRAY_COLLS = [
   // modules de la démo
   "adhFamily", "adhInvoices", "adhNews", "adhOffers", "adhResults", "adhReviews", "adhStages", "aiAutomations", "aiLog",
   "alertRules", "boxGuests", "boxRequests", "boxWait", "camEvents", "camps", "cards", "cheques", "clubEvents",
-  "coachBookings", "coachLapsed", "coachLessons", "coachReviews", "coachStables", "coachStudents",
+  "coachBookings", "coachLapsed", "coachNotes", "coachLessons", "coachReviews", "coachStables", "coachStudents",
   "comCamps", "comPins", "comPolls", "comThreads", "comTpl", "connectors", "creditNotes",
   "empCare", "empConsignes", "empDocs", "empHugo", "empIncidents", "empLeaves", "empNights", "empPresence", "empRegister",
   "empShifts", "empTasks", "empThreads", "entriesMore", "giftcards", "importLots", "journalMore", "leaves",

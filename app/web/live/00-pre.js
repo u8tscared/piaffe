@@ -10,7 +10,7 @@ var P=window.P,D=window.DATA;
 var PL=window.PL={modq:[],modErrors:{},renderErrors:{},live:true,version:(window.PIAFFE_LIVE||{}).version};
 PL.esc=P.fmt.esc;
 
-/* garde une copie du jeu de démonstration (pour « Explorer avec des données d'exemple ») avant tout remplacement */
+/* garde une copie du jeu de démonstration (pour « Explorer avec des données d'exemple ») avant tout remplacement */
 PL.demoKeys=Object.keys(D);
 try{PL.demoData=JSON.parse(JSON.stringify(D,function(k,v){return typeof v==='function'?undefined:v}))}catch(e){PL.demoData=null}
 PL.demoToday=D.today;
@@ -49,7 +49,7 @@ var EMPTY={
   reglages:['settings','Réglages','Les réglages du club s’afficheront ici.','go:cockpit','Revenir à l’accueil']
 };
 var ROLE_EMPTY={employe:['today','Votre journée est vide','Votre gérant n’a pas encore planifié de tâches ni de soins.'],adherent:['today','Votre espace se prépare','Votre club n’a pas encore relié votre fiche. Revenez dans un instant ou contactez l’accueil.'],coach:['coach','Votre agenda est vide','Ajoutez vos disponibilités pour recevoir des réservations.']};
-PL.emptyFor=function(m){var e=EMPTY[m.id];if(e)return e;var r=ROLE_EMPTY[m.role];if(r)return [r[0],r[1],r[2]];return [m.icon||'info',m.title,'Cet écran s’affichera dès que les données nécessaires seront saisies.']};
+PL.emptyFor=function(m){var e=EMPTY[m.id];if(m.id==='soins'&&window.D&&!(D.horses||[]).length)return ['care','Ajoutez d’abord vos chevaux','Les soins se planifient cheval par cheval : commencez par ajouter les chevaux de l’écurie.','horse','Ajouter un cheval'];if(e)return e;var r=ROLE_EMPTY[m.role];if(r)return [r[0],r[1],r[2]];return [m.icon||'info',m.title,'Cet écran s’affichera dès que les données nécessaires seront saisies.']};
 PL.renderEmpty=function(el,m,err){var e=PL.emptyFor(m),btn='';
   if(e[3])btn='<button class="btn pri lg lv-empty-go" data-lv-empty="'+e[3]+'">'+ICON(/^go:/.test(e[3])?'right':'plus','sm')+'<span>'+e[4]+'</span></button>';
   el.innerHTML='<div class="lv-empty rise">'+(window.ILLU&&ILLU.cheval?'<div class="lv-empty-illu">'+(m.id==='facturation'||m.id==='compta'?ILLU.pieces({size:120}):m.id==='soins'?ILLU.seau({size:120}):m.id==='competitions'?ILLU.trophee({size:120}):m.id==='contrats'?ILLU.contrat({size:120}):ILLU.cheval({size:120}))+'</div>':'<span class="ico lg">'+ICON(e[0])+'</span>')+
@@ -58,7 +58,7 @@ PL.renderEmpty=function(el,m,err){var e=PL.emptyFor(m),btn='';
 /* parcours propres aux modules, préférés à nos formulaires quand ils existent (ils créent un vrai objet dans DATA) */
 PL.OWN_FLOW={member:'Ajouter un adhérent'};
 
-/* un écran « vide » au sens des données : la démo ne prévoit pas toujours ce cas, on le traite avant le rendu */
+/* un écran « vide » au sens des données : la démo ne prévoit pas toujours ce cas, on le traite avant le rendu */
 var NEEDS={chevaux:'horses',alimentation:'horses',ecurie3d:'horses',pensions:'horses',adherents:'members',planning:'lessons',soins:'care',equipe:'staff',coachs:'coaches',competitions:'competitions'};
 PL.isEmptyFor=function(m){var c=NEEDS[m.id];if(!c||!PL.ready)return false;var v=D[c];return !v||!v.length};
 
@@ -69,7 +69,7 @@ P.mod=function(m){
     m.render=function(el,ctx){
       if(PL.isEmptyFor(m)&&!(ctx&&ctx.params&&ctx.params.force)){PL.renderEmpty(el,m);return}
       try{r0.call(this,el,ctx);
-        /* un écran de la démo qui attrape lui-même son erreur affiche « … erreur » : même traitement */
+        /* un écran de la démo qui attrape lui-même son erreur affiche « … erreur » : même traitement */
       }catch(e){PL.renderErrors[m.id]=String(e&&e.message||e);PL.renderStacks=PL.renderStacks||{};PL.renderStacks[m.id]=String(e&&e.stack||'').split('\n').slice(1,3).join(' ');console.warn('[live] écran '+m.id+' :',e);PL.renderEmpty(el,m,e)}
     }}
   if(m&&typeof m.badge==='function'){var b0=m.badge;m.badge=function(){try{return b0.apply(this,arguments)}catch(e){return null}}}

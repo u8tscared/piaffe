@@ -122,7 +122,7 @@ var STEPS=[
    ok:function(){return A.online_payments!==undefined}},
  {id:'vat',render:function(){var def=A.vat_regime||(A.kind==='association'||A.legal_form==='association'?'association_exoneree':'');
    var V=[['normal','Assujetti à la TVA','5,5 % sur l’enseignement et les activités sportives, 20 % sur les pensions et la vente.','percent'],['franchise','Franchise en base','Pas de TVA facturée (article 293 B du CGI), mention ajoutée sur vos factures.','doc'],['association_exoneree','Association exonérée','Activités sportives exonérées (article 261-7-1° du CGI).','members']];
-   return '<div class="eyebrow">Factures</div><h1>Quel est votre régime de TVA ?</h1><p class="lv-sub">Vos factures porteront les bons taux et les mentions obligatoires. En cas de doute, choisissez « Je ne sais pas » : vous ou votre comptable pourrez le corriger.</p>'+
+   return '<div class="eyebrow">Factures</div><h1>Quel est votre régime de TVA ?</h1><p class="lv-sub">Vos factures porteront les bons taux et les mentions obligatoires. En cas de doute, choisissez « Je ne sais pas » : vous ou votre comptable pourrez le corriger.</p>'+
    '<div class="lv-opts two">'+V.map(function(v,i){return '<button class="lv-opt" data-v="'+v[0]+'" aria-pressed="'+(def===v[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(v[3])+'</span><b>'+v[1]+'</b><small>'+v[2]+'</small>'+tick()+'</button>'}).join('')+
    '<button class="lv-opt" data-v="" aria-pressed="'+(A.vat_regime==='')+'" style="--i:3"><span class="ico">'+ICON('info')+'</span><b>Je ne sais pas</b><small>Nous choisissons le régime le plus courant pour votre structure.</small>'+tick()+'</button></div>'},
    bind:function(q){single(q,'vat_regime',true)},ok:function(){return A.vat_regime!==undefined}},

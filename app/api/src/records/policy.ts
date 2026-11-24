@@ -35,7 +35,7 @@ const deny = (msg = "Vous n'avez pas le droit de modifier ces données.") => new
 /** Collections nécessaires pour calculer le contexte d'un rôle. */
 export function ctxCollections(role: Role): string[] {
   if (role === "member") return ["members", "horses", "halfboard", "lessons"];
-  if (role === "coach") return ["coaches", "lessons", "coachStudents"];
+  if (role === "coach") return ["coaches", "lessons", "coachStudents", "coachNotes"];
   return [];
 }
 

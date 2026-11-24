@@ -18,7 +18,7 @@ function loadQueue(){try{S.queue=JSON.parse(localStorage.getItem(qkey())||'[]')|
 /* collections suivies et leur forme : 'rows' (objets avec id) ou 'blob' (un seul enregistrement) */
 S.tracked=function(){var out=[];Object.keys(D).forEach(function(k){if(!PL.isColl(k)||PL.NOSYNC.indexOf(k)>=0||k.charAt(0)==='_'||k==='club')return;if(S.refused[k])return;out.push(k)});return out};
 function shape(v){if(!Array.isArray(v))return 'blob';for(var i=0;i<v.length;i++)if(!plain(v[i]))return 'blob';return 'rows'}
-/* vue « enregistrements » d'une collection : {id: json} */
+/* vue « enregistrements » d'une collection : {id: json} */
 function rowsOf(k){var v=D[k],m={};
   if(S.isSingleton(k)){m._=ser(v);return m}
   if(shape(v)==='blob')return m;
@@ -75,7 +75,7 @@ S.flush=function(o){o=o||{};if(!PL.clubId||PL.readonly)return Promise.resolve();
   return S.busyP};
 
 /* ---------- Conflits : la version du serveur est rechargée et l'utilisateur prévenu ---------- */
-function label(coll,data){data=data||{};var n=data.name||data.title||((data.first||'')+' '+(data.last||'')).trim();return n?'« '+n+' »':'Un élément'}
+function label(coll,data){data=data||{};var n=data.name||data.title||((data.first||'')+' '+(data.last||'')).trim();return n?'« '+n+' »':'Un élément'}
 function applyServerObject(coll,id,data,version,deleted){
   if(version!=null)PL.versions[coll+'/'+id]=version;
   if(coll==='club'){if(data){PL.applyClub(PL.boot&&PL.boot.club,data)}S.snap.club=rowsOf('club');return true}

@@ -330,7 +330,7 @@ function dayStrip(mobile){var ev=dayEvents(),H0=8*60,H1=20*60,span=H1-H0,n=nowMi
   var tr=D.club.arenas.map(function(a){return '<div class="ck-trk">'+ev.filter(function(e){return e.a===a.id}).map(function(e){return '<i class="'+(e.e<=n?'past':'')+'" style="left:'+pc(e.s)+'%;width:calc('+(pc(e.e)-pc(e.s))+'% - 2px);--c:'+EVC[e.k][1]+';--k:'+(k++)+'" title="'+E(hm(e.at)+' · '+e.t)+'"></i>'}).join('')+'</div>'}).join('');
   return '<div class="ck-day" aria-label="Occupation des pistes aujourd’hui">'+lab+'<div class="ck-dt">'+ax+tr+'<span class="ck-now" style="left:'+pc(n)+'%" title="Maintenant, '+hmm(n)+'"></span></div></div>'+
     '<div class="ck-leg">'+Object.keys(EVC).filter(function(x){return ev.some(function(e){return e.k===x})}).map(function(x){return '<span><i style="--c:'+EVC[x][1]+'"></i>'+EVC[x][0]+'</span>'}).join('')+'</div>'}
-/* phrase « Aussi aujourd'hui » : tout ce qui occupe les pistes en dehors des reprises */
+/* phrase « Aussi aujourd'hui » : tout ce qui occupe les pistes en dehors des reprises */
 function alsoTxt(){var ev=dayEvents().filter(function(e){return e.k!=='les'}),parts=[];
   ev.filter(function(e){return e.k==='work'}).forEach(function(e){parts.push('<b>'+E(e.t.toLowerCase())+'</b> à '+hm(e.at))});
   var ow=ev.filter(function(e){return e.k==='own'});
@@ -493,7 +493,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     if(k==='more'){P.go('contrats');return}
     if(k==='decl'){var d=D.declarations.find(function(x){return x.id===id});d.status='validée';P.renderBadges();
       gone(row,function(){P.toast(d.name+' validé. Sa fiche'+(d.box?' et son box '+d.box+' sont prêts':' est prête')+'.',{undo:function(){d.status='en attente';P.renderBadges();retile('valid')}})})}
-    else{var c=D.contracts.find(function(x){return x.id===id});b.outerHTML='<span class="chip ok dot">Relancé</span>';P.toast('Relance envoyée à '+D.name(c.party)+' pour « '+c.title+' »')}}
+    else{var c=D.contracts.find(function(x){return x.id===id});b.outerHTML='<span class="chip ok dot">Relancé</span>';P.toast('Relance envoyée à '+D.name(c.party)+' pour « '+c.title+' »')}}
   function gone(row,cb){row.classList.add('out');setTimeout(function(){var m=flipFirst(bento);row.remove();var n=P.$$('.ck-vr',bento).length,c=P.$('[data-vcnt]',bento);if(c)c.textContent=n;if(!n)retile('valid');flipPlay(bento,m);cb()},P.RM?0:320)}
 
   /* info-bulle des boxes */

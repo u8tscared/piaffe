@@ -326,7 +326,7 @@ function lessonSheet(it,draw){var L=lessonItems(it),A=assignOf(it),W=workToday()
   function cands(){var used=Object.keys(A).map(function(k){return A[k]});return D.horses.filter(function(h){return h.kind==='club'&&h.status!=='bad'&&h.id!=='h06'&&used.indexOf(h.id)<0}).sort(function(a,b){return (W[a.id]||[]).length-(W[b.id]||[]).length}).slice(0,8)}
   function body(){var n=L.riders.length,y=L.riders.filter(function(r){return pr[r]==='y'}).length,no=L.riders.filter(function(r){return pr[r]==='n'}).length,miss=L.riders.filter(function(r){return !A[r]}).length;
     return (E.offline?'<div class="em-off">'+ICON('wifi')+'<span class="grow">Hors ligne. L’appel et les chevaux attribués restent sur le téléphone et partent vers la feuille de monte dès le retour du réseau.</span></div>':'')+'<div class="hrow sp wrap" style="margin-bottom:6px"><div><b class="l">'+L.title+'</b><div class="s mut">'+L.sub+'</div></div><div class="hrow wrap" style="--g:6px">'+U.chip(y+' présent'+(y>1?'s':''),'ok',true)+(no?U.chip(no+' absent'+(no>1?'s':''),'bad',true):'')+(n-y-no?U.chip((n-y-no)+' à pointer','',true):'')+'</div></div>'+
-     (miss?'<div class="note warn" style="margin:10px 0 2px">'+ICON('alert','sm')+'<span><b>'+miss+' cheva'+(miss>1?'ux':'l')+' à attribuer.</b> Tornado et Opale sont arrêtés. Touchez « Choisir un cheval » ou laissez Piaffe proposer.</span></div>':'')+
+     (miss?'<div class="note warn" style="margin:10px 0 2px">'+ICON('alert','sm')+'<span><b>'+miss+' cheva'+(miss>1?'ux':'l')+' à attribuer.</b> Tornado et Opale sont arrêtés. Touchez « Choisir un cheval » ou laissez Piaffe proposer.</span></div>':'')+
      L.riders.map(function(r){var m=D.member(r),h=A[r]&&D.horse(A[r]),w=h?(W[h.id]||[]).length:0;
       return '<div class="em-ap"><div class="hrow">'+U.av(r,'lg')+'<div class="grow"><div class="b" style="font-size:15px">'+m.first+' '+m.last+'</div><div class="xs mut">Galop '+m.galop+(m.licence!=='2027'?' · licence à renouveler':'')+'</div>'+
        '<button class="em-hb'+(h?'':' no')+'" data-h="'+r+'">'+(h?HORSE_GLYPH()+'<span class="ellip">'+h.name+'</span><span class="mut" style="font-weight:500">· '+(w+1)+(w?'e':'re')+' heure du jour</span>':ICON('alert','sm')+'Choisir un cheval')+ICON('down','sm')+'</button></div>'+
@@ -695,7 +695,7 @@ function obsSheet(h,draw){var TG=['Appétit','Crottins','Boiterie','Plaie','Comp
    '<div><span class="em-lbl">Sujet</span><div class="hrow wrap" style="--g:6px">'+TG.map(function(t){return '<button class="tag" style="height:40px;padding:0 14px;font-size:13.5px" data-tg>'+t+'</button>'}).join('')+'</div></div>'+
    '<div><span class="em-lbl">Photo et dictée</span><div class="hrow" style="--g:8px" data-ph><button class="em-add" data-photo>'+ICON('image')+'Photo</button><button class="em-add" data-mic>'+ICON('mic')+'<span>Dicter</span></button></div></div>'+
    '<textarea class="in" rows="3" placeholder="Ce que vous avez vu"></textarea>'+
-   '<div class="card flat">'+(h.owner?'<div class="li"><div class="grow"><div class="t">Prévenir '+D.name(h.owner)+'</div><div class="s">Propriétaire, dans « Nouvelles de mon cheval »</div></div>'+U.tog(false,'ob-own')+'</div>':'')+'<div class="li"><div class="grow"><div class="t">Prévenir Claire</div><div class="s">Notification immédiate à la gérante</div></div>'+U.tog(h.status!=='ok','ob-cl')+'</div></div></div>',
+   '<div class="card flat">'+(h.owner?'<div class="li"><div class="grow"><div class="t">Prévenir '+D.name(h.owner)+'</div><div class="s">Propriétaire, dans « Nouvelles de mon cheval »</div></div>'+U.tog(false,'ob-own')+'</div>':'')+'<div class="li"><div class="grow"><div class="t">Prévenir Claire</div><div class="s">Notification immédiate à la gérante</div></div>'+U.tog(h.status!=='ok','ob-cl')+'</div></div></div>',
    foot:'<button class="btn em-b pri block" data-save>'+ICON('check')+'Ajouter au journal</button>'});
   var ta=s.querySelector('textarea'),ph=0;
   s.querySelector('[data-photo]').onclick=function(){if(ph>2)return;ph++;s.querySelector('[data-ph]').insertAdjacentHTML('afterbegin',shot('Photo '+ph))};
@@ -975,7 +975,7 @@ P.mod({id:'emp-signaler',role:'employe',group:'Écurie',title:'Signaler',icon:'a
     '<div><div class="em-step"><i>4</i>Où ? <span class="chip acc" style="margin-left:auto" data-zl>'+ICON('pin','sm')+zoneName(S.zone)+'</span></div><div data-plan>'+planSvg(S.zone)+'</div><div class="xs mut" style="margin-top:6px">Lieu proposé d’après votre position. Touchez le plan pour le changer.</div></div>'+
     '<button class="btn em-b pri block hide-s" data-send>'+ICON('send')+'Envoyer à Claire</button></div>';
    x+='<div class="stack'+(first?' rise':'')+'" style="--g:14px"><div class="card"><div class="ch" style="padding-bottom:6px"><h3>Mes signalements</h3><span class="s mut">Suivi en direct</span></div><div data-mine>'+mine()+'</div></div>'+
-    '<div class="note">'+ICON('bell','sm')+'<span>Un signalement <b>urgent</b> fait sonner le téléphone de Claire et de la personne d’astreinte. Les autres arrivent dans sa liste « À traiter ».</span></div></div></div>'+
+    '<div class="note">'+ICON('bell','sm')+'<span>Un signalement <b>urgent</b> fait sonner le téléphone de Claire et de la personne d’astreinte. Les autres arrivent dans sa liste « À traiter ».</span></div></div></div>'+
     '<div class="em-sticky"><button class="btn em-b pri" data-send>'+ICON('send')+'Envoyer à Claire</button></div>';
    el.innerHTML=x;if(first)P.animate(el);first=false}
   on(el,'[data-ty]',function(b){S.type=b.getAttribute('data-ty');$$('[data-ty]',el).forEach(function(q){q.setAttribute('aria-pressed',q===b)});el.querySelector('[data-extra]').innerHTML=extra();if(S.type==='stock'){S.zone='han';zone()}if(S.type==='cloture'){S.zone='pad1';zone()}});
@@ -1203,7 +1203,7 @@ P.mod({id:'emp-bienvenue',role:'employe',group:'Moi',title:'Mon arrivée',icon:'
   on(el,'[data-err]',function(){P.toast('Claire est prévenue, elle corrige votre rôle',{icon:'send'})});
   on(el,'[data-clear]',function(){EW.signed=false;draw()});
   on(el,'[data-rule]',function(b){var k=+b.getAttribute('data-rule');EW.rules[k]=!EW.rules[k];draw()});
-  on(el,'[data-tab]',function(b){var id=b.getAttribute('data-tab'),t=EWT.find(function(q){return q[0]===id});if(!EW.tabs[id]){EW.tabs[id]=true;P.toast('Onglet « '+t[2]+' » : '+t[3].charAt(0).toLowerCase()+t[3].slice(1),{icon:t[1]})}draw()});
+  on(el,'[data-tab]',function(b){var id=b.getAttribute('data-tab'),t=EWT.find(function(q){return q[0]===id});if(!EW.tabs[id]){EW.tabs[id]=true;P.toast('Onglet « '+t[2]+' » : '+t[3].charAt(0).toLowerCase()+t[3].slice(1),{icon:t[1]})}draw()});
   on(el,'[data-ok]',function(b){var i=+b.getAttribute('data-ok');
    if(i===0)ewDone(0,'Invitation acceptée, bienvenue '+p.first);
    else if(i===1)ewDone(1,'Rôle confirmé : palefrenier soigneur');
@@ -1558,7 +1558,7 @@ LE['emp-planning']=function(el,ctx){var me=leMe(),days=Array.apply(null,Array(7)
   var tk=leTasks();
   el.innerHTML=hd('Mon planning','Vos reprises des 7 prochains jours'+(me.hours?' · contrat de '+me.hours+' h par semaine':''),'')+
    (any?'<div class="stack rise" style="--g:12px">'+days.map(function(o){var ls=leLessons(D.day(o).getDay());if(!ls.length)return '';return '<div class="card"><div class="ch"><h3>'+cap(o===0?'aujourd’hui':o===1?'demain':F.dateL(D.day(o)))+'</h3><span class="chip">'+ls.length+'</span></div><div>'+ls.map(function(l){return '<div class="em-row"><span class="em-tm">'+leEsc(l.start)+'</span><div class="grow"><div class="t">'+leEsc(l.title)+'</div><div class="s">'+l.dur+' min · '+(l.riders||[]).length+' cavalier'+((l.riders||[]).length>1?'s':'')+' sur '+l.cap+(D.club.arenas&&l.arena?' · '+leEsc((D.club.arenas.filter(function(a){return a.id===l.arena})[0]||{}).name||''):'')+'</div></div></div>'}).join('')+'</div></div>'}).join('')+'</div>':
-    '<div class="card">'+U.empty('planning','Aucune reprise à votre nom','Vos horaires et vos reprises apparaîtront ici dès que votre gérant les aura saisis.'+(tk.length?' En attendant, vos tâches du jour sont sur « Aujourd’hui ».':''),tk.length?'<button class="btn pri" data-go="emp-jour">Voir mes tâches</button>':'')+'</div>')};
+    '<div class="card">'+U.empty('planning','Aucune reprise à votre nom','Vos horaires et vos reprises apparaîtront ici dès que votre gérant les aura saisis.'+(tk.length?' En attendant, vos tâches du jour sont sur « Aujourd’hui ».':''),tk.length?'<button class="btn pri" data-go="emp-jour">Voir mes tâches</button>':'')+'</div>')};
 
 /* ---------- Soins du jour ---------- */
 LE['emp-soins']=function(el,ctx){var tab='todo';

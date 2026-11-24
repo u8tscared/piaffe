@@ -263,3 +263,11 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 .lv-tp-fx:empty{display:none}
 @media (max-width:640px){.lv-tp-fx{padding-left:0}}
 .lv-logo{background:#fff;padding:2px;box-sizing:border-box}
+
+/* liste des factures de l'adhérent : le libellé garde toute la largeur disponible, montant et boutons à droite */
+.lv-inv{align-items:flex-start}
+.lv-inv .grow{min-width:0;flex:1 1 auto}
+.lv-inv .grow b{display:block;overflow-wrap:anywhere}
+.lv-inv-st{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.lv-inv-r{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px;white-space:nowrap}
+.lv-inv-b{display:flex;gap:4px;align-items:center}

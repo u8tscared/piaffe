@@ -31,7 +31,7 @@ function recommend(id){if(KEEP_IDS[id]&&possible(id).indexOf('integrate')>=0)ret
   var f=MIG().decisionRecommandee;if(typeof f==='function'&&cat()[id]){try{var d=f(id);if(d==='changer')return 'replace';if(d==='integrer')return 'integrate'}catch(e){}}
   var l=cat()[id],r=l&&l.relation;if(r==='remplace')return 'replace';if(r==='branche')return 'integrate';
   return REPLACE_FAM[fam(id)]?'replace':'integrate'}
-/* décisions permises pour un outil (un logiciel de gestion équestre ne se « connecte » pas) */
+/* décisions permises pour un outil (un logiciel de gestion équestre ne se « connecte » pas) */
 function possible(id){var f=MIG().decisionsPossibles;if(typeof f==='function'&&cat()[id]){try{var l=f(id).map(function(d){return d==='changer'?'replace':'integrate'});if(l.length)return l}catch(e){}}return ['replace','integrate']}
 function effect(id,action){var f=MIG().effetPour;if(typeof f!=='function')return '';try{return f(id,action==='replace'?'changer':'integrer')||''}catch(e){return ''}}
 function logo(id){var L=MIG().LOGOS;var v=L&&L[id];if(!v)return '';if(typeof v==='object')v=v.svg||v.src||v.data||'';if(!v)return '';
@@ -39,7 +39,7 @@ function logo(id){var L=MIG().LOGOS;var v=L&&L[id];if(!v)return '';if(typeof v==
   if(/^(data:|https?:|\/)/.test(v))return '<img class="lv-logo" alt="" src="'+esc(v)+'">';return ''}
 function icon(id){return logo(id)||ICON(ICO[fam(id)]||'swap')}
 
-/* recherche dans le catalogue complet, pour « autre » */
+/* recherche dans le catalogue complet, pour « autre » */
 function search(q){q=(q||'').trim().toLowerCase();if(q.length<2)return [];var out=[];
   Object.keys(cat()).forEach(function(id){var l=cat()[id];if((l.nom||'').toLowerCase().indexOf(q)>=0||id.indexOf(q)>=0)out.push({id:id,nom:l.nom,famille:l.famille})});return out.slice(0,6)}
 
@@ -75,7 +75,7 @@ function open(o){o=o||{};return available().then(function(ok){
     document.body.appendChild(w);document.documentElement.classList.add('lv-noscroll');
     var done=false;function end(v){if(done)return;done=true;window.removeEventListener('message',onMsg);document.removeEventListener('keydown',onKey);w.classList.add('out');setTimeout(function(){w.remove();document.documentElement.classList.remove('lv-noscroll')},260);res(v)}
     function onMsg(ev){if(ev.origin!==location.origin)return;var d=ev.data;if(!d||d.type!=='piaffe-migration')return;
-      /* contrat : etat « fini » (valeur actuelle) ou « termine » (première version), ou « abandon » */
+      /* contrat : etat « fini » (valeur actuelle) ou « termine » (première version), ou « abandon » */
       if(d.etat==='fini'||d.etat==='termine')end({etat:'termine',job_id:d.job_id||null,controle:d.controle||null});else if(d.etat==='abandon')end({etat:'abandon',job_id:d.job_id||null})}
     function onKey(ev){if(ev.key==='Escape')end({etat:'abandon'})}
     window.addEventListener('message',onMsg);document.addEventListener('keydown',onKey);

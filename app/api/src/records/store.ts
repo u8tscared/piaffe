@@ -86,12 +86,15 @@ const errRes = (o: { coll?: unknown; id?: unknown }, code: string, message: stri
  * (db.batch est une transaction). Chaque écriture est conditionnée par la version lue : si quelqu'un a écrit entre-temps,
  * l'opération est signalée en conflit au lieu d'écraser.
  */
+/** L'id « _ » des objets uniques ne suit pas ID_RE (qui exige un premier caractère alphanumérique). */
+const validId = (coll: string, id: string) => ID_RE.test(id) || (isSingleton(coll) && id === SINGLETON_ID);
+
 export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unknown>): void } | null, p: Principal, ops: unknown[], ip?: string | null) {
   const db = env.DB;
   const results: (OpResult | null)[] = new Array(ops.length).fill(null);
   // 1. Lecture des versions actuelles (par paquets : D1 accepte 100 paramètres par requête).
   const keys = new Map<string, { coll: string; id: string }>();
-  ops.forEach((o: any) => { if (o && isColl(o.coll) && typeof o.id === "string" && ID_RE.test(o.id)) keys.set(o.coll + "\u0000" + o.id, { coll: o.coll, id: o.id }); });
+  ops.forEach((o: any) => { if (o && isColl(o.coll) && typeof o.id === "string" && validId(o.coll, o.id)) keys.set(o.coll + "\u0000" + o.id, { coll: o.coll, id: o.id }); });
   const current = new Map<string, { data: Row | null; version: number; deleted: boolean }>();
   const byColl: Record<string, string[]> = {};
   for (const k of keys.values()) (byColl[k.coll] ||= []).push(k.id);
@@ -111,7 +114,7 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
     if (!o || typeof o !== "object") { results[idx] = errRes({}, "invalid_op", "Opération illisible."); return; }
     if (o.op !== "upsert" && o.op !== "delete") { results[idx] = errRes(o, "invalid_op", "L'opération doit être « upsert » ou « delete »."); return; }
     if (!isColl(o.coll)) { results[idx] = errRes(o, "unknown_collection", "Collection inconnue."); return; }
-    if (typeof o.id !== "string" || !ID_RE.test(o.id)) { results[idx] = errRes(o, "invalid_id", "Identifiant invalide (lettres, chiffres, _ . : -, 64 caractères au plus)."); return; }
+    if (typeof o.id !== "string" || !validId(o.coll, o.id)) { results[idx] = errRes(o, "invalid_id", "Identifiant invalide (lettres, chiffres, _ . : -, 64 caractères au plus)."); return; }
     if (isSingleton(o.coll) && o.id !== SINGLETON_ID) { results[idx] = errRes(o, "invalid_id", "Cette collection est un objet unique : utilisez l'id « _ »."); return; }
     const key = o.coll + "\u0000" + o.id;
     const cur = current.get(key);

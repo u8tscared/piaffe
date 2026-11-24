@@ -495,7 +495,7 @@ P.css(`
 `);
 
 var cpSel='k1',cpTab={},TP={},ENT={},CHK={},BILL={k5:true},cpRate=1.2,cpPub={k5:true};
-/* les véhicules ne reçoivent jamais plus de chevaux ni de passagers que de places : le surplus attend dans « À placer » */
+/* les véhicules ne reçoivent jamais plus de chevaux ni de passagers que de places : le surplus attend dans « À placer » */
 function fit(list,cap,over){list.slice(cap).forEach(function(x){if(over.indexOf(x)<0)over.push(x)});return list.slice(0,cap)}
 function plan(k){if(TP[k.id])return TP[k.id];var es=ents(k),t1=D.vans[0],t2=D.vans[1],lv=9*60-90-drive(k.km),V=[],pl;
  if(k.id==='k1'){var oH=[],oP=[],byV=function(v){return es.filter(function(e){return e.transport===v}).map(function(e){return e.horse})};
@@ -770,7 +770,7 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
   function retab(t){drawTab(cur(),t,det.querySelector('[data-tb]'))}
   act(el,{imp:importSheet,'new':newComp,pasend:function(b){b.innerHTML=I('check','sm')+'Horaires envoyés';P.toast('Horaires de détente et de passage envoyés aux familles',{icon:'send'})},
    sel:function(b){cpSel=b.getAttribute('data-id');drawStrip();drawDetail();P.animate(det);swIn(det)},
-   ffe:function(){ffeSheet(cur())},grp:function(){goOr('communication','Message envoyé au groupe « '+cur().name+' »')},
+   ffe:function(){ffeSheet(cur())},grp:function(){goOr('communication','Message envoyé au groupe « '+cur().name+' »')},
    aff:function(){P.toast('Affiche du Hunter Club créée avec le logo du club',{icon:'image'})},prog:function(){P.toast('Programme publié sur le portail et envoyé aux 148 adhérents',{icon:'send'})},recap:function(){P.toast('Résumé du concours partagé sur le portail et le groupe',{icon:'send'})},
    lic:function(b){b.outerHTML=U.chip('Demande envoyée','acc',true);P.toast('Demande de certificat envoyée à la famille Martinez')},
    add:function(){var sh=P.sheet({title:'Engager un cavalier',icon:'plus',body:'<div class="stack" style="--g:12px"><label class="field"><span>Cavalier</span><select class="in"><option>'+D.name('m019')+' · Galop '+D.member('m019').galop+'</option><option>'+D.name('m044')+' · Galop '+D.member('m044').galop+'</option></select></label><label class="field"><span>Cheval</span><select class="in"><option>Quiétude</option><option>Opale</option></select></label><label class="field"><span>Épreuve</span><select class="in"><option>Club 2 · 95 cm</option><option>Club 1 · 105 cm</option></select></label><div class="note">'+I('checkc','sm')+'<span>Licence compétition valide, cheval disponible ce jour-là, une place libre dans le camion.</span></div></div>',foot:'<button class="btn pri" data-ok>Ajouter l’engagement</button>'});sh.querySelector('[data-ok]').onclick=function(){sh.close();P.toast('Demande envoyée à Emma Moreau, à valider par ses parents')}},
@@ -783,7 +783,7 @@ P.mod({id:'competitions',role:'gerant',group:'Club',title:'Compétitions',icon:'
    engimp:function(){P.toast('22 engagés importés du fichier FFE Compet',{icon:'upload'})},
    todo:function(b){var it=HS.todo[+b.getAttribute('data-id').split('-')[1]];it[1]=!it[1];b.setAttribute('aria-checked',it[1]);setTimeout(function(){retab('epr')},220)},
    benrel:function(b){b.outerHTML=U.chip('Relance envoyée','acc',true);P.toast('Relance envoyée aux 31 familles sans poste')},
-   benadd:function(b){var p=HS.posts.find(function(x){return x.id===b.getAttribute('data-id')}),pool=['m052','m083','m091','m102','m117','m001'],m=pool.find(function(i){return !HS.posts.some(function(q){return q.who.indexOf(i)>=0})});if(m){p.who.push(m);retab('ben');P.toast(nm(m)+' est inscrit au poste « '+p.name+' »')}},
+   benadd:function(b){var p=HS.posts.find(function(x){return x.id===b.getAttribute('data-id')}),pool=['m052','m083','m091','m102','m117','m001'],m=pool.find(function(i){return !HS.posts.some(function(q){return q.who.indexOf(i)>=0})});if(m){p.who.push(m);retab('ben');P.toast(nm(m)+' est inscrit au poste « '+p.name+' »')}},
    buvlist:function(){P.toast('Liste de courses créée : 9 lignes, environ 310 €',{icon:'list'})},buvcaisse:function(){goOr('boutique','Caisse de la buvette ouverte sur ce téléphone')}});
  }});
 
@@ -1182,7 +1182,7 @@ function stuActions(root,gs,redraw){var H={
   nshare:function(s,b){var n=notesOf(s)[+b.getAttribute('data-id')];n.sh=!n.sh;P.toast(n.sh?'Note partagée avec '+s.first:'Note repassée en privé');setTimeout(redraw,240)},
   nadd:function(s){var sh=P.sheet({title:'Note pour '+s.first,icon:'edit',body:'<div class="stack" style="--g:12px"><textarea class="in" rows="5" data-t>Séance sur le plat, épaule en dedans aux deux mains. '+s.horse.split(' ')[0]+' se tient mieux à main droite.</textarea><div class="card flat" style="padding:4px 14px">'+row('Partager avec '+s.first,U.tog(true,'nt-sh'))+'</div></div>',foot:'<button class="btn pri" data-ok>Enregistrer la note</button>'});
    sh.querySelector('[data-ok]').onclick=function(){var on=sh.querySelector('#nt-sh').getAttribute('aria-checked')==='true';notesOf(s).unshift({d:'Mar. 17 nov.',tag:on?'Cours':'Pour moi',t:E(sh.querySelector('[data-t]').value),sh:on});sh.close();redraw();P.toast(on?'Note enregistrée et envoyée à '+s.first:'Note enregistrée, visible par vous seule')}},
-  vid:function(s,b){P.toast('Lecture de « '+b.getAttribute('data-n')+' »',{icon:'play'})},
+  vid:function(s,b){P.toast('Lecture de « '+b.getAttribute('data-n')+' »',{icon:'play'})},
   vadd:function(s){P.toast('Caméra ouverte : la vidéo sera rangée dans la fiche de '+s.first,{icon:'video'})},
   smsg:function(s){P.toast('Conversation ouverte avec '+s.first,{icon:'chat'})},
   sbook:function(s){P.toast('Vos trois prochains créneaux libres sont envoyés à '+s.first,{icon:'send'})}},M={};
@@ -1289,10 +1289,10 @@ function cxBind(root){var ar=root.querySelector('[data-ar]'),tb=root.querySelect
   fw:function(){var o=CX.obs.find(function(x){return x.id===CX.sel}),i=CX.obs.indexOf(o);if(i>0){CX.obs.splice(i,1);CX.obs.splice(i-1,0,o);draw();P.toast(CXK[o.k][0]+' devient l’obstacle n° '+i,{ms:1500})}else P.toast('C’est déjà le premier obstacle',{icon:'info',ms:1500})},
   del:function(){var o=CX.obs.find(function(x){return x.id===CX.sel}),i=CX.obs.indexOf(o);CX.obs.splice(i,1);CX.sel=null;draw();P.toast(CXK[o.k][0]+' retiré',{undo:function(){CX.obs.splice(i,0,o);draw()}})},
   clr:function(){var old=CX.obs.slice();CX.obs=[];CX.sel=null;draw();P.toast('Piste vidée',{undo:function(){CX.obs=old;draw()}})},
-  save:function(){var sh=P.sheet({title:'Enregistrer le parcours',icon:'jump',body:'<label class="field"><span>Nom du parcours</span><input class="in" data-n value="'+E(CX.name)+'"></label><p class="xs mut" style="margin-top:8px">'+CX.obs.length+' obstacles, '+cxLen()+' m. Le parcours est rangé dans « Mes parcours ».</p>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
-   sh.querySelector('[data-ok]').onclick=function(){var n=sh.querySelector('[data-n]').value.trim()||'Parcours sans nom',list=CX.obs.map(function(o){return [o.k,o.x,o.y,o.a]}),ex=CX.saved.find(function(p){return p.name===n});if(ex)ex.obs=list;else CX.saved.unshift({name:n,obs:list});CX.name=n;sh.close();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+n+' » enregistré',{icon:'checkc'})}},
-  share:function(){cxShare('le parcours « '+CX.name+' »')},
-  ld:function(b){var p=CX.saved[+b.getAttribute('data-i')];CX.name=p.name;cxLoad(p.obs);draw();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+p.name+' » ouvert sur la piste',{ms:1600})},
+  save:function(){var sh=P.sheet({title:'Enregistrer le parcours',icon:'jump',body:'<label class="field"><span>Nom du parcours</span><input class="in" data-n value="'+E(CX.name)+'"></label><p class="xs mut" style="margin-top:8px">'+CX.obs.length+' obstacles, '+cxLen()+' m. Le parcours est rangé dans « Mes parcours ».</p>',foot:'<button class="btn pri" data-ok>Enregistrer</button>'});
+   sh.querySelector('[data-ok]').onclick=function(){var n=sh.querySelector('[data-n]').value.trim()||'Parcours sans nom',list=CX.obs.map(function(o){return [o.k,o.x,o.y,o.a]}),ex=CX.saved.find(function(p){return p.name===n});if(ex)ex.obs=list;else CX.saved.unshift({name:n,obs:list});CX.name=n;sh.close();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+n+' » enregistré',{icon:'checkc'})}},
+  share:function(){cxShare('le parcours « '+CX.name+' »')},
+  ld:function(b){var p=CX.saved[+b.getAttribute('data-i')];CX.name=p.name;cxLoad(p.obs);draw();root.querySelector('[data-saved]').innerHTML=cxSaved();P.toast('Parcours « '+p.name+' » ouvert sur la piste',{ms:1600})},
   fiche:function(b){cxFiche(CX.lib.find(function(f){return f.id===b.getAttribute('data-id')}),draw)}});
  root.querySelectorAll('[data-cxt]').forEach(function(x){x.addEventListener('click',function(){CX.theme=x.getAttribute('data-cxt');P.rerender()})})}
 function cxShare(what){var pick={s1:true};var sh=P.sheet({title:'Partager avec mes élèves',icon:'send',body:function(b,sheet){
@@ -1304,7 +1304,7 @@ function cxFiche(f,redraw){var sh=P.sheet({title:f.t,icon:'jump',body:cxMini(f).
   '<div class="hrow wrap" style="--g:6px;margin:12px 0">'+U.chip(f.th,'acc')+U.chip(f.lv,'line')+U.chip(f.d+' min','line')+'</div><p class="s" style="color:var(--ink-2)">'+f.txt+'</p>'+sec('Progression')+'<div class="tl">'+f.steps.map(function(s){return '<div class="ev"><div class="s">'+s+'</div></div>'}).join('')+'</div>',
   foot:(f.obs.length?'<button class="btn" data-ld>'+I('jump','sm')+'Poser sur la piste</button>':'')+'<button class="btn pri" data-sh>'+I('send','sm')+'Envoyer à un élève</button>'});
  var l=sh.querySelector('[data-ld]');if(l)l.onclick=function(){CX.name=f.t;cxLoad(f.obs.map(function(o,i){return [o[0],150+o[1]*1.6,120+o[2]*3.5,0]}));sh.close();redraw();P.toast('Exercice posé sur la piste, ajustez les distances',{icon:'jump'})};
- sh.querySelector('[data-sh]').onclick=function(){sh.close();setTimeout(function(){cxShare('l’exercice « '+f.t+' »')},300)}}
+ sh.querySelector('[data-sh]').onclick=function(){sh.close();setTimeout(function(){cxShare('l’exercice « '+f.t+' »')},300)}}
 
 P.mod({id:'coach-eleves',role:'coach',group:'Coaching',title:'Élèves',icon:'members',n:20,short:'Élèves',
  render:function(el,ctx){

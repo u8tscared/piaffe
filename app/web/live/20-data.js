@@ -77,7 +77,7 @@ PL.setColl=function(k,val){var cur=D[k];
   D[k]=val;return val};
 
 /* ---------- Valeurs sûres avant les modules ---------- */
-/* collections que les modules créent avec des données fictives (« D.x = D.x || [...] » ou « if(!D.x) »),
+/* collections que les modules créent avec des données fictives (« D.x = D.x || [...] » ou « if(!D.x) »),
    relevées par la sonde ?probe=demo. Posées vides AVANT les modules : leurs jeux d'exemple ne s'exécutent pas. */
 PL.MODKEYS={A:'planExtras planStages planCatch rapAct rapN1 rapSched rapCohorts rapLeave comThreads comCamps comPins comPolls practitioners tours pharmacy register journalMore boxGuests boxRequests camEvents recurring creditNotes schedules cards cheques receipts nights leaves reviews quotes coachBookings coachReviews entriesMore coachStables coachStudents coachLessons coachLapsed adhFamily adhNews adhStages adhInvoices adhReviews adhOffers adhResults empTasks empHugo empPresence empConsignes empCare empRegister empShifts empNights empThreads empLeaves empDocs empIncidents aiAutomations aiLog mcpClients mcpCalls apiKeys webhooks webhookLog importLots pfTarifs'.split(' '),
   O:'rapFill breeding bankSuggest hr shifts coachDeals homeShow empNotes'.split(' ')};
@@ -85,7 +85,7 @@ PL.preseed=function(data){data=data||{};
   PL.MODKEYS.A.forEach(function(k){D[k]=Array.isArray(data[k])?data[k].slice():[]});
   PL.MODKEYS.O.forEach(function(k){D[k]=data[k]&&typeof data[k]==='object'&&!Array.isArray(data[k])?data[k]:{}});
   D._lotB=true;
-  /* le planning de la démo « complète » les reprises avec des cavaliers pris au hasard la première fois (D.planInit) :
+  /* le planning de la démo « complète » les reprises avec des cavaliers pris au hasard la première fois (D.planInit) :
      jamais sur les vraies reprises d'un club (et la boucle ne s'arrête pas quand il y a moins d'adhérents que de places) */
   D.planInit=true;
   /* fiches RH et plannings par salarié : un salarié sans fiche reçoit une fiche vide au lieu de casser l'écran Équipe */
