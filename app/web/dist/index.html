@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Piaffe">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611241804">
+<meta name="piaffe-version" content="202611241806">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -1159,7 +1159,7 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Piaffe a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611241804",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611241806",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    PIAFFE · Marque
@@ -2322,6 +2322,7 @@ const EXPORT_RH = ['Exportez la liste des salariés (nom, poste, contrat, heures
 const L = [
   // ---- Gestion équestre (research/01-concurrents-france.md) ----
   ['kavalog', 'Kavalog', 'equestre', 'les-deux', 'kavalog.com', 'kavalog\\.(com|fr)', false, null, 'AEXAE'],
+  ['pegase', 'Pégase', 'equestre', null, null, null, false, null],
   ['equimondo', 'Equimondo', 'equestre', 'web', 'equimondo.fr', 'equimondo\\.', true, ['Dans Equimondo, téléchargez l’export standard : clients, chevaux, factures.', 'Déposez les fichiers ici.']],
   ['cavasoft', 'Cavasoft', 'equestre', 'web', 'cavasoft.fr', 'cavasoft\\.fr', false, null],
   ['equionline', 'Equionline', 'equestre', 'web', 'equionline.fr', 'equionline\\.fr', false, null],
@@ -2351,6 +2352,7 @@ const L = [
   ['stripe', 'Stripe', 'adhesions', 'web', 'stripe.com', 'stripe\\.com', true, ['Dans le tableau de bord Stripe, ouvrez Clients puis Exporter (CSV).', 'Faites de même pour Paiements et, si vous en avez, Abonnements.', 'Déposez les fichiers ici.']],
   ['sumup', 'SumUp', 'adhesions', 'web', 'sumup.com', 'sumup\\.(com|fr)', false, ['Dans votre espace SumUp, exportez l’historique des transactions (CSV ou Excel).', 'Déposez le fichier ici : Piaffe le rapproche des factures.']],
   ['gocardless', 'GoCardless', 'adhesions', 'web', 'gocardless.com', 'gocardless\\.com', false, ['Dans GoCardless, exportez les clients et les mandats (CSV).', 'Déposez les fichiers ici : les mandats de prélèvement restent à faire signer de nouveau ou à transférer avec l’accord de GoCardless.']],
+  ['qonto', 'Qonto', 'adhesions', 'web', 'qonto.com', 'qonto\\.com', false, ['Dans Qonto, Transactions puis Exporter (CSV ou Excel) sur la saison.', 'Déposez le fichier ici : Piaffe rapproche virements et prélèvements des factures.']],
   ['paypal', 'PayPal', 'adhesions', 'web', 'paypal.com', 'paypal\\.com', false, ['Dans PayPal, Activité puis Relevés : téléchargez l’historique en CSV.', 'Déposez le fichier ici.']],
   // ---- Agenda et réservation ----
   ['google-agenda', 'Google Agenda', 'agenda', 'web', 'calendar.google.com', 'calendar\\.google\\.com', true, ['Google Agenda : Paramètres, Importer et exporter, Exporter (fichier .ics dans un .zip).', 'Déposez le fichier ici, ou abonnez Piaffe à l’agenda (lien iCal) pour une reprise en continu.']],
@@ -2427,11 +2429,12 @@ const R = {
   sumup: ['branche', null, 'Gardé. Vos encaissements par carte au club arrivent dans Piaffe et sont rapprochés des factures.', null],
   gocardless: ['branche', null, 'Gardé. Vos mandats et prélèvements SEPA continuent ; les encaissements sont rapprochés des factures.', null],
   paypal: ['branche', 'Changé. Piaffe encaisse en ligne lui-même ; on reprend l’historique des paiements, puis vous fermez le compte.', 'Gardé. On reprend l’historique par export ; le branchement direct arrive bientôt.', null],
-  'google-agenda': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements et les reprises récurrentes.', 'Gardé. Piaffe publie son planning dans votre Google Agenda.', null],
+  'google-agenda': ['au_choix', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements et les reprises récurrentes.', 'Gardé. Piaffe publie son planning dans votre Google Agenda.', null],
   outlook: ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Outlook s’abonne au planning Piaffe (lien d’agenda) ; envoi direct bientôt.', null],
   'apple-calendrier': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Calendrier Apple s’abonne au planning Piaffe (flux d’agenda), sur iPhone et Mac.', null],
   calendly: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
   planity: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
+  qonto: ['branche', null, 'Gardé. Votre compte reste chez Qonto ; on rapproche virements et prélèvements des factures (par export, branchement direct bientôt).', null],
   pennylane: ['branche', null, 'Gardé. Piaffe envoie factures et encaissements à votre comptable.', null],
   tiime: ['branche', null, COMPTA_EXPORT, null], indy: ['branche', null, COMPTA_EXPORT, null], sage: ['branche', null, COMPTA_EXPORT, null],
   ebp: ['branche', null, COMPTA_EXPORT, null], cegid: ['branche', null, COMPTA_EXPORT, null], ciel: ['branche', null, COMPTA_EXPORT, null],

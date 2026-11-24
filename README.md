@@ -23,3 +23,12 @@ node tools/build.js
 Puis ouvrir `demo/dist/preview.html` dans un navigateur.
 
 Toutes les données de la démo sont fictives.
+
+## Le logiciel (app/)
+
+`app/` contient le vrai logiciel vendu aux écuries : un Worker Cloudflare (`app/api`, Hono, D1, R2) qui sert l'API et l'application web (`app/web`, les écrans de la démo branchés sur les vraies données).
+
+- Architecture et contrats : `app/ARCHITECTURE.md`
+- Comptes à créer et mise en ligne : `app/COMPTES-A-CREER.md`
+- Tests : `cd app/api && npm ci && npx vitest run`
+- Lancer en local : `node app/web/build.js`, puis dans `app/api` : `npx wrangler d1 migrations apply piaffe --local` et `npx wrangler dev`
