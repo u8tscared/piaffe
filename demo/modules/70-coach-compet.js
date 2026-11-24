@@ -492,7 +492,7 @@ function plan(k){if(TP[k.id])return TP[k.id];var es=ents(k),t1=D.vans[0],t2=D.va
   V=[
   {id:'v1',kind:'truck',name:t1.name,plate:t1.plate,drv:t1.driver,cap:t1.horses,seats:t1.seats-1,leave:hm(t1.leave),from:t1.from,club:true,h:fit(byV('v1'),t1.horses,oH),p:fit(['m003','m008','m022'],t1.seats-1,oP)},
   {id:'v2',kind:'van',name:t2.name+' de Léa',plate:t2.plate,drv:t2.driver,cap:t2.horses,seats:t2.seats-1,leave:hm(t2.leave),from:t2.from,h:fit(byV('v2'),t2.horses,oH),p:[]},
-  {id:'v3',kind:'truck',name:'Camion 3 places, famille Muller',plate:'EV-731-QA',drvName:'Stéphane Muller',cap:3,seats:3,leave:7*60,from:'Parking du haut',h:['h16'],p:['m040']}]
+  {id:'v3',kind:'truck',name:'Camion 3 places, famille Perrin',plate:'EV-731-QA',drvName:'Stéphane Perrin',cap:3,seats:3,leave:7*60,from:'Parking du haut',h:['h16'],p:['m040']}]
   .concat(D.carpool.map(function(c,i){return {id:'c'+i,kind:'car',name:'Voiture de '+fst(c.driver),drv:c.driver,cap:0,seats:c.seats,leave:7*60+15+i*10,from:c.from,h:[],p:c.taken.slice()}}));
   pl={veh:V,poolH:oH.concat(['h07'].filter(function(h){return oH.indexOf(h)<0})),poolP:oP.concat(['m034'])}}
  else{V=[{id:'v1',kind:'truck',name:t1.name,plate:t1.plate,drv:t1.driver,cap:t1.horses,seats:t1.seats-1,leave:lv,from:t1.from,club:true,h:[],p:[]}];
@@ -510,10 +510,10 @@ function fees(k){var pl=kKind(k)==='away'?plan(k):null;return ents(k).map(functi
   var co=COACHFEE[e.coach]||20;return {e:e,fee:e.fee,tr:tr,how:how,co:co,tot:e.fee+tr+co}})}
 function eur1(v){return F.eur(v,v%1?1:0)}
 function matList(k){if(CHK[k.id])return CHK[k.id];return CHK[k.id]=[
- ['Papiers',[['Livrets des '+ents(k).length+' chevaux, vaccins à jour',true,'Nadia'],['Licences compétition vérifiées',true,'Nadia'],['Listes de départ imprimées',false,'Thomas']]],
- ['Camion',[['Plein de gazole et pression des pneus',true,'Thomas'],['Filets à foin et 80 L d’eau',false,'Mamadou'],['Protections de transport et licols de rechange',false,'Lucie'],['Trousse de premiers soins',true,'Lucie']]],
+ ['Papiers',[['Livrets des '+ents(k).length+' chevaux, vaccins à jour',true,'Manon'],['Licences compétition vérifiées',true,'Manon'],['Listes de départ imprimées',false,'Thomas']]],
+ ['Camion',[['Plein de gazole et pression des pneus',true,'Thomas'],['Filets à foin et 80 L d’eau',false,'Antoine'],['Protections de transport et licols de rechange',false,'Lucie'],['Trousse de premiers soins',true,'Lucie']]],
  ['Sellerie',[['Selles, filets et tapis du club',false,'Cavaliers'],['Guêtres, protège-boulets, crampons',false,'Cavaliers'],['Vestes de concours et dossards',false,'Cavaliers']]],
- ['Sur place',[['Seaux, éponges, couvre-reins',false,'Mamadou'],['Barnum et table de camp',true,'Kévin']]]]}
+ ['Sur place',[['Seaux, éponges, couvre-reins',false,'Antoine'],['Barnum et table de camp',true,'Kévin']]]]}
 
 /* ---------- Envoi des engagements : saisie assistée ou fichier ---------- */
 function ffeSheet(k){var es=ents(k),st=ENT[k.id]=ENT[k.id]||{done:{}},mode='saisie',tot=es.reduce(function(a,e){return a+e.fee},0);
@@ -1717,11 +1717,11 @@ P.actions.push(
 
 P.brain.push(
  {role:'gerant',re:/transport|camion|\bvan\b|emm[eè]ne|covoit|qui (va|part)/i,reply:function(){var k=D.competitions[0],pl=plan(k),free=pl.veh.reduce(function(a,v){return a+(v.cap-v.h.length)},0);
-   return {text:'Pour '+k.place.split(',')[0]+' dimanche, '+(ents(k).length-pl.poolH.length)+' chevaux sur '+ents(k).length+' ont une place. '+(pl.poolH.length?'Il reste '+pl.poolH.map(function(h){return D.horse(h).name}).join(' et ')+' à placer, et '+free+' places libres dans le camion de la famille Muller.':'Tout le monde est placé.')+' Le camion part à '+th(pl.veh[0].leave)+'.',
+   return {text:'Pour '+k.place.split(',')[0]+' dimanche, '+(ents(k).length-pl.poolH.length)+' chevaux sur '+ents(k).length+' ont une place. '+(pl.poolH.length?'Il reste '+pl.poolH.map(function(h){return D.horse(h).name}).join(' et ')+' à placer, et '+free+' places libres dans le camion de la famille Perrin.':'Tout le monde est placé.')+' Le camion part à '+th(pl.veh[0].leave)+'.',
     card:pl.veh.filter(function(v){return v.cap}).map(function(v){return '<div class="hrow sp"><span class="s">'+v.name+'</span><b class="s num">'+v.h.length+' / '+v.cap+'</b></div>'}).join(''),
     actions:[{label:'Placer automatiquement',run:function(){pl.poolH.slice().forEach(function(h){var v=pl.veh.find(function(x){return x.h.length<x.cap});if(v){v.h.push(h);pl.poolH=pl.poolH.filter(function(i){return i!==h})}});pl.poolP.slice().forEach(function(p){var v=pl.veh.find(function(x){return x.p.length<x.seats});if(v){v.p.push(p);pl.poolP=pl.poolP.filter(function(i){return i!==p})}});P.go('competitions',{id:'k1',tab:'qui'});return 'Plan complété'}},{label:'Ouvrir le plan',run:function(){P.go('competitions',{id:'k1',tab:'qui'});return 'Ouvert'}}]}}},
  {role:'gerant',re:/concours|engag|rambouillet|comp[ée]t|hunter|r[ée]sultat/i,reply:function(){var k=D.competitions[0],es=ents(k),tot=es.reduce(function(a,e){return a+e.fee},0);
-   return {text:'Prochain concours : '+k.name+' à '+k.place.split(',')[0]+', '+F.dateL(k.date)+'. '+es.length+' cavaliers sont engagés pour '+F.eur(tot)+', la clôture est '+F.rel(k.closes)+'. Il manque le certificat médical d’Inès Martinez. Ensuite, le Hunter Club à domicile du 6 décembre compte déjà 22 engagés et il manque 4 bénévoles.',
+   return {text:'Prochain concours : '+k.name+' à '+k.place.split(',')[0]+', '+F.dateL(k.date)+'. '+es.length+' cavaliers sont engagés pour '+F.eur(tot)+', la clôture est '+F.rel(k.closes)+'. Il manque le certificat médical d’Inès Masson. Ensuite, le Hunter Club à domicile du 6 décembre compte déjà 22 engagés et il manque 4 bénévoles.',
     card:es.slice(0,4).map(function(e){return '<div class="hrow sp"><span class="s">'+nm(e.rider)+' · '+D.horse(e.horse).name+'</span><span class="s mut">'+e.class.split(' · ')[0]+'</span></div>'}).join('')+'<div class="xs mut">et '+(es.length-4)+' autres</div>',
     actions:[{label:'Préparer les engagements',run:function(){P.go('competitions',{id:'k1',tab:'eng'});setTimeout(function(){ffeSheet(k)},350);return 'Saisie assistée ouverte'}},{label:'Voir qui emmène qui',run:function(){P.go('competitions',{id:'k1',tab:'qui'});return 'Ouvert'}}]}}},
  {role:'gerant',re:/coach|reverse|pauline|cours particulier|droit de piste/i,reply:function(){var p=pendB(),ext=D.coaches.filter(function(c){return c.ext}),sum=ext.reduce(function(a,c){return a+DEAL[c.id].ca-clubCut(c)},0),ok=p.filter(function(b){return !(dayBlocks(b.d).find(function(x){return x.id===b.id})||{}).clash});

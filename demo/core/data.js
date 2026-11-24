@@ -19,15 +19,15 @@ D.me={gerant:'s01',employe:'s05',adherent:'m001',coach:'c01'};
 
 /* ---------- Équipe ---------- */
 D.staff=[
- {id:'s01',first:'Claire',last:'Morel',role:'Gérante',dip:'DEJEPS, BPJEPS',contract:'Gérante associée',hours:45,color:'var(--c2)'},
+ {id:'s01',first:'Claire',last:'Dumont',role:'Gérante',dip:'DEJEPS, BPJEPS',contract:'Gérante associée',hours:45,color:'var(--c2)'},
  {id:'s02',first:'Hugo',last:'Lefèvre',role:'Moniteur',dip:'BPJEPS équitation',contract:'CDI 35 h',hours:35,color:'var(--c1)'},
  {id:'s03',first:'Inès',last:'Garnier',role:'Monitrice',dip:'BPJEPS, CQP ASA',contract:'CDI 35 h',hours:35,color:'var(--c6)'},
  {id:'s04',first:'Thomas',last:'Roux',role:'Moniteur',dip:'DEJEPS CSO',contract:'CDI 30 h',hours:30,color:'var(--c3)'},
- {id:'s05',first:'Mamadou',last:'Diallo',role:'Palefrenier soigneur',dip:'CAPA soigneur',contract:'CDI 39 h',hours:39,color:'var(--c4)'},
+ {id:'s05',first:'Antoine',last:'Leroy',role:'Palefrenier soigneur',dip:'CAPA soigneur',contract:'CDI 39 h',hours:39,color:'var(--c4)'},
  {id:'s06',first:'Lucie',last:'Petit',role:'Palefrenière soigneuse',dip:'Bac pro CGEH',contract:'CDI 35 h',hours:35,color:'var(--c5)'},
  {id:'s07',first:'Kévin',last:'Bernard',role:'Agent d’entretien',dip:'',contract:'CDD 24 h',hours:24,color:'var(--c7)'},
  {id:'s08',first:'Jade',last:'Fontaine',role:'Apprentie BPJEPS',dip:'En formation',contract:'Apprentissage',hours:35,color:'var(--c6)'},
- {id:'s09',first:'Nadia',last:'Benali',role:'Secrétariat et accueil',dip:'',contract:'CDI 28 h',hours:28,color:'var(--c3)'}
+ {id:'s09',first:'Manon',last:'Lemoine',role:'Secrétariat et accueil',dip:'',contract:'CDI 28 h',hours:28,color:'var(--c3)'}
 ];
 /* ---------- Coachs (internes et extérieurs réservables) ---------- */
 D.coaches=[
@@ -65,7 +65,7 @@ al(3,'bad','Boiterie antérieur gauche, véto à 14 h');al(7,'warn','Vaccin grip
 
 /* ---------- Adhérents ---------- */
 var FN=['Léa','Emma','Chloé','Manon','Camille','Inès','Louise','Jade','Zoé','Alice','Lina','Rose','Anna','Mila','Ambre','Juliette','Sarah','Clara','Lou','Romane','Lucas','Hugo','Louis','Arthur','Jules','Nathan','Tom','Paul','Gabriel','Raphaël','Sophie','Nathalie','Isabelle','Céline','Aurélie','Julie','Marion','Hélène','Valérie','Pierre'];
-var LN=['Martin','Bernard','Dubois','Thomas','Robert','Richard','Petit','Durand','Leroy','Moreau','Simon','Laurent','Lefebvre','Michel','Garcia','David','Bertrand','Roux','Vincent','Fournier','Morel','Girard','André','Mercier','Dupont','Lambert','Bonnet','François','Martinez','Legrand','Garnier','Faure','Rousseau','Blanc','Guérin','Muller','Henry','Roussel','Nicolas','Perrin'];
+var LN=['Martin','Bernard','Dubois','Thomas','Robert','Richard','Petit','Durand','Leroy','Moreau','Simon','Laurent','Lefebvre','Michel','Colin','David','Bertrand','Roux','Vincent','Fournier','Chevalier','Girard','André','Mercier','Dupont','Lambert','Bonnet','François','Masson','Legrand','Garnier','Faure','Rousseau','Blanc','Guérin','Gauthier','Henry','Roussel','Nicolas','Perrin'];
 var FORF=[{id:'f1',name:'Forfait annuel 1 h / semaine',price:780,kind:'annuel'},{id:'f2',name:'Forfait annuel 2 h / semaine',price:1390,kind:'annuel'},{id:'f3',name:'Carte 10 séances',price:290,kind:'carte'},{id:'f4',name:'Baby poney (trimestre)',price:195,kind:'trimestre'},{id:'f5',name:'Propriétaire, accès installations',price:0,kind:'proprio'},{id:'f6',name:'Demi-pension 2 jours',price:180,kind:'demi'}];
 D.forfaits=FORF;
 D.members=[];
@@ -166,7 +166,7 @@ D.care=[
  {id:'s3',horse:'h08',kind:'Vaccin',who:'Dr Leclerc',date:iso(day(6)),time:'10:00',note:'Grippe + tétanos, rappel annuel',status:'planifié'},
  {id:'s4',horse:'h12',kind:'Maréchal',who:'Benoît Gautier',date:iso(day(-9)),time:'09:00',note:'Parage, en retard',status:'en retard'},
  {id:'s5',horse:'h27',kind:'Vermifuge',who:'Équipe',date:iso(day(0)),time:'08:00',note:'Ivermectine + praziquantel',status:'à faire'},
- {id:'s6',horse:'h23',kind:'Surveillance',who:'Mamadou',date:iso(day(0)),time:'Toutes les 2 h',note:'Colique légère, crottins et appétit',status:'en cours'},
+ {id:'s6',horse:'h23',kind:'Surveillance',who:'Antoine',date:iso(day(0)),time:'Toutes les 2 h',note:'Colique légère, crottins et appétit',status:'en cours'},
  {id:'s7',horse:'h06',kind:'Ostéopathe',who:'Camille Hervé',date:iso(day(8)),time:'15:00',note:'Bilan dos après repos',status:'planifié'},
  {id:'s8',horse:'h16',kind:'Dentiste',who:'Pierre Valat',date:iso(day(15)),time:'10:00',note:'Râpage annuel, 6 chevaux',status:'planifié'},
  {id:'s9',horse:'h01',kind:'Vétérinaire',who:'Dr Leclerc',date:iso(day(-30)),time:'11:00',note:'Bilan locomoteur, RAS',status:'fait'},
@@ -230,7 +230,7 @@ D.threads=[
  {id:'th1',with:'m001',title:'Léa Martin',last:'Merci ! Je passe signer ce soir.',when:'09:12',unread:1},
  {id:'th2',with:'grp',title:'Groupe Concours Rambouillet',last:'Thomas : départ 6 h 45, soyez là à 6 h 30',when:'08:47',unread:4},
  {id:'th3',with:'m044',title:'Famille Laurent',last:'Est-ce que Zoé peut rattraper samedi ?',when:'Hier',unread:0},
- {id:'th4',with:'s05',title:'Mamadou Diallo',last:'Xanthos a recrotté, il mange un peu',when:'08:05',unread:0}];
+ {id:'th4',with:'s05',title:'Antoine Leroy',last:'Xanthos a recrotté, il mange un peu',when:'08:05',unread:0}];
 D.notifs=[
  {i:'alert',c:'bad',t:'Xanthos (B23) : consommation d’eau en baisse de 40 %',w:'il y a 12 min'},
  {i:'invoice',c:'warn',t:'7 factures en retard pour 2 340 €',w:'ce matin'},

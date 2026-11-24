@@ -7,7 +7,7 @@ const css=rd('core/tokens.css')+'\n'+rd('core/shell.css');
 const only=(process.argv.find(a=>a.startsWith('--only='))||'').slice(7);
 const use=only?mods.filter(f=>only.split(',').some(o=>f.includes(o))||f.startsWith('10-')):mods;
 /* un <script> par module : une erreur de syntaxe dans un module n'arrête pas les autres */
-const js=['core/horse.inc.js','core/icons.js','core/data.js','core/engine.js'].map(rd).join('\n;\n')+'\n</script>\n'+
+const js=['core/horse.inc.js','core/brand.js','core/icons.js','core/data.js','core/engine.js'].map(rd).join('\n;\n')+'\n</script>\n'+
   use.map(f=>'<script>/* ===== modules/'+f+' ===== */\ntry{\n'+rd('modules/'+f)+'\n}catch(e){console.error("Module '+f+'",e)}\n</script>').join('\n')+'\n<script>P.start();';
 const head=`<title>Piaffe</title>
 <meta name="claude:viewport-fit-sides" content="cover">
