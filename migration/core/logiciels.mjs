@@ -111,6 +111,55 @@ for (const [id, nom, famille, forme, site, domaines, confirme, etapes, editeur] 
   };
 }
 
+// Que devient chaque outil quand le club passe à Piaffe.
+//   relation 'remplace' : Piaffe fait le même travail ; on récupère, puis le club résilie (choix recommandé « Changer »).
+//   relation 'branche'  : on le garde et on le relie à Piaffe (choix recommandé « Intégrer »).
+//   relation 'au_choix' : les deux se tiennent ; « Intégrer » est présélectionné.
+// effets.changer / effets.integrer : phrase affichée selon le choix ; null = choix impossible (Piaffe ne sait pas le faire).
+// Statuts vérifiés dans demo/modules/95-plateforme.js (connecteurs) : ce qui n'y est pas actif est dit « bientôt » ou « par export ».
+const CHANGE_GESTION = l => `On récupère tout de ${l.nom} (cavaliers, familles, chevaux, forfaits, factures, planning), puis vous résiliez avec la lettre prête.`;
+const COMPTA_EXPORT = 'Gardé. Piaffe prépare l’export des écritures (FEC) pour votre comptable ; l’envoi direct arrive bientôt.';
+const PAIE_EXPORT = 'Gardé. Piaffe prépare chaque mois l’export des heures et variables de paie ; l’envoi direct arrive bientôt.';
+const TABLEUR = 'Changé. On reprend le tableau dans Piaffe : plus besoin de le tenir à jour à côté.';
+const R = {
+  ffe: ['branche', null, 'Gardé. On récupère vos licenciés (export Club SIF) pour compléter les fiches ; la prise de licence depuis Piaffe viendra avec l’agrément FFE.', 'la liste des licenciés'],
+  ffecompet: ['branche', null, 'Gardé. On reprend vos engagements et résultats par export ; le branchement direct viendra avec l’agrément FFE.', null],
+  sire: ['branche', null, 'Gardé. Piaffe pré-remplit chaque cheval depuis son numéro SIRE (données ouvertes de l’IFCE).', null],
+  helloasso: ['au_choix', 'Changé. Piaffe encaisse en ligne lui-même (carte et prélèvement) ; on reprend l’historique des adhésions.', 'Gardé. On reprend vos membres et l’historique des adhésions ; les nouvelles adhésions arrivent par export, branchement direct bientôt.', 'l’historique des adhésions'],
+  assoconnect: ['au_choix', 'Changé. Piaffe gère adhésions et paiements en ligne ; on reprend membres et historique, puis vous résiliez.', 'Gardé. On reprend vos membres et l’historique des adhésions ; les nouvelles arrivent par export, branchement direct bientôt.', 'l’historique des adhésions'],
+  simpliasso: ['au_choix', 'Changé. Piaffe gère adhésions et paiements en ligne ; on reprend membres et historique, puis vous résiliez.', 'Gardé. On reprend vos membres et l’historique des adhésions par export.', 'l’historique des adhésions'],
+  stripe: ['branche', null, 'Gardé et branché. Vos paiements en ligne passent par votre compte Stripe et sont rapprochés des factures.', null],
+  sumup: ['branche', null, 'Gardé. Vos encaissements par carte au club arrivent dans Piaffe et sont rapprochés des factures.', null],
+  gocardless: ['branche', null, 'Gardé. Vos mandats et prélèvements SEPA continuent ; les encaissements sont rapprochés des factures.', null],
+  paypal: ['branche', 'Changé. Piaffe encaisse en ligne lui-même ; on reprend l’historique des paiements, puis vous fermez le compte.', 'Gardé. On reprend l’historique par export ; le branchement direct arrive bientôt.', null],
+  'google-agenda': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements et les reprises récurrentes.', 'Gardé. Piaffe publie son planning dans votre Google Agenda.', null],
+  outlook: ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Outlook s’abonne au planning Piaffe (lien d’agenda) ; envoi direct bientôt.', null],
+  'apple-calendrier': ['remplace', 'Changé. Votre planning vit dans Piaffe ; on reprend les événements du calendrier.', 'Gardé. Calendrier Apple s’abonne au planning Piaffe (flux d’agenda), sur iPhone et Mac.', null],
+  calendly: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
+  planity: ['remplace', 'Changé. Vos cavaliers réservent directement dans Piaffe ; on reprend contacts et rendez-vous.', null, null],
+  pennylane: ['branche', null, 'Gardé. Piaffe envoie factures et encaissements à votre comptable.', null],
+  tiime: ['branche', null, COMPTA_EXPORT, null], indy: ['branche', null, COMPTA_EXPORT, null], sage: ['branche', null, COMPTA_EXPORT, null],
+  ebp: ['branche', null, COMPTA_EXPORT, null], cegid: ['branche', null, COMPTA_EXPORT, null], ciel: ['branche', null, COMPTA_EXPORT, null],
+  quickbooks: ['branche', null, COMPTA_EXPORT, null], isagri: ['branche', null, COMPTA_EXPORT, null],
+  axonaut: ['remplace', 'Changé. Piaffe fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
+  henrri: ['remplace', 'Changé. Piaffe fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
+  payfit: ['branche', null, 'Gardé. Piaffe envoie chaque mois les heures et variables de paie à PayFit.', null],
+  silae: ['branche', null, PAIE_EXPORT, null], skello: ['branche', null, 'Gardé. Piaffe exporte les heures de l’équipe ; le branchement direct arrive bientôt.', null],
+  combo: ['branche', null, 'Gardé. Piaffe exporte les heures de l’équipe ; le branchement direct arrive bientôt.', null],
+  'google-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
+  'outlook-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
+};
+// Gratuits ou inclus ailleurs : rien à résilier par lettre, il suffit d'arrêter de s'en servir.
+const SANS_LETTRE = new Set(['helloasso', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
+for (const l of Object.values(LOGICIELS)) {
+  let r = R[l.id];
+  if (!r) r = ['remplace', l.famille === 'equestre' ? CHANGE_GESTION(l) : l.id === 'papier' ? 'Changé. On vous aide à tout mettre dans Piaffe : modèle Excel à remplir ou saisie guidée à l’accueil.' : TABLEUR, null, null];
+  const [relation, changer, integrer, historique] = r;
+  Object.assign(l, { relation, effets: { changer, integrer }, effet: relation === 'branche' || relation === 'au_choix' ? integrer : changer, historique, lettre: !SANS_LETTRE.has(l.id) });
+}
+// Logiciels proposés comme « logiciel principal » (celui qu'on vide et qu'on résilie).
+export const PRINCIPAUX = { oui: ['equestre'], tableur: ['tableurs', 'papier'] };
+
 export function reconnaitreLogiciel(nomFichier, entetes = []) {
   for (const [id, l] of Object.entries(LOGICIELS)) {
     if (['excel', 'papier', 'numbers', 'libreoffice'].includes(id)) continue;

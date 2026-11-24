@@ -65,3 +65,16 @@ Utile pendant la **période de double saisie** (le club garde Kavalog un mois le
 2. **Décider si on fait le `.exe` Windows** maintenant (coût de signature) ou si la page web suffit pour les premiers clubs. Recommandation : page web d'abord, `.exe` quand un premier club en a besoin.
 3. **Faire valider** par un juriste l'argument Data Act et le contrat de sous-traitance RGPD.
 4. **Une boîte à part ?** Le moteur est générique (lecture, reconnaissance de colonnes, fusion, contrôle) ; ce qui a de la valeur, ce sont les dictionnaires métier. Recommandation : le garder dans Piaffe tant qu'il sert à vendre Piaffe (c'est un argument de vente décisif contre Kavalog), et le séparer plus tard si d'autres éditeurs veulent l'acheter.
+
+## Mise à jour du 24/11 : connexion assistée, sans rien installer
+
+Marceau ne veut rien à installer. L'extension Chrome est retirée de l'interface et remplacée par un navigateur côté serveur :
+
+1. Le gérant donne l'adresse de son logiciel ; `POST /api/v1/migration/robot` ouvre un navigateur Piaffe sur cette adresse (https seulement, adresses privées refusées).
+2. La page affiche l'écran de ce navigateur en direct (images JPEG par SSE) et renvoie clics, frappes et défilement. Le gérant se connecte lui-même, double authentification comprise. Ce qu'il tape n'est ni stocké ni journalisé.
+3. Dès qu'il n'y a plus de champ mot de passe à l'écran (deux contrôles de suite), la copie démarre : recette connue rejouée, sinon exploration en lecture seule (liens de suppression, paiement, déconnexion ignorés).
+4. À la fin, le navigateur est fermé (les cookies de session disparaissent), la capture est transformée en paquet et envoyée à l'API d'import.
+
+Coût : Cloudflare Browser Rendering compte du temps de navigateur ; une reprise dure quelques minutes (1 min 30 pour 62 cavaliers avec leurs fiches dans l'essai), soit quelques centimes par club, une seule fois. Référence locale : `robot/serveur-local.mjs` ; essai : `essais/robot-serveur.cjs`.
+
+Parcours : la reprise fait partie de la création de compte. Questions : venez-vous d'un autre logiciel, lequel, quels autres outils ; pour chacun « Changer » (Piaffe le remplace, on récupère puis on résilie) ou « Intégrer » (on le garde et on le branche : Pennylane, SumUp, FFE…). Voir `core/parcours.mjs`.

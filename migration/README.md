@@ -4,7 +4,7 @@ La passerelle récupère les données d'un club (cavaliers, familles, chevaux, f
 
 Quatre façons de récupérer les données, un seul moteur (`core/`, JavaScript sans dépendance), présentées sur l'écran « Changer de logiciel » (56 logiciels réels rangés par famille, avec leurs logos, et un champ « collez l'adresse de votre logiciel » pour ceux qu'on ne connaît pas) :
 
-1. **Robot navigateur** (`extension/`) : le gérant se connecte à son ancien logiciel, l'extension parcourt les pages et copie tout, même sur un logiciel inconnu (exploration automatique). Chaque exploration retient le chemin ; s'il casse, un incident est signalé.
+1. **Connexion assistée** (`robot/`, `web/robot-distant.mjs`), rien à installer : un navigateur Piaffe côté serveur ouvre l'ancien logiciel, le gérant voit son écran dans la page et s'y connecte (double authentification comprise). Dès qu'il est connecté, le robot parcourt les pages en lecture seule et copie tout, même sur un logiciel inconnu. Il retient le chemin (recette) ; s'il casse, un incident est signalé. Les identifiants tapés ne sont ni stockés ni journalisés ; la session est fermée à la fin de la copie. Essai : `node migration/essais/robot-serveur.cjs`.
 2. **Robot pour ordinateur** (`cli/`) pour les logiciels installés.
 3. **Confiez-nous l'accès** : identifiants chiffrés dans le navigateur, migration faite par notre robot (partie serveur à venir, voir `docs/CODES.md`).
 4. **Fichier** : CSV, Excel, liste FFE, agenda .ics.
@@ -59,7 +59,9 @@ core/paquet.mjs     fusion et contrôles -> paquet piaffe-import 1.0
 core/rapport.mjs    rapport HTML et résumé
 core/vers-api.mjs   paquet -> lots pour POST /api/v1/import (voir app/ARCHITECTURE.md)
 cli/passerelle.mjs  robot pour ordinateur (chercher, convertir, envoyer)
-extension/          robot navigateur (extension Chrome), voir extension/LISEZMOI.md
+robot/              robot côté serveur : explorateur.mjs (Playwright ou Puppeteer), entree.mjs (migrerDepuisPage), serveur-local.mjs (référence du contrat HTTP)
+core/parcours.mjs   questions d'accueil (changer ou intégrer) et plan de bascule
+extension/          ancienne extension Chrome, plus proposée dans l'interface (même moteur d'extraction)
 essais/             faux ancien logiciel web et essai de bout en bout du robot navigateur
 core/capture.mjs    lecture des captures du robot navigateur ; core/ics.mjs agendas
 core/logos.mjs      logos des logiciels ; core/acces.mjs chiffrement des identifiants ; core/resiliation.mjs lettre
@@ -73,6 +75,6 @@ docs/FORMAT.md      format du paquet
 - Les intitulés de colonnes de Kavalog, Equimondo et Cavasoft sont **déduits**, pas relevés sur de vrais exports : il faut un vrai export de club pour calibrer (voir docs/ETUDE.md, « Ce qu'il faut à Marceau »).
 - L'ancien format Excel binaire `.xls` (avant 2007) n'est pas lu : la page demande de l'enregistrer en `.xlsx`.
 - Les bases locales (HFSQL, Access, Firebird) sont **repérées** par le robot, pas encore lues.
-- L'extension n'est pas encore publiée sur le Chrome Web Store (chargement manuel en mode développeur).
+- La connexion assistée tourne en local (robot/serveur-local.mjs) ; en production elle sera hébergée par l'API (Cloudflare Browser Rendering, un Durable Object par session), même contrat HTTP.
 - « Confiez-nous l'accès » attend les routes serveur ; le formulaire n'envoie rien en attendant.
 - Le robot demande Node.js ; le `.exe` Windows signé est l'étape suivante.

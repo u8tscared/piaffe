@@ -14,7 +14,7 @@ const page = (titre, corps) => `<!doctype html><html lang="fr"><head><meta chars
 <body><nav class="menu"><a href="/accueil">Accueil</a><a href="/cavaliers">Cavaliers</a><a href="/chevaux">Cavalerie</a><a href="/factures">Factures</a><a href="/planning">Planning</a><a href="/parametres/supprimer-tout">Supprimer toutes les données</a><a href="/deconnexion">Déconnexion</a></nav><main><h1>${titre}</h1>${corps}</main></body></html>`;
 
 const srv = http.createServer((req, res) => {
-  const u = new URL(req.url, 'http://x'); journalAcces.push(req.method + ' ' + u.pathname);
+  const u = new URL(req.url, 'http://x'); journalAcces.push(req.method + ' ' + u.pathname); if (process.env.JOURNAL_ACCES) console.log('ACCES', req.method, u.pathname);
   const connecte = /session=ok/.test(req.headers.cookie || '');
   const html = (h, code = 200) => { res.writeHead(code, { 'content-type': 'text/html; charset=utf-8' }); res.end(h); };
   if (u.pathname === '/connexion' && req.method === 'POST') { res.writeHead(302, { 'set-cookie': 'session=ok; Path=/', location: '/accueil' }); return res.end(); }

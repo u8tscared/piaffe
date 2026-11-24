@@ -8,6 +8,7 @@ import { construirePaquet } from '../core/paquet.mjs';
 import { versLots } from '../core/vers-api.mjs';
 import * as V from '../core/valeurs.mjs';
 import { lireCSV } from '../core/csv.mjs';
+import { planDeBascule, decisionRecommandee, decisionsPossibles } from '../core/parcours.mjs';
 
 const ici = path.dirname(new URL(import.meta.url).pathname);
 const inflate = async b => new Uint8Array(zlib.inflateRawSync(b));
@@ -42,6 +43,21 @@ t('lots API stables', () => {
   const refs = JSON.stringify(a).match(/"ext:[^"]+"/g).map(s => s.slice(5, -1));
   const connus = new Set(a.flatMap(x => x.items.map(i => i.external_id)));
   for (const r of refs) assert.ok(connus.has(r), 'référence orpheline ' + r);
+});
+// Parcours : plan de bascule
+t('plan : Pennylane cochée est branchée, pas résiliée', () => {
+  const pl = planDeBascule({ depart: 'oui', principal: 'kavalog', outils: ['pennylane'] });
+  assert.ok(pl.brancher.some(x => x.id === 'pennylane')); assert.ok(!pl.resilier.some(x => x.id === 'pennylane')); assert.ok(!pl.recuperer.some(x => x.id === 'pennylane'));
+});
+t('plan : Kavalog + Google Agenda changé sont récupérés et résiliés', () => {
+  const pl = planDeBascule({ depart: 'oui', principal: 'kavalog', outils: ['google-agenda'], choix: { 'google-agenda': 'changer' } });
+  for (const id of ['kavalog', 'google-agenda']) { assert.ok(pl.recuperer.some(x => x.id === id), id); assert.ok(pl.resilier.some(x => x.id === id), id); }
+  assert.equal(pl.brancher.length, 0);
+});
+t('choix recommandés et interdits', () => {
+  assert.equal(decisionRecommandee('sumup'), 'integrer'); assert.equal(decisionRecommandee('ffe'), 'integrer'); assert.equal(decisionRecommandee('calendly'), 'changer');
+  assert.equal(decisionRecommandee('helloasso'), 'integrer'); assert.deepEqual(decisionsPossibles('helloasso'), ['changer', 'integrer']);
+  for (const id of ['ffe', 'sire', 'payfit', 'silae', 'pennylane']) assert.ok(!decisionsPossibles(id).includes('changer'), id);
 });
 console.log(`${n} contrôles réussis.`);
 
