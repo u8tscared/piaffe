@@ -46,3 +46,6 @@ Coût : compte gratuit jusqu'à 1 000 factures par mois ; par l'API 0,01 € HT 
 4. Inscrire ton entreprise individuelle sur une plateforme agréée pour **recevoir** tes factures fournisseurs (obligatoire depuis le 1er septembre 2026 ; le compte gratuit SUPER PDP suffit). L'émission électronique de tes factures d'abonnement sera obligatoire en septembre 2027.
 5. Faire passer une facture PDF dans un validateur Factur-X (veraPDF ou le service en ligne de la FNFE) et faire relire le plan de comptes par un expert-comptable.
 6. Décision : la facture légale de l'abonnement est la facture Factur-X émise par Piaffe (série PIA-) ; celle de Stripe sert de reçu. Sinon il y aurait deux numérotations.
+
+## 6. Robot de migration (rien à installer chez le client)
+Il tourne sur Cloudflare Browser Rendering, inclus dans Workers Paid : 10 h de navigateur par mois, puis 0,09 $ par heure, soit environ 20 à 40 migrations par mois sans frais en plus. Rien d'autre à activer : le binding suffit et `wrangler deploy` crée le Durable Object. Réglages (sessions par club et par heure, délai d'inactivité) dans `app/api/src/robot/reglages.ts`.
