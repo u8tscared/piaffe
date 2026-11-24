@@ -7,7 +7,7 @@ Ce document est le contrat commun de tous les écrans de la démo. Lisez-le en e
 Piaffe est la plateforme tout-en-un des centres équestres et écuries (club fictif de démo : **Écurie des Tilleuls**, 46 boxes, date du jour **mardi 17 novembre 2026, 9 h 41**). Quatre vues :
 
 - **Gérant** (ordinateur et tablette d'abord) : pilote tout le club.
-- **Employé** (téléphone d'abord) : moniteurs, palefreniers, accueil. Utilisateur de démo : Mamadou Diallo, palefrenier soigneur (`s05`).
+- **Employé** (téléphone d'abord) : moniteurs, palefreniers, accueil. Utilisateur de démo : Antoine Leroy, palefrenier soigneur (`s05`).
 - **Adhérent** (téléphone d'abord) : cavaliers, parents, propriétaires, demi-pensionnaires. Utilisatrice de démo : Léa Martin (`m001`), 27 ans, Galop 7, propriétaire d'Ulysse de la Roche (`h01`, box B01).
 - **Coach** (téléphone et ordinateur) : coachs indépendants réservables en ligne. Utilisatrice de démo : Pauline Arnaud (`c01`), coach CSO.
 

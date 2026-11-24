@@ -75,24 +75,23 @@ P.css(`
 .ck-ring .rg{animation:ck-ring 1.3s var(--e-out) .3s both}
 @keyframes ck-ring{from{stroke-dashoffset:var(--C)}}
 
-/* héros assistant */
+/* héros : résumé du matin */
 .ck-hero{background:linear-gradient(150deg,var(--acc-bg) 0%,color-mix(in srgb,var(--acc-bg) 35%,var(--surface)) 55%,var(--surface) 100%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 18%,var(--line))}
 .ck-ast{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 11px;border-radius:999px;background:var(--surface);color:var(--acc-deep);font:600 14.5px var(--f-text);box-shadow:var(--shadow-1);align-self:flex-start;position:relative;z-index:1}
-.ck-ast .strass{width:12px;height:12px}
+.ck-ast svg.i{width:18px;height:18px}
 .ck-hero h2{font:800 31px/1.1 var(--f-display);letter-spacing:-.03em;margin:16px 0 0;max-width:60%;color:var(--ink);position:relative;z-index:1}
 .ck-hero>.illu{position:absolute;right:-6px;top:-8px;width:216px;height:216px;-webkit-mask-image:linear-gradient(to bottom,#000 62%,transparent 96%);mask-image:linear-gradient(to bottom,#000 62%,transparent 96%);pointer-events:none}
-.ck-spk{position:absolute;color:var(--strass);pointer-events:none;animation:ck-tw 3.2s ease-in-out infinite}
-.ck-spk svg{width:100%;height:100%;fill:currentColor}
-@keyframes ck-tw{0%,100%{transform:scale(.6) rotate(0);opacity:.35}50%{transform:scale(1) rotate(45deg);opacity:1}}
-.ck-pts{display:grid;gap:2px;margin-top:auto;padding-top:14px;position:relative;z-index:1}
-.ck-pt{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;padding:8px 10px 8px 6px;border-radius:16px;font:400 15.5px/1.45 var(--f-text);color:var(--ink-2);text-align:left;width:100%;transition:background var(--t-2)}
+.ck-pts{display:grid;gap:4px;margin-top:22px;position:relative;z-index:1}
+.ck-pts>*{animation:ck-pin .5s var(--e-out) both;animation-delay:calc(var(--j,0)*70ms + 260ms)}
+@keyframes ck-pin{from{opacity:0;transform:translateX(-10px)}}
+.ck-pt{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;padding:10px 10px 10px 6px;border-radius:16px;font:400 15.5px/1.45 var(--f-text);color:var(--ink-2);text-align:left;width:100%;transition:background var(--t-2)}
 button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .ck-pt b{color:var(--ink);font-weight:650}
 .ck-pt .ico{width:34px;height:34px;border-radius:11px}
 .ck-pt .ico svg.i{width:19px;height:19px}
 .ck-pt.ok{color:var(--mut)}
 .ck-pt.ok .ico{--d-bg:var(--hz-bg);--d-ink:var(--hz-ink)}
-.ck-hacts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:1}
+.ck-hacts{display:flex;gap:10px;margin-top:auto;padding-top:18px;flex-wrap:wrap;position:relative;z-index:1}
 .ck-hacts .btn.done{background:var(--hz-bg);color:var(--hz-ink);box-shadow:none}
 
 /* reprises du jour */
@@ -149,7 +148,12 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .ck-bx.free{background:transparent;box-shadow:inset 0 0 0 2px var(--line-2)}
 .ck-bx.soin::after{content:'';position:absolute;inset:30%;border-radius:50%;background:#fff;opacity:.92}
 @keyframes ck-bxin{from{transform:scale(0)}}
-.ck-sf{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font:500 14px var(--f-text);color:var(--mut)}
+.ck-sk{display:flex;flex-direction:column;gap:2px;margin:14px -8px 12px}
+.ck-sk>span{padding:0 8px 4px}
+.ck-sk button{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;font:500 14.5px var(--f-text);text-align:left;transition:background var(--t-2)}
+.ck-sk button:hover{background:var(--surface-2)}
+.ck-sk .av.horse{width:28px;height:28px}
+.ck-sf{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line);font:500 14px var(--f-text);color:var(--mut)}
 .ck-sf b{color:var(--ink-2);font-weight:600}
 .ck-tip{position:absolute;z-index:20;padding:8px 12px;border-radius:12px;background:var(--navy);color:var(--on-navy);font:600 14px/1.35 var(--f-text);pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-2);opacity:0;transform:translate(-50%,-100%) translateY(-6px);transition:opacity .15s}
 .ck-tip.on{opacity:1}
@@ -164,7 +168,7 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .ck-td.on .ck-ck{background:var(--hz);box-shadow:none;color:#fff;transform:scale(1.08)}
 .ck-td.on .ck-ck svg{stroke-dashoffset:0}
 .ck-td .tx{display:block;font:600 15.5px/1.3 var(--f-text)}
-.ck-td .mt{display:block;font:400 14px/1.3 var(--f-text);color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-td .mt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font:400 14px/1.3 var(--f-text);color:var(--mut);margin-top:2px;overflow:hidden}
 .ck-td .mt .u{color:var(--cr);font-weight:700}
 .ck-td.on .tx{text-decoration:line-through;text-decoration-thickness:2px;opacity:.55}
 .ck-td.on .mt{opacity:.5}
@@ -174,18 +178,27 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 
 /* équipe */
 .ck-team{display:flex;align-items:center;margin-top:auto;padding-top:10px}
+.ck-tmr{display:grid;gap:6px;margin-top:14px}
+.ck-tmr div{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:8px;align-items:baseline}
+.ck-tmr b{font:800 22px/1 var(--f-display);grid-row:span 2}
+.ck-tmr span{font:600 14px/1.3 var(--f-text)}
+.ck-tmr em{font:400 13.5px/1.3 var(--f-text);font-style:normal;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ck-team .av{box-shadow:0 0 0 3px var(--d-bg);margin-left:-8px;width:38px;height:38px;font-size:13px;transition:transform .35s var(--e-spring)}
 .ck-team .av:first-child{margin-left:0}
 .ck-team .av:hover{transform:translateY(-4px);z-index:1}
 
 /* foin et météo */
-.ck-hay{flex-direction:row;align-items:center;gap:18px;padding:18px 22px}
-.ck-hay .illu{width:116px;height:96px;flex:none}
-.ck-hay .ck-big{font-size:48px;margin-top:4px}
+.ck-hay .illu{position:absolute;right:-4px;top:4px;width:104px;height:86px;pointer-events:none}
+.ck-hay .ck-lbl{max-width:56%}
+.ck-hay .ck-big{font-size:52px}
+.ck-hay .btn{margin-top:12px;align-self:flex-start;max-width:100%}
+.ck-hay .ck-done{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font:700 14px var(--f-text)}
 .ck-wxh{display:flex;align-items:center;gap:12px}
 .ck-wxh .ck-big{font-size:40px;margin:0}
 .ck-wxh svg.i{width:26px;height:26px}
-.ck-wx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:auto;padding-top:10px}
+.ck-wxn{display:flex;align-items:flex-start;gap:8px;margin-top:auto;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--surface) 55%,transparent);font:500 14px/1.35 var(--f-text)}
+.ck-wxn svg.i{flex:none;width:18px;height:18px;margin-top:1px}
+.ck-wx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding-top:10px}
 .ck-wx div{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0 4px;border-radius:12px;font:600 13px var(--f-text)}
 .ck-wx div.hl{background:color-mix(in srgb,var(--tm) 22%,transparent)}
 .ck-wx svg.i{width:19px;height:19px}
@@ -194,6 +207,7 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 
 /* à valider */
 .ck-vl{display:flex;flex-direction:column;margin:0 -10px}
+.ck-vf{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
 .ck-vr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 10px;border-radius:16px;transition:background var(--t-2),opacity .35s,transform .35s var(--e-out)}
 .ck-vr:hover{background:var(--surface-2)}
 .ck-vr .lk{min-width:0;text-align:left;cursor:pointer}
@@ -263,6 +277,10 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
  .ck-hay .illu{width:92px;height:76px}
  .ck-hay .ck-big{font-size:40px}
  .ck-bars{height:150px;gap:5px}
+ .ck-bars.many>div:nth-child(even):not(.cur) span{visibility:hidden}
+ .ck-lg{flex-wrap:wrap;gap:6px 14px;white-space:normal}
+ .ck-vr{align-items:start}.ck-vr .btn{margin-top:2px}
+ .ck-vr .tx,.ck-vr .mt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
  .ck-rev .ck-big{font-size:40px}
  .ck-rh{gap:10px}.ck-rh .seg{width:100%}.ck-rh .seg button{flex:1}
  .ck-est b{font-size:26px}
@@ -271,7 +289,7 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 
 /* ---------- Tuiles : clé, libellé, domaine, tailles [colonnes sur 12, rangées, colonnes sur 6, colonnes sur 2] ---------- */
 var TILES=[
- ['hero','Résumé du matin par l’assistant','acc',[6,3,6,2]],
+ ['hero','Résumé du matin','acc',[6,3,6,2]],
  ['kRiders','Cavaliers en selle','rd',[3,1,3,1]],
  ['kFill','Remplissage de la semaine','acc',[3,1,3,1]],
  ['kHorses','Chevaux de club disponibles','hz',[3,1,3,1]],
@@ -289,7 +307,6 @@ var TD={};TILES.forEach(function(t){TD[t[0]]=t[2]});
 var MOB=['hero','kRiders','kFill','kHorses','kMoney','todo','today','stable','valid','hay','wx','team','rev'];
 var FOC=[['all','Tout'],['hz','Chevaux'],['rd','Cavaliers'],['mo','Argent'],['tm','Équipe'],['cr','Soins']];
 var DAYN={Lun:['lundi',1],Mar:['mardi',2],Mer:['mercredi',3],Jeu:['jeudi',4],Ven:['vendredi',5],Sam:['samedi',6],Dim:['dimanche',0]};
-var SPK='<svg viewBox="0 0 24 24"><path d="M12 1c.8 6 4 9.2 11 11-7 1.8-10.2 5-11 11-.8-6-4-9.2-11-11 7-1.8 10.2-5 11-11z"/></svg>';
 var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 /* état de la session (survit aux allers-retours entre écrans) */
 var S={focus:'all',hero:{},seen:false,fin:12};
@@ -320,8 +337,7 @@ function alsoTxt(){var ev=dayEvents().filter(function(e){return e.k!=='les'}),pa
   return 'Aussi aujourd’hui : '+(parts.length>1?parts.slice(0,-1).join(' ; ')+' ; '+parts[parts.length-1]:parts[0])+'.'}
 
 /* ---------- Anneau de remplissage ---------- */
-function ring(p,dom){var r=40,C=2*Math.PI*r;return '<svg class="ck-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="currentColor" stroke-width="11" opacity=".14"/><circle class="rg" cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--'+dom+')" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" style="--C:'+C.toFixed(1)+';stroke-dashoffset:'+(C*(1-p)).toFixed(1)+'" transform="rotate(-90 50 50)"/>'+
- '<path d="M50 34Q50 50 66 50Q50 50 50 66Q50 50 34 50Q50 50 50 34Z" fill="var(--strass)" opacity=".9"/></svg>'}
+function ring(p,dom){var r=40,C=2*Math.PI*r;return '<svg class="ck-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="currentColor" stroke-width="11" opacity=".14"/><circle class="rg" cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--'+dom+')" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" style="--C:'+C.toFixed(1)+';stroke-dashoffset:'+(C*(1-p)).toFixed(1)+'" transform="rotate(-90 50 50)"/>'+'</svg>'}
 
 /* ---------- FLIP ---------- */
 function flipFirst(root){var m={};P.$$('[data-flip]',root).forEach(function(e){m[e.getAttribute('data-flip')]=e.getBoundingClientRect()});return m}
@@ -373,23 +389,24 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
       pts.push(['cr','alert','<b>'+E(hx.name)+'</b> boit '+(pct?pct[1]+NB+'%':'nettement')+' de moins depuis hier soir.'+(watch?' '+E(watch.who)+' le surveille '+(/2 h/.test(watch.time)?'toutes les deux heures':E(watch.time.toLowerCase()))+'.':''),null,'cheval',hx.id])});
     if(moved.length)pts.push(['tm','rain','<b>'+cap(rdTxt)+', pluie.</b> '+(moved.length>1?moved.length+' reprises en carrière peuvent':'Une reprise en carrière peut')+' passer au '+low(indoor.name)+'.','wx']);
     if(late.length)pts.push(['mo','invoice','<b>'+pl(late.length,'facture')+' en retard</b> pour '+F.eur(lateSum)+'. Les relances sont prêtes.','rel']);
-    if(shav&&!moved.length)pts.push(['hz','stock','<b>'+E(shav.name.split(' ')[0])+'</b> : '+Math.floor(shav.qty/shav.daily)+' jours de stock. La commande de '+shav.min+' '+E(shav.unit)+' est prête.','cmd']);
+    if(shav)pts.push(['hz','stock','<b>'+E(shav.name.split(' ')[0])+'</b> : '+Math.floor(shav.qty/shav.daily)+' jours de stock. La commande de '+shav.min+' '+E(shav.unit)+' est prête.','cmd']);
     var DONE={wx:(moved.length>1?'<b>'+moved.length+' reprises basculées</b>':'<b>Reprise basculée</b>')+' au '+low(indoor.name)+'. Cavaliers prévenus.',rel:'<b>'+pl(late.length,'relance')+' envoyée'+(late.length>1?'s':'')+'</b> par e-mail et SMS, pour '+F.eur(lateSum)+'.',cmd:shav?'<b>Commande de '+shav.min+' '+E(shav.unit)+'</b> envoyée à '+E(shav.supplier)+', livraison jeudi.':''};
     var n=pts.filter(function(p){return !(p[3]&&S.hero[p[3]])}).length;
     var head=n?(bad.length>3?'Journée tendue. ':'Belle journée en vue. ')+(n>1?word(n)+' points méritent':'Un point mérite')+' votre œil.':'Tout est réglé. Belle journée au club.';
     var BT={wx:['swap','Basculer au '+low(indoor.name),'pri'],rel:['send','Envoyer les relances',''],cmd:['bag','Commander les '+(shav?low(shav.name.split(' ')[0]):''),'']};
-    return '<span class="ck-spk" style="left:57%;top:22px;width:16px;height:16px">'+SPK+'</span><span class="ck-spk" style="left:47%;top:68px;width:10px;height:10px;animation-delay:1.2s">'+SPK+'</span>'+
-     ILLU.cheval({size:null})+'<span class="ck-ast"><span class="strass"></span>Résumé du matin par l’assistant</span><h2>'+head+'</h2>'+
-     '<div class="ck-pts">'+pts.slice(0,5).map(function(p){var ok=p[3]&&S.hero[p[3]];var tag=p[4]?'button':'div';
-       return '<'+tag+' class="ck-pt d-'+p[0]+(ok?' ok':'')+'"'+(p[4]?' data-go="'+p[4]+'" data-id="'+p[5]+'"':'')+'><span class="ico">'+ICON(ok?'check':p[1],'sm')+'</span><span>'+(ok?DONE[p[3]]:p[2])+'</span></'+tag+'>'}).join('')+'</div>'+
-     '<div class="ck-hacts">'+['wx','rel','cmd'].filter(function(k){return pts.some(function(p){return p[3]===k})}).map(function(k,i){var b=BT[k];return S.hero[k]?'<button class="btn sm done" disabled>'+ICON('check','sm')+(k==='wx'?'Reprises basculées':k==='rel'?'Relances envoyées':'Commande envoyée')+'</button>':'<button class="btn '+(i===0?'pri':'')+'" data-hero="'+k+'">'+ICON(b[0],'sm')+b[1]+'</button>'}).join('')+'</div>'};
+    return ILLU.cheval({size:null})+'<span class="ck-ast">'+ICON('today','sm')+'Résumé du matin</span><h2>'+head+'</h2>'+
+     '<div class="ck-pts">'+pts.slice(0,5).map(function(p,j){var ok=p[3]&&S.hero[p[3]];var tag=p[4]?'button':'div';
+       return '<'+tag+' style="--j:'+j+'" class="ck-pt d-'+p[0]+(ok?' ok':'')+'"'+(p[4]?' data-go="'+p[4]+'" data-id="'+p[5]+'"':'')+'><span class="ico">'+ICON(ok?'check':p[1],'sm')+'</span><span>'+(ok?DONE[p[3]]:p[2])+'</span></'+tag+'>'}).join('')+'</div>'+
+     '<div class="ck-hacts">'+['wx','rel','cmd'].filter(function(k){return pts.some(function(p){return p[3]===k})}).slice(0,2).map(function(k,i){var b=BT[k];return S.hero[k]?'<button class="btn sm done" disabled>'+ICON('check','sm')+(k==='wx'?'Reprises basculées':k==='rel'?'Relances envoyées':'Commande envoyée')+'</button>':'<button class="btn '+(i===0?'pri':'')+'" data-hero="'+k+'">'+ICON(b[0],'sm')+b[1]+'</button>'}).join('')+'</div>'};
   T.kRiders=function(){return ILLU.selle({size:null})+'<div class="ck-lbl">Cavaliers en selle aujourd’hui</div><div class="ck-big"><span data-count="'+riders+'">'+riders+'</span></div><div class="ck-sub">'+pl(today.length,'reprise')+(paul.length?' et '+pl(paul.length,'cours','cours')+' de Pauline':'')+' · '+D.members.length+' adhérents</div>'};
   T.kFill=function(){return ring(fill/100,'acc')+'<div class="ck-lbl">Remplissage de la semaine</div><div class="ck-big"><span data-count="'+fill+'">'+fill+'</span><small>%</small></div><div class="ck-sub">'+ridW+' cavaliers, '+waitW+' en liste d’attente</div>'};
   T.kHorses=function(){var av=clubH.length-offH.length;return ILLU.fer({size:null})+'<div class="ck-lbl">Chevaux de club disponibles</div><div class="ck-big"><span data-count="'+av+'">'+av+'</span><small>sur '+clubH.length+'</small></div><div class="ck-sub">'+(offH.length?offH.slice(0,2).map(function(h){return E(h.name)}).join(' et ')+(offH.length>2?' et '+(offH.length-2)+' autres':'')+' au repos':'Toute la cavalerie est au travail')+'</div>'};
   T.kMoney=function(){return ILLU.pieces({size:null})+'<div class="ck-lbl">À encaisser</div><div class="ck-big"><span data-count="'+lateSum+'" data-fmt="eur">'+F.eur(lateSum)+'</span></div><div class="ck-sub">'+pl(late.length,'facture')+' en retard'+(oldest>0?', la plus ancienne de '+oldest+' jours':'')+'</div>'};
-  T.hay=function(){var d=Math.floor(hay.qty/hay.daily);return ILLU.foin({size:null})+'<div style="min-width:0"><div class="ck-lbl">'+E(hay.name)+'</div><div class="ck-big"><span data-count="'+d+'">'+d+'</span><small>jours</small></div><div class="ck-sub">'+hay.qty+' '+E(hay.unit)+', '+String(hay.daily).replace('.',',')+' par jour'+'</div>'+(shav?(S.hero.cmd?'<span class="ck-sub" style="font-weight:700">'+ICON('check','sm')+' Commande envoyée</span>':'<button class="btn sm tint" style="margin-top:10px" data-hero="cmd" title="'+E(shav.name)+' : '+Math.floor(shav.qty/shav.daily)+' jours de stock">'+ICON('bag','sm')+E(shav.name.split(' ')[0])+', '+Math.floor(shav.qty/shav.daily)+NB+'j</button>'):'')+'</div>'};
+  T.hay=function(){var d=Math.floor(hay.qty/hay.daily),sd=shav?Math.floor(shav.qty/shav.daily):0;return ILLU.foin({size:null})+'<div class="ck-lbl">'+E(hay.name)+'</div><div class="ck-big"><span data-count="'+d+'">'+d+'</span><small>jours</small></div><div class="ck-sub">'+hay.qty+' '+E(hay.unit)+', '+String(hay.daily).replace('.',',')+' par jour</div>'+
+    (shav?(S.hero.cmd?'<span class="ck-done">'+ICON('check','sm')+'Copeaux commandés</span>':'<button class="btn sm tint" data-hero="cmd" title="'+E(shav.name)+' : '+sd+' jours de stock, commande de '+shav.min+' '+E(shav.unit)+'">'+ICON('bag','sm')+E(shav.name.split(' ')[0])+' : '+sd+NB+'j, commander</button>'):'')};
   T.wx=function(){var w0=D.weather[0];return '<div class="ck-wxh">'+ICON(w0.i)+'<div class="ck-big"><span data-count="'+w0.t+'">'+w0.t+'</span><small>°C</small></div><div class="ck-sub" style="margin:0;line-height:1.3">'+(w0.i==='sun'?'Ensoleillé':w0.i==='rain'?'Pluie':'Nuageux')+'<br>Pluie '+w0.r+NB+'%</div></div>'+
-    '<div class="ck-wx">'+D.weather.slice(1,7).map(function(w){var hl=w.r>=60;return '<div class="'+(hl?'hl':'')+'" title="'+(DAYN[w.d]?cap(DAYN[w.d][0]):w.d)+' : '+w.t+'°, pluie '+w.r+NB+'%"><span>'+w.d+'</span>'+ICON(w.i)+'<b>'+w.t+'°</b>'+(hl?'<small>'+w.r+NB+'%</small>':'')+'</div>'}).join('')+'</div>'};
+    '<div class="ck-wxn">'+(moved.length&&S.hero.wx?ICON('checkc','sm')+'<span><b>'+cap(rdTxt)+'</b> : reprises au '+low(indoor.name)+'</span>':moved.length?ICON('rain','sm')+'<span><b>'+cap(rdTxt)+'</b> : '+pl(moved.length,'reprise')+' en carrière</span>':ICON('checkc','sm')+'<span>Carrières praticables toute la semaine</span>')+'</div>'+
+    '<div class="ck-wx">'+D.weather.slice(1,7).map(function(w){var hl=w.r>=60;return '<div class="'+(hl?'hl':'')+'" title="'+(DAYN[w.d]?cap(DAYN[w.d][0]):w.d)+' : '+w.t+'°, pluie '+w.r+NB+'%"><span>'+w.d+'</span>'+ICON(w.i)+'<b>'+w.t+'°</b>'+'</div>'}).join('')+'</div>'};
   T.today=function(){var also=alsoTxt(),nowDone=false,next=null;
     var rows=today.map(function(l){return {s:mins(l.start),dur:l.dur,t:l.title,who:D.staffer(l.coach),a:l.arena,n:l.riders.length,cap:l.cap,w:l.wait||0,id:l.id,d:disc(l.title)}});
     paul.forEach(function(x){var pc=D.coaches.find(function(c){return c.id==='c01'});rows.push({s:mins(x.at),dur:60,t:x.what.replace(/ et .*$/,''),who:pc,a:x.arena,n:/particulier/i.test(x.what)?1:4,cap:/particulier/i.test(x.what)?1:6,w:0,id:null,d:'acc',coach:true})});
@@ -405,6 +422,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     return '<div class="ck-th"><h3 style="white-space:nowrap">Écurie en direct</h3><span class="ck-live"><i></i>'+hmm(nm)+'</span></div>'+
      '<div class="ck-est">'+[['pad','Paddock'],['work','Travail'],['box','Box'],['soin','Soins']].map(function(x){return '<div><b data-count="'+wh[x[0]]+'">'+wh[x[0]]+'</b><span><i style="--k:'+K[x[0]]+'"></i>'+x[1]+'</span></div>'}).join('')+'</div>'+
      '<div class="ck-boxes">'+bx+'</div>'+
+     (function(){var sick=D.horses.filter(function(h){return h.status==='bad'&&h.box});return sick.length?'<div class="ck-sk"><span class="xs mut">En soins</span>'+sick.slice(0,3).map(function(h){return '<button data-go="cheval" data-id="'+h.id+'">'+U.hav(h)+'<b>'+E(h.name)+'</b><span class="mut">'+h.box+'</span></button>'}).join('')+'</div>':''})()+
      '<button class="ck-sf" data-go="ecurie3d"><span class="grow" style="text-align:left"><b>'+occN+'/'+nBox+' boxes</b> · '+(free.length?pl(free.length,'libre'):'complet')+(req?' · '+pl(req,'demande')+' de pension':'')+'</span>'+ICON('arrow','sm')+'</button>'};
   T.todo=function(){var nT=tasks.filter(function(t){return !t.done}).length,more=alerts.length-3;
     var h='<div class="ck-th"><span class="ico">'+ICON('care')+'</span><h3>À traiter</h3><span class="ck-cnt hot" data-todocnt>'+(nT+Math.min(alerts.length,3))+'</span></div><div class="ck-todo">';
@@ -415,13 +433,13 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     if(more>0)h+='<button class="ck-td" data-go="chevaux"><span class="ico sm d-hz">'+ICON('horse','sm')+'</span><span style="min-width:0"><span class="tx">'+more+' autres chevaux à surveiller</span><span class="mt">Voir la liste des chevaux</span></span>'+ICON('right','sm')+'</button>';
     return h+'</div>'};
   T.team=function(){var kev=D.tasks.filter(function(t){return t.who==='s07'&&mins(t.time)!=null}).sort(function(a,b){return mins(a.time)-mins(b.time)})[0];
-    return '<div class="ck-lbl">Équipe du jour</div><div class="ck-sub" style="margin-top:4px">'+D.staff.length+' personnes au club.'+(kev?' Kévin arrive à '+hm(kev.time)+'.':'')+'</div><div class="ck-team">'+D.staff.slice(0,6).map(function(s){return U.av(s)}).join('')+(D.staff.length>6?'<span class="av" style="--c:var(--surface);color:var(--d-ink)">+'+(D.staff.length-6)+'</span>':'')+'</div>'};
+    return '<div class="ck-lbl">Équipe du jour</div><div class="ck-sub" style="margin-top:4px">'+D.staff.length+' personnes au club.'+(kev?' Kévin arrive à '+hm(kev.time)+'.':'')+'</div><div class="ck-tmr">'+[['Enseignement',/Monit|BPJEPS/],['Écurie',/Palefreni|entretien/],['Accueil et gestion',/Gérant|accueil/]].map(function(g){var L=D.staff.filter(function(s){return g[1].test(s.role)});return '<div><b class="num">'+L.length+'</b><span>'+g[0]+'</span><em>'+L.map(function(s){return E(s.first)}).join(', ')+'</em></div>'}).join('')+'</div><div class="ck-team">'+D.staff.slice(0,6).map(function(s){return U.av(s)}).join('')+(D.staff.length>6?'<span class="av" style="--c:var(--surface);color:var(--d-ink)">+'+(D.staff.length-6)+'</span>':'')+'</div>'};
   T.valid=function(){var L=[];
     decl.forEach(function(d){L.push({k:'decl',id:d.id,i:'horse',d:'hz',tx:d.stay==='passage'?E(d.name)+', cheval de passage':E(d.name)+' arrive en pension',mt:'Déclaré par '+E(D.name(d.by))+(D.coach(d.by)?', coach':'')+' · '+E(d.breed)+(d.box?', box '+d.box:''),b:'Valider',go:'chevaux'})});
     toSign.slice(0,3).forEach(function(c){var t=c.title.replace(/^Contrat de /,'').replace(/ et règlement intérieur$/,'').replace(/ et droit à l’image$/,'');if(/demi-pension/i.test(t)&&D.facts&&D.facts.emmaContract)t='Avenant de demi-pension';
       L.push({k:'ct',id:c.id,i:'sign',d:'rd',tx:cap(t)+(c.horse?' '+de(D.horse(c.horse).name):''),mt:'À signer par '+E(D.name(c.party))+(c.amount?' · '+F.eur(c.amount):''),b:'Relancer',go:'contrats'})});
     if(toSign.length>3)L.push({k:'more',id:'more',i:'contract',d:'rd',tx:pl(toSign.length-3,'autre contrat','autres contrats')+' à signer',mt:'Voir tous les contrats',b:'Ouvrir',go:'contrats'});
-    return '<div class="ck-th"><span class="ico">'+ICON('sign')+'</span><h3>À valider</h3><span class="ck-cnt" data-vcnt>'+L.length+'</span></div>'+(L.length?'<div class="ck-vl">'+L.map(function(v){return '<div class="ck-vr d-'+v.d+'" data-vr="'+v.id+'"><span class="ico">'+ICON(v.i)+'</span><span class="lk" data-go="'+v.go+'"'+(v.k==='decl'?' data-p-validate="1"':'')+'><span class="tx">'+v.tx+'</span><span class="mt">'+v.mt+'</span></span><button class="btn sm tint" data-val="'+v.k+'" data-vid="'+v.id+'">'+v.b+'</button></div>'}).join('')+'</div>':'<div class="ck-ok">'+ICON('checkc')+'Tout est validé. Rien n’attend votre signature.</div>')};
+    return '<div class="ck-th"><span class="ico">'+ICON('sign')+'</span><h3>À valider</h3><span class="ck-cnt" data-vcnt>'+L.length+'</span></div>'+(L.length?'<div class="ck-vl">'+L.map(function(v){return '<div class="ck-vr d-'+v.d+'" data-vr="'+v.id+'"><span class="ico">'+ICON(v.i)+'</span><span class="lk" data-go="'+v.go+'"'+(v.k==='decl'?' data-p-validate="1"':'')+'><span class="tx">'+v.tx+'</span><span class="mt">'+v.mt+'</span></span><button class="btn sm tint" data-val="'+v.k+'" data-vid="'+v.id+'">'+v.b+'</button></div>'}).join('')+'</div><div class="ck-vf"><button class="btn ghost sm" data-go="contrats">'+ICON('contract','sm')+'Tous les contrats</button><button class="btn ghost sm" data-go="chevaux">'+ICON('horse','sm')+'Chevaux déclarés</button></div>':'<div class="ck-ok">'+ICON('checkc')+'Tout est validé. Rien n’attend votre signature.</div>')};
   T.rev=function(){return '<div class="ck-rh"><span class="ico">'+ICON('euro')+'</span><h3>Recettes et dépenses</h3>'+U.seg([['12','12 mois'],['3','Trimestre'],['1','Mois']],String(S.fin),'data-fin')+'</div><div data-finbody>'+fin(S.fin)+'</div>'};
   function fin(n){var rv,co,lb,per,cur=D.revenue[11],prev=D.revenue[10];
     if(n===1){var w=[.27,.24,.31,.18];rv=w.map(function(x){return Math.round(cur*x)});co=[.26,.25,.24,.25].map(function(x){return Math.round(D.costs[11]*x)});lb=['2 au 8','9 au 15','16 au 22','23 au 30'];per='Novembre, semaine par semaine'}
@@ -429,7 +447,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     var tot=rv.reduce(function(a,b){return a+b},0),res=tot-co.reduce(function(a,b){return a+b},0),mx=Math.max.apply(null,rv.concat(co));
     return '<div class="ck-rev"><div><div class="ck-lbl" style="color:var(--mut)">'+per+'</div><div class="ck-big"><span data-count="'+(n===12?cur:tot)+'" data-fmt="eur">'+F.eur(n===12?cur:tot)+'</span></div></div>'+
       '<span class="ck-dl2'+(res<0?' neg':'')+'">'+(n===12?'+8,4'+NB+'% sur un an':'Marge '+(res<0?'−':'')+F.eur(Math.abs(res)))+'</span><span class="ck-dl2 mo" title="Encaissé aujourd’hui">'+ICON('card','sm')+F.eur(inSum)+' encaissés aujourd’hui</span></div>'+
-      '<div class="ck-bars" style="--n:'+rv.length+'">'+rv.map(function(v,i){return '<div class="'+(i===rv.length-1?'cur':'')+'"><em>'+F.eur(v)+' · dépenses '+F.eur(co[i])+'</em><i style="--h:'+(v/mx*100).toFixed(1)+'%;--c:'+(co[i]/v*100).toFixed(1)+'%;--i:'+i+'"></i><span>'+lb[i]+'</span></div>'}).join('')+'</div>'+
+      '<div class="ck-bars'+(rv.length>8?' many':'')+'" style="--n:'+rv.length+'">'+rv.map(function(v,i){return '<div class="'+(i===rv.length-1?'cur':'')+'"><em>'+F.eur(v)+' · dépenses '+F.eur(co[i])+'</em><i style="--h:'+(v/mx*100).toFixed(1)+'%;--c:'+(co[i]/v*100).toFixed(1)+'%;--i:'+i+'"></i><span>'+lb[i]+'</span></div>'}).join('')+'</div>'+
       '<div class="ck-lg" style="margin-top:12px"><span><i></i>Recettes</span><span><i class="c"></i>Dépenses</span><span class="grow"></span><span>'+(res<0?'−':'+')+F.eur(Math.abs(res))+' de résultat '+(n===12?'sur 12 mois':n===3?'sur le trimestre':'en novembre')+'</span></div>'}
 
   var GO={kRiders:'planning',kFill:'rapports',kHorses:'chevaux',kMoney:'facturation',hay:'alimentation',team:'equipe'};
@@ -467,8 +485,8 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   });
   function heroAct(k){var lbl={wx:moved.length>1?moved.length+' reprises déplacées au '+low(indoor.name)+', cavaliers prévenus':'Reprise déplacée au '+low(indoor.name)+', cavaliers prévenus',
       rel:pl(late.length,'relance')+' envoyée'+(late.length>1?'s':'')+' par e-mail et SMS',cmd:shav?'Commande de '+shav.min+' '+shav.unit+' envoyée à '+shav.supplier+', livraison jeudi':''};
-    var m=flipFirst(bento);S.hero[k]=1;retile('hero');retile('hay');flipPlay(bento,m);
-    P.toast(lbl[k],{undo:function(){delete S.hero[k];retile('hero');retile('hay');P.toast(k==='rel'?'Relances annulées':k==='cmd'?'Commande annulée':'Reprises remises en carrière',{icon:'refresh'})}})}
+    var m=flipFirst(bento);S.hero[k]=1;retile('hero');retile('hay');retile('wx');flipPlay(bento,m);
+    P.toast(lbl[k],{undo:function(){delete S.hero[k];retile('hero');retile('hay');retile('wx');P.toast(k==='rel'?'Relances annulées':k==='cmd'?'Commande annulée':'Reprises remises en carrière',{icon:'refresh'})}})}
   function validate(b){var k=b.getAttribute('data-val'),id=b.getAttribute('data-vid'),row=b.closest('.ck-vr');
     if(k==='more'){P.go('contrats');return}
     if(k==='decl'){var d=D.declarations.find(function(x){return x.id===id});d.status='validée';P.renderBadges();
@@ -495,5 +513,5 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
 
 P.actions.push({role:'gerant',label:'Envoyer les relances d’impayés',icon:'send',run:function(){var n=lateInv().length;S.hero.rel=1;P.toast(n+' relances envoyées par e-mail et SMS');if(P.state&&P.state.route==='cockpit')P.rerender()}},{role:'gerant',label:'Personnaliser mon accueil',icon:'sliders',run:function(){P.go('cockpit');setTimeout(function(){var b=P.$('[data-edit]',P.app());if(b)b.click()},380)}});
 P.brain.push({role:'gerant',re:/pay|impay|relan|retard/i,reply:function(){var l=lateInv();return {text:l.length+' factures sont en retard pour '+F.eur(l.reduce(function(a,i){return a+i.amount},0))+'. Les trois plus anciennes :',card:l.slice().sort(function(a,b){return a.due<b.due?-1:1}).slice(0,3).map(function(i){return '<div class="hrow sp"><span class="s">'+D.name(i.member)+'</span><b class="s num">'+F.eur(i.amount)+'</b></div>'}).join(''),actions:[{label:'Relancer les '+l.length,run:function(){S.hero.rel=1;P.toast(l.length+' relances envoyées');return l.length+' relances envoyées'}},{label:'Voir les factures',run:function(){P.go('facturation');return 'Ouvert'}}]}}});
-P.tourSteps.push({route:'cockpit',title:'Le matin, tout tient sur un écran',text:'Le gérant ouvre Piaffe et voit ce qui compte : chevaux à surveiller, chevaux déclarés à valider, reprises et pistes de la journée, argent à encaisser. Les puces de domaine remontent les tuiles utiles, et l’assistant a déjà préparé les actions : il suffit de valider.'});
+P.tourSteps.push({route:'cockpit',title:'Le matin, tout tient sur un écran',text:'Le gérant ouvre Piaffe et voit ce qui compte : chevaux à surveiller, chevaux déclarés à valider, reprises et pistes de la journée, argent à encaisser. Les puces de domaine remontent les tuiles utiles, et les actions les plus probables sont déjà prêtes : il suffit de valider.'});
 })();

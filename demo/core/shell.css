@@ -365,3 +365,86 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .app.mini .side .sec.on .bdg,.app.mini .side .sec.hov .bdg{box-shadow:0 0 0 2px var(--d-bg)}
 .app.mini .side .me{justify-content:center;padding:12px 0 0}
 @media (prefers-reduced-motion:reduce){.app,.navtog,.navtog svg.i{transition:none}}
+
+/* =====================================================================
+   Manche 4 : marque, lanceur, assistant sobre, motion de la coque
+   ===================================================================== */
+/* bouton de l'assistant : un bouton d'outil, pas une pastille « magique » */
+.top .ai{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2);padding:0 16px 0 6px;gap:10px}
+.top .ai:hover{box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-1);background:var(--surface-2)}
+.top .ai .aim{width:32px;height:32px;border-radius:var(--r-pill);background:var(--navy);display:grid;place-items:center;flex:none;transition:transform .5s var(--e-spring)}
+.top .ai:hover .aim{transform:rotate(-8deg) scale(1.06)}
+.app.mobile .top .ai{background:transparent;box-shadow:none}
+.app.mobile .top .ai .aim{width:40px;height:40px}
+@container main (max-width:1000px){.top .ai{padding:0;background:transparent;box-shadow:none}.top .ai .aim{width:40px;height:40px}}
+.aip .aih{background:var(--surface)}
+
+/* écran de lancement */
+.splash{position:absolute;inset:0;z-index:90;display:grid;place-items:center;background:var(--hero);color:var(--hero-ink);border-radius:inherit;pointer-events:none;transition:opacity .45s var(--e-out),transform .45s var(--e-out)}
+.stage[data-dev="phone"] .splash{border-radius:60px}.stage[data-dev="tablet"] .splash{border-radius:30px}.stage.full .splash{border-radius:0}
+.splash.out{opacity:0;transform:scale(1.04)}
+.splash .spc{display:flex;flex-direction:column;align-items:center;gap:14px}
+.splash .spl{display:block;animation:splLogo .8s var(--e-spring) both}
+.splash .spl .lg-b{stroke-dasharray:320;stroke-dashoffset:320;fill-opacity:0;animation:splDraw .7s .05s var(--e-out) forwards}
+.splash b{font:800 40px/1 var(--f-display);letter-spacing:-.04em;animation:splUp .6s .25s var(--e-out) both}
+.splash small{font:500 15px/1 var(--f-text);opacity:.7;animation:splUp .6s .38s var(--e-out) both}
+.splash .spbar{display:block;width:72px;height:3px;border-radius:3px;background:color-mix(in srgb,var(--hero-ink) 18%,transparent);overflow:hidden;margin-top:12px;animation:splUp .5s .45s var(--e-out) both}
+.splash .spbar i{display:block;height:100%;width:100%;background:var(--strass);border-radius:3px;transform-origin:left;animation:splBar .75s .5s var(--e-out) both}
+@keyframes splLogo{from{opacity:0;transform:translateY(14px) scale(.8)}}
+@keyframes splDraw{60%{fill-opacity:0}to{stroke-dashoffset:0;fill-opacity:1}}
+@keyframes splUp{from{opacity:0;transform:translateY(10px)}}
+@keyframes splBar{from{transform:scaleX(0)}}
+
+/* lanceur « Tous les écrans » : de vraies icônes d'app */
+.lnch section{margin-bottom:22px}
+.lnch .eyebrow{margin:2px 4px 12px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:18px 6px}
+.lapp{display:flex;flex-direction:column;align-items:center;gap:9px;padding:4px 2px;border-radius:18px;color:var(--ink);animation:lappIn .5s calc(var(--i,0)*28ms) var(--e-spring) both;-webkit-tap-highlight-color:transparent}
+.lapp b{font:600 13.5px/1.2 var(--f-text);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lapp .aic{position:relative;width:62px;height:62px;border-radius:19px;display:grid;place-items:center;color:#fff;
+  background:radial-gradient(120% 90% at 30% 0%,color-mix(in srgb,#fff 28%,var(--d,var(--acc))) 0%,transparent 60%),linear-gradient(165deg,var(--d,var(--acc)),color-mix(in srgb,var(--d,var(--acc)) 72%,#0a1636));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 6px rgba(10,22,54,.18),0 8px 18px -10px color-mix(in srgb,var(--d,var(--acc)) 80%,transparent);
+  transition:transform .4s var(--e-spring),box-shadow var(--t-2)}
+.lapp .aic svg.i{width:30px;height:30px;stroke-width:2;filter:drop-shadow(0 1px 1px rgba(10,22,54,.2))}
+.lapp .aic svg.i .f{fill:#fff}
+.lapp .aic em{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--cr);color:#fff;font:700 12.5px/22px var(--f-text);font-style:normal;box-shadow:0 0 0 2.5px var(--raise,var(--surface));animation:lappBdg .5s calc(var(--i,0)*28ms + .25s) var(--e-spring) both}
+.lapp:hover .aic{transform:translateY(-3px) rotate(-3deg);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 6px rgba(10,22,54,.18),0 14px 24px -12px color-mix(in srgb,var(--d,var(--acc)) 90%,transparent)}
+.lapp:active .aic{transform:scale(.88);transition-duration:.12s}
+.lapp[aria-current="page"] b,.lapp.cur b{color:var(--d-ink)}
+@keyframes lappIn{from{opacity:0;transform:translateY(14px) scale(.7)}}
+@keyframes lappBdg{from{opacity:0;transform:scale(0)}}
+
+/* pastille qui glisse */
+.seg>button,.tabs>button,.tabs>a,.tabbar>button{position:relative;z-index:1}
+.tabs{position:relative}
+.glide{position:absolute;left:0;top:0;z-index:0;pointer-events:none;will-change:transform,width}
+.gl-seg{border-radius:11px;background:var(--surface);box-shadow:var(--shadow-1),inset 0 0 0 1px var(--line)}
+.gl-tab{height:3px;border-radius:3px 3px 0 0;background:var(--acc)}
+.gl-tbar{border-radius:18px;background:var(--surface-3);margin:3px 0 0 4px;clip-path:inset(0 8px 6px 0 round 18px)}
+.seg>button.gl-hide[aria-selected="true"]{background:transparent;box-shadow:none}
+.tabs>.gl-hide::after{opacity:0}
+.tabbar>button.gl-hide::before{opacity:0!important;transition:none}
+.dbar .seg>button.gl-hide[aria-selected="true"]{background:transparent;box-shadow:none}
+
+/* transitions de page selon le sens : onglet (fondu), détail (glisse de la droite), retour (de la gauche) */
+.view.enter[data-dir="tab"]>.page{animation:pageTab .34s var(--e-out) both}
+.view.enter[data-dir="fwd"]>.page{animation:pageFwd .38s var(--e-out) both}
+.view.enter[data-dir="back"]>.page{animation:pageBack .38s var(--e-out) both}
+@keyframes pageTab{from{opacity:0;transform:translateY(8px) scale(.996)}}
+@keyframes pageFwd{from{opacity:0;transform:translateX(28px)}}
+@keyframes pageBack{from{opacity:0;transform:translateX(-28px)}}
+
+/* fil d'Ariane et titre téléphone : le nouveau titre glisse en place */
+.crumb b,.app.mobile .mt{animation:crumbIn .35s var(--e-out) both}
+@keyframes crumbIn{from{opacity:0;transform:translateY(5px)}}
+/* les icônes des espaces de la barre de démo répondent au clic */
+.dbar .roles button[aria-selected="true"] svg.i{animation:roleIc .5s var(--e-spring)}
+@keyframes roleIc{40%{transform:scale(.8) rotate(-8deg)}}
+@media (prefers-reduced-motion:reduce){.splash *,.lapp,.lapp .aic em,.crumb b,.app.mobile .mt,.view.enter>.page{animation:none!important}}
+
+.splash .spl{filter:drop-shadow(0 10px 30px rgba(109,139,255,.25))}
+.app.mobile .lgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 4px}
+.app.mobile .lapp .aic{width:58px;height:58px;border-radius:17px}
+.side .nv .lb{overflow-wrap:normal;hyphens:auto;letter-spacing:-.005em}
+.side .nv:has(.bdg) .lb{font-size:14.5px}
+.side .nv{gap:10px}

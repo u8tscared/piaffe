@@ -1,0 +1,6 @@
+<html><head><meta charset="utf-8"></head><body><table>
+<tr><th>Nom</th><th>Prénom</th><th>Poste</th><th>Contrat</th><th>Heures hebdo</th><th>Téléphone</th></tr>
+<tr><td>BLANC</td><td>Hugo</td><td>Moniteur</td><td>CDI</td><td>35</td><td>06 01 02 03 04</td></tr>
+<tr><td>NICOLAS</td><td>Jade</td><td>Apprentie BPJEPS</td><td>Apprentissage</td><td>35</td><td>06 05 06 07 08</td></tr>
+<tr><td>GUÉRIN</td><td>Thomas</td><td>Moniteur DEJEPS</td><td>CDI</td><td>30</td><td></td></tr>
+</table></body></html>

@@ -9,6 +9,7 @@ H='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewpo
 { printf '%s\n' "$H"; cat site/dist/landing.html; printf '\n</body></html>\n'; } > _pages/index.html
 { printf '%s\n' "$H"; cat demo/dist/piaffe.html; printf '\n</body></html>\n'; } > _pages/demo/index.html
 cp -r site/shots _pages/shots && rm -rf _pages/shots/_png
+node migration/tools/construire.mjs >/dev/null && mkdir -p _pages/passerelle && cp migration/dist/passerelle.html _pages/passerelle/index.html
 touch _pages/.nojekyll
 node site/build.js >/dev/null
 echo "OK _pages"

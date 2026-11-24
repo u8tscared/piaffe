@@ -1,0 +1,7 @@
+N° facture;Date;Code client;Client;Désignation;Qté;PU TTC;Taux TVA;Total TTC;Réglé;Mode de règlement
+FA2026-0412;01/09/2026;C0001;MARTIN Sophie;Forfait annuel 1 h / semaine;1;780,00;5,5%;780,00;780,00;Prélèvement
+FA2026-0412;01/09/2026;C0001;MARTIN Sophie;Licence FFE 2027 moins de 18 ans;1;25,00;0%;25,00;25,00;Prélèvement
+FA2026-0413;01/09/2026;C0002;MARTIN Sophie;Forfait annuel 1 h / semaine;1;780,00;5,5%;780,00;585,00;Chèque
+FA2026-0420;01/11/2026;C0004;ROUSSEAU Chloé;Pension box paddock novembre;1;420,00;20%;420,00;0,00;Virement
+FA2026-0421;05/11/2026;C0006;GIRARD Manon;Carte 10 séances;1;290,00;5,5%;290,00;232,00;Carte bancaire
+AV2026-0007;10/11/2026;C0003;LAURENT Emma;Avoir cours annulé;1;-38,00;5,5%;-38,00;0,00;

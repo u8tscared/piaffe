@@ -1,0 +1,11 @@
+Liste des cavaliers - Ecurie de demonstration - edite le 24/11/2026
+
+Code cavalier;NOM;Prénom;Né(e) le;Adresse;CP;Ville;Tél portable;E-mail;N° licence;Galop;Responsable légal;Tél responsable;Forfait;Solde
+C0001;MARTIN;Léa;14/03/2012;3 rue des Lilas;78730;Saint-Arnoult-en-Yvelines;6 12 34 56 78;famille.martin@exemple.fr;1234567A;4;MARTIN Sophie;06 11 22 33 44;Forfait annuel 1 h / semaine;0,00
+C0002;MARTIN;Hugo;02/09/2015;3 rue des Lilas;78730;Saint-Arnoult-en-Yvelines;;famille.martin@exemple.fr;1234568B;2;MARTIN Sophie;06 11 22 33 44;Forfait annuel 1 h / semaine;-195,00
+C0003;LAURENT;Emma;21/06/2009;12 avenue du Parc;78120;Rambouillet;07 45 67 89 01;emma.laurent@exemple.fr;2345678C;6;;;Forfait annuel 2 h / semaine;0,00
+C0004;ROUSSEAU;Chloé;05/01/1988;8 chemin des Prés;78730;Rochefort-en-Yvelines;06.98.76.54.32;chloe.rousseau@exemple;3456789D;7;;;Propriétaire, accès installations;-420,00
+C0005;FAURE;Jules;30/11/2017;;78730;Saint-Arnoult-en-Yvelines;;;;1;;;Baby poney (trimestre);0,00
+C0006;GIRARD;Manon;17/07/2001;4 place de l'Église;91410;Dourdan;0634567890;manon.girard@exemple.fr;4567890E;5;;;Carte 10 séances;-58,00
+C0007;LAMBERT;Inès;09/02/2013;19 rue Pasteur;78120;Rambouillet;;;5678901F;3;LAMBERT Julien;06 22 33 44 55;Forfait annuel 1 h / semaine;0,00
+C0008;FONTAINE;Camille;23/04/1995;2 allée des Chênes;78730;Saint-Arnoult-en-Yvelines;06 55 44 33 22;camille.fontaine@exemple.fr;6789012G;7;;;Demi-pension 2 jours;0,00

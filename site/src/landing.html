@@ -15,7 +15,7 @@
   <div class="w nav-in">
     <a class="marque" href="#top" aria-label="Piaffe, retour en haut">{{logo:30}}<span>Piaffe</span></a>
     <nav class="nav-l" id="navL" aria-label="Sections">
-      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai" class="nl-ai">Piaffe AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
+      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#changer">Changer de logiciel</a><a href="#ai" class="nl-ai">Piaffe AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
     </nav>
     <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre">{{i:moon}}{{i:sun}}</button>
     <a class="btn pri sm nav-cta" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
@@ -257,6 +257,38 @@
   </div>
 </section>
 
+<!-- ================= CHANGER DE LOGICIEL ================= -->
+<section class="mig" id="changer" aria-labelledby="h-mig">
+  <div class="w">
+    <div class="mig-tete" data-r>
+      <p class="sur2 mig-sur">{{i:robot}}Changer de logiciel</p>
+      <h2 id="h-mig">Vos données passent à Piaffe <span>toutes seules.</span></h2>
+      <p>Nos robots récupèrent tout ce qu’il y a dans votre ancien logiciel : adhérents, familles, chevaux, forfaits, factures, planning, soins. Même s’il n’est pas dans notre liste : donnez son adresse, le robot s’y retrouve.</p>
+    </div>
+
+    <div class="mig-flux" data-r aria-hidden="true">
+      <div class="mf-src"><span>Kavalog</span><span>Equimondo</span><span>Excel</span><span>FFE Club SIF</span><span>HelloAsso</span><span>Votre logiciel</span></div>
+      <div class="mf-tuyau"><i></i><i></i><i></i><i></i><i></i><b>{{i:robot}}</b></div>
+      <div class="mf-dst"><div class="mf-logo">{{logo:34}}</div><ul><li>{{i:members}}<span>Cavaliers et familles</span></li><li>{{i:horse}}<span>Chevaux et soins</span></li><li>{{i:invoice}}<span>Forfaits et factures</span></li><li>{{i:planning}}<span>Planning des reprises</span></li></ul></div>
+    </div>
+
+    <div class="mig-voies">
+      <article class="mv" style="--i:0" data-r><span class="mv-n">1</span><span class="mv-tag">Le plus magique</span><h3>Le robot navigateur</h3><p>Vous vous connectez à votre ancien logiciel comme d’habitude, double authentification comprise. Un clic sur l’extension Piaffe : le robot parcourt les pages et copie tout, sur votre ordinateur.</p></article>
+      <article class="mv" style="--i:1" data-r><span class="mv-n">2</span><span class="mv-tag">Le plus simple · bientôt</span><h3>Confiez-nous l’accès</h3><p>Vous nous donnez vos identifiants : ils sont chiffrés dès votre navigateur, notre robot fait la migration, puis ils sont effacés.</p></article>
+      <article class="mv" style="--i:2" data-r><span class="mv-n">3</span><span class="mv-tag">Le plus sûr</span><h3>Un fichier suffit</h3><p>Un export CSV ou Excel, la liste des licenciés FFE, votre tableur maison : Piaffe reconnaît les colonnes, fusionne les doublons et vous montre tout avant d’importer.</p></article>
+    </div>
+
+    <div class="mig-plus">
+      <div class="mp" data-r>{{i:spark}}<div><b>Les robots apprennent</b><small>Chaque migration réussie retient le chemin : la suivante, sur le même logiciel, va plus vite. Si un écran change, on est prévenus.</small></div></div>
+      <div class="mp" data-r>{{i:mail}}<div><b>Vos adhérents prévenus pour vous</b><small>Annonce, activation en un clic avec une fiche déjà remplie, confirmation, relances : vous suivez qui a activé.</small></div></div>
+      <div class="mp" data-r>{{i:doc}}<div><b>La résiliation offerte</b><small>Piaffe prépare la lettre de résiliation de votre ancien abonnement et la demande d’export de vos données.</small></div></div>
+      <div class="mp" data-r>{{i:shield}}<div><b>Rien n’est écrasé</b><small>Trois chiffres à comparer avec votre ancien logiciel avant d’importer, et un import annulable.</small></div></div>
+    </div>
+
+    <p class="c mt" data-r><a class="btn pri" href="https://claude.ai/artifact/Jro7uLYBPbJUrSebQmUvn1" target="_blank" rel="noopener">Essayer la passerelle{{i:arrow}}</a></p>
+  </div>
+</section>
+
 <!-- ================= MISE EN ROUTE ================= -->
 <section class="sec route" id="demarrer" aria-labelledby="h-route">
   <div class="w">
@@ -272,7 +304,7 @@
         <h3>Vous venez d’un autre logiciel ?</h3>
         <p>Adhérents, familles, chevaux, forfaits, soldes et factures ouvertes : tout se reprend. Piaffe reconnaît les colonnes, repère les doublons, et rien n’est écrasé sans votre accord. L’import reste annulable pendant 30 jours.</p>
         <div class="src" id="srcL"></div>
-        <a class="lien" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a>
+        <a class="lien" href="#changer">Voir comment nos robots récupèrent tout{{i:arrow}}</a> <a class="lien" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a>
       </div>
       <figure class="rp-v">
         <div class="nav-frame"><div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.piaffe.fr/les-tilleuls</span></div><div class="crop fade" style="--dx:276;--dy:0;--dw:1164;--dh:900;--mx:296;--my:246;--mw:780;--mh:654"><img src="shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>

@@ -1,4 +1,4 @@
-/* Vue employé · toute la journée d'un soigneur (Mamadou Diallo) et d'un moniteur (Hugo Lefèvre)
+/* Vue employé · toute la journée d'un soigneur (Antoine Leroy) et d'un moniteur (Hugo Lefèvre)
    Téléphone d'abord : gros boutons, forts contrastes, tout à portée de pouce. */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,$=P.$,$$=P.$$;
@@ -72,7 +72,7 @@ D.empShifts=D.empShifts||[
  {d:4,l:'Sam',n:21,parts:[['07:00','12:00','Écurie']],h:5,swap:true},
  {d:5,l:'Dim',n:22,parts:[],h:0}];
 D.empNights=D.empNights||[['Lun','s05',true],['Mar','s06'],['Mer','s05'],['Jeu','s01'],['Ven','s05'],['Sam','s01'],['Dim','s01']];
-/* La semaine de Mamadou se lit dans le planning de l'équipe (écran Équipe du gérant, D.shifts et D.nights) :
+/* La semaine de Antoine se lit dans le planning de l'équipe (écran Équipe du gérant, D.shifts et D.nights) :
    mêmes postes, mêmes astreintes, même total. Les données propres à l'employé ne servent que si ce planning manque. */
 var SHC={E:[8,[['07:00','12:00'],['14:00','17:00']],'Écurie'],L:[9.5,[['07:00','12:00'],['14:00','18:30']],'Écurie et soins'],A:[5,[['07:00','12:00']],'Matinée d’écurie'],M:[5.5,[['07:00','12:30']],'Écurie, matin'],S:[5.5,[['13:30','19:00']],'Écurie, soir'],J:[8,[['08:30','12:30'],['13:30','17:30']],'Journée'],C:[7,[['07:00','11:00'],['16:00','19:00']],'Écurie'],K:[8,[['06:30','12:00'],['13:30','16:00']],'Concours'],F:[7,[['08:30','12:30'],['13:30','16:30']],'Formation'],P:[7,[],'Congé payé'],R:[0,[],'Repos']};
 var WD=[['Lun',16],['Mar',17],['Mer',18],['Jeu',19],['Ven',20],['Sam',21],['Dim',22]];
@@ -91,14 +91,14 @@ D.empThreads=D.empThreads||[
    {w:'s06',t:'8 h 32',x:'Groupe A sorti. Volga a perdu un fer au postérieur droit, je l’ai mis de côté dans la sellerie.'},
    {w:'s01',t:'8 h 40',x:'Merci Lucie. J’ajoute Volga à la liste du maréchal de jeudi.'},
    {w:'s07',t:'9 h 15',x:'Je herse la carrière d’honneur à 13 h 30, évitez de traverser avec les brouettes.'},
-   {w:'s01',t:'9 h 30',x:'Mamadou, tu me dis comment va Xanthos après le contrôle de 10 h ?'}]},
- {id:'cl',title:'Claire Morel',with:'s01',unread:0,msgs:[
+   {w:'s01',t:'9 h 30',x:'Antoine, tu me dis comment va Xanthos après le contrôle de 10 h ?'}]},
+ {id:'cl',title:'Claire Dumont',with:'s01',unread:0,msgs:[
    {w:'s05',t:'8 h 05',x:'Xanthos a recrotté, il mange un peu de foin mouillé.',read:true},
    {w:'s01',t:'8 h 09',x:'Très bonne nouvelle. On continue les contrôles toutes les 2 h jusqu’au véto.'}]},
  {id:'lu',title:'Lucie Petit',with:'s06',unread:1,msgs:[
    {w:'s06',t:'Hier',x:'Tu pourrais prendre mon samedi matin ? Je te rends ton dimanche 29.'}]},
  {id:'co',title:'Groupe Concours Rambouillet',grp:['s04','s01','s06'],unread:0,msgs:[
-   {w:'s04',t:'8 h 47',x:'Départ dimanche à 6 h 45, soyez là à 6 h 30. Mamadou, peux-tu préparer le foin du camion samedi soir ?'},
+   {w:'s04',t:'8 h 47',x:'Départ dimanche à 6 h 45, soyez là à 6 h 30. Antoine, peux-tu préparer le foin du camion samedi soir ?'},
    {w:'s05',t:'8 h 52',x:'Oui, 4 filets prêts samedi à 18 h.',read:true}]}];
 /* Les demandes en cours sont celles que voit la gérante (D.leaves, écran Équipe) ; ici seulement l'historique déjà pris. */
 D.empLeaves=D.empLeaves||[
@@ -106,7 +106,7 @@ D.empLeaves=D.empLeaves||[
 var LST={attente:'en attente','validé':'validé','refusé':'refusé'};
 function myLeaves(){if(!D.leaves)return D.empLeaves;
   return D.leaves.filter(function(l){return l.who==='s05'}).map(function(l){return {id:l.id,kind:l.kind.replace('Congés payés','Congé payé'),from:l.from,to:l.to,days:l.days,st:LST[l.state]||l.state,note:l.state==='attente'?'Demandée '+l.asked:l.state==='validé'?'Validée par Claire':'Refusée par Claire',fresh:l.fresh,src:l}}).concat(D.empLeaves)}
-function addLeave(o){if(D.leaves){var l={id:'a'+Date.now(),who:'s05',kind:o.kind==='Congé payé'?'Congés payés':o.kind,from:o.from,to:o.to,days:o.days,state:'attente',asked:'à l’instant',impact:'ok',note:'Demande envoyée depuis l’application de Mamadou.',fresh:true};D.leaves.unshift(l);return function(){var i=D.leaves.indexOf(l);if(i>=0)D.leaves.splice(i,1)}}
+function addLeave(o){if(D.leaves){var l={id:'a'+Date.now(),who:'s05',kind:o.kind==='Congé payé'?'Congés payés':o.kind,from:o.from,to:o.to,days:o.days,state:'attente',asked:'à l’instant',impact:'ok',note:'Demande envoyée depuis l’application de Antoine.',fresh:true};D.leaves.unshift(l);return function(){var i=D.leaves.indexOf(l);if(i>=0)D.leaves.splice(i,1)}}
   var v={id:'v'+Date.now(),kind:o.kind,from:o.from,to:o.to,days:o.days,st:'en attente',note:'Demandée à l’instant',fresh:true};D.empLeaves.unshift(v);return function(){var i=D.empLeaves.indexOf(v);if(i>=0)D.empLeaves.splice(i,1)}}
 function cpLeft(){var H=hrOf();return H.cp[0]-H.cp[1]}
 D.empDocs=D.empDocs||[
@@ -133,6 +133,8 @@ function mon(){return E.who==='s02'}
 function tasks(){return mon()?D.empHugo:D.empTasks}
 function tasksLeft(){return tasks().filter(function(t){return !t.done}).length}
 function hm(t){var p=t.split(':');return (+p[0])+' h'+(p[1]==='00'?'':' '+p[1])}
+function sw(n){if(!n||P.RM)return;n.classList.toggle('em-sw',false);void n.offsetWidth;n.classList.add('em-sw')}
+function swBody(el){[].slice.call(el.children).forEach(function(x){if(!x.classList.contains('em-hd'))sw(x)})}
 function on(root,sel,fn){root.addEventListener('click',function(e){var t=e.target.closest(sel);if(t&&root.contains(t))fn(t,e)})}
 function say(msg,o){if(E.offline){E.queue++;P.toast(msg+'. Envoi au retour du réseau',{icon:'wifi'});var b=$('.em-off b',P.app());if(b)b.textContent=E.queue}else P.toast(msg,o)}
 function ico(n,k,c){return '<span class="em-ic '+(k||'')+'"'+(c?' style="--c:'+c+'"':'')+'>'+ICON(n)+'</span>'}
@@ -156,15 +158,19 @@ function dictate(btn,ta,text){if(btn.classList.contains('rec'))return;btn.classL
 function vetSheet(h){var s=P.sheet({title:'Appeler le vétérinaire',icon:'phone',body:
   '<div class="stack" style="--g:14px"><div class="card flat hrow" style="padding:14px">'+ico('care','lg','var(--bad)')+'<div class="grow"><b class="l">Dr Antoine Leclerc</b><div class="s mut">Vétérinaire de l’écurie · de garde aujourd’hui</div><div class="num b" style="font-size:19px;margin-top:4px">'+VET+'</div></div></div>'+
   (h?'<div class="note">'+ICON('info','sm')+'<span>Piaffe lui envoie la fiche de <b>'+h.name+'</b> ('+h.box+') avec les derniers contrôles pendant l’appel.</span></div>':'')+
-  '<div class="list card flat"><button class="li click" data-alt="clinique" style="width:100%;text-align:left">'+ico('phone','','var(--acc)')+'<div class="grow"><div class="t">Clinique équine de Rambouillet</div><div class="s">Urgences jour et nuit · 01 30 00 00 00</div></div>'+ICON('right','sm')+'</button><button class="li click" data-alt="Claire" style="width:100%;text-align:left">'+U.av('s01')+'<div class="grow"><div class="t">Claire Morel, gérante</div><div class="s">À prévenir avant tout appel non urgent</div></div>'+ICON('right','sm')+'</button></div></div>',
+  '<div class="list card flat"><button class="li click" data-alt="clinique" style="width:100%;text-align:left">'+ico('phone','','var(--acc)')+'<div class="grow"><div class="t">Clinique équine de Rambouillet</div><div class="s">Urgences jour et nuit · 01 30 00 00 00</div></div>'+ICON('right','sm')+'</button><button class="li click" data-alt="Claire" style="width:100%;text-align:left">'+U.av('s01')+'<div class="grow"><div class="t">Claire Dumont, gérante</div><div class="s">À prévenir avant tout appel non urgent</div></div>'+ICON('right','sm')+'</button></div></div>',
   foot:'<button class="btn em-b pri block" data-call>'+ICON('phone')+'Appeler le Dr Leclerc</button>'});
   s.querySelector('[data-call]').onclick=function(){s.close();P.toast('Appel du Dr Leclerc en cours'+(h?', fiche de '+h.name+' envoyée':''),{icon:'phone'});if(h)(E.obs[h.id]=E.obs[h.id]||[]).unshift({who:E.who,when:'À l’instant',text:'Appel au Dr Leclerc.',kind:'soin'})};
-  on(s,'[data-alt]',function(b){s.close();P.toast('Appel en cours : '+(b.getAttribute('data-alt')==='Claire'?'Claire Morel':'Clinique équine de Rambouillet'),{icon:'phone'})});return s}
+  on(s,'[data-alt]',function(b){s.close();P.toast('Appel en cours : '+(b.getAttribute('data-alt')==='Claire'?'Claire Dumont':'Clinique équine de Rambouillet'),{icon:'phone'})});return s}
 
 /* =====================================================================
    Styles
    ===================================================================== */
 P.css(`
+.em-cl2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.35}
+.em-sw{animation:em-sw 240ms var(--e-out) both}
+@keyframes em-sw{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.em-sw{animation:none}}
 .em-hd{align-items:center}
 .app.mobile .em-hd{align-items:stretch}
 .em-hd .acts{align-items:center}
@@ -323,7 +329,7 @@ function lessonSheet(it,draw){var L=lessonItems(it),A=assignOf(it),W=workToday()
        '<button class="em-hb'+(h?'':' no')+'" data-h="'+r+'">'+(h?HORSE_GLYPH()+'<span class="ellip">'+h.name+'</span><span class="mut" style="font-weight:500">· '+(w+1)+(w?'e':'re')+' heure du jour</span>':ICON('alert','sm')+'Choisir un cheval')+ICON('down','sm')+'</button></div>'+
        '<button class="em-pa y" data-pr="y" data-r="'+r+'" aria-pressed="'+(pr[r]==='y')+'" title="Présent">'+ICON('check')+'</button><button class="em-pa n" data-pr="n" data-r="'+r+'" aria-pressed="'+(pr[r]==='n')+'" title="Absent">'+ICON('x')+'</button></div>'+
        (open===r?'<div class="em-pick fade">'+cands().map(function(c){var k=(W[c.id]||[]).length;return '<button data-pk="'+c.id+'" data-r="'+r+'" class="'+(k>=2?'hot':'')+'">'+c.name+'<small>'+(k?k+' h déjà':'repos')+'</small></button>'}).join('')+'</div>':'')+'</div>'}).join('')}
-  var s=P.sheet({title:'Appel et chevaux',icon:'whistle',body:function(b){b.innerHTML=body()},foot:(L.one?'':'<button class="btn em-b" data-auto>'+ICON('assistant')+'Proposer</button>')+'<button class="btn em-b pri" style="flex:1" data-close>Clôturer l’appel</button>'});
+  var s=P.sheet({title:'Appel et chevaux',icon:'whistle',body:function(b){b.innerHTML=body()},foot:(L.one?'':'<button class="btn em-b" data-auto>'+ICON('repeat')+'Proposer</button>')+'<button class="btn em-b pri" style="flex:1" data-close>Clôturer l’appel</button>'});
   var b=s.querySelector('.sb');function re(){var st=b.scrollTop;b.innerHTML=body();b.scrollTop=st}
   on(s,'[data-pr]',function(x){var r=x.getAttribute('data-r'),val=x.getAttribute('data-pr');pr[r]=pr[r]===val?null:val;re()});
   on(s,'[data-h]',function(x){if(L.one){P.toast('Ulysse est le cheval de sa demi-pensionnaire',{icon:'info'});return}var r=x.getAttribute('data-h');open=open===r?null:r;re()});
@@ -352,7 +358,8 @@ P.css(`
 .em-qs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .em-qs button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);text-align:left;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);min-width:0;transition:box-shadow var(--t-2),background var(--t-2)}
 .em-qs button svg.i{color:var(--mut);flex:none}
-.em-qs button b{display:block;font-size:13.5px}.em-qs button small{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.em-qs button b{display:block;font-size:13.5px}.em-qs button small{display:block;font-size:13px;color:var(--mut);line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.em-qs button{align-items:flex-start}.em-qs button svg.i,.em-qs .n{margin-top:2px}
 .em-qs button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
 .em-qs button[aria-pressed="true"] svg.i{color:var(--acc)}
 .em-qs .n{margin-left:auto;flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--acc);color:var(--acc-ink)}
@@ -402,12 +409,12 @@ function puceSheet(){var T=tourState(),order=[],c=tourCur();if(c>=0)order.push(T
   bo.onclick=function(){var h=order[k%order.length];s.close();P.go('emp-cheval',{id:h})};
   ba.onclick=function(){k++;read()};read();return s}
 
-P.mod({id:'emp-jour',role:'employe',group:'Ma journée',title:'Aujourd’hui',icon:'today',n:10,short:'Journée',phoneTitle:'Bonjour Mamadou',
+P.mod({id:'emp-jour',role:'employe',group:'Ma journée',title:'Aujourd’hui',icon:'today',n:10,short:'Journée',phoneTitle:'Bonjour Antoine',
  badge:function(){var n=tasksLeft();return n?{v:n}:null},
  render:function(el,ctx){var first=true,showDone=false;
   function draw(){var p=me(),T=tasks(),mt=$('.mt',P.app()),O=jourPrefs();if(mt)mt.textContent='Bonjour '+p.first;
    var left=T.filter(function(t){return !t.done}),done=T.filter(function(t){return t.done}),now=mon()?left.filter(function(t){return t.priv||t.lesson})[0]:left[0],rest=left.filter(function(t){return t!==now});
-   var who=U.seg([['s05',U.av('s05','sm')+'Mamadou'],['s02',U.av('s02','sm')+'Hugo']],E.who,'data-who');
+   var who=U.seg([['s05',U.av('s05','sm')+'Antoine'],['s02',U.av('s02','sm')+'Hugo']],E.who,'data-who');
    var h=hd('Bonjour '+p.first,'Mardi 17 novembre · 9 h 41 · '+p.role+(mon()?' · arrivée à 10 h':''),
      who+'<span class="hrow" style="--g:6px"><button class="btn icon" data-perso title="Personnaliser ma journée">'+ICON('sliders')+'</button><button class="btn icon" data-net title="Simuler une coupure du réseau">'+ICON('wifi')+'</button></span>');
    var B={};
@@ -569,7 +576,7 @@ P.mod({id:'emp-tournee',role:'employe',group:'Ma journée',title:'Tournée des b
  render:function(el,ctx){var T=tourState(),first=true,flash=-1;if(ctx.params&&ctx.params.jump!=null)T.cur=+ctx.params.jump;
   function cardHtml(i,cls){var b=T.boxes[i],h=D.horse(b.h),note=D.empNotes[h.id]||h.alerts[0],hay=Math.round(h.ration.hay*.4*2)/2,pd=padOf(h),wk=workToday()[h.id];
    return '<div class="em-card '+(cls||'')+'" data-i="'+i+'">'+(cls&&cls.indexOf('b')===0?'':'<div class="em-stamp ok">Tout va bien</div><div class="em-stamp bad">Signaler</div>')+
-    '<div class="em-ctop d-chevaux'+(h.status==='bad'?' bad':'')+'">'+U.hav(h,'xl')+'<div class="grow"><div class="nm ellip">'+h.name+'</div><div class="s ellip">'+h.breed+' · '+h.age+' ans · '+(h.owner?'propriétaire':'club')+'</div></div><span class="em-bx"><small>Box</small>'+h.box+'</span></div>'+
+    '<div class="em-ctop d-chevaux'+(h.status==='bad'?' bad':'')+'">'+U.hav(h,'xl')+'<div class="grow"><div class="nm ellip">'+h.name+'</div><div class="s em-cl2">'+h.breed+' · '+h.age+' ans · '+(h.owner?'propriétaire':'club')+'</div></div><span class="em-bx"><small>Box</small>'+h.box+'</span></div>'+
     '<div class="em-cn'+(note?'':' calm')+'">'+ICON(note?'alert':'check')+'<span>'+(note||'Aucune consigne particulière. Caractère : '+h.mood.toLowerCase()+'.')+'</span></div>'+
     '<div class="g2" style="--g:8px;grid-template-columns:1.25fr 1fr"><div class="em-kv"><small>'+ICON('feed')+'Ration du matin</small><b>'+(h.id==='h23'?'Foin mouillé 1 kg':String(hay).replace('.',',')+' kg de foin · '+String(h.ration.grain).replace('.',',')+' L')+'</b></div><div class="em-kv"><small>'+ICON('layers')+'Couverture</small><b>'+blanket(h)+'</b></div><div class="em-kv"><small>'+ICON('paddock')+(pd?'Paddock · '+(pd.g==='A'?'matin':'après-midi'):'Paddock')+'</small><b class="ellip">'+(pd?pd.p:'Reste au box')+'</b></div><div class="em-kv"><small>'+ICON('whistle')+'Travail</small><b>'+(wk?wk.map(hm).join(', '):pd&&h.id!=='h06'?'Repos':'Arrêté')+'</b></div></div>'+
     '<div class="stack" style="--g:6px;margin-top:auto"><div class="em-q"><span>A mangé</span>'+tri('eat',['Tout','Un peu','Rien'],b.chk.eat)+'</div><div class="em-q"><span>Crottins</span>'+tri('dung',['Normaux','Mous','Aucun'],b.chk.dung)+'</div><div class="em-q"><span>Eau</span>'+tri('water',['Propre','Sale','Vide'],b.chk.water)+'</div></div></div>'}
@@ -666,9 +673,9 @@ P.mod({id:'emp-chevaux',role:'employe',group:'Écurie',title:'Chevaux',icon:'hor
   function draw(){el.innerHTML=hd('Chevaux',D.horses.length+' chevaux · '+outNow+' dehors en ce moment · '+works+' travaillent aujourd’hui',U.seg([['list',ICON('list','sm')+'Liste'],['pad',ICON('paddock','sm')+'Paddocks']],view,'data-view')+'<button class="btn icon" data-scan title="Scanner le QR code d’un box">'+ICON('qr')+'</button>')+
     (view==='list'?'<div class="stack" style="--g:12px"><div class="search">'+ICON('search')+'<input class="in em-in" type="search" placeholder="Nom, box ou race" value="'+F.esc(q)+'" aria-label="Chercher un cheval"></div><div class="em-tags scroll-x">'+FL.map(function(x){return '<button class="tag" data-manual data-f="'+x[0]+'" aria-pressed="'+(f===x[0])+'">'+x[1]+' <b>'+x[2]+'</b></button>'}).join('')+'</div><div data-list>'+list()+'</div></div>':pads())}
   el.addEventListener('input',function(e){if(e.target.matches('.em-in')){q=e.target.value;el.querySelector('[data-list]').innerHTML=list()}});
-  on(el,'[data-f]',function(b){f=b.getAttribute('data-f');$$('[data-f]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)});el.querySelector('[data-list]').innerHTML=list()});
+  on(el,'[data-f]',function(b){f=b.getAttribute('data-f');$$('[data-f]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)});var dl=el.querySelector('[data-list]');dl.innerHTML=list();sw(dl)});
   on(el,'[data-clear]',function(){q='';f='all';draw()});
-  on(el,'[data-view]',function(b){view=b.getAttribute('data-view');P.prefs.set('emp:hview',view);draw()});
+  on(el,'[data-view]',function(b){if(view===b.getAttribute('data-view'))return;view=b.getAttribute('data-view');P.prefs.set('emp:hview',view);draw();swBody(el)});
   on(el,'[data-pad]',function(b){var k=b.getAttribute('data-pad'),st=b.getAttribute('data-st'),n=b.getAttribute('data-n');E.pad[k]=st==='out'?'back':'out';draw();say(n+' chevaux '+(st==='out'?'rentrés au box':'sortis au paddock')+', journal mis à jour')});
   on(el,'[data-scan]',function(){scanSheet(function(i){P.go('emp-cheval',{id:tourState().boxes[i].h})})});
   online(el,draw);draw()}});
@@ -772,7 +779,7 @@ var DL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 
 function nightSheet(){P.sheet({title:'Astreinte de nuit',icon:'moonstar',body:'<div class="stack" style="--g:14px"><div class="card flat" style="padding:14px"><div class="eyebrow">Votre prochaine astreinte</div><div class="em-h2" style="font-size:19px;margin-top:4px">'+(function(i){return i<0?'Aucune cette semaine':DL[i]+' '+myWeek()[i].n+' novembre, de 20 h à 7 h'})(nextNight())+'</div><div class="s mut" style="margin-top:4px">Prime de 18 € par nuit. Une intervention est comptée en heures et majorée.</div></div>'+
   '<div><span class="em-lbl">Votre tour de 22 h</span><div class="card flat">'+['Vérifier les 46 abreuvoirs et les portes des boxes','Regarder Xanthos (B23) et noter un contrôle','Fermer la sellerie et le portail, éteindre les lumières du manège'].map(function(t){return '<div class="li"><div class="grow s" style="color:var(--ink);font-weight:500">'+t+'</div>'+U.chk(false)+'</div>'}).join('')+'</div></div>'+
-  '<div><span class="em-lbl">Qui appeler la nuit</span><div class="card flat">'+[['Dr Leclerc, vétérinaire de garde',VET],['Claire Morel, gérante','06 45 12 78 30'],['Clinique équine de Rambouillet','01 30 00 00 00']].map(function(c){return '<button class="em-row" data-nc="'+c[0].split(',')[0]+'">'+ico('phone','sm')+'<div class="grow"><div class="t">'+c[0]+'</div><div class="s num">'+c[1]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'+
+  '<div><span class="em-lbl">Qui appeler la nuit</span><div class="card flat">'+[['Dr Leclerc, vétérinaire de garde',VET],['Claire Dumont, gérante','06 45 12 78 30'],['Clinique équine de Rambouillet','01 30 00 00 00']].map(function(c){return '<button class="em-row" data-nc="'+c[0].split(',')[0]+'">'+ico('phone','sm')+'<div class="grow"><div class="t">'+c[0]+'</div><div class="s num">'+c[1]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'+
   '<div class="note">'+ICON('camera','sm')+'<span>Les caméras des boxes B23 et B04 vous envoient une alerte si un cheval reste couché plus de 40 minutes.</span></div></div>',
   foot:'<button class="btn em-b block" data-go="emp-signaler">'+ICON('alert')+'Signaler un incident</button>'}).addEventListener('click',function(e){var b=e.target.closest('[data-nc]');if(b)P.toast('Appel en cours : '+b.getAttribute('data-nc'),{icon:'phone'})})}
 
@@ -844,7 +851,7 @@ P.mod({id:'emp-soins',role:'employe',group:'Écurie',title:'Soins du jour',icon:
    if(tab==='reg')x+='<div class="card'+(first?' rise':'')+'"><div class="ch" style="padding-bottom:6px"><div><h3>Registre sanitaire</h3><div class="xs mut">Obligatoire pour tout détenteur d’équidés, conservé 5 ans</div></div><button class="btn sm" data-pdf>'+ICON('download','sm')+'Exporter en PDF</button></div>'+D.empRegister.map(function(r){var h=D.horse(r.horse),s=D.staffer(r.by);return '<div class="em-row'+(r.fresh?' fade':'')+'">'+U.hav(h)+'<div class="grow"><div class="t">'+h.name+' · '+r.what+'</div><div class="s">'+r.d+' · par '+s.first+' '+s.last+'</div></div><span class="em-reg hide-s">'+r.n+'</span>'+ICON('lock','sm')+'</div>'}).join('')+'</div>';
    else{var L=tab==='todo'?todo:done;x+=L.length?'<div class="em-cg'+(first?' rise':'')+'">'+L.map(card).join('')+'</div>':'<div class="card">'+U.empty('checkc','Tous les soins du jour sont donnés','Ils sont inscrits au registre sanitaire.','<button class="btn sm" data-tab="reg">Voir le registre</button>')+'</div>'}
    el.innerHTML=x;if(first)P.animate(el);first=false}
-  on(el,'[data-tab]',function(b){tab=b.getAttribute('data-tab');first=true;draw()});
+  on(el,'[data-tab]',function(b){if(tab===b.getAttribute('data-tab'))return;tab=b.getAttribute('data-tab');first=true;draw();swBody(el)});
   on(el,'[data-care]',function(b){careSheet(D.empCare.find(function(c){return c.id===b.getAttribute('data-care')}),draw)});
   on(el,'[data-later]',function(b){var c=D.empCare.find(function(q){return q.id===b.getAttribute('data-later')}),old=c.t,ol=c.late;c.t='14:00';c.late=false;draw();say('Soin reporté à 14 h, Claire est prévenue',{icon:'clock',undo:function(){c.t=old;c.late=ol;if(el.isConnected)draw()}})});
   on(el,'[data-pdf]',function(){P.toast('Registre sanitaire du 4e trimestre exporté en PDF',{icon:'download'})});
@@ -945,7 +952,7 @@ P.mod({id:'emp-pointage',role:'employe',group:'Moi',title:'Pointage',icon:'clock
    else{E.t0=Date.now();C.state='in';C.log.push(['9 h 41','Reprise après la pause','Pause de '+Math.max(1,Math.round((Date.now()-C.p0)/60000))+' min, non comptée',1])}
    draw();var b=el.querySelector('[data-hold]');b.classList.add('done');say(st==='in'?'Départ pointé à 9 h 41. Bonne fin de journée':st==='out'?'Arrivée pointée à 9 h 41, position vérifiée':'Pause terminée, bon courage',{icon:'clockin'})}
   on(el,'[data-pause]',function(){C.base=secs();C.state='pause';C.pauseAt='9 h 41';C.p0=Date.now();C.log.push(['9 h 41','Début de pause','Maintenez le bouton pour reprendre',1]);draw();say('Pause commencée à 9 h 41',{icon:'pause'})});
-  on(el,'[data-export]',function(){P.toast('Feuille d’heures de la semaine envoyée à mamadou.diallo@exemple.fr',{icon:'mail'})});
+  on(el,'[data-export]',function(){P.toast('Feuille d’heures de la semaine envoyée à antoine.leroy@exemple.fr',{icon:'mail'})});
   on(el,'[data-fix]',function(){var s=P.sheet({title:'Corriger un pointage',icon:'edit',body:'<div class="stack" style="--g:14px"><p class="s mut">Un oubli ou une erreur ? Claire reçoit votre demande et la valide. L’heure d’origine reste visible dans l’historique.</p><label class="field"><span>Jour</span><select class="in em-in"><option>Lundi 16 novembre</option><option>Mardi 17 novembre</option></select></label><div class="g2" style="--g:10px;grid-template-columns:1fr 1fr"><label class="field"><span>Arrivée</span><input class="in em-in num" type="time" value="07:02"></label><label class="field"><span>Départ</span><input class="in em-in num" type="time" value="17:01"></label></div><label class="field"><span>Motif</span><select class="in em-in"><option>J’ai oublié de pointer</option><option>Pas de réseau, pointage non parti</option><option>Je suis resté plus tard pour un cheval</option></select></label></div>',foot:'<button class="btn em-b pri block" data-send>'+ICON('send')+'Envoyer à Claire</button>'});s.querySelector('[data-send]').onclick=function(){s.close();say('Demande de correction envoyée à Claire',{icon:'send'})}});
   online(el,draw);draw();
   iv=setInterval(function(){if(!el.isConnected){clearInterval(iv);return}if(C.state==='out')return;var t=el.querySelector('[data-tm]');if(t)t.textContent=C.state==='pause'?fmtT(Math.floor((Date.now()-C.p0)/1000)):fmtT(secs())},1000)}});
@@ -1075,7 +1082,7 @@ function leaveSheet(draw){var kind='Congé payé',left=cpLeft()-myLeaves().filte
   on(s,'[data-kind]',function(q){kind=q.getAttribute('data-kind');calc()});s.addEventListener('input',calc);s.addEventListener('click',function(e){if(e.target.closest('.tog'))setTimeout(calc,0)});calc();
   s.querySelector('[data-send]').onclick=function(){var n=calc();if(!n){P.toast('Vérifiez les dates de votre demande',{icon:'alert'});return}var undo=addLeave({kind:kind,from:a.value,to:b.value,days:n});s.close();draw();say('Demande envoyée à Claire. Réponse sous 48 heures',{icon:'send',undo:function(){undo();draw()}})}}
 function paySheet(d){var p=d.pay,s=P.sheet({title:d.t,icon:'doc',body:p?'<div class="stack" style="--g:14px"><div class="card navy" style="padding:18px"><div class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 68%,transparent)">Net payé</div><div class="disp num" style="font-size:34px;font-weight:700;color:var(--navy-ink);margin-top:4px">'+p.net+'</div><div class="s" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent);margin-top:4px">Viré le dernier jour ouvré du mois sur le compte se terminant par 4821</div></div>'+
-   '<div>'+[['Salarié','Mamadou Diallo · palefrenier soigneur'],['Convention','Centres équestres, coefficient 121'],['Heures payées',p.h],['Heures supplémentaires',p.sup],['Salaire brut',p.brut],['Net avant impôt',p.net]].map(function(r){return '<div class="em-pay"><span class="mut">'+r[0]+'</span><b class="num" style="text-align:right">'+r[1]+'</b></div>'}).join('')+'</div>'+
+   '<div>'+[['Salarié','Antoine Leroy · palefrenier soigneur'],['Convention','Centres équestres, coefficient 121'],['Heures payées',p.h],['Heures supplémentaires',p.sup],['Salaire brut',p.brut],['Net avant impôt',p.net]].map(function(r){return '<div class="em-pay"><span class="mut">'+r[0]+'</span><b class="num" style="text-align:right">'+r[1]+'</b></div>'}).join('')+'</div>'+
    '<div class="note">'+ICON('lock','sm')+'<span>Vos bulletins sont gardés 50 ans dans votre coffre personnel. Vous y gardez accès même après votre départ de l’écurie.</span></div></div>':
    '<div class="stack" style="--g:14px"><div class="card flat" style="padding:16px"><div class="hrow">'+ico('doc','lg')+'<div><b>'+d.t+'</b><div class="s mut">'+d.s+'</div></div></div></div><div class="note">'+ICON('shield','sm')+'<span>Document signé et archivé par l’Écurie des Tilleuls. Seuls vous et Claire pouvez le consulter.</span></div></div>',
    foot:(p?'<button class="btn em-b" data-err>Signaler une erreur</button>':'')+'<button class="btn em-b pri" style="flex:1" data-dl>'+ICON('download')+'Télécharger le PDF</button>'});
@@ -1153,14 +1160,14 @@ function ewDone(i,msg){if(EW.done.indexOf(i)<0)EW.done.push(i);P.toast(msg,{icon
 P.mod({id:'emp-bienvenue',role:'employe',group:'Moi',title:'Mon arrivée',icon:'onboarding',hidden:true,tab:'emp-jour',phoneTitle:'Mon arrivée',
  render:function(el,ctx){var p=me(),first=true;
   function stepHTML(){var i=EW.step;
-   if(i===0)return '<div class="eyebrow">Étape 1 · Invitation</div><h2>Claire vous invite dans l’équipe des Tilleuls</h2><div class="ew-mail"><div class="hrow">'+U.av('s01')+'<div class="grow"><div class="b s">Claire Morel, gérante</div><div class="xs mut">Reçu par SMS et par e-mail le 9 novembre à 18 h 02</div></div></div><p class="s" style="line-height:1.5;color:var(--ink)">Bonjour Mamadou, l’écurie passe sur Piaffe. Votre journée, les soins, la tournée et le pointage seront sur votre téléphone. Touchez le lien pour créer votre accès, cela prend deux minutes.</p><div class="hrow wrap" style="--g:6px">'+U.chip('Écurie des Tilleuls','acc',true)+U.chip('Lien valable 7 jours','',true)+'</div></div>'+
+   if(i===0)return '<div class="eyebrow">Étape 1 · Invitation</div><h2>Claire vous invite dans l’équipe des Tilleuls</h2><div class="ew-mail"><div class="hrow">'+U.av('s01')+'<div class="grow"><div class="b s">Claire Dumont, gérante</div><div class="xs mut">Reçu par SMS et par e-mail le 9 novembre à 18 h 02</div></div></div><p class="s" style="line-height:1.5;color:var(--ink)">Bonjour Antoine, l’écurie passe sur Piaffe. Votre journée, les soins, la tournée et le pointage seront sur votre téléphone. Touchez le lien pour créer votre accès, cela prend deux minutes.</p><div class="hrow wrap" style="--g:6px">'+U.chip('Écurie des Tilleuls','acc',true)+U.chip('Lien valable 7 jours','',true)+'</div></div>'+
      '<div class="card flat" style="padding:4px 0"><div class="li"><div class="grow"><div class="t">Votre numéro</div><div class="s num">06 •• •• 41 27, vérifié par code SMS</div></div>'+U.chip('Vérifié','ok',true)+'</div><div class="li"><div class="grow"><div class="t">Votre code à 4 chiffres</div><div class="s">Pour ouvrir l’application, même avec des gants</div></div>'+U.chip('Choisi','ok',true)+'</div></div>'+
      '<div class="ew-foot"><button class="btn em-b pri" data-ok="0">'+ICON('check')+'Accepter l’invitation</button></div>';
    if(i===1)return '<div class="eyebrow">Étape 2 · Rôle attribué</div><h2>Vous êtes palefrenier soigneur</h2><p class="s mut">Claire a choisi ce rôle pour vous. Il décide de ce que vous voyez et de ce que vous pouvez modifier.</p>'+
      '<div class="card flat">'+[['ok','Vous pouvez','Faire la tournée, valider les soins, signaler un problème, pointer, écrire à l’équipe'],['acc','Vous voyez','Les fiches des chevaux, les rations, les stocks, votre planning et vos bulletins'],['','Vous ne voyez pas','Les factures des familles, la comptabilité et la paie de vos collègues']].map(function(r){return '<div class="li" style="align-items:flex-start">'+ico(r[0]==='ok'?'checkc':r[0]==='acc'?'eye':'eye_off','sm',r[0]==='ok'?'var(--ok)':r[0]==='acc'?'var(--acc)':'var(--mut)')+'<div class="grow"><div class="t">'+r[1]+'</div><div class="s">'+r[2]+'</div></div></div>'}).join('')+'</div>'+
      '<div class="ew-foot"><button class="btn em-b" data-err>Ce n’est pas mon rôle</button><button class="btn em-b pri" data-ok="1">'+ICON('check')+'C’est bien mon rôle</button></div>';
-   if(i===2)return '<div class="eyebrow">Étape 3 · Contrat</div><h2>Signez l’avenant de votre contrat</h2><div class="ew-doc"><b>Avenant au contrat de travail de Mamadou Diallo</b><span>CDI de 39 h, palefrenier soigneur, coefficient 121. Le contrat d’origine est inchangé.</span><span>Article 1. Le temps de travail est pointé sur le téléphone, à l’écurie seulement. La position n’est jamais suivie pendant la journée.</span><span>Article 2. Les bulletins de paie et les documents sont rangés dans un coffre personnel, gardé 50 ans.</span></div>'+
-     '<div><span class="em-lbl">Signez avec le doigt</span><div class="ew-pad'+(EW.signed?' signed':'')+'"><div class="hint"><span>Mamadou Diallo, le 17 novembre 2026</span></div><canvas data-pad aria-label="Zone de signature"></canvas></div></div>'+
+   if(i===2)return '<div class="eyebrow">Étape 3 · Contrat</div><h2>Signez l’avenant de votre contrat</h2><div class="ew-doc"><b>Avenant au contrat de travail de Antoine Leroy</b><span>CDI de 39 h, palefrenier soigneur, coefficient 121. Le contrat d’origine est inchangé.</span><span>Article 1. Le temps de travail est pointé sur le téléphone, à l’écurie seulement. La position n’est jamais suivie pendant la journée.</span><span>Article 2. Les bulletins de paie et les documents sont rangés dans un coffre personnel, gardé 50 ans.</span></div>'+
+     '<div><span class="em-lbl">Signez avec le doigt</span><div class="ew-pad'+(EW.signed?' signed':'')+'"><div class="hint"><span>Antoine Leroy, le 17 novembre 2026</span></div><canvas data-pad aria-label="Zone de signature"></canvas></div></div>'+
      '<div class="ew-foot"><button class="btn em-b" data-clear>'+ICON('refresh')+'Effacer</button><button class="btn em-b pri" data-ok="2"'+(EW.signed?'':' disabled')+'>'+ICON('sign')+'Signer l’avenant</button></div>';
    if(i===3){var n=RULES.filter(function(_,k){return EW.rules[k]}).length;return '<div class="eyebrow">Étape 4 · Sécurité</div><h2>Les cinq consignes de sécurité</h2><p class="s mut">Lisez chaque consigne et cochez-la. Le document unique complet reste dans vos documents.</p><div class="card flat">'+RULES.map(function(r,k){return '<button class="ew-rule" data-rule="'+k+'" aria-pressed="'+!!EW.rules[k]+'">'+'<span class="em-ck'+(EW.rules[k]?' on':'')+'" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg></span>'+'<div class="grow"><div class="t">'+r[0]+'</div><div class="s">'+r[1]+'</div></div></button>'}).join('')+'</div>'+
      '<div class="ew-foot"><button class="btn em-b pri" data-ok="3"'+(n===RULES.length?'':' disabled')+'>'+ICON('check')+(n===RULES.length?'J’ai lu les consignes':'Encore '+(RULES.length-n)+' à lire')+'</button></div>'}
@@ -1188,7 +1195,7 @@ P.mod({id:'emp-bienvenue',role:'employe',group:'Moi',title:'Mon arrivée',icon:'
    function stop(){if(EW.held)return;clearTimeout(tm);b.classList.remove('press')}
    b.addEventListener('pointerdown',start);['pointerup','pointercancel','pointerleave'].forEach(function(t){b.addEventListener(t,stop)});
    b.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&!e.repeat)start(e)});b.addEventListener('keyup',stop);b.addEventListener('contextmenu',function(e){e.preventDefault()})}
-  on(el,'[data-st]',function(b){var i=+b.getAttribute('data-st');if(i>EW.done.length&&EW.done.indexOf(i-1)<0){P.toast('Validez d’abord l’étape '+(i)+'',{icon:'info'});return}EW.step=i;draw()});
+  on(el,'[data-st]',function(b){var i=+b.getAttribute('data-st');if(i>EW.done.length&&EW.done.indexOf(i-1)<0){P.toast('Validez d’abord l’étape '+(i)+'',{icon:'info'});return}if(EW.step===i)return;EW.step=i;draw();sw(el.querySelector('.ew-card'))});
   on(el,'[data-restart]',function(){EW={step:0,done:[],rules:{},tabs:{},signed:false,held:false};draw();P.toast('Parcours d’arrivée remis au début',{icon:'refresh'})});
   on(el,'[data-err]',function(){P.toast('Claire est prévenue, elle corrige votre rôle',{icon:'send'})});
   on(el,'[data-clear]',function(){EW.signed=false;draw()});
@@ -1201,7 +1208,7 @@ P.mod({id:'emp-bienvenue',role:'employe',group:'Moi',title:'Mon arrivée',icon:'
    else if(i===3)ewDone(3,'Consignes de sécurité lues, Claire est prévenue');
    else if(i===4)ewDone(4,'Pointage d’essai validé');
    else{ewDone(5,'Arrivée terminée. Bonne journée '+p.first);EW={step:0,done:[0,1,2,3,4,5],rules:{},tabs:{},signed:false,held:false,fin:true};P.go('emp-jour');return}
-   draw();var v=el.closest('.view');if(v&&P.isMobile())v.scrollTop=0});
+   draw();sw(el.querySelector('.ew-card'));var v=el.closest('.view');if(v&&P.isMobile())v.scrollTop=0});
   if(EW.fin){EW={step:0,done:[],rules:{},tabs:{},signed:false,held:false}}
   draw()}});
 
@@ -1221,7 +1228,7 @@ P.actions.push(
 
 P.brain.push({role:'employe',re:/signal|probl[eè]me|panne|cass[ée]|bless/i,reply:function(t){var m=/(?:box|b)\s*0?(\d{1,2})/i.exec(t),h=m&&D.horses.find(function(x){return +x.box.slice(1)===+m[1]});
   if(!h)return {text:'Je peux préparer le signalement. Dites-moi le box ou le lieu, ou ouvrez le formulaire : photo, gravité et lieu en dix secondes.',actions:[{label:'Ouvrir le formulaire',run:function(){P.go('emp-signaler');return 'Formulaire ouvert'}}]};
-  return {text:'Je prépare un signalement pour le box <b>'+h.box+'</b>, où loge <b>'+h.name+'</b>. Voici ce que Claire recevra :',card:'<div class="hrow">'+U.hav(h)+'<div class="grow"><div class="b s">Problème au box '+h.box+' · '+h.name+'</div><div class="xs mut">Mardi 17 novembre, 9 h 41 · à voir aujourd’hui · par Mamadou</div></div></div>'+(D.empNotes[h.id]?'<div class="xs mut">Consigne en cours : '+D.empNotes[h.id]+'</div>':''),
+  return {text:'Je prépare un signalement pour le box <b>'+h.box+'</b>, où loge <b>'+h.name+'</b>. Voici ce que Claire recevra :',card:'<div class="hrow">'+U.hav(h)+'<div class="grow"><div class="b s">Problème au box '+h.box+' · '+h.name+'</div><div class="xs mut">Mardi 17 novembre, 9 h 41 · à voir aujourd’hui · par Antoine</div></div></div>'+(D.empNotes[h.id]?'<div class="xs mut">Consigne en cours : '+D.empNotes[h.id]+'</div>':''),
    actions:[{label:'Envoyer à Claire',run:function(){D.empIncidents.unshift({id:'i'+Date.now(),kind:'Problème signalé',where:'Box '+h.box+' · '+h.name,when:'À l’instant',sev:1,st:'Envoyé',txt:'Signalé depuis l’assistant.',fresh:true});P.toast('Signalement envoyé à Claire : box '+h.box,{icon:'send'});return 'Signalement envoyé'}},{label:'Ajouter une photo',run:function(){P.go('emp-signaler',{type:'cheval',id:h.id});return 'Formulaire ouvert'}}]}}});
 P.brain.push({role:'employe',re:/paddock|sort|dehors|rentr/i,reply:function(){var G={},n=0;D.horses.forEach(function(h){var p=padOf(h);if(p&&p.g==='A'){(G[p.p]=G[p.p]||[]).push(h.name.split(' ')[0]);n++}});var stay=D.horses.filter(function(h){return !padOf(h)});
   return {text:'<b>'+n+' chevaux</b> sont dehors en ce moment avec le groupe A, jusqu’à 12 h. Le groupe B sort de 13 h à 16 h 30. '+stay.map(function(h){return h.name.split(' ')[0]}).join(' et ')+' restent au box.',card:Object.keys(G).map(function(k){return '<div class="hrow sp" style="align-items:flex-start"><span class="s b" style="flex:none">'+k+'</span><span class="xs mut" style="text-align:right">'+G[k].join(', ')+'</span></div>'}).join(''),

@@ -35,7 +35,7 @@ var I={
  contract:p('M7 3.5h7l4 4V20a.6.6 0 0 1-.6.6H6.6A.6.6 0 0 1 6 20V4.1a.6.6 0 0 1 .6-.6z')+p('M14 3.5V8h4M9 11.5h5')+p('M9 16.2c1-1.6 1.8-1.6 2.2 0s1.2 1.5 2.3 0 1.5-.8 2 0'),
  shop:p('M4.5 9h15l-1.2 10.4a1.8 1.8 0 0 1-1.8 1.6h-9a1.8 1.8 0 0 1-1.8-1.6z')+p('M8.8 9V7.2a3.2 3.2 0 0 1 6.4 0V9')+c(12,14.5,1.4,'f'),
  chat:p('M4.6 5.5h14.8a1.1 1.1 0 0 1 1.1 1.1v9a1.1 1.1 0 0 1-1.1 1.1H10l-4.4 3.5v-3.5h-1a1.1 1.1 0 0 1-1.1-1.1v-9a1.1 1.1 0 0 1 1.1-1.1z')+p('M8 9.8h8M8 13h5'),
- assistant:p('M11 3.5c.6 4.4 2.9 6.7 7.3 7.3-4.4.6-6.7 2.9-7.3 7.3-.6-4.4-2.9-6.7-7.3-7.3 4.4-.6 6.7-2.9 7.3-7.3z')+st(18.6,17.8,2.8),
+ assistant:p('M4.2 4.5h10.6a1.2 1.2 0 0 1 1.2 1.2v6.6a1.2 1.2 0 0 1-1.2 1.2H8.6L5.2 16.3v-2.8h-1A1.2 1.2 0 0 1 3 12.3V5.7a1.2 1.2 0 0 1 1.2-1.2z')+p('M19 9h.8A1.2 1.2 0 0 1 21 10.2v6.6a1.2 1.2 0 0 1-1.2 1.2h-1v2.8L15.4 18H11.2A1.2 1.2 0 0 1 10 16.8v-.3')+c(7.2,9,.9,'f')+c(11.8,9,.9,'f'),
  plug:p('M9 3v4.5M15 3v4.5M6.5 7.5h11v3.8a5.5 5.5 0 0 1-11 0z')+p('M12 16.8V21'),
  api:p('M8 7l-5 5 5 5M16 7l5 5-5 5M13.6 4.5l-3.2 15'),
  mcp:c(6,6,2.3)+c(18,6,2.3)+c(12,18.5,2.3)+p('M8.3 6h7.4M7.1 8l3.8 8.5M16.9 8l-3.8 8.5')+c(12,10.6,1.3,'f'),
@@ -178,8 +178,9 @@ I.horse_logo='<path class="f" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 4
 window.ICONS=I;
 window.ICON=function(n,k){var b=I[n]||I.dot;return '<svg class="i'+(k?' '+k:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+b+'</svg>'};
 /* Logo Piaffe « La pièce » : tête de cheval pleine, œil en strass */
-window.LOGO=function(size,col,eye,anim){size=size||24;col=col||'currentColor';eye=eye||'var(--strass)';
-  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="'+col+'" stroke="'+col+'" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg>'};
+window.LOGO=function(size,col,eye,anim){size=size||24;col=col||'currentColor';eye=eye||'var(--strass)';var B=window.BRAND||{path:'M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z',eye:'M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z'};
+  if(B.src)return '<img src="'+B.src+'" width="'+size+'" height="'+size+'" alt="" style="flex:none;display:block;object-fit:contain">';
+  return '<svg class="logo" width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="'+col+'" stroke="'+col+'" stroke-width="4" stroke-linejoin="round" d="'+B.path+'"/>'+(B.eye?'<path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="'+B.eye+'"/>':'')+'</svg>'};
 window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="'+HEAD+'Z" transform="translate(-2.2 0)"/><circle cx="13.5" cy="10.6" r="1.1" fill="var(--surface)"/></svg>'};
 
 /* =====================================================================
@@ -188,7 +189,7 @@ window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true
    Options : {size:96 (px, ou null pour remplir), still:true (sans mouvement), cls:'…'}
    Couleurs : jetons --coat, --mane, --hay, --hz, --mo, --rd… (clair et sombre).
    ===================================================================== */
-var SP=function(x,y,s){return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
+var SP=function(x,y,s){return '';return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
 function wrap(name,vb,body,o){o=o||{};var sz=o.size===null?'':(' width="'+(o.size||96)+'" height="'+(o.size||96)+'"');
   return '<svg class="illu il-'+name+(o.cls?' '+o.cls:'')+'"'+sz+' viewBox="'+vb+'" aria-hidden="true"'+(o.still?' style="--still:1"':'')+'>'+(o.still?body.replace(/ class="il-[a-z]+"/g,''):body)+'</svg>'}
 function BALE(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="9" fill="var(--hay)"/>'+
