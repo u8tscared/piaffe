@@ -10,7 +10,13 @@ export interface Env {
   EINVOICE_PROVIDER: string; // sandbox | <plateforme agréée>
   EINVOICE_API_KEY?: string;
   PLATFORM_LEGAL_NAME: string;
+  PLATFORM_TRADE_NAME: string;
   PLATFORM_SIREN: string;
+  PLATFORM_SIRET: string;
+  PLATFORM_ADDRESS: string;
+  /** franchise (TVA non applicable, art. 293 B du CGI) | normal */
+  PLATFORM_VAT_REGIME: string;
+  PLATFORM_LEGAL_NOTE: string;
   SESSION_SECRET: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;

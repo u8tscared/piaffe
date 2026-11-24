@@ -1,0 +1,15 @@
+# Consignes communes aux lots
+
+Contexte : Piaffe est un logiciel de gestion pour centres équestres et écuries, vendu par Marceau Ruis (entreprise individuelle, SIREN 934 733 122). Jusqu'ici tout était une démo front simulée (`demo/`). On construit maintenant le vrai logiciel dans `app/`, pour commencer à le vendre à des écuries. Objectifs de Marceau : que **tout fonctionne vraiment**, zéro bug, coût de fonctionnement quasi nul, très bien pensé et optimisé.
+
+1. Lis d'abord `app/ARCHITECTURE.md` en entier, puis le socle : `app/api/src/index.ts`, `src/env.ts`, `src/lib/*.ts`, `migrations/0001_init.sql`, `test/helpers.ts`, `test/smoke.test.ts`, `vitest.config.ts`.
+2. Tu n'écris QUE dans les fichiers de ton lot (tableau « Découpage et propriété »). D'autres agents travaillent en même temps dans le même dépôt sur les autres lots. Ne touche jamais au socle ni aux fichiers d'un autre lot ; si tu en as besoin, contourne dans ton lot et note-le dans ton compte rendu.
+3. Ton `src/<lot>/routes.ts` est importé par `src/index.ts` : il doit **compiler à tout moment** (écris tes gros changements dans d'autres fichiers du lot, puis branche-les). Si les tests échouent à cause du fichier d'un autre lot, attends une minute et relance, ne le corrige pas.
+4. Pas de `npm install`, pas de commande git, pas de déploiement, pas de création de compte chez un fournisseur. Dépendances disponibles : hono, pdf-lib, @pdf-lib/fontkit (et tout ce que fournit le runtime Workers : WebCrypto, fetch, CompressionStream…). Appelle Stripe, Google, les fournisseurs d'e-mail et la plateforme de facturation en `fetch` direct, avec une fonction d'injection (`setFetch`) pour les simuler dans les tests.
+5. Tests : `cd app/api && npx vitest run test/<ton-préfixe>` (et `npx tsc --noEmit` pour les types). Écris des tests sérieux : cas nominal, erreurs, droits d'accès (un rôle qui n'a pas le droit reçoit 403, un autre club ne voit jamais les données), idempotence. Tout doit passer avant ton rapport.
+6. Sécurité par défaut : isolation stricte par `club_id` dans chaque requête SQL, contrôle de rôle sur chaque route, aucune donnée sensible dans les journaux, jetons stockés hachés, comparaisons en temps constant, limites de débit sur ce qui est public.
+7. Français impeccable pour tout texte visible (messages d'erreur, e-mails, PDF) : vouvoiement, phrases complètes, espaces insécables avant : ; ? ! € %, pas de tiret cadratin en ponctuation, pas d'emoji.
+8. Travaille dans ton dossier privé du scratchpad pour les fichiers temporaires : `/tmp/claude-0/-home-claude/2bdc06e5-be5a-576d-9d81-d3969cb7fbc5/scratchpad/<ton-lot>/`.
+9. Si une décision dépend de Marceau (un choix commercial, un compte à créer, un prix), prends l'option la plus raisonnable, rends-la facile à changer (constante ou variable d'environnement) et liste-la dans ton rapport.
+
+Rapport final (court, en français) : ce qui est fait et testé (nombre de tests), routes et tables ajoutées, ce que Marceau doit créer ou configurer lui-même (comptes, clés, réglages chez les fournisseurs), limites connues, et ce dont tu as eu besoin dans le socle.
