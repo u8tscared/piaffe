@@ -870,6 +870,44 @@ section.espaces{padding-bottom:0}
   .an::after{display:none}
 }
 
+/* ---------- Changer de logiciel ---------- */
+.mig{padding:clamp(72px,10vw,140px) 0;background:radial-gradient(1200px 500px at 80% -10%,#182a6e 0,transparent 60%),#0a1636;color:#f4f6ff;position:relative;overflow:hidden}
+.mig-tete{max-width:820px;margin:0 auto clamp(36px,5vw,56px);text-align:center}
+.mig-tete h2{font-size:clamp(32px,4.8vw,60px);line-height:1.03;color:#fff}.mig-tete h2 span{color:#a9bcff}
+.mig-tete>p:not(.sur2){margin-top:18px;font-size:clamp(16px,1.5vw,18.5px);color:#b9c3e6}
+.mig-sur{background:rgba(169,188,255,.12);color:#dbe3ff}.mig-sur svg{width:16px;height:16px}
+.mig-flux{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,1.1fr) minmax(0,1fr);gap:clamp(12px,3vw,40px);align-items:center;max-width:1040px;margin:0 auto clamp(40px,5vw,64px)}
+.mf-src{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.mf-src span{padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(169,188,255,.18);font-weight:600;font-size:14.5px;animation:mfp 3.6s var(--e-in-out) infinite;animation-delay:calc(var(--k,0)*.45s)}
+.mf-src span:nth-child(2){--k:1}.mf-src span:nth-child(3){--k:2}.mf-src span:nth-child(4){--k:3}.mf-src span:nth-child(5){--k:4}.mf-src span:nth-child(6){--k:5;border-style:dashed;color:#b9c3e6}
+@keyframes mfp{0%,70%,100%{background:rgba(255,255,255,.06)}20%{background:rgba(109,139,255,.28)}}
+.mf-tuyau{position:relative;height:64px}
+.mf-tuyau::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px dashed rgba(169,188,255,.35)}
+.mf-tuyau i{position:absolute;top:calc(50% - 6px);left:0;width:12px;height:12px;border-radius:4px;background:#6d8bff;box-shadow:0 0 14px #6d8bff;animation:mft 2.6s linear infinite;opacity:0}
+.mf-tuyau i:nth-child(2){animation-delay:.52s;background:#a3eac3;box-shadow:0 0 14px #3cc787}.mf-tuyau i:nth-child(3){animation-delay:1.04s;background:#ffd59a;box-shadow:0 0 14px #f5ae45}.mf-tuyau i:nth-child(4){animation-delay:1.56s;background:#d3c6ff;box-shadow:0 0 14px #9b80ff}.mf-tuyau i:nth-child(5){animation-delay:2.08s}
+@keyframes mft{0%{left:0;opacity:0;transform:rotate(0)}10%{opacity:1}90%{opacity:1}100%{left:calc(100% - 12px);opacity:0;transform:rotate(180deg)}}
+.mf-tuyau b{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:18px;background:#fff;color:#0a1636;display:grid;place-items:center;box-shadow:0 0 0 8px rgba(109,139,255,.16),0 20px 40px -10px rgba(0,0,0,.6);animation:mfb 2.6s var(--e-in-out) infinite}
+.mf-tuyau b svg{width:28px;height:28px}
+@keyframes mfb{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mf-dst{display:flex;gap:14px;align-items:center}
+.mf-logo{width:64px;height:64px;border-radius:20px;background:#fff;color:#0a1636;display:grid;place-items:center;flex:none}
+.mf-dst ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mf-dst li{display:flex;gap:8px;align-items:center;font-size:14.5px;font-weight:600;color:#dbe3ff}.mf-dst li svg{width:18px;height:18px;color:#a9bcff}
+.mig-voies{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mv{position:relative;border-radius:24px;padding:26px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(169,188,255,.16);transition:transform .35s var(--e-out),background .3s}
+.mv:hover{transform:translateY(-4px);background:rgba(255,255,255,.08)}
+.mv-n{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;color:#6d8bff;display:block;margin-bottom:10px}
+.mv-tag{position:absolute;top:24px;right:20px;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(169,188,255,.14);color:#dbe3ff}
+.mv h3{font-size:22px;color:#fff;margin-bottom:8px}.mv p{color:#b9c3e6;font-size:15.5px}
+.mig-plus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.mp{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:20px;background:rgba(255,255,255,.035)}
+.mp>svg{width:22px;height:22px;flex:none;color:#a9bcff;margin-top:2px}.mp b{display:block;color:#fff}.mp small{display:block;color:#b9c3e6;font-size:14.5px;margin-top:2px}
+.mig .mt{margin-top:clamp(28px,4vw,44px)}
+@media (max-width:900px){.mig-flux{grid-template-columns:1fr;justify-items:center}.mf-src{justify-content:center}.mf-tuyau{width:64px;height:120px}.mf-tuyau::before{left:50%;right:auto;top:0;bottom:0;border-top:0;border-left:2px dashed rgba(169,188,255,.35)}
+  .mf-tuyau i{left:calc(50% - 6px);top:0;animation-name:mftv}.mig-voies,.mig-plus{grid-template-columns:1fr}}
+@keyframes mftv{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% - 12px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.mf-src span,.mf-tuyau i,.mf-tuyau b{animation:none}.mf-tuyau i{display:none}}
+
 </style>
 
 <div class="pg" id="top" data-demo="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN">
@@ -878,9 +916,9 @@ section.espaces{padding-bottom:0}
 
 <header class="nav" id="nav">
   <div class="w nav-in">
-    <a class="marque" href="#top" aria-label="Piaffe, retour en haut"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg><span>Piaffe</span></a>
+    <a class="marque" href="#top" aria-label="Piaffe, retour en haut"><svg class="logo" width="30" height="30" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg><span>Piaffe</span></a>
     <nav class="nav-l" id="navL" aria-label="Sections">
-      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai" class="nl-ai">Piaffe AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
+      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#changer">Changer de logiciel</a><a href="#ai" class="nl-ai">Piaffe AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
     </nav>
     <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z"/></svg><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><g class="sun-r"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg></button>
     <a class="btn pri sm nav-cta" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener">Essayer la démo<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -979,7 +1017,7 @@ section.espaces{padding-bottom:0}
   <div class="w ai-in">
 
     <div class="ai-tete" data-r>
-      <div class="orb" aria-hidden="true"><i></i><i></i><i></i><span class="orb-c"><svg width="34" height="34" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg></span></div>
+      <div class="orb" aria-hidden="true"><i></i><i></i><i></i><span class="orb-c"><svg class="logo" width="34" height="34" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg></span></div>
       <p class="ai-sur"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.7 5 3.4 7.6 8.4 8.4-5 .8-7.7 3.4-8.4 8.4-.7-5-3.4-7.6-8.4-8.4 5-.8 7.7-3.4 8.4-8.4z" class="f"/></svg>Piaffe AI</p>
       <h2 id="h-ai">Posez la question. Piaffe AI répond avec les chiffres de votre écurie.</h2>
       <p>Il lit vos factures, votre planning, vos chevaux et votre équipe. Il répond avec les vrais chiffres, repère ce qui cloche et prépare l’action. Rien ne part sans votre validation.</p>
@@ -996,7 +1034,7 @@ section.espaces{padding-bottom:0}
         </ul>
       </div>
       <div class="chat" id="chat">
-        <div class="chat-h"><span class="chat-logo"><svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg></span><div><b>Piaffe AI</b><small>Il agit dans Les Tilleuls avec vos droits de gérante</small></div><span class="chat-tag">Démo interactive</span></div>
+        <div class="chat-h"><span class="chat-logo"><svg class="logo" width="22" height="22" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg></span><div><b>Piaffe AI</b><small>Il agit dans Les Tilleuls avec vos droits de gérante</small></div><span class="chat-tag">Démo interactive</span></div>
         <div class="chat-fil" id="chatFil" aria-live="polite"></div>
         <form class="chat-f" id="chatF" autocomplete="off"><input id="chatIn" type="text" aria-label="Votre question à Piaffe AI" placeholder="Demandez n’importe quoi…"><button type="submit" aria-label="Envoyer"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5L10 14M20.5 3.5l-6.5 17-4-6.5-6.5-4z"/></svg></button></form>
       </div>
@@ -1122,6 +1160,38 @@ section.espaces{padding-bottom:0}
   </div>
 </section>
 
+<!-- ================= CHANGER DE LOGICIEL ================= -->
+<section class="mig" id="changer" aria-labelledby="h-mig">
+  <div class="w">
+    <div class="mig-tete" data-r>
+      <p class="sur2 mig-sur"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="8" width="15" height="11.5" rx="3.8"/><path d="M12 4.8V8M9.5 16h5"/><circle cx="9" cy="12.8" r="1.3" class="f"/><circle cx="15" cy="12.8" r="1.3" class="f"/><circle cx="12" cy="4" r="1.2" class="f"/></svg>Changer de logiciel</p>
+      <h2 id="h-mig">Vos données passent à Piaffe <span>toutes seules.</span></h2>
+      <p>Nos robots récupèrent tout ce qu’il y a dans votre ancien logiciel : adhérents, familles, chevaux, forfaits, factures, planning, soins. Même s’il n’est pas dans notre liste : donnez son adresse, le robot s’y retrouve.</p>
+    </div>
+
+    <div class="mig-flux" data-r aria-hidden="true">
+      <div class="mf-src"><span>Kavalog</span><span>Equimondo</span><span>Excel</span><span>FFE Club SIF</span><span>HelloAsso</span><span>Votre logiciel</span></div>
+      <div class="mf-tuyau"><i></i><i></i><i></i><i></i><i></i><b><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="8" width="15" height="11.5" rx="3.8"/><path d="M12 4.8V8M9.5 16h5"/><circle cx="9" cy="12.8" r="1.3" class="f"/><circle cx="15" cy="12.8" r="1.3" class="f"/><circle cx="12" cy="4" r="1.2" class="f"/></svg></b></div>
+      <div class="mf-dst"><div class="mf-logo"><svg class="logo" width="34" height="34" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg></div><ul><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.3"/><path d="M2.8 19.5c.6-3.3 3.1-5.3 6.2-5.3s5.6 2 6.2 5.3"/><circle cx="17" cy="9" r="2.6"/><path d="M16.3 14.3c2.7 0 4.6 1.6 5 4.5"/></svg><span>Cavaliers et familles</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(-1.9 0)"><path d="M6.7 20.6C6.7 14.9 8.9 10.8 12 8.4L11.3 3.8L14.9 6.7C18.2 7.9 20.4 11 21.1 14.9L18.5 16.3C17 14.2 15.1 13.4 13.7 13.9C13.9 16.6 15.1 18.5 16.8 20.6"/><circle cx="15.7" cy="10.6" r="1" class="f"/></g></svg><span>Chevaux et soins</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12a.5.5 0 0 1 .5.5v16.6l-2.8-1.6-2.8 1.6-2.9-1.6-2.8 1.6-1.7-1V4a.5.5 0 0 1 .5-.5z"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/></svg><span>Forfaits et factures</span></li><li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="4.5"/><path d="M8 3v4M16 3v4M3.5 10.5h17"/><rect x="7" y="13.3" width="4.2" height="3.8" rx="1.2" class="f"/></svg><span>Planning des reprises</span></li></ul></div>
+    </div>
+
+    <div class="mig-voies">
+      <article class="mv" style="--i:0" data-r><span class="mv-n">1</span><span class="mv-tag">Le plus magique</span><h3>Le robot navigateur</h3><p>Vous vous connectez à votre ancien logiciel comme d’habitude, double authentification comprise. Un clic sur l’extension Piaffe : le robot parcourt les pages et copie tout, sur votre ordinateur.</p></article>
+      <article class="mv" style="--i:1" data-r><span class="mv-n">2</span><span class="mv-tag">Le plus simple · bientôt</span><h3>Confiez-nous l’accès</h3><p>Vous nous donnez vos identifiants : ils sont chiffrés dès votre navigateur, notre robot fait la migration, puis ils sont effacés.</p></article>
+      <article class="mv" style="--i:2" data-r><span class="mv-n">3</span><span class="mv-tag">Le plus sûr</span><h3>Un fichier suffit</h3><p>Un export CSV ou Excel, la liste des licenciés FFE, votre tableur maison : Piaffe reconnaît les colonnes, fusionne les doublons et vous montre tout avant d’importer.</p></article>
+    </div>
+
+    <div class="mig-plus">
+      <div class="mp" data-r><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.7 5 3.4 7.6 8.4 8.4-5 .8-7.7 3.4-8.4 8.4-.7-5-3.4-7.6-8.4-8.4 5-.8 7.7-3.4 8.4-8.4z" class="f"/></svg><div><b>Les robots apprennent</b><small>Chaque migration réussie retient le chemin : la suivante, sur le même logiciel, va plus vite. Si un écran change, on est prévenus.</small></div></div>
+      <div class="mp" data-r><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="3.2"/><path d="M3.8 7.5l8.2 5.6 8.2-5.6"/></svg><div><b>Vos adhérents prévenus pour vous</b><small>Annonce, activation en un clic avec une fiche déjà remplie, confirmation, relances : vous suivez qui a activé.</small></div></div>
+      <div class="mp" data-r><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4 4V20a.6.6 0 0 1-.6.6H6.6A.6.6 0 0 1 6 20V4.1a.6.6 0 0 1 .6-.6z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h4"/></svg><div><b>La résiliation offerte</b><small>Piaffe prépare la lettre de résiliation de votre ancien abonnement et la demande d’export de vos données.</small></div></div>
+      <div class="mp" data-r><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.3L5 6v5.6c0 4.3 3 7.7 7 9.1 4-1.4 7-4.8 7-9.1V6z"/><path d="M8.8 12.1l2.3 2.3 4.2-4.5"/></svg><div><b>Rien n’est écrasé</b><small>Trois chiffres à comparer avec votre ancien logiciel avant d’importer, et un import annulable.</small></div></div>
+    </div>
+
+    <p class="c mt" data-r><a class="btn pri" href="https://claude.ai/artifact/Jro7uLYBPbJUrSebQmUvn1" target="_blank" rel="noopener">Essayer la passerelle<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
+  </div>
+</section>
+
 <!-- ================= MISE EN ROUTE ================= -->
 <section class="sec route" id="demarrer" aria-labelledby="h-route">
   <div class="w">
@@ -1137,7 +1207,7 @@ section.espaces{padding-bottom:0}
         <h3>Vous venez d’un autre logiciel ?</h3>
         <p>Adhérents, familles, chevaux, forfaits, soldes et factures ouvertes : tout se reprend. Piaffe reconnaît les colonnes, repère les doublons, et rien n’est écrasé sans votre accord. L’import reste annulable pendant 30 jours.</p>
         <div class="src" id="srcL"></div>
-        <a class="lien" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#import" target="_blank" rel="noopener">Essayer l’import dans la démo<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="lien" href="#changer">Voir comment nos robots récupèrent tout<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a> <a class="lien" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#import" target="_blank" rel="noopener">Essayer l’import dans la démo<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
       <figure class="rp-v">
         <div class="nav-frame"><div class="nf-bar"><i></i><i></i><i></i><span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/><circle cx="12" cy="15.5" r="1.4" class="f"/></svg>app.piaffe.fr/les-tilleuls</span></div><div class="crop fade" style="--dx:276;--dy:0;--dw:1164;--dh:900;--mx:296;--my:246;--mw:780;--mh:654"><img src="../shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>
@@ -1218,7 +1288,7 @@ section.espaces{padding-bottom:0}
 <footer class="pied">
   <div class="w pied-in">
     <div class="pd-m">
-      <a class="marque" href="#top"><svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg><span>Piaffe</span></a>
+      <a class="marque" href="#top"><svg class="logo" width="28" height="28" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path class="sc" fill="var(--acc)" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg><span>Piaffe</span></a>
       <p>Le logiciel tout-en-un des centres équestres et des écuries.</p>
     </div>
     <nav aria-label="Produit"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Piaffe AI</a><a href="#connecteurs">Connecteurs</a><a href="#tarifs">Tarifs</a></nav>
@@ -1232,6 +1302,26 @@ section.espaces{padding-bottom:0}
 
 <script src="../../demo/tools/three.min.js"></script>
 <script>
+/* =====================================================================
+   PIAFFE · Marque
+   Un seul endroit pour changer le nom et le logo de toute l'app
+   (coque, écran de lancement, menu, assistant, palette, icône de l'onglet).
+
+   Pour poser le nouveau logo :
+   - logo dessiné : remplacer `path` (silhouette, viewBox 0 0 100 100) et `eye`
+     (détail en strass, peut rester vide) ;
+   - ou logo image : mettre dans `src` une URL ou un data:image/svg+xml;base64,…
+     (carré, fond transparent) ; `path` est alors ignoré.
+   ===================================================================== */
+window.BRAND={
+  name:'Piaffe',
+  tagline:'La gestion de votre écurie, au même endroit',
+  src:null,
+  path:'M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z',
+  eye:'M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z'
+};
+
+;
 /* =====================================================================
    PIAFFE · Icônes « Paddock » et illustrations animées
    Icônes : grille 24, trait 1,8 arrondi, formes douces et généreuses.
@@ -1269,7 +1359,7 @@ var I={
  contract:p('M7 3.5h7l4 4V20a.6.6 0 0 1-.6.6H6.6A.6.6 0 0 1 6 20V4.1a.6.6 0 0 1 .6-.6z')+p('M14 3.5V8h4M9 11.5h5')+p('M9 16.2c1-1.6 1.8-1.6 2.2 0s1.2 1.5 2.3 0 1.5-.8 2 0'),
  shop:p('M4.5 9h15l-1.2 10.4a1.8 1.8 0 0 1-1.8 1.6h-9a1.8 1.8 0 0 1-1.8-1.6z')+p('M8.8 9V7.2a3.2 3.2 0 0 1 6.4 0V9')+c(12,14.5,1.4,'f'),
  chat:p('M4.6 5.5h14.8a1.1 1.1 0 0 1 1.1 1.1v9a1.1 1.1 0 0 1-1.1 1.1H10l-4.4 3.5v-3.5h-1a1.1 1.1 0 0 1-1.1-1.1v-9a1.1 1.1 0 0 1 1.1-1.1z')+p('M8 9.8h8M8 13h5'),
- assistant:p('M11 3.5c.6 4.4 2.9 6.7 7.3 7.3-4.4.6-6.7 2.9-7.3 7.3-.6-4.4-2.9-6.7-7.3-7.3 4.4-.6 6.7-2.9 7.3-7.3z')+st(18.6,17.8,2.8),
+ assistant:p('M4.2 4.5h10.6a1.2 1.2 0 0 1 1.2 1.2v6.6a1.2 1.2 0 0 1-1.2 1.2H8.6L5.2 16.3v-2.8h-1A1.2 1.2 0 0 1 3 12.3V5.7a1.2 1.2 0 0 1 1.2-1.2z')+p('M19 9h.8A1.2 1.2 0 0 1 21 10.2v6.6a1.2 1.2 0 0 1-1.2 1.2h-1v2.8L15.4 18H11.2A1.2 1.2 0 0 1 10 16.8v-.3')+c(7.2,9,.9,'f')+c(11.8,9,.9,'f'),
  plug:p('M9 3v4.5M15 3v4.5M6.5 7.5h11v3.8a5.5 5.5 0 0 1-11 0z')+p('M12 16.8V21'),
  api:p('M8 7l-5 5 5 5M16 7l5 5-5 5M13.6 4.5l-3.2 15'),
  mcp:c(6,6,2.3)+c(18,6,2.3)+c(12,18.5,2.3)+p('M8.3 6h7.4M7.1 8l3.8 8.5M16.9 8l-3.8 8.5')+c(12,10.6,1.3,'f'),
@@ -1412,8 +1502,9 @@ I.horse_logo='<path class="f" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 4
 window.ICONS=I;
 window.ICON=function(n,k){var b=I[n]||I.dot;return '<svg class="i'+(k?' '+k:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+b+'</svg>'};
 /* Logo Piaffe « La pièce » : tête de cheval pleine, œil en strass */
-window.LOGO=function(size,col,eye,anim){size=size||24;col=col||'currentColor';eye=eye||'var(--strass)';
-  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path fill="'+col+'" stroke="'+col+'" stroke-width="4" stroke-linejoin="round" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z"/><path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z"/></svg>'};
+window.LOGO=function(size,col,eye,anim){size=size||24;col=col||'currentColor';eye=eye||'var(--strass)';var B=window.BRAND||{path:'M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z',eye:'M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z'};
+  if(B.src)return '<img src="'+B.src+'" width="'+size+'" height="'+size+'" alt="" style="flex:none;display:block;object-fit:contain">';
+  return '<svg class="logo" width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="'+col+'" stroke="'+col+'" stroke-width="4" stroke-linejoin="round" d="'+B.path+'"/>'+(B.eye?'<path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="'+B.eye+'"/>':'')+'</svg>'};
 window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="'+HEAD+'Z" transform="translate(-2.2 0)"/><circle cx="13.5" cy="10.6" r="1.1" fill="var(--surface)"/></svg>'};
 
 /* =====================================================================
@@ -1422,7 +1513,7 @@ window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true
    Options : {size:96 (px, ou null pour remplir), still:true (sans mouvement), cls:'…'}
    Couleurs : jetons --coat, --mane, --hay, --hz, --mo, --rd… (clair et sombre).
    ===================================================================== */
-var SP=function(x,y,s){return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
+var SP=function(x,y,s){return '';return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
 function wrap(name,vb,body,o){o=o||{};var sz=o.size===null?'':(' width="'+(o.size||96)+'" height="'+(o.size||96)+'"');
   return '<svg class="illu il-'+name+(o.cls?' '+o.cls:'')+'"'+sz+' viewBox="'+vb+'" aria-hidden="true"'+(o.still?' style="--still:1"':'')+'>'+(o.still?body.replace(/ class="il-[a-z]+"/g,''):body)+'</svg>'}
 function BALE(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="9" fill="var(--hay)"/>'+
@@ -1605,10 +1696,10 @@ put($('#bento'),BENTO.map(function(b,i){return '<a class="bt '+(b[0]==='ia'?'ia'
 /* ---------- Quatre espaces : section épinglée ---------- */
 function vue(n,alt,c,iw){return '<div class="vue"><div class="crop" style="'+cropStyle(c,null,iw)+'">'+img(n,alt,iw)+'</div></div>'}
 var ESP=[
- {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',qui:'Claire Morel, gérante',t:'Toute l’écurie sous les yeux, chaque matin.',p:'Le tableau de bord dit ce qui demande une décision aujourd’hui. Les rapports répondent au reste : chiffre d’affaires, remplissage, rentabilité.',c:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',
+ {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',qui:'Claire Dumont, gérante',t:'Toute l’écurie sous les yeux, chaque matin.',p:'Le tableau de bord dit ce qui demande une décision aujourd’hui. Les rapports répondent au reste : chiffre d’affaires, remplissage, rentabilité.',c:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',
   l:['Résumé du matin et actions en un geste','Planning, chevaux, adhérents, facturation, équipe','Rapports clairs sur 12 mois','Piaffe AI sur chaque écran'],r:'cockpit',cta:'Ouvrir l’espace gérant',tel:'p-g-cockpit',
   lab:['today','Le même tableau de bord, sur ordinateur'],v:vue('g-cockpit','Indicateurs du tableau de bord du gérant',[854,196,566,393])},
- {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',qui:'Mamadou Diallo, palefrenier soigneur',t:'Sa journée, box après box.',p:'Palefreniers et moniteurs voient quoi faire maintenant, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.',c:'Quoi faire maintenant, box après box. Même sans réseau.',
+ {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',qui:'Antoine Leroy, palefrenier soigneur',t:'Sa journée, box après box.',p:'Palefreniers et moniteurs voient quoi faire maintenant, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.',c:'Quoi faire maintenant, box après box. Même sans réseau.',
   l:['Tournée des boxes, soins et rations du jour','Consignes de la gérante, lues et confirmées','Pointage par appui maintenu','Fonctionne hors ligne, synchronise ensuite'],r:'emp-jour',cta:'Ouvrir l’espace employé',tel:'p-emp-tournee',
   lab:['alert','L’urgence du matin, sur la tablette de la sellerie'],v:vue('e-jour-tab','Urgence Xanthos, box B23, sur la tablette de l’équipe',[296,178,517,283],1180)},
  {id:'adherent',d:'rd',ic:'user',n:'Adhérent',ap:'Téléphone',qui:'Léa Martin, propriétaire d’Ulysse',t:'Le club dans la poche des cavaliers.',p:'Réserver, rattraper un cours, payer, signer. Les propriétaires suivent leur cheval, les parents paient pour toute la famille.',c:'Réserver, rattraper, payer, signer, et suivre son cheval.',
@@ -1756,7 +1847,7 @@ var CAPS=[
   [['scan','Factures et ordonnances lues en photo',''],['mic','Soins dictés à la voix, gants aux mains',''],['repeat','Le point sur les impayés, chaque lundi à 8 h','']]]
 ];
 put($('#caps'),CAPS.map(function(c,i){return '<article class="cap d-'+c[0]+'" style="--i:'+(i%2)+'" data-r><div><p class="cap-n">'+c[1]+'</p><h4>'+c[2]+'</h4><p>'+c[3]+'</p></div><div class="mm">'+c[4].map(function(r){return '<div>'+(typeof r[0]==='number'?'<span class="rg">'+r[0]+'</span>':I(r[0]))+'<span>'+(i===0?'« '+r[1]+' »':r[1])+'</span>'+(r[2]?(i===2?'<em>+ '+r[2]+'</em>':'<small>'+r[2]+'</small>'):'')+'</div>'}).join('')+'</div></article>'}).join(''));
-var MATIN=[['cr','heart','Attention','Tornado boite','Le Dr Leclerc passe à 14 h, Lucie le prépare à 13 h 45.'],['mo','alert','À surveiller','Xanthos boit 40 % de moins','Depuis hier soir, au box B23. Mamadou le surveille toutes les deux heures.'],['hz','trend','Opportunité','7 relances sont prêtes','2 073 € à encaisser. Un geste suffit pour les envoyer.'],['tm','rain','Prévision','Pluie jeudi et vendredi','2 reprises en carrière peuvent passer au grand manège.']];
+var MATIN=[['cr','heart','Attention','Tornado boite','Le Dr Leclerc passe à 14 h, Lucie le prépare à 13 h 45.'],['mo','alert','À surveiller','Xanthos boit 40 % de moins','Depuis hier soir, au box B23. Antoine le surveille toutes les deux heures.'],['hz','trend','Opportunité','7 relances sont prêtes','2 073 € à encaisser. Un geste suffit pour les envoyer.'],['tm','rain','Prévision','Pluie jeudi et vendredi','2 reprises en carrière peuvent passer au grand manège.']];
 put($('#matin'),MATIN.map(function(m){return '<div class="mt-c d-'+m[0]+'"><span class="mt-tag">'+I(m[1])+m[2]+'</span><b>'+m[3]+'</b><small>'+m[4]+'</small></div>'}).join(''));
 (function(){var b=$('#mcpCopy'),s=$('span',b);b.addEventListener('click',function(){var u=$('#mcpUrl').textContent,ok=function(){s.textContent='Copié';setTimeout(function(){s.textContent='Copier'},1800)};
   try{navigator.clipboard.writeText(u).then(ok,ok)}catch(e){ok()}})})();

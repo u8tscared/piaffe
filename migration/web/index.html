@@ -65,24 +65,73 @@ details summary{cursor:pointer;color:var(--acc);font-weight:600;margin:10px 0 4p
 #envoi-sortie:empty{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0a1636;color:#fff;border-radius:14px;padding:12px 18px;max-width:min(560px,calc(100% - 32px));animation:mont .3s var(--ease);transition:opacity .4s,transform .4s;z-index:9}
 .toast.part{opacity:0;transform:translate(-50%,10px)}
-footer{color:var(--mut);font-size:14px;text-align:center;padding:12px}
+footer{color:var(--mut);font-size:14px;text-align:center;padding:12px;line-height:1.6}
+.vitrine{padding-bottom:20px}
+.adresse{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;background:var(--bg);border:1.5px dashed var(--line);border-radius:18px;padding:12px 16px;margin:0 0 16px;transition:border-color .2s,background .2s}
+.adresse:focus-within{border-color:var(--acc);border-style:solid;background:var(--acc-pale)}
+.adresse svg{color:var(--acc);grid-row:span 2}.adresse label{font-weight:600;font-size:15px}
+.adresse input{font:inherit;border:0;background:transparent;color:var(--ink);padding:2px 0;outline:none;min-width:0;width:100%}
+#adresse-info{grid-column:2;font-size:14px}#adresse-info:empty{display:none}#adresse-info.ok{color:var(--ok);font-weight:600}#adresse-info.neuf{color:var(--acc);font-weight:600}
+.filtres{display:flex;flex-direction:column;gap:12px;margin:0 0 16px}
+#recherche{font:inherit;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card);color:var(--ink);width:100%}
+#recherche:focus{outline:none;border-color:var(--acc)}
+#familles{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -24px;padding:2px 24px}#familles::-webkit-scrollbar{display:none}
+.fam{font:inherit;font-size:14px;font-weight:600;white-space:nowrap;border:0;border-radius:999px;padding:8px 14px;background:var(--bg);color:var(--mut);cursor:pointer;transition:background .2s,color .2s,transform .2s var(--ease)}
+.fam span{opacity:.6;font-weight:500;margin-left:2px}.fam:hover{color:var(--ink)}.fam.on{background:var(--ink);color:var(--card)}.fam:active{transform:scale(.96)}
+#catalogue{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.carte-l{position:relative;font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:2px;cursor:pointer;animation:mont .4s var(--ease) both;animation-delay:calc(var(--i)*18ms);transition:transform .25s var(--ease),box-shadow .25s,border-color .2s}
+.carte-l:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(10,22,54,.10)}
+.carte-l:hover .logo{transform:rotate(-6deg) scale(1.06)}
+.carte-l .logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin:0 0 8px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px var(--line);transition:transform .35s var(--ease)}
+.carte-l .logo img{width:40px;height:40px;object-fit:contain;border-radius:8px}
+.carte-l .initiale{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;font-size:20px;box-shadow:none}
+.carte-l .initiale.pf{background:var(--bg);color:var(--mut)}.carte-l .initiale.hz{background:var(--hz-bg);color:var(--hz-ink)}.carte-l .initiale.tm{background:var(--tm-bg);color:var(--tm-ink)}.carte-l .initiale.mo{background:var(--mo-bg);color:var(--mo-ink)}.carte-l .initiale.rd{background:var(--rd-bg);color:var(--rd-ink)}
+.carte-l .nom{font-weight:700;line-height:1.25}.carte-l small{color:var(--mut);font-size:13px}
+.carte-l .coche{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--acc);transform:scale(0);transition:transform .3s var(--ease)}
+.carte-l .coche::after{content:"";position:absolute;left:7px;top:4px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.carte-l.on{border-color:var(--acc);background:var(--acc-pale);animation:choix .45s var(--ease)}.carte-l.on .coche{transform:scale(1)}
+@keyframes choix{40%{transform:scale(1.04)}}
+.vide{grid-column:1/-1;color:var(--mut);text-align:center;padding:20px}
+.modes{display:grid;gap:12px}
+.mode{border:1.5px solid var(--line);border-radius:20px;padding:18px;animation:mont .45s var(--ease) both;animation-delay:calc(var(--i)*80ms)}
+.mode header{display:flex;gap:14px;align-items:center;margin:0 0 10px}.mode h3{margin:2px 0 0;font-size:18px}
+.mi{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;flex:none}
+.m-robot .mi{background:var(--rd-bg);color:var(--rd-ink)}.m-ordinateur .mi{background:var(--tm-bg);color:var(--tm-ink)}.m-codes .mi{background:var(--mo-bg);color:var(--mo-ink)}.m-export .mi{background:var(--hz-bg);color:var(--hz-ink)}
+.m-robot{border-color:var(--strass);background:linear-gradient(135deg,var(--acc-pale),var(--card) 60%)}
+.badge{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.mode ol{margin:0 0 8px;padding-left:20px}.mode li{margin:3px 0}.mode code{background:var(--bg);border-radius:6px;padding:1px 6px;font-size:14px}
+.actions-m{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}a.bouton{text-decoration:none}
+.fine{color:var(--mut);font-size:14px;margin:6px 0 0}
+.bientot{display:inline-block;background:var(--mo-bg);color:var(--mo-ink);border-radius:10px;padding:6px 12px;font-weight:600;font-size:14px;margin:0 0 10px}
+.codes,.resil{display:grid;grid-template-columns:1fr 1fr;gap:10px}.plein{grid-column:1/-1}
+.codes input:not([type=checkbox]),.resil input{font:inherit;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card);color:var(--ink);min-width:0}
+.codes input:disabled,.codes button:disabled{opacity:.55;cursor:not-allowed}.codes label{font-size:14px;color:var(--mut)}
+.resil .date{display:flex;flex-direction:column;font-size:13px;color:var(--mut);gap:4px}
+.relire{background:var(--mo-bg);color:var(--mo-ink);border-radius:12px;padding:10px 14px;font-weight:600;margin:16px 0 10px}
+#lettre{width:100%;min-height:360px;font:15px/1.55 Inter,system-ui,sans-serif;border:1.5px solid var(--line);border-radius:14px;padding:16px;background:var(--card);color:var(--ink);resize:vertical}
+@media (max-width:640px){.codes,.resil{grid-template-columns:1fr}#familles{margin:0 -18px;padding:2px 18px}#catalogue{grid-template-columns:repeat(2,minmax(0,1fr))}.adresse{grid-template-columns:1fr}.adresse svg{display:none}#adresse-info{grid-column:1}}
+
 @media (max-width:640px){#envoi{grid-template-columns:1fr}.flux{display:none}section{padding:18px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style></head><body><main>
 <div class="hero">
   <div class="marque"><i></i> Piaffe</div>
   <h1>Changez de logiciel sans rien ressaisir.</h1>
-  <p>Déposez les exports de votre ancien logiciel. La passerelle retrouve vos cavaliers, familles, chevaux, forfaits, factures et reprises, et prépare tout pour Piaffe en quelques secondes.</p>
+  <p>Choisissez votre ancien logiciel : un robot récupère vos cavaliers, familles, chevaux, forfaits, factures et reprises, ou vous déposez simplement vos exports. Piaffe range tout en quelques secondes.</p>
   <div class="garantie"><span>Rien ne quitte votre ordinateur</span><span>Vos fichiers ne sont pas modifiés</span><span>Gratuit</span></div>
   <svg class="flux" viewBox="0 0 340 120" aria-hidden="true"><path id="chemin" d="M10 90 C 90 10, 200 130, 330 30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="4 6"/>
     <circle r="5" fill="#6d8bff" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#dcf3e4" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/><circle r="4" fill="#ffedcf" style="offset-path:path('M10 90 C 90 10, 200 130, 330 30')"/></svg>
 </div>
 
-<section id="etape-source"><h2><span class="n">1</span>Quel logiciel utilisez-vous aujourd’hui ?</h2><p class="sous">On vous montre comment sortir vos données, en deux minutes.</p><div id="logiciels"></div></section>
-<section id="etape-guide" hidden><h2><span class="n">2</span>Exportez vos données</h2><p class="sous">Les données sont à vous : chaque logiciel doit vous laisser les récupérer.</p><div id="guide"></div></section>
+<section id="etape-source" class="vitrine"><h2><span class="n">1</span>Changer de logiciel</h2><p class="sous">Choisissez celui que vous quittez : on vous montre la façon la plus simple d’en sortir vos données.</p>
+  <form id="adresse-form" class="adresse"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+    <label for="adresse">Votre logiciel n’est pas dans la liste ? Collez son adresse</label><input id="adresse" type="url" inputmode="url" placeholder="https://…" autocomplete="off"><span id="adresse-info" aria-live="polite"></span></form>
+  <div class="filtres"><input id="recherche" type="search" placeholder="Rechercher : Kavalog, HelloAsso, Pennylane…" aria-label="Rechercher un logiciel"><div id="familles" role="tablist"></div></div>
+  <div id="catalogue"></div></section>
+<section id="etape-guide" hidden><h2><span class="n">2</span><span id="guide-titre">Récupérez vos données</span></h2><p class="sous">Trois façons, de la plus magique à la plus sûre. Les données sont à vous : chaque logiciel doit vous laisser les récupérer.</p><div id="guide"></div></section>
 <section id="etape-depot" hidden><h2><span class="n">3</span>Déposez vos fichiers</h2><p class="sous">CSV, Excel (.xlsx) ou export « Excel » d’un ancien logiciel. Plusieurs à la fois.</p>
   <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
-  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls"></label>
+  <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls,.json,.ics"></label>
   <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></section>
 <section id="etape-fichiers" hidden><h2><span class="n">4</span>Ce que la passerelle a compris</h2><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></section>
 <section id="etape-resultat" hidden><h2><span class="n">5</span>Prêt pour Piaffe</h2><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
@@ -92,7 +141,12 @@ footer{color:var(--mut);font-size:14px;text-align:center;padding:12px}
   <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
   <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details>
 </section>
-<footer>Passerelle Piaffe · prototype. Les fichiers sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous ne cliquez pas sur « Envoyer ».</footer>
+<section id="etape-bonus" hidden><h2><span class="n">★</span>Bonus : résilier l’ancien abonnement</h2><p class="sous">Piaffe prépare la lettre recommandée, avec la demande de restitution de vos données.</p>
+  <form id="resiliation" class="resil"><input name="club" placeholder="Nom du club" required><input name="siret" placeholder="SIRET"><input name="adresse" class="plein" placeholder="Adresse du club"><input name="ville" placeholder="Ville (pour la date)"><input name="signataire" placeholder="Signataire (nom, qualité)">
+  <input id="r-logiciel" name="logiciel" placeholder="Logiciel"><input id="r-editeur" name="editeur" placeholder="Éditeur"><input name="adresse_editeur" class="plein" placeholder="Adresse de l’éditeur (sur votre contrat ou vos factures)"><input name="numero_client" placeholder="Numéro client"><label class="date">Date d’effet souhaitée <input name="date_effet" type="date"></label>
+  <button class="bouton plein">Préparer la lettre</button></form>
+  <div id="lettre-zone" hidden><p class="relire">À relire avant envoi : vérifiez le préavis prévu par votre contrat.</p><textarea id="lettre" spellcheck="true"></textarea><div class="actions"><button class="bouton" id="copier-lettre" type="button">Copier</button><button class="bouton second" id="dl-lettre" type="button">Télécharger (.txt)</button></div></div></section>
+<footer>Les marques et logos cités appartiennent à leurs propriétaires ; Piaffe n’est pas affilié à ces éditeurs.<br>Passerelle Piaffe · prototype. Les fichiers sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous ne cliquez pas sur « Envoyer ».</footer>
 </main>
 <script type="module" src="app.mjs"></script>
 </body></html>

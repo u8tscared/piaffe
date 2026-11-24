@@ -7,11 +7,11 @@ export const TYPES = {
     libelle: 'Adhérents et cavaliers',
     indices: ['cavalier', 'adherent', 'licence', 'galop', 'eleve', 'client'],
     champs: {
-      id_source: ['id', 'code', 'code client', 'code cavalier', 'numero client', 'numero adherent', 'ref', 'reference', 'identifiant', 'id client'],
+      id_source: ['id', 'numero', 'code', 'code client', 'code cavalier', 'numero client', 'numero adherent', 'ref', 'reference', 'identifiant', 'id client'],
       nom_complet: ['cavalier', 'nom prenom', 'nom et prenom', 'adherent', 'client', 'eleve', 'nom complet'],
       nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage'],
       prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent'],
-      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'date naissance', 'ddn', 'birth', 'date de naiss'],
+      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'ne e le', 'ne e', 'nee', 'date naissance', 'ddn', 'birth', 'date de naiss'],
       sexe: ['sexe', 'civilite', 'genre'],
       email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier'],
       telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1'],
