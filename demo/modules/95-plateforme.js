@@ -10,7 +10,7 @@ var MK=['<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>','<path d
  '<path d="M12 12c0-5 3-7.500 7-7.500 0 3.500-2.500 7.500-7 7.500zm0 0c0 5-3 7.500-7 7.500 0-3.500 2.500-7.500 7-7.500z"/><circle class="f" cx="12" cy="12" r="1.700"/>','<path d="M12 3.500l7.400 4.250v8.500L12 20.500l-7.400-4.250v-8.500z"/><circle class="f" cx="12" cy="12" r="2.600"/>',
  '<path d="M4 17.500a8 8 0 0 1 16 0M3.500 17.500h17"/><circle class="f" cx="12" cy="8" r="2"/>','<path d="M12 3.500l8.500 8.500-8.500 8.500L3.500 12z"/><path d="M12 3.500v17"/>','<path d="M3.500 18.500l5-9 5 9zM10.500 18.500l5-9 5 9z"/>',
  '<circle cx="8" cy="8" r="2.800"/><circle cx="16" cy="8" r="2.800"/><circle cx="8" cy="16" r="2.800"/><circle class="f" cx="16" cy="16" r="2.800"/>','<path d="M17 6.500c-1.500-1.800-9-2.500-9 2 0 4.500 9 2.500 9 7 0 4.500-7.500 3.800-9 2"/>',
- '<path d="M12 3c1 5 4 8 9 9-5 1-8 4-9 9-1-5-4-8-9-9 5-1 8-4 9-9z"/>','<circle cx="12" cy="12" r="8"/><path class="f" d="M12 4a8 8 0 0 1 0 16z"/>','<rect x="4" y="4" width="16" height="16" rx="4.500"/><rect class="f" x="9" y="9" width="6" height="6" rx="1.500"/>'];
+ '<path d="M4 15l8-7 8 7"/><path d="M4 20l8-7 8 7"/>','<circle cx="12" cy="12" r="8"/><path class="f" d="M12 4a8 8 0 0 1 0 16z"/>','<rect x="4" y="4" width="16" height="16" rx="4.500"/><rect class="f" x="9" y="9" width="6" height="6" rx="1.500"/>'];
 function mkOf(t){var h=7;String(t).split('').forEach(function(ch,i){h=(h*31+ch.charCodeAt(0)*(i+3))%9973});return MK[h%MK.length]}
 function lg(txt,c,cls){var ic=/</.test(txt);return '<span class="pf-lg '+(ic?'':'mk ')+(cls||'')+'" style="--c:'+(c||'var(--acc)')+'"'+(ic?'':' title="'+esc(String(txt))+'"')+'>'+(ic?txt:'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+mkOf(txt)+'</svg>')+'</span>'}
 function go(id,params,label){if(P.mods[id])P.go(id,params);else P.toast('L’écran « '+(label||id)+' » s’ouvre dans la démo complète',{icon:'info'})}
@@ -46,6 +46,9 @@ P.css(`
 .pf-row+.pf-row{border-top:1px solid var(--line)}
 .pf-row .t{font-weight:600;font-size:13.5px}.pf-row .d{font-size:13px;color:var(--mut)}
 .pf-tap{min-height:44px}
+.pf-sw{animation:pfSw 240ms var(--e-out) both}
+@keyframes pfSw{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pf-sw{animation:none}}
 .pf-step{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font:700 13px var(--f-text);flex:none;background:var(--bg-2);color:var(--mut);transition:background var(--t-2),color var(--t-2)}
 .pf-step.on{background:var(--acc);color:var(--acc-ink)}.pf-step.ok{background:var(--ok-pale);color:var(--ok)}
 .pf-step svg.i{width:14px;height:14px;stroke-width:2.4}
@@ -368,7 +371,7 @@ var AS={tab:'chat',cur:'cv1',dom:'Argent',jf:'all'};
 var DOMS=[['Argent','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
 function conv(){return CONVS.find(function(c){return c.id===AS.cur})||CONVS[0]}
 function msgs(c){if(!c.msgs){c.msgs=[];(c.qs||[]).forEach(function(q){c.msgs.push({u:q});c.msgs.push({a:answer(q)})})}return c.msgs}
-var ORB='<span class="pfa-orb">'+LOGO(18,'var(--navy-ink)','var(--strass)')+'</span>';
+var ORB='<span class="pfa-orb">'+LOGO(20,'var(--on-navy)','var(--navy)')+'</span>';
 var DOMC={'Argent':'d-argent','Écurie':'d-chevaux','Club':'d-cavaliers','Équipe':'d-equipe','Concours':'d-poney','Plateforme':'d-plateforme'};
 
 function actsHTML(r,last){var op=r.actions.filter(function(a){return a._st==='preview'})[0];
@@ -391,7 +394,8 @@ function renderAssistant(el,ctx){
   if(ctx.params.tab){AS.tab=ctx.params.tab;delete ctx.params.tab}
   var seg=U.seg([['chat',ICON('chat','sm')+'Discussion'],['auto',ICON('repeat','sm')+'Automatisations'],['journal',ICON('shield','sm')+'Journal']],AS.tab,'data-at');
   if(AS.tab==='chat')renderChat(el,ctx,seg);else if(AS.tab==='auto')renderAuto(el,ctx,seg);else renderJournal(el,ctx,seg);
-  on(el,'[data-at]',function(b){AS.tab=b.getAttribute('data-at');P.rerender()});
+  on(el,'[data-at]',function(b){if(AS.tab===b.getAttribute('data-at'))return;AS.tab=b.getAttribute('data-at');AS.sw=1;P.rerender()});
+  if(AS.sw){AS.sw=0;var hd=el.querySelector('.pfa-head');var nx=hd&&hd.nextElementSibling||el.querySelector('.pfa-main');if(nx)nx.classList.add('pf-sw')}
   if(ctx.params.do){var d=ctx.params.do;delete ctx.params.do;setTimeout(function(){var b=el.querySelector('[data-do="'+d+'"]');if(b)b.click()},60)}
 }
 
@@ -409,7 +413,7 @@ function renderChat(el,ctx,seg){
      '<div class="pfa-legal">L’assistant agit avec vos droits de gérante. Il ne modifie rien sans que vous ayez validé l’aperçu.</div></div></section></div></div>';
   var th=$('.pfa-thread',el),inp=$('[data-q]',el),comp=$('.pfa-comp',el),fu=$('.pfa-fu',el),busy=false,vt=null;
   function draw(scroll){var c=conv(),m=msgs(c);$('[data-title]',el).textContent=c.title||'Nouvelle conversation';
-    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="hrow" style="--g:8px;margin-bottom:10px"><span class="strass"></span><span class="eyebrow">Assistant Piaffe</span></div><h2>Bonjour Claire. Que voulez-vous savoir ou faire aux Tilleuls ?</h2><p class="mut">Il lit tout Piaffe avec vos droits, chiffre chaque réponse et vous montre un aperçu avant d’agir.</p></div></div>'+
+    if(!m.length){th.innerHTML='<div class="pfa-wel"><div class="pfa-wh"><div class="pfa-wi">'+(window.ILLU?ILLU.cheval({size:null}):'')+'</div><div><div class="eyebrow" style="margin-bottom:10px">Piaffe AI · vos données, vos droits</div><h2>Bonjour Claire. Que voulez-vous savoir ou faire aux Tilleuls ?</h2><p class="mut">Posez votre question comme à un collègue. Chaque réponse cite ses sources et chaque action passe par un aperçu.</p></div></div>'+
         '<div class="hrow wrap" style="--g:6px">'+DOMS.map(function(d){return '<button class="tag" data-manual data-dom="'+d[0]+'" aria-pressed="'+(d[0]===AS.dom)+'">'+ICON(d[1],'sm')+d[0]+'</button>'}).join('')+'</div>'+
         '<div class="pfa-sg rise">'+INT.filter(function(i){return i.dom===AS.dom&&i.q}).slice(0,6).map(function(i){return '<button class="'+(DOMC[AS.dom]||'')+'" data-sq="'+esc(i.q)+'"><span class="ico sm">'+ICON(i.ic)+'</span><span>'+i.q+'</span>'+ICON('arrow','sm')+'</button>'}).join('')+'</div></div>';
       fu.innerHTML='';P.animate(th);return}
@@ -419,7 +423,7 @@ function renderChat(el,ctx,seg){
     var used=m.filter(function(x){return x.u}).map(function(x){return x.u});
     fu.innerHTML=INT.filter(function(i){return i.q&&used.indexOf(i.q)<0}).slice(1,6).map(function(i){return '<button data-sq="'+esc(i.q)+'">'+i.q+'</button>'}).join('');
     P.animate(th);if(scroll!==false)th.scrollTop=scroll==='top'?0:1e6}
-  function send(t,file){if(busy)return;if(!t){var ti=$('.pfa-comp textarea,.pfa-comp input',el);if(ti)ti.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'assistant'});return}var c=conv(),m=msgs(c);if(!c.title){c.title=t.length>42?t.slice(0,40)+'…':t;c.when='à l’instant';$('.pfa-hl',el).innerHTML=histHTML()}
+  function send(t,file){if(busy)return;if(!t){var ti=$('.pfa-comp textarea,.pfa-comp input',el);if(ti)ti.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'edit'});return}var c=conv(),m=msgs(c);if(!c.title){c.title=t.length>42?t.slice(0,40)+'…':t;c.when='à l’instant';$('.pfa-hl',el).innerHTML=histHTML()}
     m.push({u:t,file:file});var ph={think:true};m.push(ph);busy=true;draw();
     var st=$('[data-step]',th),steps=['Je cherche dans Piaffe','Je lis les données de l’écurie','Je prépare la réponse'],k=0,iv=setInterval(function(){k++;if(st&&st.isConnected&&steps[k])st.textContent=steps[k]},420);
     setTimeout(function(){clearInterval(iv);var i=m.indexOf(ph);if(i>=0)m.splice(i,1,{a:answer(t)});busy=false;if(el.isConnected&&AS.tab==='chat'){draw(false);var a=th.querySelectorAll('.pfa-a');a=a[a.length-1];if(a){var u=a.previousElementSibling||a;th.scrollTo({top:u.offsetTop-14,behavior:P.RM?'auto':'smooth'})}}},P.RM?60:1150)}
@@ -437,7 +441,7 @@ function renderChat(el,ctx,seg){
     if(t.closest('.chk')&&box.querySelector('[data-ok]')){setTimeout(function(){var ck=box.querySelector('.chk');box.querySelector('[data-ok]').disabled=ck.getAttribute('aria-checked')!=='true'},0)}
   });
   fu.addEventListener('click',function(e){var b=e.target.closest('[data-sq]');if(b)send(b.getAttribute('data-sq'))});
-  comp.addEventListener('submit',function(e){e.preventDefault();if(comp.classList.contains('rec'))return;var v=inp.value.trim();if(v){inp.value='';send(v,comp._file);comp._file=null;inp.placeholder=ctx.mobile?'Votre demande':'Posez une question ou demandez une action'}else{inp.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'assistant'})}});
+  comp.addEventListener('submit',function(e){e.preventDefault();if(comp.classList.contains('rec'))return;var v=inp.value.trim();if(v){inp.value='';send(v,comp._file);comp._file=null;inp.placeholder=ctx.mobile?'Votre demande':'Posez une question ou demandez une action'}else{inp.focus();P.toast('Écrivez votre demande, ou choisissez une suggestion',{icon:'edit'})}});
   /* mode vocal simulé */
   function stopVoice(sendIt){clearInterval(vt);vt=null;comp.classList.remove('rec');var tr=$('[data-tr]',comp).textContent;$('[data-mic]',comp).innerHTML=ICON('mic');$('[data-mic]',comp).title='Dicter la demande';if(sendIt&&tr&&tr!=='Je vous écoute')send(tr)}
   $('[data-mic]',el).onclick=function(){if(vt){stopVoice(true);return}if(busy)return;
@@ -474,10 +478,10 @@ function renderAuto(el,ctx,seg){
     var MOD=['Chaque lundi, envoie-moi le point sur les impayés','Chaque vendredi, envoie à l’équipe les soins à venir','Tous les matins, dis-moi quelles reprises ne sont pas pleines','Le 1er de chaque mois, liste les licences à renouveler','Chaque lundi, préviens-moi si un stock passe sous son seuil'];
     P.sheet({title:'Créer une automatisation',icon:'repeat',body:'<div class="stack" style="--g:14px"><label class="field"><span>Décrivez ce que vous voulez, avec vos mots</span><textarea class="in" data-txt rows="3" placeholder="Chaque lundi, envoie-moi le point sur les impayés">Chaque lundi, envoie-moi le point sur les impayés</textarea></label>'+
       '<div><div class="xs mut" style="margin-bottom:6px">Ou partez d’un modèle</div><div class="hrow wrap" style="--g:6px">'+MOD.map(function(m,i){return '<button class="tag" data-manual data-mod="'+i+'">'+m+'</button>'}).join('')+'</div></div><div data-parsed></div></div>',
-      foot:'<button class="btn" data-und>'+ICON('assistant','sm')+'Comprendre ma demande</button><button class="btn pri" data-mk disabled>Créer l’automatisation</button>'});
+      foot:'<button class="btn" data-und>'+ICON('check','sm')+'Comprendre ma demande</button><button class="btn pri" data-mk disabled>Créer l’automatisation</button>'});
     var sh=sheet(),txt=sh.querySelector('[data-txt]'),box=sh.querySelector('[data-parsed]'),r=null;
     function parse(){r=answer(/chaque|tous les|le 1er/i.test(txt.value)?txt.value:'chaque lundi '+txt.value);var p=r.actions&&r.actions[0]&&r.actions[0].preview;if(!p){r=answer('chaque lundi impayés');p=r.actions[0].preview}
-      box.innerHTML='<div class="pfa-prev pop"><div class="pfa-ph">'+ICON('assistant','sm')+'<span>Ce que j’ai compris</span><span class="chip acc">À vérifier</span></div><div class="pfa-pb"><h4>'+p.title+'</h4><dl class="pf-kv">'+p.rows.map(function(x){return '<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>'}).join('')+'</dl></div></div>';sh.querySelector('[data-mk]').disabled=false}
+      box.innerHTML='<div class="pfa-prev pop"><div class="pfa-ph">'+ICON('list','sm')+'<span>Ce que j’ai compris</span><span class="chip acc">À vérifier</span></div><div class="pfa-pb"><h4>'+p.title+'</h4><dl class="pf-kv">'+p.rows.map(function(x){return '<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>'}).join('')+'</dl></div></div>';sh.querySelector('[data-mk]').disabled=false}
     on(sh,'[data-mod]',function(b){txt.value=MOD[+b.getAttribute('data-mod')];parse()});
     sh.querySelector('[data-und]').onclick=parse;txt.oninput=function(){sh.querySelector('[data-mk]').disabled=true;box.innerHTML=''};
     sh.querySelector('[data-mk]').onclick=function(){r.actions[0].run();sh.close();P.rerender()};parse()};
@@ -490,10 +494,10 @@ function renderJournal(el,ctx,seg){
     h+='<div class="pfa-jr'+(x.fresh?' pop':'')+'"><span class="tm">'+x.t+'</span><span class="av sq sm" style="--c:var(--'+(x.kind==='E'?'acc-pale':'bg-2')+');color:var(--'+(x.kind==='E'?'acc':'mut')+')">'+ICON(x.kind==='E'?'edit':'eye','sm')+'</span><div style="min-width:0"><div class="s b" style="font-size:13.5px">'+x.what+'</div><div class="xs mut hrow wrap" style="--g:6px;margin-top:2px"><span class="pf-mono" style="font-size:13px">'+x.tool+'</span><span>·</span><span>'+x.src+' pour '+p.first+' '+p.last+'</span></div></div>'+
      '<div class="r">'+U.chip(s[0]+(x.st==='ok'?p.first:''),s[1],true)+(x.st==='wait'?'<button class="btn sm pri" data-val="'+L.indexOf(x)+'">Voir et valider</button>':x.undo&&x.st==='ok'?'<button class="btn sm ghost" data-un="'+L.indexOf(x)+'">'+ICON('refresh','sm')+'Annuler</button>':'')+'</div></div>'});
   L.forEach(function(x){x.fresh=false});
-  el.innerHTML='<div class="pfa-head"><div><h1>Piaffe AI</h1><div class="sub hide-s">Tout ce que l’IA a lu ou fait dans l’écurie, que ce soit ici ou depuis Claude et ChatGPT.</div></div>'+seg+'</div>'+
+  el.innerHTML='<div class="pfa-head"><div><h1>Piaffe AI</h1><div class="sub hide-s">Tout ce qui a été lu ou modifié via Piaffe AI, Claude ou ChatGPT, avec qui l’a validé.</div></div>'+seg+'</div>'+
    '<div class="stack rise" style="--g:14px"><div class="g4">'+[[L.length,'demandes tracées','chat'],[w.filter(function(x){return x.st==='ok'}).length,'écritures confirmées','checkc'],[w.filter(function(x){return x.st==='cancel'}).length,'refusées ou annulées','xc'],[0,'écriture sans confirmation','shield']].map(function(k){return '<div class="card pad hrow" style="--g:12px;padding:14px 16px"><span class="av sq" style="--c:var(--surface-2);color:var(--mut);box-shadow:inset 0 0 0 1px var(--line)">'+ICON(k[2])+'</span><div><div class="disp num" style="font-size:22px;font-weight:700;line-height:1.1"><span data-count="'+k[0]+'">'+k[0]+'</span></div><div class="xs mut">'+k[1]+'</div></div></div>'}).join('')+'</div>'+
-   '<div class="card"><div class="ch" style="padding-bottom:12px;flex-wrap:wrap"><h3>Journal des actions de l’IA</h3><div class="hrow wrap" style="--g:8px">'+U.seg([['all','Tout'],['E','Écritures'],['L','Lectures'],['mcp','Via MCP']],f,'data-jf')+'<button class="btn sm" data-exp>'+ICON('download','sm')+'Exporter</button></div></div>'+(h||U.empty('shield','Aucune action dans ce filtre'))+'</div>'+
-   '<div class="note">'+ICON('shield','sm')+'<span>Chaque écriture porte la mention « via assistant » sur la fiche concernée. Le journal est conservé 12 mois et ne peut pas être modifié.</span></div></div>';
+   '<div class="card"><div class="ch" style="padding-bottom:12px;flex-wrap:wrap"><h3>Journal des actions</h3><div class="hrow wrap" style="--g:8px">'+U.seg([['all','Tout'],['E','Écritures'],['L','Lectures'],['mcp','Via MCP']],f,'data-jf')+'<button class="btn sm" data-exp>'+ICON('download','sm')+'Exporter</button></div></div>'+(h||U.empty('shield','Aucune action dans ce filtre'))+'</div>'+
+   '<div class="note">'+ICON('shield','sm')+'<span>Chaque écriture porte la mention « via Piaffe AI » sur la fiche concernée. Le journal est conservé 12 mois et ne peut pas être modifié.</span></div></div>';
   on(el,'[data-jf]',function(b){AS.jf=b.getAttribute('data-jf');P.rerender()});
   on(el,'[data-un]',function(b){var x=L[+b.getAttribute('data-un')];x.st='cancel';x.undo=false;P.rerender();P.toast('Action annulée : « '+x.what.replace(/^A /,'')+' »',{icon:'refresh'})});
   on(el,'[data-val]',function(b){var x=L[+b.getAttribute('data-val')];P.sheet({title:'Valider la commande',icon:'truck',body:'<div class="pfa-prev"><div class="pfa-ph">'+ICON('shield','sm')+'<span>Aperçu avant exécution</span><span class="chip acc">Rien n’est encore fait</span></div><div class="pfa-pb"><h4>Commande chez Litière Pro</h4><dl class="pf-kv"><dt>Article</dt><dd>60 sacs de copeaux dépoussiérés</dd><dt>Montant</dt><dd>'+F.eur(690)+' HT</dd><dt>Livraison</dt><dd>Jeudi 19 novembre, cour principale</dd><dt>Préparée par</dt><dd>L’automatisation « Stocks sous le seuil »</dd></dl></div></div>',foot:'<button class="btn" data-n>Refuser</button><button class="btn pri" data-y>Envoyer la commande</button>'});
@@ -579,8 +583,8 @@ D.connectors=D.connectors||[
  K('Equionline','Reprise de données','Eo','E','assist','Reprise de vos exports Equionline : cavaliers, chevaux, forfaits en cours et soldes, avec la correspondance des colonnes déjà prête.',['Cavaliers et familles','Chevaux','Forfaits et soldes','Historique des réservations']),
  K('GCE, Horse-Manager et autres','Reprise de données','Au','E','assist','Tout logiciel qui exporte en Excel ou en CSV. Notre équipe vous aide gratuitement.',['Adhérents','Chevaux','Factures']),
  K('AssoConnect et HelloAsso','Reprise de données','As','E','assist','Reprise des adhésions et des paiements depuis un logiciel d’association.',['Adhérents','Adhésions']),
- K('Excel et CSV','Reprise de données','Xl','E','on','Glissez un fichier : l’IA reconnaît les colonnes et repère les doublons.',['Tous vos tableaux'],'grid'),
- K('Photos et PDF','Reprise de données','Ph','E','on','Photo d’un tableau, d’un cahier ou d’un livret : l’IA le transforme en données.',['Tableaux papier','Livrets et factures'],'image'),
+ K('Excel et CSV','Reprise de données','Xl','E','on','Glissez un fichier : Piaffe reconnaît les colonnes et repère les doublons.',['Tous vos tableaux'],'grid'),
+ K('Photos et PDF','Reprise de données','Ph','E','on','Photo d’un tableau, d’un cahier ou d’un livret : Piaffe le transforme en données.',['Tableaux papier','Livrets et factures'],'image'),
  K('Serveur MCP Piaffe','IA et plateforme','MCP','B','on','Votre écurie devient interrogeable par Claude, ChatGPT ou tout autre assistant.',['36 outils','10 ressources','7 demandes prêtes'],'mcp'),
  K('Claude','IA et plateforme','Cl','B','on','Relié par le serveur MCP avec les droits de Claire Dumont.',['Lecture de l’écurie','Écritures validées dans Piaffe']),
  K('ChatGPT','IA et plateforme','GP','B','on','Relié par le serveur MCP avec les droits de Manon Lemoine.',['Lecture du club']),
@@ -590,11 +594,11 @@ D.connectors=D.connectors||[
  K('Make','IA et plateforme','Mk','B','off','Scénarios d’automatisation visuels à partir des événements de Piaffe.',['Déclencheurs','Actions']),
  K('n8n','IA et plateforme','n8','B','off','Automatisation libre, que vous pouvez héberger vous-même.',['Déclencheurs','Actions'])];
 var STL={on:['Connecté','ok'],off:['Disponible','line'],assist:['Export assisté','acc'],agr:['Agrément à obtenir','warn']};
-var DIRL={E:['Vers Piaffe','download'],S:['Depuis Piaffe','upload'],B:['Dans les deux sens','swap']};
+var DIRL={E:['Vers Piaffe','download'],S:['Depuis Piaffe','upload'],B:['Synchronisé','swap']};
 var KCOL=['var(--c1)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)'];
 function kcol(k){if(k.ic)return CC[k.cat];var h=0;k.n.split('').forEach(function(c){h=(h*17+c.charCodeAt(0))%997});return KCOL[h%KCOL.length]}
 function klogo(k,cls){return lg(k.ic?ICON(k.ic):k.l,kcol(k),cls)}
-var CICO={'Paiement':'card','Banque':'bank','Comptabilité':'accounting','Facture électronique':'invoice','Signature':'sign','RH et paie':'team','Communication':'chat','Calendrier':'planning','Caméras et capteurs':'camera','Fédéral et public':'flag','Reprise de données':'import','IA et plateforme':'spark'};
+var CICO={'Paiement':'card','Banque':'bank','Comptabilité':'accounting','Facture électronique':'invoice','Signature':'sign','RH et paie':'team','Communication':'chat','Calendrier':'planning','Caméras et capteurs':'camera','Fédéral et public':'flag','Reprise de données':'import','IA et plateforme':'mcp'};
 
 /* ---------- Outils MCP (36, issus de l’audit) ---------- */
 function T(n,dom,d,w,cf,roles,args){return {n:n,dom:dom,d:d,w:w,cf:cf,roles:roles,args:args||'{}',on:true}}
@@ -727,7 +731,11 @@ P.css(`
 .pfc-mx td.c{text-align:center}
 .pfc-cl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px 16px}
 .pfc-cl+.pfc-cl{border-top:1px solid var(--line)}
-.pfc-call{display:grid;grid-template-columns:96px 150px minmax(0,1.1fr) minmax(0,1fr) 64px;gap:12px;align-items:center;padding:10px 16px;font-size:13px}
+.pfc-add{margin:12px 16px 16px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;text-align:left;box-shadow:inset 0 0 0 1.5px var(--line);background:var(--surface-2);transition:box-shadow var(--t-2),background var(--t-2)}
+.pfc-add b{display:block;font-size:14.5px}.pfc-add small{display:block;font-size:13px;color:var(--mut);margin-top:1px}
+.pfc-add>svg.i{color:var(--mut-2);transition:transform var(--t-2) var(--e-out),color var(--t-2)}
+.pfc-add:hover{box-shadow:inset 0 0 0 1.5px var(--acc-line);background:var(--surface)}.pfc-add:hover>svg.i{transform:translateX(3px);color:var(--acc)}
+.pfc-call{display:grid;grid-template-columns:96px 150px minmax(0,1.1fr) minmax(0,1fr) max-content;gap:12px;align-items:center;padding:10px 16px;font-size:13px}
 .pfc-call+.pfc-call{border-top:1px solid var(--line)}
 .pfc-call.h{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);padding-top:4px}
 .pfc-call .a{font:400 13px var(--f-mono);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -757,6 +765,7 @@ P.css(`
 .pfc-res{transition:opacity var(--t-3)}
 .pfc-wl{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1.2fr) auto;gap:12px;align-items:center;padding:10px 16px;font-size:13px;cursor:pointer}
 .pfc-wl:hover{background:var(--surface-2)}
+.pfc-wl>*{text-align:left}.pfc-wl>:last-child{justify-self:end}
 .pfc-wl+.pfc-wl{border-top:1px solid var(--line)}
 .pfc-code{font:600 13px var(--f-mono);padding:2px 7px;border-radius:5px;background:var(--ok-pale);color:var(--ok)}
 .pfc-code.e{background:var(--bad-pale);color:var(--bad)}
@@ -764,7 +773,7 @@ P.css(`
 .pfc-ok .big{width:72px;height:72px;border-radius:22px;background:var(--acc-pale);display:grid;place-items:center;position:relative}
 .pfc-ok .big .strass{position:absolute;right:-5px;top:-5px;width:16px;height:16px}
 .pfc-ok .big svg.i{width:30px;height:30px;color:var(--acc);stroke-width:2.2}
-@container main (max-width:1000px){.pfc-hero{grid-template-columns:minmax(0,1fr);padding:22px}.pfc-hero h2{font-size:28px}.pfc-tools{grid-template-columns:minmax(0,1fr)}.pfc-call{grid-template-columns:90px 130px minmax(0,1fr) 60px}.pfc-call .a{display:none}}
+@container main (max-width:1000px){.pfc-hero{grid-template-columns:minmax(0,1fr);padding:22px}.pfc-hero h2{font-size:28px}.pfc-tools{grid-template-columns:minmax(0,1fr)}.pfc-call{grid-template-columns:90px 130px minmax(0,1fr) max-content}.pfc-call .a{display:none}}
 @container main (max-width:760px){
  .pfc-hero{padding:18px;gap:18px}.pfc-hero h2{font-size:25px}.pfc-hero p{font-size:14px}.pfc-demo{height:380px}
  .pfc-doc{grid-template-columns:minmax(0,1fr)}.pfc-doc nav{border-right:0;border-bottom:1px solid var(--line);flex-direction:row;overflow-x:auto;scrollbar-width:none}.pfc-ep{flex:none;max-width:230px}
@@ -920,15 +929,15 @@ function reqCode(e,lang){
 function tabMCP(ctx){
   var TL=TOOLS.filter(function(t){return CX.tf==='all'||(CX.tf==='E'?t.w:!t.w)}),nOn=TOOLS.filter(function(t){return t.on}).length,nW=TOOLS.filter(function(t){return t.w&&t.on}).length;
   var h='<div class="stack'+(X.q?'':' rise')+'" style="--g:14px">'+
-   '<div class="card navy pfc-hero"><div class="glow"></div><div class="pfc-hl"><div class="hrow" style="--g:8px"><span class="strass" style="background:var(--strass)"></span><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent)">Serveur MCP Piaffe</span></div>'+
-     '<h2>Connectez toute votre écurie à l’IA</h2><p>Collez une adresse dans Claude, ChatGPT ou l’assistant de votre choix. Il interroge alors vos chevaux, vos reprises et vos factures avec vos droits, et vous demande votre accord avant d’écrire quoi que ce soit.</p>'+
+   '<div class="card navy pfc-hero"><div class="pfc-hl"><div class="hrow" style="--g:8px"><span class="eyebrow" style="color:color-mix(in srgb,var(--navy-ink) 72%,transparent)">Serveur MCP Piaffe</span></div>'+
+     '<h2>Votre écurie, dans Claude ou ChatGPT</h2><p>Collez une adresse dans Claude, ChatGPT ou l’assistant de votre choix. Il interroge alors vos chevaux, vos reprises et vos factures avec vos droits, et vous demande votre accord avant d’écrire quoi que ce soit.</p>'+
      '<div class="pfc-url"><code>'+MCP_URL+'</code><button class="btn sm pfc-nb" data-cpurl>'+ICON('copy','sm')+'Copier</button></div>'+
      '<div class="hrow wrap" style="--g:8px"><button class="btn pri" data-con="claude" data-do="connect">'+ICON('plug','sm')+'Connecter à Claude</button><button class="btn pfc-nb" data-con="chatgpt">ChatGPT</button><button class="btn pfc-nb" data-con="autre">Autre assistant</button></div>'+
      '<div class="pfc-pts"><span>'+ICON('shield')+'Lecture seule par défaut</span><span>'+ICON('check')+'Chaque écriture validée par vous</span><span>'+ICON('lock')+'Données hébergées en France</span></div></div>'+
     '<div class="pfc-demo" data-demo><div class="pfc-dh"><span class="dots"><i></i><i></i><i></i></span><b class="grow ellip">Votre assistant IA</b><span class="chip ok dot">Piaffe connecté</span><button class="btn ghost icon sm" data-pp title="Mettre en pause">'+ICON('pause','sm')+'</button></div><div class="pfc-db"></div><div class="pfc-df"><span data-lbl>Démonstration</span><span class="sc">'+[0,1,2].map(function(i){return '<button data-sc="'+i+'" title="Scénario '+(i+1)+'"><i></i></button>'}).join('')+'</span></div></div></div>';
 
-  h+='<div class="g3"><div class="card span2"><div class="ch" style="padding-bottom:6px"><div><h3>Assistants connectés</h3><div class="xs mut" style="margin-top:2px">Chacun agit au nom d’une personne et hérite de son rôle, jamais plus</div></div><span class="chip">'+D.mcpClients.length+'</span></div>'+
-    D.mcpClients.map(function(c,i){var p=D.person(c.user),w=c.sc.filter(function(s){return s>=4}).length;return '<div class="pfc-cl'+(c.fresh?' pop':'')+'">'+lg(c.l,c.c)+'<div style="min-width:0"><div class="b" style="font-size:13.5px">'+c.n+' <span class="mut" style="font-weight:500">pour '+p.first+' '+p.last+'</span></div><div class="xs mut">'+(c.sc.length-w)+' droit'+(c.sc.length-w>1?'s':'')+' de lecture'+(w?', '+w+' d’écriture avec aperçu':', aucune écriture')+' · '+c.calls+' appels depuis le '+c.since+'</div></div><div class="r hrow" style="--g:8px"><span class="xs mut hide-s">'+c.last+'</span><button class="btn sm" data-scopes="'+i+'">Droits</button><button class="btn sm danger" data-cut="'+i+'">Couper</button></div></div>'}).join('')+'</div>'+
+  h+='<div class="g3"><div class="card span2" style="display:flex;flex-direction:column"><div class="ch" style="padding-bottom:6px"><div><h3>Assistants connectés</h3><div class="xs mut" style="margin-top:2px">Chacun agit au nom d’une personne et hérite de son rôle, jamais plus</div></div><span class="chip">'+D.mcpClients.length+'</span></div>'+
+    D.mcpClients.map(function(c,i){var p=D.person(c.user),w=c.sc.filter(function(s){return s>=4}).length;return '<div class="pfc-cl'+(c.fresh?' pop':'')+'">'+lg(c.l,c.c)+'<div style="min-width:0"><div class="b" style="font-size:13.5px">'+c.n+' <span class="mut" style="font-weight:500">pour '+p.first+' '+p.last+'</span></div><div class="xs mut">'+(c.sc.length-w)+' droit'+(c.sc.length-w>1?'s':'')+' de lecture'+(w?', '+w+' d’écriture avec aperçu':', aucune écriture')+' · '+c.calls+' appels depuis le '+c.since+'</div></div><div class="r hrow" style="--g:8px"><span class="xs mut hide-s">'+c.last+'</span><button class="btn sm" data-scopes="'+i+'">Droits</button><button class="btn sm danger" data-cut="'+i+'">Couper</button></div></div>'}).join('')+'<div style="flex:1"></div><button class="pfc-add" data-con="autre"><span class="ico sm">'+ICON('plus','sm')+'</span><span class="grow"><b>Relier un autre assistant</b><small>Mistral Le Chat, Copilot ou un agent maison : une adresse suffit</small></span>'+ICON('arrow','sm')+'</button></div>'+
    '<div class="card"><div class="ch" style="padding-bottom:4px"><h3>Garde-fous</h3>'+ICON('shield')+'</div><div class="list">'+
     '<div class="li"><div class="grow"><div class="t">Aperçu avant toute écriture</div><div class="s">Ce qui change, pour qui, pour combien</div></div><span class="chip ok">'+ICON('lock','sm')+'Toujours</span></div>'+
     '<div class="li"><div class="grow"><div class="t">Double confirmation</div><div class="s">Émission de facture, envoi à plus de 20 personnes</div></div>'+U.tog(true)+'</div>'+
@@ -955,18 +964,18 @@ function tabCat(){
   var L=D.connectors.filter(function(k){return (CX.cat==='Tous'||k.cat===CX.cat)&&(CX.st==='all'||(CX.st==='on'?k.st==='on':k.st!=='on'))&&(!CX.q||norm(k.n+' '+k.cat+' '+k.d).indexOf(norm(CX.q))>=0)});
   var K=D.connectors,nOn=K.filter(function(k){return k.st==='on'}).length,nAs=K.filter(function(k){return k.st==='assist'||k.st==='agr'}).length,nOff=K.filter(function(k){return k.st==='off'}).length;
   var h='<div class="stack" style="--g:14px"><div class="pfc-sum">'+
-   '<button class="card tint d-acc pfc-st" data-kst="on"><span class="ico sm">'+ICON('plug')+'</span><b class="big num">'+nOn+'</b><span>connecteurs actifs</span><div class="lgs">'+K.filter(function(k){return k.st==='on'&&!k.ic}).slice(0,5).map(function(k){return klogo(k,'sm')}).join('')+'</div></button>'+
-   '<button class="card tint d-argent pfc-st" data-kst="off"><span class="ico sm">'+ICON('plus')+'</span><b class="big num">'+nOff+'</b><span>à connecter en un clic</span></button>'+
-   '<div class="card tint d-cavaliers pfc-st"><span class="ico sm">'+ICON('import')+'</span><b class="big num">'+nAs+'</b><span>en export assisté ou agrément</span></div>'+
+   '<button class="card tint d-acc pfc-st" data-kst="on"><span class="ico sm">'+ICON('plug')+'</span><b class="big num"><span data-count="'+nOn+'">'+nOn+'</span>'+'</b><span>connecteurs actifs</span><div class="lgs">'+K.filter(function(k){return k.st==='on'&&!k.ic}).slice(0,5).map(function(k){return klogo(k,'sm')}).join('')+'</div></button>'+
+   '<button class="card tint d-argent pfc-st" data-kst="off"><span class="ico sm">'+ICON('plus')+'</span><b class="big num"><span data-count="'+nOff+'">'+nOff+'</span>'+'</b><span>à connecter en un clic</span></button>'+
+   '<div class="card tint d-cavaliers pfc-st"><span class="ico sm">'+ICON('import')+'</span><b class="big num"><span data-count="'+nAs+'">'+nAs+'</span>'+'</b><span>en export assisté ou agrément</span></div>'+
    '<div class="card tint d-chevaux pfc-st pfc-ask"><span class="ico sm">'+ICON('bulb')+'</span><b class="t">Il vous manque un outil ?</b><span>Notre équipe ajoute un connecteur en moins de trois semaines.</span><button class="btn sm dark" data-ask2>'+ICON('send','sm')+'Demander un connecteur</button></div></div>'+
-   '<div class="pfc-filter"><div class="search grow" style="min-width:220px;max-width:380px"><span>'+ICON('search','sm')+'</span><input class="in" data-kq placeholder="Chercher un connecteur : Qonto, Stripe, caméras…" value="'+esc(CX.q)+'"></div>'+U.seg([['all','Tous'],['on','Connectés'],['off','À connecter']],CX.st,'data-kst')+'</div>'+
+   '<div class="pfc-filter"><div class="search grow" style="min-width:220px;max-width:380px"><span>'+ICON('search','sm')+'</span><input class="in" data-kq placeholder="Qonto, Stripe, Pennylane…" value="'+esc(CX.q)+'"></div>'+U.seg([['all','Tous'],['on','Connectés'],['off','À connecter']],CX.st,'data-kst')+'</div>'+
    '<div class="pfc-cats scroll-x">'+['Tous'].concat(CATS).map(function(c){var n=c==='Tous'?D.connectors.length:D.connectors.filter(function(k){return k.cat===c}).length;return '<button class="tag" data-manual data-kc="'+c+'" aria-pressed="'+(c===CX.cat)+'">'+c+' <span style="opacity:.6">'+n+'</span></button>'}).join('')+'</div><div data-klist>';
   h+=catList(L)+'</div></div>';return h}
 function catList(L){
   if(!L.length)return U.empty('plug','Aucun connecteur ne correspond','Dites-nous ce qu’il vous manque, nous l’ajoutons au catalogue.','<button class="btn sm pri" data-ask>Demander un connecteur</button>');
   var h='';(CX.cat==='Tous'&&!CX.q?CATS:[null]).forEach(function(c){var l=c?L.filter(function(k){return k.cat===c}):L;if(!l.length)return;
     if(c)h+='<div class="pfc-cg"><span class="ico sm">'+ICON(CICO[c]||'plug')+'</span>'+c+'<span>'+l.filter(function(k){return k.st==='on'}).length+' connecté'+(l.filter(function(k){return k.st==='on'}).length>1?'s':'')+' sur '+l.length+'</span></div>';
-    h+='<div class="pfc-grid" style="margin-top:12px">'+l.map(function(k){var dl=DIRL[k.dir];return '<button class="card hover pfc-k st-'+k.st+'" data-k="'+k.id+'"><div class="tp">'+klogo(k,'lg')+'<span class="chip pfc-sc '+STL[k.st][1]+'">'+STL[k.st][0]+'</span></div><div class="nm"><span class="ellip">'+k.n+'</span></div><div class="ds">'+k.d+'</div><div class="ft"><span class="ct">'+ICON(dl[1],'sm')+(c?dl[0]:k.cat)+'</span><span class="go">'+(k.st==='off'?'Connecter':'Ouvrir')+ICON('arrow','sm')+'</span></div></button>'}).join('')+'</div>'});
+    h+='<div class="pfc-grid" style="margin-top:12px">'+l.map(function(k){var dl=DIRL[k.dir];return '<button class="card hover pfc-k st-'+k.st+'" data-k="'+k.id+'"><div class="tp">'+klogo(k,'lg')+'<span class="chip pfc-sc '+STL[k.st][1]+'">'+STL[k.st][0]+'</span></div><div class="nm">'+k.n+'</div><div class="ds">'+k.d+'</div><div class="ft"><span class="ct">'+ICON(dl[1],'sm')+(c?dl[0]:k.cat)+'</span><span class="go">'+(k.st==='off'?'Connecter':'Ouvrir')+ICON('arrow','sm')+'</span></div></button>'}).join('')+'</div>'});
   return h}
 
 function tabAPI(ctx){
@@ -991,9 +1000,10 @@ function tabAPI(ctx){
 function renderConn(el,ctx){
   if(ctx.params.tab){CX.tab=ctx.params.tab;delete ctx.params.tab}
   var nOn=D.connectors.filter(function(k){return k.st==='on'}).length;
-  el.innerHTML=U.ph('Connecteurs','Reliez l’écurie à votre IA, à votre banque et à vos outils. '+nOn+' connecteurs actifs sur '+D.connectors.length+'.','<button class="btn hide-s" data-go="assistant" data-p-tab="journal">'+ICON('shield','sm')+'Journal de l’IA</button>')+
+  el.innerHTML=U.ph('Connecteurs','Reliez l’écurie à votre IA, à votre banque et à vos outils. '+nOn+' connecteurs actifs sur '+D.connectors.length+'.','<button class="btn hide-s" data-go="assistant" data-p-tab="journal">'+ICON('shield','sm')+'Journal des actions</button>')+
    '<div style="margin:-6px 0 18px">'+U.tabs([['mcp',ICON('mcp','sm')+' Serveur MCP'],['cat',ICON('plug','sm')+' Catalogue <span class="chip" style="margin-left:4px">'+D.connectors.length+'</span>'],['api',ICON('api','sm')+' API et webhooks']],CX.tab,'data-cx')+'</div><div data-body>'+(CX.tab==='mcp'?tabMCP(ctx):CX.tab==='cat'?tabCat():tabAPI(ctx))+'</div>';
-  on(el,'[data-cx]',function(b){CX.tab=b.getAttribute('data-cx');P.rerender()});
+  on(el,'[data-cx]',function(b){if(CX.tab===b.getAttribute('data-cx'))return;CX.tab=b.getAttribute('data-cx');CX.sw=1;P.rerender()});
+  if(CX.sw){CX.sw=0;var bd=el.querySelector('[data-body]');if(bd)bd.classList.add('pf-sw')}
   var q=function(s){return el.querySelector(s)};
   if(CX.tab==='mcp'){
     demo(q('[data-demo]'));
@@ -1055,7 +1065,8 @@ P.css(`
 .pfi-s.ok .c{background:var(--ok);box-shadow:none;color:var(--acc-ink)}
 .pfi-s.ok .c svg.i{width:15px;height:15px;stroke-width:2.6}
 .pfi-s.cur .c{box-shadow:inset 0 0 0 2px var(--acc),0 0 0 4px var(--acc-pale);color:var(--acc)}
-.pfi-s small{font-size:13px;font-weight:500;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pfi-s small{font-size:13px;font-weight:500;color:var(--mut);line-height:1.3;max-width:100%;text-align:center;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.pfi-hb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .pfi-lay{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:14px;align-items:start}
 .pfi-wh{display:flex;align-items:center;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .pfi-ws{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--mut);white-space:nowrap;flex:none;padding:4px 6px 4px 4px;border-radius:99px}
@@ -1082,7 +1093,9 @@ P.css(`
 .pfi-col:last-child{border-right:0}
 .pfi-col .h{font:500 13px var(--f-mono);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pfi-col .v{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pfi-col .m{height:22px;display:flex;align-items:center}
+.pfi-col .m{min-height:22px;display:flex;align-items:center}
+.pfi-col .m .chip{white-space:normal!important;line-height:1.25!important;padding-top:3px;padding-bottom:3px;height:auto}
+.pfi-dot{width:8px;height:8px;border-radius:50%;background:var(--acc);flex:none}
 .pfi-col .m .chip{animation:pop var(--t-3) var(--e-spring) both;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:inline-block;line-height:22px}
 .pfi-map{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr) 20px minmax(0,1.25fr) 92px;gap:10px;align-items:center;padding:8px 16px;min-height:52px}
 .pfi-map+.pfi-map{border-top:1px solid var(--line)}
@@ -1130,9 +1143,9 @@ P.css(`
 
 var NH=D.horses.length,NS=D.staff.length-1,NL=148+NH+1240;
 function kinds(k){return D.horses.filter(function(h){return h.kind===k}).length}
-var OBD=['Identité vérifiée',D.club.arenas.length+' installations',D.club.boxes+' boxes, '+D.club.paddocks.length+' paddocks',NH+' chevaux','148 adhérents','6 forfaits',NS+' salariés et la gérante','Carte et SEPA actifs'];
-var OB=[['Club','stable',OBD[0],1],['Pistes','arena',OBD[1],1],['Boxes','grid',OBD[2],1],['Chevaux','horse',OBD[3],1],['Adhérents','members',OBD[4],1],['Tarifs','tag',OBD[5],1],['Équipe','team',(NS-2)+' salariés sur '+NS+' ont rejoint',2],['Paiement','card','À activer',0]];
-var SRC=[['kavalog','Kavalog','Ka','var(--c5)','Correspondance des colonnes déjà connue'],['equimondo','Equimondo','Em','var(--c3)','Adhérents, chevaux et réservations'],['excel','Excel ou CSV','Xl','var(--c7)','N’importe quel tableau, l’IA le comprend'],['ffe','FFE Club SIF','FFE','var(--c1)','Vos fichiers exportés : licenciés, concours'],['autre','Autre logiciel','Au','var(--c4)','GCE, Horse-Manager, AssoConnect…'],['photo','Photo ou PDF','Ph','var(--c6)','Tableau papier, cahier, livret']];
+var OBD=['Identité vérifiée',D.club.arenas.length+' installations',D.club.boxes+' boxes',NH+' chevaux','148 adhérents','6 forfaits',NS+' salariés et la gérante','Carte et SEPA actifs'];
+var OB=[['Club','stable',OBD[0],1],['Pistes','arena',OBD[1],1],['Boxes','grid',OBD[2],1],['Chevaux','horse',OBD[3],1],['Adhérents','members',OBD[4],1],['Tarifs','tag',OBD[5],1],['Équipe','team',(NS-2)+' sur '+NS+' inscrits',2],['Paiement','card','À activer',0]];
+var SRC=[['kavalog','Kavalog','Ka','var(--c5)','Correspondance des colonnes déjà connue'],['equimondo','Equimondo','Em','var(--c3)','Adhérents, chevaux et réservations'],['excel','Excel ou CSV','Xl','var(--c7)','N’importe quel tableau, Piaffe le comprend'],['ffe','FFE Club SIF','FFE','var(--c1)','Vos fichiers exportés : licenciés, concours'],['autre','Autre logiciel','Au','var(--c4)','GCE, Horse-Manager, AssoConnect…'],['photo','Photo ou PDF','Ph','var(--c6)','Tableau papier, cahier, livret']];
 var FILES=[['adherents_kavalog.xlsx','Adhérents',148,'members'],['chevaux_kavalog.csv','Chevaux',NH,'horse'],['factures_2026.csv','Factures',1240,'invoice']];
 var FIELDS=['Nom et prénom','Date de naissance','Téléphone mobile','E-mail','Numéro de licence FFE','Galop','Représentant légal','Forfait','Solde du compte','Note','Nom du cheval','Numéro SIRE','Propriétaire','Box','Race','Numéro de facture','Client','Montant TTC','Taux de TVA','Échéance','Statut','Ne pas importer'];
 function maps(){var m=D.members,h=D.horses,iv=D.invoices,up=function(x){return x.last.toUpperCase()+' '+x.first},tel=function(x){return x.phone.replace(/ /g,'')};
@@ -1156,13 +1169,13 @@ function stepHTML(ctx){
   if(s===0)return '<div><div class="b" style="font-size:15px;margin-bottom:10px">D’où viennent vos données ?</div><div class="pfi-src">'+SRC.map(function(x){return '<button class="pfi-t" data-src="'+x[0]+'" aria-pressed="'+(x[0]===IM.src)+'">'+lg(x[2],x[3],'sm')+'<span><b>'+x[1]+'</b><span class="d">'+x[4]+'</span></span></button>'}).join('')+'</div></div>'+
     '<div class="pfi-drop" data-drop>'+'<span class="ic">'+ICON('upload','lg')+'</span><div><b style="font-size:15px">Glissez vos fichiers ici</b><div class="s mut" style="margin-top:2px">Excel, CSV, XML de la FFE, PDF ou photo. Plusieurs fichiers à la fois, jusqu’à 50 Mo.</div></div><div class="hrow wrap" style="--g:8px;justify-content:center"><span class="btn sm">Choisir des fichiers</span><span class="btn sm pri" data-ex>'+ICON('play','sm')+'Essayer avec un export d’exemple</span></div></div>'+
     '<div class="note">'+ICON('shield','sm')+'<span>Rien n’est écrit pendant l’analyse. Vous voyez un essai à blanc avant d’importer, et chaque import peut être annulé en bloc pendant 30 jours.</span></div>';
-  if(s===1)return '<div class="stack" style="--g:8px">'+FILES.map(function(f,i){return '<div class="pfi-file" data-f="'+i+'"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON(f[3])+'</span><div style="min-width:0"><div class="hrow sp"><b class="s ellip pf-mono">'+f[0]+'</b><span class="xs mut num" data-fs>0 %</span></div><div class="bar"><i style="--v:0%"></i></div></div><span data-fok style="width:20px"></span></div>'}).join('')+'</div>'+
-    '<div><div class="hrow" style="--g:8px;margin-bottom:10px"><span class="strass"></span><b style="font-size:15px" data-at>L’IA lit vos colonnes</b><span class="s mut" data-as>adherents_kavalog.xlsx</span></div><div class="pfi-scan"><div class="pfi-cols">'+MAPS[0].slice(0,5).map(function(c,i){return '<div class="pfi-col"><div class="h">'+c[0]+'</div><div class="m" data-m="'+i+'"><span class="skel" style="width:70%;height:14px"></span></div><div class="v">'+esc(c[1])+'</div><div class="v mut">'+esc(['DUBOIS Emma','02/09/2012','0698112233','emma.dubois@exemple.fr','0398112A'][i])+'</div></div>'}).join('')+'</div></div><div class="xs mut" style="margin-top:8px" data-an>Encodage, séparateur, ligne d’en-tête, formats de date et de téléphone</div></div>';
+  if(s===1)return '<div class="stack" style="--g:8px">'+FILES.map(function(f,i){return '<div class="pfi-file" data-f="'+i+'"><span class="av sq" style="--c:var(--acc-pale);color:var(--acc)">'+ICON(f[3])+'</span><div style="min-width:0"><div class="hrow sp"><b class="s ellip pf-mono">'+f[0]+'</b><span class="xs mut num" data-fs style="white-space:nowrap;flex:none">0 %</span></div><div class="bar"><i style="--v:0%"></i></div></div><span data-fok style="width:20px"></span></div>'}).join('')+'</div>'+
+    '<div><div class="hrow" style="--g:8px;margin-bottom:10px"><span class="pfi-dot"></span><b style="font-size:15px;white-space:nowrap" data-at>Lecture des colonnes</b><span class="s mut" data-as>adherents_kavalog.xlsx</span></div><div class="pfi-scan"><div class="pfi-cols">'+MAPS[0].slice(0,5).map(function(c,i){return '<div class="pfi-col"><div class="h">'+c[0]+'</div><div class="m" data-m="'+i+'"><span class="skel" style="width:70%;height:14px"></span></div><div class="v">'+esc(c[1])+'</div><div class="v mut">'+esc(['DUBOIS Emma','02/09/2012','0698112233','emma.dubois@exemple.fr','0398112A'][i])+'</div></div>'}).join('')+'</div></div><div class="xs mut" style="margin-top:8px" data-an>Encodage, séparateur, ligne d’en-tête, formats de date et de téléphone</div></div>';
   if(s===2){var M=MAPS[IM.file],warn=M.filter(function(c){return c[4]}).length;
-    return '<div class="hrow sp wrap">'+U.seg(FILES.map(function(f,i){return [String(i),f[1]+' <span class="mut" style="font-weight:500">'+F.num(f[2])+'</span>']}),String(IM.file),'data-file')+'<span class="chip acc" style="white-space:normal;height:auto;min-height:24px;padding-top:3px;padding-bottom:3px">'+ICON('assistant','sm')+'Correspondance proposée par l’IA'+(IM.src==='kavalog'?', mémorisée pour Kavalog':'')+'</span></div>'+
+    return '<div class="hrow sp wrap">'+U.seg(FILES.map(function(f,i){return [String(i),f[1]+' <span class="mut" style="font-weight:500">'+F.num(f[2])+'</span>']}),String(IM.file),'data-file')+'<span class="chip acc" style="white-space:normal;height:auto;min-height:24px;padding-top:3px;padding-bottom:3px">'+ICON('swap','sm')+'Correspondance proposée'+(IM.src==='kavalog'?', mémorisée pour Kavalog':'')+'</span></div>'+
     '<div class="card flat"><div class="pfi-map h"><span>Colonne du fichier</span><span>Exemple</span><span></span><span>Champ dans Piaffe</span><span>Confiance</span></div>'+M.map(function(c,i){return '<div class="pfi-map'+(c[4]?' w':'')+'"><span class="pf-mono ellip">'+c[0]+'</span><span class="ex">'+esc(c[1])+'</span>'+ICON('arrow','sm')+'<span class="sel"><select class="in" data-mp="'+i+'" aria-label="Champ pour '+c[0]+'">'+FIELDS.map(function(f,k){return '<option'+(k===c[2]?' selected':'')+'>'+f+'</option>'}).join('')+'</select>'+(c[4]?'<span class="xs warnc" style="display:block;margin-top:4px">'+c[4]+'</span>':'')+'</span><span class="pfi-conf"><span class="'+(c[3]<80?'warnc':'')+'">'+c[3]+' %</span>'+U.bar(c[3],c[3]<80?'var(--warn)':'var(--ok)')+'</span></div>'}).join('')+'</div>'+
     (IM.file===0?'<div><div class="b s" style="margin-bottom:8px">Après nettoyage, voici ce qui sera enregistré</div><div class="tw card flat"><table class="tbl"><thead><tr><th>Dans le fichier</th><th>Dans Piaffe</th><th>Règle appliquée</th></tr></thead><tbody>'+[[MAPS[0][0][1],D.members[0].first+' '+D.members[0].last,'Nom et prénom séparés, casse corrigée'],[MAPS[0][2][1],'+33 '+D.members[0].phone.slice(1),'Téléphone au format international'],['14/03/1999','14 mars 1999','Date reconnue (jour, mois, année)'],['G7','Galop 7','Niveau rapproché du référentiel FFE']].map(function(r){return '<tr><td class="pf-mono" style="color:var(--mut)">'+esc(r[0])+'</td><td class="b">'+r[1]+'</td><td class="mut">'+r[2]+'</td></tr>'}).join('')+'</tbody></table></div></div>':'')+
-    (warn?'<div class="note warn">'+ICON('alert','sm')+'<span><b>'+warn+' colonne'+(warn>1?'s':'')+' à vérifier</b> dans ce fichier. L’IA propose, c’est vous qui décidez.</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Toutes les colonnes de ce fichier sont reconnues avec une confiance élevée.</span></div>')}
+    (warn?'<div class="note warn">'+ICON('alert','sm')+'<span><b>'+warn+' colonne'+(warn>1?'s':'')+' à vérifier</b> dans ce fichier. Piaffe propose, c’est vous qui décidez.</span></div>':'<div class="note ok">'+ICON('checkc','sm')+'<span>Toutes les colonnes de ce fichier sont reconnues avec une confiance élevée.</span></div>')}
   if(s===3){var DU=dups(),L={f:'Fusionner',c:'Créer une fiche',i:'Ignorer'};
     return '<div class="pfi-big"><div><b class="okc">'+F.num(NL-9)+'</b><span>lignes prêtes : '+F.num(NL-48)+' créations, 39 mises à jour</span></div><div><b class="warnc">'+DU.length+'</b><span>doublons possibles à décider</span></div><div><b class="badc">3</b><span>lignes à corriger, mises de côté</span></div></div>'+
     '<div><div class="hrow sp" style="margin-bottom:8px"><b style="font-size:15px">Doublons possibles</b><button class="btn sm" data-allf>Fusionner les 2 certains</button></div><div class="stack" style="--g:10px">'+DU.map(function(d,i){var a=d.a;return '<div class="card flat"><div class="pfi-dup"><div class="p"><small>Dans votre fichier</small><div class="b s" style="font-size:13.5px">'+a.first+' '+(i===2?a.last.slice(0,-1):a.last)+'</div><div class="xs mut">'+(i===3?'Prénom : '+D.members[64].first:a.email)+'</div></div>'+ICON('swap')+'<div class="p"><small>Déjà dans Piaffe</small><div class="hrow" style="--g:8px">'+U.av(a.id,'sm')+'<div style="min-width:0"><div class="b s ellip" style="font-size:13.5px">'+a.first+' '+a.last+'</div><div class="xs mut ellip">Galop '+a.galop+' · licence '+a.lic+'</div></div></div></div></div><div class="pfi-dupf"><div class="hrow wrap" style="--g:6px"><span class="chip '+(d.sure?'ok':'warn')+' dot">'+d.why+'</span><span class="xs mut">'+d.diff+'</span></div>'+U.seg([['f','Fusionner'],['c','Créer'],['i','Ignorer']],IM.dup[i],'data-dp="'+i+'" data-dv')+'</div></div>'}).join('')+'</div></div>'+
@@ -1202,7 +1215,7 @@ function obSheet(i){var o=OB[i],A=D.club.arenas,body=[
 function photoSheet(){
   var rows=[['17 h','Galop 1-2','Emma B.','Vanille',98],['17 h','Galop 1-2','Lucas M.','Câline',62],['17 h','Galop 1-2','Zoé L.','Pistache',95],['18 h','Galop 6-7 CSO','Hugo D.','Sirius',97],['18 h','Galop 6-7 CSO','Manon R.','Tango',71],['18 h','Galop 6-7 CSO','Lina P.','Opale',96]];
   P.sheet({title:'Lire une photo de tableau',icon:'image',wide:true,body:'<div class="stack" style="--g:14px"><div class="pfi-board"><span class="ln"></span><h5>MARDI 17, reprises du soir</h5>'+[['17h  Galop 1-2 (Inès, manège)','-.8deg'],['Emma B. : Vanille     Lucas M. : Caline ?','.4deg'],['Zoé L. : Pistache','-.3deg'],['18h  G 6-7 CSO (Thomas, carrière)','.6deg'],['Hugo D. : Sirius    Manon R. : Tang…    Lina P. : Opale','-.5deg']].map(function(r){return '<div style="--r:'+r[1]+'">'+r[0]+'</div>'}).join('')+'</div>'+
-    '<div data-out><div class="hrow" style="--g:10px;color:var(--mut)"><span class="typing"><i></i><i></i><i></i></span><span class="s">L’IA lit le tableau : écriture manuscrite, noms de chevaux, horaires</span></div></div></div>',
+    '<div data-out><div class="hrow" style="--g:10px;color:var(--mut)"><span class="typing"><i></i><i></i><i></i></span><span class="s">Lecture du tableau : écriture manuscrite, noms de chevaux, horaires</span></div></div></div>',
    foot:'<button class="btn" data-c>Annuler</button><button class="btn pri" data-add disabled>'+ICON('planning','sm')+'Ajouter au planning</button>'});
   var sh=sheet();sh.querySelector('[data-c]').onclick=function(){sh.close()};
   setTimeout(function(){if(!sh.isConnected)return;sh.querySelector('[data-out]').innerHTML='<div class="pop"><div class="hrow sp wrap" style="margin-bottom:8px"><b style="font-size:15px">6 attributions lues</b><span class="chip warn dot">2 cases à vérifier</span></div><div class="tw card flat"><table class="tbl"><thead><tr><th>Heure</th><th>Reprise</th><th>Cavalier</th><th>Cheval</th><th class="n">Confiance</th></tr></thead><tbody>'+rows.map(function(r){var w=r[4]<80;return '<tr><td class="num">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+(w?'<input class="in" value="'+r[3]+'" style="height:30px;width:110px;box-shadow:inset 0 0 0 1.5px var(--warn)" aria-label="Cheval à vérifier">':'<b>'+r[3]+'</b>')+'</td><td class="n"><span class="'+(w?'warnc b':'mut')+'">'+r[4]+' %</span></td></tr>'}).join('')+'</tbody></table></div><div class="xs mut" style="margin-top:8px">Les noms sont rapprochés de vos chevaux et de vos adhérents. Ce qui est incertain reste à valider par vous.</div></div>';sh.querySelector('[data-add]').disabled=false},P.RM?50:2600);
@@ -1281,7 +1294,7 @@ function newClubSheet(st){NC.step=st||0;
 function endReplay(){var p=NC.prev;NC.replay=false;if(p){OB.forEach(function(o,i){o[2]=p.ob[i][2];o[3]=p.ob[i][3]});P.prefs.setOff('gerant',p.off)}NC.prev=null;P.toast('Retour à l’Écurie des Tilleuls, menu et étapes rétablis',{icon:'refresh'})}
 
 /* Petites scènes dessinées pour chaque étape de la reprise (trait 1,8, couleurs des jetons) */
-var WCAP=['D’où viennent vos données','Vos exports déposés','L’IA relie les champs','Les doubles fusionnés','Essai à blanc, puis import'];
+var WCAP=['D’où viennent vos données','Vos exports déposés','Chaque champ à sa place','Les doubles fusionnés','Essai à blanc, puis import'];
 var WPIC=[
  '<svg viewBox="0 0 64 44" aria-hidden="true"><rect class="b" x="6" y="8" width="22" height="28" rx="5"/><rect class="b" x="36" y="8" width="22" height="28" rx="5"/><path class="a" d="M28 22h8"/><circle class="d" cx="17" cy="22" r="4"/><path class="s" d="M43 17h8M43 22h8M43 27h5"/></svg>',
  '<svg viewBox="0 0 64 44" aria-hidden="true"><rect class="b" x="14" y="10" width="24" height="28" rx="4" transform="rotate(-8 26 24)"/><rect class="b" x="24" y="6" width="24" height="30" rx="4"/><path class="s" d="M30 14h12M30 19h12M30 24h8"/><path class="a" d="M48 30v8M44 34l4 4 4-4"/></svg>',
@@ -1292,13 +1305,13 @@ function renderImport(el,ctx){
   MAPS=MAPS||maps();
   if(ctx.params.src){var m={'kavalog':'kavalog','equimondo':'equimondo','excel-et-csv':'excel','photos-et-pdf':'photo'}[ctx.params.src]||(/ffe/.test(ctx.params.src)?'ffe':'autre');IM.src=m;IM.step=0;delete ctx.params.src}
   var done=OB.filter(function(o){return o[3]===1}).length,WS=['Source','Fichiers','Colonnes','Doublons','Rapport'];
-  el.innerHTML=U.ph('Arrivée et reprise des données','Reprenez vos adhérents, vos chevaux et vos factures sans rien ressaisir. L’IA lit vos fichiers, vous validez.','<button class="btn" data-do="new">'+ICON('onboarding','sm')+'Rejouer l’arrivée d’un nouveau club</button><button class="btn hide-s" data-do="help">'+ICON('phone','sm')+'Se faire accompagner</button>')+
+  el.innerHTML=U.ph('Arrivée et reprise des données','Reprenez vos adhérents, vos chevaux et vos factures sans rien ressaisir. Piaffe lit vos fichiers, vous validez.','<button class="btn" data-do="new">'+ICON('onboarding','sm')+'Rejouer l’arrivée d’un nouveau club</button><button class="btn hide-s" data-do="help">'+ICON('phone','sm')+'Se faire accompagner</button>')+
    '<div class="stack'+(X.q?'':' rise')+'" style="--g:14px"><div class="card pfi-ob">'+(window.ILLU?'<div class="pfi-van">'+ILLU.van({size:null})+'</div>':'')+'<div class="hrow" style="--g:14px">'+U.ring(Math.round(done/8*100),done+'/8',done===8?'var(--ok)':'var(--acc)',58)+'<div><div class="b" style="font-size:15.5px">'+(NC.replay?'Mise en route d’un nouveau club':'Mise en route des Tilleuls')+'</div><div class="s mut">'+(done===8?'Tout est prêt. Bienvenue dans Piaffe.':'Il reste '+(8-done)+' étape'+(8-done>1?'s':'')+', environ 10 minutes')+'</div></div></div>'+
      '<div class="pfi-steps scroll-x">'+OB.map(function(o,i){return '<button class="pfi-s '+(o[3]===1?'ok':o[3]===2?'cur':'')+'" data-ob="'+i+'" title="'+o[0]+' : '+o[2]+'"><span class="c">'+(o[3]===1?ICON('check'):i+1)+'</span>'+o[0]+'<small>'+o[2]+'</small></button>'}).join('')+'</div></div>'+
    (NC.replay?'<div class="pfn-banner">'+ICON('onboarding','sm')+'<span class="grow">Vous rejouez l’arrivée d’un nouveau club : menu choisi, '+OB.filter(function(o){return o[3]===1}).length+' étape'+(OB.filter(function(o){return o[3]===1}).length>1?'s':'')+' sur 8 faite'+(OB.filter(function(o){return o[3]===1}).length>1?'s':'')+'.</span><button class="btn sm" data-do="again">Modifier le menu</button><button class="btn sm pri" data-do="end">Revenir aux Tilleuls</button></div>':'')+
    '<div class="pfi-lay"><div class="card" data-wiz><div class="pfi-wh scroll-x">'+WS.map(function(w,i){var k=i===IM.step?'on':i<IM.step?'ok':'';return '<span class="pfi-ws '+k+'"><span class="pfi-pic">'+WPIC[i]+'</span><span class="pfi-wt"><span class="pf-step '+k+'">'+(i<IM.step?ICON('check'):i+1)+'</span>'+w+'</span><small>'+WCAP[i]+'</small></span>'}).join('')+'</div><div class="pfi-wb" data-wb>'+stepHTML(ctx)+'</div><div class="pfi-wf">'+footHTML()+'</div></div>'+
-   '<div class="stack" style="--g:14px"><div class="card pad stack" style="--g:12px"><div class="hrow" style="--g:12px;align-items:flex-start"><div class="pfi-mini" style="width:92px;flex:none"><i style="width:70%"></i><i style="width:90%"></i><i style="width:55%"></i><i style="width:80%"></i></div><div><div class="b">Un tableau papier ?</div><div class="s mut">Prenez-le en photo. L’IA lit l’écriture, vous corrigez ce qui est incertain.</div></div></div><button class="btn block" data-do="photo">'+ICON('camera','sm')+'Lire une photo ou un PDF</button></div>'+
-    '<div class="card pad stack" style="--g:12px"><div class="hrow" style="--g:12px"><span class="av lg" style="--c:var(--c6)">ML</span><div><div class="b">Marion vous accompagne</div><div class="s mut">Reprise faite avec vous, incluse dans l’abonnement</div></div></div><div class="hrow" style="--g:8px"><button class="btn sm grow" data-do="help2">'+ICON('calendar_add','sm')+'Réserver un appel</button><button class="btn sm grow" data-chat>'+ICON('chat','sm')+'Lui écrire</button></div></div>'+
+   '<div class="stack" style="--g:14px"><div class="card pad stack" style="--g:12px"><div class="hrow" style="--g:12px;align-items:flex-start"><div class="pfi-mini" style="width:92px;flex:none"><i style="width:70%"></i><i style="width:90%"></i><i style="width:55%"></i><i style="width:80%"></i></div><div><div class="b">Un tableau papier ?</div><div class="s mut">Prenez-le en photo. Piaffe lit l’écriture, vous corrigez ce qui est incertain.</div></div></div><button class="btn block" data-do="photo">'+ICON('camera','sm')+'Lire une photo ou un PDF</button></div>'+
+    '<div class="card pad stack" style="--g:12px"><div class="hrow" style="--g:12px"><span class="av lg" style="--c:var(--c6)">ML</span><div><div class="b">Marion vous accompagne</div><div class="s mut">Reprise faite avec vous, incluse dans l’abonnement</div></div></div><div class="pfi-hb"><button class="btn sm" data-do="help2">'+ICON('calendar_add','sm')+'Prendre rendez-vous</button><button class="btn sm" data-chat>'+ICON('chat','sm')+'Lui écrire</button></div></div>'+
     '<div class="card"><div class="ch" style="padding-bottom:4px"><h3>Imports précédents</h3><span class="xs mut">Annulables 30 jours</span></div><div class="list">'+LOTS.map(function(l,i){return '<div class="li" style="align-items:flex-start"><div class="grow"><div class="t" style="font-size:13px">'+l.t+'</div><div class="xs mut" style="margin-top:2px"><span class="pf-mono" style="font-size:13px">'+l.id+'</span> · '+l.n+' · '+l.d+'</div></div><button class="btn sm ghost" data-lot="'+i+'" title="Annuler cet import en bloc">Annuler</button></div>'}).join('')+'</div></div></div></div></div>';
   var wb=$('[data-wb]',el),q=function(s){return el.querySelector(s)};
   function setStep(n){IM.step=n;var v=el.closest('.view'),y=v.scrollTop;X.quiet();v.style.scrollBehavior='auto';v.scrollTop=Math.min(y,260);v.style.scrollBehavior=''}
@@ -1418,7 +1431,7 @@ var CAT={gerant:[['cockpit','Aujourd’hui','today','Pilotage','Le résumé du m
   ['planning','Planning','planning','Club','Reprises, stages, montoir'],['adherents','Adhérents','members','Club','Familles, forfaits, licences'],['pensions','Pensions','owner','Club','Pensions et demi-pensions'],['coachs','Coachs','coach','Club','Coachs extérieurs réservables'],['competitions','Concours','compet','Club','Engagements, transport, résultats'],['boutique','Boutique','shop','Club','Vente en ligne et caisse'],['communication','Communication','chat','Club','Messages, e-mails, SMS'],
   ['facturation','Facturation','invoice','Argent','Factures, paiements, relances'],['compta','Comptabilité','accounting','Argent','Banque, rapprochement, exports'],['contrats','Contrats','contract','Argent','Signature électronique'],
   ['equipe','Équipe','team','Équipe','Plannings, pointages, congés'],
-  ['assistant','Piaffe AI','assistant','Plateforme','L’IA qui lit et prépare pour vous'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
+  ['assistant','Piaffe AI','assistant','Plateforme','Questions, actions et automatisations'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
  employe:[['emp-jour','Ma journée','today','Ma journée','Ce que je dois faire maintenant',1],['emp-tournee','Tournée','route','Ma journée','La tournée des boxes, dans l’ordre'],['emp-planning','Planning','planning','Ma journée','Mes reprises et mes horaires'],['emp-chevaux','Chevaux','horse','Écurie','Les fiches, en lecture rapide'],['emp-soins','Soins','care','Écurie','Soins à faire et à noter'],['emp-signaler','Signaler','alert','Écurie','Un problème, avec photo'],['emp-pointage','Pointage','clockin','Moi','Arrivée, départ, pauses'],['emp-messages','Messages','chat','Moi','L’équipe et les familles'],['emp-conges','Congés','holiday','Moi','Demandes et soldes']],
  adherent:[['adh-accueil','Accueil','today','Moi','Mes prochaines reprises',1],['adh-reserver','Réserver','planning','Équitation','Reprises, stages, rattrapages'],['adh-coachs','Coachs','coach','Équitation','Réserver un coach'],['adh-concours','Concours','compet','Équitation','Engagements et covoiturage'],['adh-progression','Progression','trend','Équitation','Galops et objectifs'],['adh-cheval','Mon cheval','horse','Cheval','Soins, journal, caméra'],['adh-demipension','Demi-pension','owner','Cheval','Offres et planning partagé'],['adh-paiements','Paiements','card','Compte','Factures et moyens de paiement'],['adh-contrats','Contrats','contract','Compte','Documents à signer'],['adh-messages','Messages','chat','Compte','Le club et mon moniteur'],['adh-profil','Profil','user','Compte','Mes informations']],
  coach:[['coach-agenda','Agenda','planning','Coaching','Mes cours et réservations',1],['coach-eleves','Élèves','members','Coaching','Suivi et notes de séance'],['coach-dispo','Disponibilités','clock','Coaching','Mes créneaux réservables'],['coach-concours','Concours','compet','Coaching','Mes élèves engagés'],['coach-revenus','Revenus','euro','Compte','Encaissements et factures'],['coach-profil','Profil','user','Compte','Ma page publique']]};
@@ -1514,7 +1527,7 @@ function secSecu(){
    '<div class="g3"><div class="card span2"><div class="ch" style="padding-bottom:6px"><div><h3>Registre des traitements</h3><div class="xs mut" style="margin-top:2px">Pré-rempli par Piaffe, à votre nom</div></div><button class="btn sm" data-reg>'+ICON('download','sm')+'Télécharger le registre</button></div>'+REG.map(function(r){return '<div class="pfr-r" style="min-height:48px;padding-top:9px;padding-bottom:9px"><div class="grow"><div class="t">'+r[0]+'</div><div class="d">Base légale : '+r[1].toLowerCase()+'</div></div><div class="ctl"><span class="chip">'+ICON('hourglass','sm')+r[2]+'</span></div></div>'}).join('')+'</div>'+
    '<div class="stack" style="--g:14px"><div class="card pad stack" style="--g:10px"><div class="b">Exporter les données d’une personne</div><div class="s mut">Droit d’accès et de portabilité : fiche, factures, réservations, messages.</div><div class="search"><span>'+ICON('search','sm')+'</span><input class="in" data-pq value="Léa Martin" aria-label="Personne concernée"></div><button class="btn block" data-pexp>'+ICON('download','sm')+'Préparer l’export</button></div>'+
     '<div class="card pad stack" style="--g:10px"><div class="hrow sp"><span class="b">Demandes de suppression</span><span class="chip warn">1</span></div><div class="s mut">Famille Perrin, partie en juin. Les factures sont conservées 10 ans : la fiche est rendue anonyme.</div><button class="btn block danger" data-anon>Rendre la fiche anonyme</button></div></div></div>'+
-   '<div class="note">'+ICON('heart','sm')+'<span><b>Certificats médicaux :</b> Piaffe ne les stocke pas. Seules la date de présentation et la date de validité sont gardées. Aucune donnée de santé humaine ne part vers l’IA ni vers le serveur MCP.</span></div>'}
+   '<div class="note">'+ICON('heart','sm')+'<span><b>Certificats médicaux :</b> Piaffe ne les stocke pas. Seules la date de présentation et la date de validité sont gardées. Aucune donnée de santé humaine ne part vers Piaffe AI ni vers le serveur MCP.</span></div>'}
 
 function secAbo(){
   var US=[['Boxes',D.club.boxes,60,''],['Comptes de l’équipe',D.staff.length,0,''],['SMS ce mois-ci',412,1000,''],['Caméras reliées',8,8,'warn']],INV=[['1er nov.','PIA-2026-11-0412'],['1er oct.','PIA-2026-10-0398'],['1er sept.','PIA-2026-09-0371']];
@@ -1610,11 +1623,12 @@ function renderSet(el,ctx){
   if(ctx.params.sec){RG.sec=ctx.params.sec;delete ctx.params.sec}
   var body={prefs:secPrefs,etab:secEtab,aide:secAide,modules:secModules,roles:secRoles,club:secClub,tarifs:secTarifs,inst:secInst,resa:secResa,notifs:secNotifs,secu:secSecu,abo:secAbo}[RG.sec](ctx);
   el.innerHTML=U.ph('Réglages','Adaptez Piaffe à votre club. Les bons choix sont déjà faits : ne changez que ce qui vous gêne.')+
-   '<div class="pfr-lay"><nav class="pfr-nav scroll-x"><button class="pfr-club" data-sec="club" title="Identité du club"><span class="pfr-cl0">'+LOGO(26,'var(--navy-ink)','var(--strass)')+'</span><span class="grow"><b>'+esc(D.club&&D.club.name||'Écurie des Tilleuls')+'</b><small>Formule Club · 46 boxes</small></span>'+(window.ILLU?ILLU.fer({size:46,still:true}):'')+'</button>'+SECS.map(function(g,gi){var dc=['d-acc','d-cavaliers','d-chevaux','d-argent'][gi];return '<div class="pfr-ng">'+g[0]+'</div>'+g[1].map(function(s){return '<button class="pfr-nb '+dc+'" data-sec="'+s[0]+'" aria-current="'+(s[0]===RG.sec)+'"><span class="ico sm">'+ICON(s[2])+'</span>'+s[1]+'</button>'}).join('')}).join('')+'</nav><div class="stack'+(X.q?'':' rise')+'" style="--g:14px" data-body>'+body+'</div></div>';
+   '<div class="pfr-lay"><nav class="pfr-nav scroll-x"><button class="pfr-club" data-sec="club" title="Identité du club"><span class="pfr-cl0">'+LOGO(26,'var(--on-navy)','var(--navy)')+'</span><span class="grow"><b>'+esc(D.club&&D.club.name||'Écurie des Tilleuls')+'</b><small>Formule Club · 46 boxes</small></span>'+ICON('right','sm')+'</button>'+SECS.map(function(g,gi){var dc=['d-acc','d-cavaliers','d-chevaux','d-argent'][gi];return '<div class="pfr-ng">'+g[0]+'</div>'+g[1].map(function(s){return '<button class="pfr-nb '+dc+'" data-sec="'+s[0]+'" aria-current="'+(s[0]===RG.sec)+'"><span class="ico sm">'+ICON(s[2])+'</span>'+s[1]+'</button>'}).join('')}).join('')+'</nav><div class="stack'+(X.q?'':' rise')+'" style="--g:14px" data-body>'+body+'</div></div>';
   var q=function(s){return el.querySelector(s)},view=el.closest('.view');
   (function(){var cur=null;SECS.forEach(function(g,gi){g[1].forEach(function(x){if(x[0]===RG.sec)cur=[x[2],['d-acc','d-cavaliers','d-chevaux','d-argent'][gi]]})});var h=q('[data-body] .pfr-h');if(cur&&h&&!h.querySelector('.pfr-hi')){var w=h.firstElementChild;if(w)w.insertAdjacentHTML('beforebegin','<span class="ico lg pfr-hi '+cur[1]+'">'+ICON(cur[0],'lg')+'</span>')}})();
   function keep(fn){var y=view.scrollTop;X.q=true;try{fn()}finally{X.q=false}var v=P.$('.view',P.app());if(v){v.style.scrollBehavior='auto';v.scrollTop=y;v.style.scrollBehavior=''}}
-  on(el,'[data-sec]',function(b){RG.sec=b.getAttribute('data-sec');P.rerender()});
+  on(el,'[data-sec]',function(b){if(RG.sec===b.getAttribute('data-sec'))return;RG.sec=b.getAttribute('data-sec');RG.sw=1;P.rerender()});
+  if(RG.sw){RG.sw=0;var bd=el.querySelector('[data-body]');if(bd)bd.classList.add('pf-sw')}
   var cn=q('.pfr-nb[aria-current="true"]');if(cn&&cn.scrollIntoView&&ctx.mobile)cn.scrollIntoView({block:'nearest',inline:'center'});
   /* interactions génériques */
   on(el,'.pfr-stp [data-s]',function(b){var v=b.parentNode.querySelector('b');v.textContent=Math.max(0,+v.textContent+ +b.getAttribute('data-s'))});
@@ -1672,7 +1686,7 @@ function renderSet(el,ctx){
     q('[data-stop]').onclick=function(){P.sheet({title:'Résilier l’abonnement',icon:'card',body:'<p style="font-size:14.5px;line-height:1.5">Vous pouvez partir quand vous voulez. Avant de résilier, Piaffe vous remet <b>toutes vos données</b> dans des fichiers Excel et un export comptable, et les garde 90 jours au cas où.</p><div class="note" style="margin-top:14px">'+ICON('phone','sm')+'<span>Un souci avec Piaffe ? Marion vous rappelle aujourd’hui.</span></div>',foot:'<button class="btn" data-call>Être rappelée</button><button class="btn danger" data-exp>Exporter mes données d’abord</button>'});var sh=sheet();sh.querySelector('[data-call]').onclick=function(){sh.close();P.toast('Marion vous rappelle avant 12 h')};sh.querySelector('[data-exp]').onclick=function(){sh.close();exportSheet()}};
     on(el,'[data-expall],[data-expall2]',function(){exportSheet()});
     q('[data-plan]').onclick=function(){var PL=[['Essentiel','59','Jusqu’à 20 boxes','Planning, adhérents, facturation, application adhérent'],['Écurie','149','Jusqu’à 60 boxes','Tous les modules, l’assistant, le serveur MCP, 8 caméras'],['Réseau','289','Plusieurs sites','Tout Écurie, multi-sites, API sans limite, accompagnement dédié']],cur=1;
-      P.sheet({title:'Changer de formule',icon:'card',wide:true,body:'<div class="g3" style="--g:10px">'+PL.map(function(p,i){return '<button class="pfr-plan" data-pl="'+i+'" aria-pressed="'+(i===cur)+'"><div class="hrow sp"><b>'+p[0]+'</b>'+(i===1?'<span class="chip acc">Actuelle</span>':'')+'</div><div class="pr num">'+p[1]+' € <small>HT par mois</small></div><div class="s b">'+p[2]+'</div><div class="s mut">'+p[3]+'</div></button>'}).join('')+'</div><div class="card flat" style="margin-top:14px">'+row('Analyse vidéo des boxes par l’IA','Cheval couché, agitation, colique : 29 € par mois',U.tog(false))+row('Pack de 2 000 SMS','19 € par mois',U.tog(false))+'</div><div class="xs mut" style="margin-top:10px">Changement immédiat, au prorata. Sans engagement, sans commission sur vos encaissements.</div>',foot:'<button class="btn pri" data-ok disabled>Vous êtes déjà sur cette formule</button>'});
+      P.sheet({title:'Changer de formule',icon:'card',wide:true,body:'<div class="g3" style="--g:10px">'+PL.map(function(p,i){return '<button class="pfr-plan" data-pl="'+i+'" aria-pressed="'+(i===cur)+'"><div class="hrow sp"><b>'+p[0]+'</b>'+(i===1?'<span class="chip acc">Actuelle</span>':'')+'</div><div class="pr num">'+p[1]+' € <small>HT par mois</small></div><div class="s b">'+p[2]+'</div><div class="s mut">'+p[3]+'</div></button>'}).join('')+'</div><div class="card flat" style="margin-top:14px">'+row('Détection vidéo dans les boxes','Cheval couché, agitation, colique : 29 € par mois',U.tog(false))+row('Pack de 2 000 SMS','19 € par mois',U.tog(false))+'</div><div class="xs mut" style="margin-top:10px">Changement immédiat, au prorata. Sans engagement, sans commission sur vos encaissements.</div>',foot:'<button class="btn pri" data-ok disabled>Vous êtes déjà sur cette formule</button>'});
       var sh=sheet(),ok=sh.querySelector('[data-ok]');on(sh,'[data-pl]',function(b){cur=+b.getAttribute('data-pl');$$('[data-pl]',sh).forEach(function(x){x.setAttribute('aria-pressed',x===b)});ok.disabled=cur===1;ok.textContent=cur===1?'Vous êtes déjà sur cette formule':'Passer à la formule '+PL[cur][0]});ok.onclick=function(){sh.close();P.toast('Demande de passage à la formule '+PL[cur][0]+' enregistrée')}};
   }
   if(S==='prefs'){
@@ -1708,7 +1722,7 @@ P.mod({id:'reglages',role:'gerant',group:'Plateforme',title:'Réglages',icon:'se
 [['Poser une question à l’assistant','assistant',function(){P.go('assistant',{tab:'chat'})}],
  ['Dicter une demande à l’assistant','mic',function(){P.go('assistant',{tab:'chat',do:'voice'})}],
  ['Créer une automatisation','repeat',function(){P.go('assistant',{tab:'auto',do:'newauto'})}],
- ['Voir le journal des actions de l’IA','shield',function(){P.go('assistant',{tab:'journal'})}],
+ ['Voir le journal des actions de Piaffe AI','shield',function(){P.go('assistant',{tab:'journal'})}],
  ['Connecter Claude ou ChatGPT à l’écurie','mcp',function(){P.go('connecteurs',{tab:'mcp',do:'connect'})}],
  ['Copier l’adresse du serveur MCP','copy',function(){X.clip('https://mcp.piaffe.fr/mcp','Adresse du serveur MCP copiée')}],
  ['Chercher un connecteur','plug',function(){P.go('connecteurs',{tab:'cat'})}],
@@ -1727,7 +1741,7 @@ P.mod({id:'reglages',role:'gerant',group:'Plateforme',title:'Réglages',icon:'se
 ].forEach(function(a){P.actions.push({role:'gerant',label:a[0],icon:a[1],run:a[2]})});
 P.suggestions.gerant=['Qui n’a pas payé ce mois-ci ?','Quels chevaux travaillent trop ?','Prépare le planning de samedi','Où en sont les stocks ?','Chaque lundi, envoie-moi le point sur les impayés'];
 P.tourSteps.push({route:'connecteurs',params:{tab:'mcp'},title:'Toute l’écurie branchée sur votre IA',text:'Une adresse à coller dans Claude ou ChatGPT, et l’assistant interroge les chevaux, les reprises et les factures avec vos droits. Il lit par défaut, et chaque écriture attend votre accord dans Piaffe.'});
-P.tourSteps.push({route:'import',title:'Arriver sans rien ressaisir',text:'Glissez vos exports Kavalog, Equimondo ou Excel. L’IA reconnaît les colonnes, repère les doublons et montre un essai à blanc. 148 adhérents, '+D.horses.length+' chevaux et 1 240 factures sont repris en moins d’une minute.'});
+P.tourSteps.push({route:'import',title:'Arriver sans rien ressaisir',text:'Glissez vos exports Kavalog, Equimondo ou Excel. Piaffe reconnaît les colonnes, repère les doublons et montre un essai à blanc. 148 adhérents, '+D.horses.length+' chevaux et 1 240 factures sont repris en moins d’une minute.'});
 /* L'assistant flottant répond comme la page Assistant : les intentions précises passent avant les réponses des autres modules. */
 P.brain.unshift({role:'gerant',re:/./,reply:function(t){var INT=P.pf.INT;for(var i=0;i<INT.length;i++){if(INT[i].id!=='cheval'&&INT[i].re.test(t)){var r=INT[i].fn(t);if(r)return {text:r.text,card:r.card,actions:(r.actions||[]).map(function(a){return {label:a.label,run:a.run}})}}}return null}});
 
@@ -1787,7 +1801,7 @@ applyMe();
 (function(){var t1=P.tour;P.tour=function(){var r=t1.apply(this,arguments),box=document.querySelector('body>.tour');if(!box)return r;box.classList.add('pt-tour');
   function dec(){if(!box.isConnected||box.querySelector('.pt-h'))return;var e=box.querySelector('.eyebrow'),m=e&&/(\d+)\s*\/\s*(\d+)/.exec(e.textContent);if(!m)return;var i=+m[1]-1,n=+m[2],st=P.tourSteps[i]||{},md=P.mods[st.route]||{},dm=P.domOf(st.route||'');
    box.className='tour pt-tour d-'+dm;e.removeAttribute('style');e.textContent='Étape '+(i+1)+' sur '+n+(md.title?' · '+md.title:'');
-   e.insertAdjacentHTML('beforebegin','<div class="pt-h"><span class="ico lg">'+ICON(md.icon||'spark')+'</span><div class="pt-p"><i style="width:'+Math.round((i+1)/n*100)+'%"></i></div></div>')}
+   e.insertAdjacentHTML('beforebegin','<div class="pt-h"><span class="ico lg">'+ICON(md.icon||'flag')+'</span><div class="pt-p"><i style="width:'+Math.round((i+1)/n*100)+'%"></i></div></div>')}
   dec();var mo=new MutationObserver(function(){if(!box.isConnected){mo.disconnect();return}dec()});mo.observe(box,{childList:true});return r}})();
 P.css(`
 body>.tour.pt-tour{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-3);border-radius:30px;padding:22px 24px 20px;gap:10px;width:min(600px,calc(100% - 28px))}
@@ -1834,7 +1848,7 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfc-k .tp{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;width:100%}
 .pfc-k .pf-lg{transition:transform .5s var(--e-spring)}
 .pfc-k:hover .pf-lg{transform:rotate(-6deg) scale(1.06)}
-.pfc-k .nm{font:800 18px/1.2 var(--f-display);letter-spacing:-.02em;margin-top:4px;width:100%}
+.pfc-k .nm{font:800 18px/1.2 var(--f-display);letter-spacing:-.02em;margin-top:4px;width:100%;white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip}
 .pfc-k .ds{font-size:14px;line-height:1.45;margin-top:0;-webkit-line-clamp:3}
 .pfc-k .ft{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding-top:10px;border-top:1px solid var(--line)}
 .pfc-k .ct{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--mut);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1846,10 +1860,12 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfc-cg span:not(.ico){font:500 14px var(--f-text)}
 .pfc-cg .ico{color:var(--pf-ink);background:var(--pf-bg)}
 .pfc-cats .tag{min-height:42px;font-size:14.5px}
+@container main (min-width:1001px){.pfc-cats{flex-wrap:wrap;overflow:visible}}
 /* Assistant : conversation soignée */
 .pfa-head h1{font:800 44px/1 var(--f-display);letter-spacing:-.045em}
 .pfa-head .sub{font-size:15.5px;margin-top:8px}
 .pfa-main{grid-template-columns:292px minmax(0,1fr);gap:16px}
+@container main (max-width:900px){.pfa-main{grid-template-columns:minmax(0,1fr)}}
 .pfa-hist,.pfa-chat{border-radius:28px}
 .pfa-hg{font-size:13px;padding:16px 10px 6px}
 .pfa-hi{padding:11px 12px;border-radius:14px;margin-bottom:2px}
@@ -1858,12 +1874,11 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfa-hi[aria-current="true"] b{color:var(--acc-deep)}
 .pfa-bar{padding:12px 14px 12px 22px;min-height:64px}
 .pfa-bar b{font:800 18px var(--f-display);letter-spacing:-.02em}
-.pfa-thread{padding:28px 28px 12px;background:radial-gradient(90% 60% at 50% 0%,color-mix(in srgb,var(--acc-bg) 55%,transparent),transparent 70%)}
+.pfa-thread{padding:28px 28px 12px;background:var(--surface)}
 .pfa-col{gap:24px}
-.pfa-u{padding:13px 18px;border-radius:22px 22px 6px 22px;font-size:15.5px;line-height:1.5;box-shadow:0 10px 24px -14px var(--acc)}
+.pfa-u{padding:13px 18px;border-radius:20px 20px 6px 20px;font-size:15.5px;line-height:1.5;background:var(--navy);color:var(--on-navy)}
 .pfa-a{grid-template-columns:40px minmax(0,1fr);gap:14px}
-.pfa-orb{width:40px;height:40px;border-radius:14px;background:linear-gradient(150deg,var(--navy),color-mix(in srgb,var(--navy) 70%,var(--acc)));box-shadow:0 8px 18px -10px var(--acc);position:relative}
-.pfa-orb::after{content:"";position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--strass);box-shadow:0 0 0 2.5px var(--surface)}
+.pfa-orb{width:40px;height:40px;border-radius:13px;background:var(--navy);position:relative}
 .pfa-txt{font-size:16px;line-height:1.6;padding-top:7px}
 .pfa-card{border-radius:22px;padding:16px 18px}
 .pfa-tb{font-size:14.5px}.pfa-tb td{padding:10px 8px 10px 0}
@@ -1887,7 +1902,7 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfa-sg button:hover>svg.i:last-child{transform:translateX(3px);color:var(--acc)}
 .pfa-sg button svg.i{margin-top:0}
 .pfa-foot{padding:12px 20px 14px;gap:10px}
-.pfa-fu{max-width:820px}
+.pfa-fu{max-width:820px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);padding-right:40px}
 .pfa-fu button{font-size:14px;padding:0 15px;height:40px;border-radius:99px;background:var(--surface);font-weight:600}
 .pfa-fu button:hover{box-shadow:inset 0 0 0 1.5px var(--acc-line);color:var(--acc-deep)}
 .pfa-comp{max-width:820px;padding:7px 7px 7px 8px;border-radius:24px;box-shadow:inset 0 0 0 1px var(--line-2),0 14px 34px -22px color-mix(in srgb,var(--navy) 60%,transparent)}
@@ -1898,7 +1913,10 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfa-jr{padding:14px 20px}.pfa-jd{font-size:13px;padding:18px 20px 8px}
 @container main (max-width:760px){
  .pfa-thread{padding:16px 14px 8px}
- .pfa-wh{grid-template-columns:84px minmax(0,1fr);gap:14px}.pfa-wi{width:84px;height:84px;border-radius:26px}
+ .pfa-a{grid-template-columns:minmax(0,1fr)}
+ .pfa-head .seg svg.i{display:none}.pfa-head .seg button{padding:0 8px;font-size:14px}
+ .pfa-tb .who .av{display:none}.pfa-tb{font-size:14px}.pfa-tb th{font-size:13px;letter-spacing:.02em}.pfa-card{padding:12px 14px;overflow-x:auto}
+ .pfa-wh{grid-template-columns:minmax(0,1fr);gap:12px}.pfa-wi{width:72px;height:72px;border-radius:22px}.pfa-wh .eyebrow{display:none}
  .pfa-wel h2{font-size:23px}.pfa-wel p{font-size:14.5px}
  .pfa-sg button{min-height:64px;padding:12px 14px}
  .pfa-comp input{height:46px}.pfa-comp .btn.icon{width:46px;height:46px}
@@ -1943,7 +1961,7 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfr-cl0{width:46px;height:46px;border-radius:15px;background:var(--navy);display:grid;place-items:center;flex:none}
 .pfr-club b{display:block;font:800 16px/1.15 var(--f-display);letter-spacing:-.02em}
 .pfr-club small{display:block;font-size:13px;opacity:.8;margin-top:3px}
-.pfr-club .illu{flex:none;margin:-6px -4px -6px 0}
+.pfr-club>svg.i{flex:none;opacity:.6;transition:transform var(--t-2) var(--e-out)}.pfr-club:hover>svg.i{transform:translateX(3px)}
 .pfr-nb{height:50px;gap:12px;padding:0 8px;border-radius:16px;font-size:15px;color:var(--ink)}
 .pfr-nb .ico{width:34px;height:34px;border-radius:11px;background:var(--surface-2);color:var(--mut);transition:background var(--t-2),color var(--t-2)}
 .pfr-nb .ico svg.i{width:19px;height:19px;color:inherit}
@@ -1962,6 +1980,7 @@ button.pfc-st:hover{transform:translateY(-3px)}button.pfc-st:active{transform:sc
 .pfr-mx{font-size:14px}
 .pfr-lv{height:30px;font-size:13px}
 .pfr-plan{border-radius:24px;padding:20px}
+@container main (max-width:760px){.seg:has(>[data-vr]){width:100%;display:flex}.seg:has(>[data-vr])>button{flex:1;min-width:0;padding:0 4px;justify-content:center;font-size:14px;gap:4px}}
 @container main (max-width:1100px){.pfr-lay{grid-template-columns:minmax(0,1fr)}.pfr-club{display:none}.pfr-nb{height:46px;flex:none;padding-right:14px}}
 @container main (max-width:760px){.pfr-h{grid-template-columns:auto minmax(0,1fr)}.pfr-h>:nth-child(3){grid-column:1/-1}.pfr-h>.pfr-hi{width:48px;height:48px;border-radius:16px}.pfr-h h2{font-size:24px}.pfr-r{padding:14px 16px}}
 @container main (max-width:1100px){.pfc-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}

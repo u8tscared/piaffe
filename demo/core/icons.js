@@ -189,7 +189,7 @@ window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true
    Options : {size:96 (px, ou null pour remplir), still:true (sans mouvement), cls:'…'}
    Couleurs : jetons --coat, --mane, --hay, --hz, --mo, --rd… (clair et sombre).
    ===================================================================== */
-var SP=function(x,y,s){return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
+var SP=function(x,y,s){return '';return '<path class="il-tw" d="M'+x+' '+(y-s)+'Q'+x+' '+y+' '+(x+s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+s)+'Q'+x+' '+y+' '+(x-s)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-s)+'Z" fill="var(--strass)"/>'};
 function wrap(name,vb,body,o){o=o||{};var sz=o.size===null?'':(' width="'+(o.size||96)+'" height="'+(o.size||96)+'"');
   return '<svg class="illu il-'+name+(o.cls?' '+o.cls:'')+'"'+sz+' viewBox="'+vb+'" aria-hidden="true"'+(o.still?' style="--still:1"':'')+'>'+(o.still?body.replace(/ class="il-[a-z]+"/g,''):body)+'</svg>'}
 function BALE(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="9" fill="var(--hay)"/>'+
