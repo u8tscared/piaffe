@@ -8,7 +8,7 @@ const rd=f=>fs.readFileSync(f,'utf8');
 let html=rd(path.join(S,'landing.html'));
 /* three.js r128 vient de cdnjs ; l'aperçu local le charge depuis demo/tools pour fonctionner hors ligne */
 const CDN='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-const parts={'/*__CSS__*/':rd(path.join(S,'landing.css')),'/*__ICONS__*/':rd(path.join(CORE,'icons.js')),'/*__HORSE__*/':rd(path.join(CORE,'horse.inc.js')),'/*__JS__*/':rd(path.join(S,'landing.js'))};
+const parts={'/*__CSS__*/':rd(path.join(S,'landing.css')),'/*__ICONS__*/':rd(path.join(CORE,'brand.js'))+'\n;\n'+rd(path.join(CORE,'icons.js')),'/*__HORSE__*/':rd(path.join(CORE,'horse.inc.js')),'/*__JS__*/':rd(path.join(S,'landing.js'))};
 /* liens de démo : {{demo:ecran}} dans le HTML, {{demobase}} pour le JS */
 /* PIAFFE_DEMO=pages : liens relatifs vers demo/ (GitHub Pages) ; sinon l'artifact claude.ai */
 const DEMO=process.env.PIAFFE_DEMO==='pages'?'demo/':'https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN';
