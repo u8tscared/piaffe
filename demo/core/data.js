@@ -84,6 +84,7 @@ OWN.forEach(function(o){var m=D.members.find(function(x){return x.id===o});if(m)
 function pinM(id,o){var m=D.members.find(function(x){return x.id===id});if(m)Object.assign(m,o)}
 pinM('m019',{first:'Emma',last:'Moreau',age:24,minor:false,galop:6,since:2021,licence:'2027',cert:true,forfait:'f6',fam:'F19',email:'emma.moreau@exemple.fr'});
 pinM('m078',{first:'Hélène',last:'Girard',age:50,minor:false,galop:7,email:'helene.girard@exemple.fr'});
+pinM('m066',{last:'Lefebvre',email:D.members.find(function(x){return x.id==='m066'}).first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+'.lefebvre@exemple.fr'});
 pinM('m044',{first:'Alice',last:'Vincent',age:15,minor:true,galop:5,email:'alice.vincent@exemple.fr'});
 /* pas d'homonyme de la demi-pensionnaire */
 D.members.forEach(function(m){if(m.id!=='m019'&&m.first==='Emma'&&m.last==='Moreau'){m.first='Chloé';m.email=m.email.replace('emma','chloe')}});

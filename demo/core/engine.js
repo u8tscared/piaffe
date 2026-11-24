@@ -85,6 +85,7 @@ P.chart={
       var li=s.v.length-1;g+='<circle class="dot" cx="'+X(li)+'" cy="'+Y(s.v[li])+'" r="5.5" fill="var(--surface)" stroke="'+s.c+'" stroke-width="3"/>'});
     return '<svg class="chart" data-vw="'+w+'" viewBox="0 0 '+w+' '+h+'" role="img">'+g+'</svg>'},
   bars:function(vals,labels,o){o=o||{};var w=chW(),h=o.h||200,pt=14,pb=CH.fs*CH.head+14,mx=o.max||Math.max.apply(null,vals.map(function(v){return Array.isArray(v)?v.reduce(function(a,b){return a+b},0):v}))*1.1||1;
+    if(!o.max){var q=mx/4,pw=Math.pow(10,Math.floor(Math.log10(q))),fs=[1,1.5,2,2.5,3,4,5,6,8,10];for(var z=0;z<fs.length;z++){if(q<=fs[z]*pw+1e-9){mx=fs[z]*pw*4;break}}}
     var yl=[];for(var k=0;k<=4;k++)yl.push(o.fmt?o.fmt(mx*k/4):F.num(mx*k/4));
     var pl=Math.ceil(Math.max.apply(null,yl.map(txtW)))+12,pr=8,n=vals.length,bw=(w-pl-pr)/n,g='',st=every(labels,w-pl-pr);
     yl.forEach(function(t,k){var y=pt+(1-k/4)*(h-pt-pb);g+='<line class="grid'+(k?'':' base')+'" x1="'+pl+'" x2="'+(w-pr)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(pl-10)+'" y="'+(y+4.5)+'" text-anchor="end">'+t+'</text>'});
