@@ -1,5 +1,5 @@
 /* =====================================================================
-   PIAFFE · Données de démonstration (fictives, déterministes)
+   STABL · Données de démonstration (fictives, déterministes)
    Club : Écurie des Tilleuls. Date du jour de la démo : mardi 17 novembre 2026.
    ===================================================================== */
 (function(){
@@ -126,7 +126,7 @@ D.invoices.unshift({id:'F-2026-1173',member:'m001',label:'Pension complète nove
 /* ---------- Banque et compta ---------- */
 D.bank=[
  {d:iso(day(0)),label:'PRLV SEPA GROUPE 2 · 14 mandats',amount:4210,cat:'Forfaits',matched:true},
- {d:iso(day(0)),label:'CB PAIEMENT EN LIGNE PIAFFE · 6 opérations',amount:1186,cat:'Ventes en ligne',matched:true},
+ {d:iso(day(0)),label:'CB PAIEMENT EN LIGNE STABL · 6 opérations',amount:1186,cat:'Ventes en ligne',matched:true},
  {d:iso(day(-1)),label:'SARL FOURRAGES DU HUREPOIX',amount:-3840,cat:'Foin et paille',matched:false},
  {d:iso(day(-1)),label:'VIR M. ET MME DUBOIS',amount:780,cat:'Forfaits',matched:true},
  {d:iso(day(-2)),label:'SELLERIE DU PARC · facture 2211',amount:-412.5,cat:'Sellerie',matched:false},
