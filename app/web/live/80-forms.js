@@ -14,7 +14,7 @@ function val(sh,id){var e=sh.querySelector('#'+id);return e?e.value.trim():''}
 function form(o){var sh=P.sheet({title:o.title,icon:o.icon,body:'<form class="lv-f" novalidate>'+o.body+'<div class="lv-fmsg"></div></form>',foot:'<button class="btn ghost" data-cancel>Annuler</button><button class="btn pri" data-save>'+ICON('check','sm')+o.cta+'</button>'});
   var ok=function(){var m=sh.querySelector('.lv-fmsg');try{var r=o.save(sh);if(r===false)return;sh.close();P.rerender();P.renderBadges();P.toast(r||'Enregistré');PL.sync&&PL.sync.flush()}catch(e){m.innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>'+esc(e.message)+'</span></div>'}};
   sh.querySelector('[data-cancel]').onclick=function(){sh.close()};sh.querySelector('[data-save]').onclick=ok;sh.querySelector('form').onsubmit=function(e){e.preventDefault();ok()};
-  if(o.bind)o.bind(sh);var first=sh.querySelector('input');if(first&&!PL.isTouch())setTimeout(function(){first.focus()},80);return sh}
+  if(o.bind)o.bind(sh);var first=sh.querySelector('input');if(first&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!sh.contains(a))first.focus()},80);return sh}
 function need(v,msg){if(!v)throw new Error(msg);return v}
 function people(){return (D.members||[]).map(function(m){return [m.id,(m.first+' '+m.last).trim()]})}
 function staffOpts(){return [['','À choisir']].concat((D.staff||[]).map(function(s){return [s.id,(s.first+' '+s.last).trim()+(s.role?' · '+s.role:'')]})).concat((D.coaches||[]).filter(function(c){return !c.staff}).map(function(c){return [c.id,(c.first+' '+c.last).trim()+' · coach']}))}

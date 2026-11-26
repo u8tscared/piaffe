@@ -45,7 +45,7 @@ PL.del=function(p,o){return PL.api('DELETE',p,undefined,o)};
 PL.msg=function(e){if(!e)return 'Une erreur est survenue.';if(e.offline)return 'Pas de connexion : cette action a besoin d’internet. Réessayez dès le retour du réseau.';return e.message||'Une erreur est survenue.'};
 PL.online=function(){return navigator.onLine!==false&&!(PL.sync&&PL.sync.state==='offline')};
 /* boutons qui exigent le réseau : grisés hors ligne (lv.css, body.lv-offline) et expliqués au lieu d'échouer */
-PL.NET='[data-net],.lv-inv-act button';
+PL.NET='[data-needs-net],.lv-inv-act button';
 document.addEventListener('click',function(e){if(!document.body.classList.contains('lv-offline'))return;var b=e.target.closest&&e.target.closest(PL.NET);if(!b||b.closest('.lv-auth,.lv-ob'))return;
   e.preventDefault();e.stopPropagation();try{P.toast('Hors ligne : cette action (paiement, e-mail, facture, invitation) a besoin d’internet. Le reste de l’appli marche normalement.',{icon:'wifi',ms:5200})}catch(x){}},true);
 /* toast d'erreur uniforme (et message clair si la route n'existe pas encore) */

@@ -276,7 +276,7 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 body.lv-nogoogle .lv-google,body.lv-nogoogle .lv-or{display:none!important}
 
 /* ---------- Hors connexion : ce qui exige le réseau est grisé (et expliqué au toucher, 10-api.js) ---------- */
-body.lv-offline [data-net],body.lv-offline .lv-inv-act button{opacity:.45;filter:grayscale(1);cursor:not-allowed}
+body.lv-offline [data-needs-net],body.lv-offline .lv-inv-act button{opacity:.45;filter:grayscale(1);cursor:not-allowed}
 /* ---------- Nouvelle version disponible ---------- */
 .lv-update{position:fixed;z-index:60;left:0;right:0;margin:0 auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;
   width:min(560px,calc(100vw - 24px));padding:10px 10px 10px 14px;border-radius:16px;background:var(--surface);color:var(--ink);font-size:14.5px;line-height:1.4;
