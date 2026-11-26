@@ -14,6 +14,7 @@ import { cron as importCron } from "./import/routes";
 import { cron as onboardingCron } from "./onboarding/routes";
 import { cron as robotCron } from "./robot/routes";
 import { cron as mcpCron } from "./mcp/routes";
+import { cron as mediaCron } from "./media/routes";
 
 /*
  * Plan des URL :
@@ -44,6 +45,7 @@ app.route("/", R.onboardingRoutes);
 app.route("/", R.robotRoutes);
 app.route("/", R.mcpRoutes);
 app.route("/", R.adminRoutes);
+app.route("/", R.mediaRoutes);
 
 app.all("/api/*", (c) => c.json({ error: { code: "not_found", message: "Route d'API inconnue." } }, 404));
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));
@@ -51,7 +53,7 @@ app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));
 export default {
   fetch: app.fetch,
   async scheduled(ev: ScheduledController, env: Env, ctx: ExecutionContext) {
-    for (const f of [authCron, recordsCron, billingCron, invoicingCron, mailCron, icsCron, importCron, onboardingCron, robotCron, mcpCron]) {
+    for (const f of [authCron, recordsCron, billingCron, invoicingCron, mailCron, icsCron, importCron, onboardingCron, robotCron, mcpCron, mediaCron]) {
       ctx.waitUntil(f(env, ev.cron).catch((e) => console.error("cron", e)));
     }
   },
