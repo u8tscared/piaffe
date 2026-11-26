@@ -10,7 +10,11 @@ PL.runModules=function(){
   var ghost=!PL.sandbox&&PL.make&&!/probe=demo/.test(location.search),saved={};
   if(ghost)[['member','member'],['horse','horse'],['staffer','staff'],['coach','coach']].forEach(function(x){var f=D[x[0]];saved[x[0]]=f;
     D[x[0]]=function(i){var r=f.apply(D,arguments);if(r)return r;try{return PL.make[x[1]]({id:String(i==null?"":i),first:'',last:'',name:''})}catch(e){return {id:String(i),first:'',last:'',name:''}}}});
+  /* club d'exemple : les factures vivent dans leur propre table (chargées à part) ; les modules de la démo
+     s'appuient sur quelques factures d'exemple pour préparer leurs écrans, on les leur prête le temps de tourner */
+  var lent=null;if(PL.sandbox&&PL.demoData&&Array.isArray(D.invoices)&&!D.invoices.length&&Array.isArray(PL.demoData.invoices)){lent=D.invoices;D.invoices=JSON.parse(JSON.stringify(PL.demoData.invoices))}
   PL.modq.forEach(function(m){try{m.run()}catch(e){console.error('module',m.file,e)}});PL.modq=[];
+  if(lent)D.invoices=lent;
   Object.keys(saved).forEach(function(k){D[k]=saved[k]})};
 if(/probe=demo/.test(location.search)){PL.keysBefore=Object.keys(DATA);PL.runModules();PL.keysAfter=Object.keys(DATA);P.start()}
 else (function(){
