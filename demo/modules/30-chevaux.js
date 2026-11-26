@@ -421,7 +421,7 @@ P.css(`
  .fc-wd .dn{flex-direction:column;gap:2px}.fc-wd .ss{display:flex;flex-direction:column;gap:6px;min-width:0}.fc-rest{flex-direction:row;margin:0;justify-content:flex-start;padding:4px 0}
  .fc-meal{grid-template-columns:minmax(0,1fr)}.fc-gait{grid-template-columns:repeat(2,minmax(0,1fr))}
  .fc-cost{grid-template-columns:26px minmax(0,1fr) 64px}.fc-cost .bar{display:none}
- .fc-acts{flex-wrap:nowrap}.fc-acts .btn{flex:1 1 auto;height:44px}.fc-acts .btn.icon,.fc-acts .btn:not(.pri){flex:0 0 44px;padding:0;gap:0;font-size:0;justify-content:center}
+ .fc-acts{flex-wrap:nowrap;gap:6px}.fc-acts .btn.pri{min-width:0;padding:0 8px;gap:0}.fc-acts .btn.pri svg{display:none}.fc-al{display:none}.fc-as{display:inline!important}.fc-acts .btn{flex:1 1 auto;height:44px}.fc-acts .btn.icon,.fc-acts .btn:not(.pri){flex:0 0 44px;padding:0;gap:0;font-size:0;justify-content:center}
  .app.mobile .fc-nm h1{display:none}.app.mobile .fc-nm>.mut{margin-top:0!important}
  .fc-st-top [data-move] span{display:none}
  .fc-gl{height:calc(100% + 64px);width:calc(100% + 100px);margin:-22px 0 0 -50px}
@@ -523,7 +523,7 @@ function swap(n){if(P.RM||!n)return;n.classList.remove('lb-sw');void n.offsetWid
 function on(root,sel,fn){root.addEventListener('click',function(e){var t=e.target.closest(sel);if(t&&root.contains(t))fn(t,e)})}
 function stepper(id,v,unit){return '<span class="lb-step" data-step="'+id+'"><button type="button" data-d="-1" title="Diminuer">'+ICON('minus','sm')+'</button><output data-v="'+v+'">'+String(v).replace('.',',')+' '+unit+'</output><button type="button" data-d="1" title="Augmenter">'+ICON('plus','sm')+'</button></span>'}
 function bindSteppers(root,step,unit,cb){on(root,'[data-step] button',function(b){var o=b.parentNode.querySelector('output'),v=Math.max(0,Math.round((parseFloat(o.getAttribute('data-v'))+(+b.getAttribute('data-d'))*step)*10)/10);o.setAttribute('data-v',v);var u=b.parentNode.getAttribute('data-unit')||unit;o.textContent=String(v).replace('.',',')+' '+u;if(cb)cb(b.parentNode.getAttribute('data-step'),v)})}
-function ownerLine(h){if(h.coowners&&h.coowners.length>1)return h.coowners.map(function(c){return D.name(c.id)+' ('+c.share+'\u00a0%)'}).join(', ');return h.owner?D.name(h.owner):h.coachOwner?D.name(h.coachOwner)+' (coach)':'Écurie des Tilleuls'}
+function ownerLine(h){if(h.coowners&&h.coowners.length>1)return h.coowners.map(function(c){return D.name(c.id)+' ('+c.share+'\u00a0%)'}).join(', ');return h.owner?D.name(h.owner):h.coachOwner?D.name(h.coachOwner)+' (coach)':clubName()}
 
 /* =====================================================================
    3. Cheptel
@@ -839,7 +839,7 @@ P.mod({id:'chevaux',role:'gerant',group:'Écurie',title:'Chevaux',icon:'horse',n
   on(el,'[data-reset]',function(){LS.q='';LS.f='all';P.rerender()});
   el.querySelector('[data-add]').onclick=addHorseSheet;
   el.querySelector('[data-imp]').onclick=importSheet;
-  el.querySelector('[data-exp]').onclick=function(){P.toast('Export du cheptel téléchargé : '+all.length+' fiches, soins et rations compris',{icon:'download'})};
+  el.querySelector('[data-exp]').onclick=function(){herdCsv(all)};
   box.addEventListener('keydown',function(e){if(e.key==='Enter'){var c=e.target.closest('.hx-c');if(c)P.go('cheval',{id:c.getAttribute('data-id')})}});
  }});
 
@@ -1108,12 +1108,12 @@ function qrSheet(h){var sh=P.sheet({title:'Fiche de box',icon:'qr',body:'<div cl
    '<p class="s mut" style="text-align:left">Un palefrenier, le vétérinaire ou le maréchal scanne le code et voit la ration, les soins du jour, les consignes et les contacts d’urgence, sans compte ni mot de passe. Vous choisissez ce qui s’affiche.</p>'+
    '<div class="card flat list" style="text-align:left"><div class="li"><div class="grow t">Ration et consignes</div>'+U.tog(true)+'</div><div class="li"><div class="grow t">Soins du jour et traitements</div>'+U.tog(true)+'</div><div class="li"><div class="grow t">Téléphone du propriétaire</div>'+U.tog(false)+'</div></div></div>',
    foot:'<button class="btn" data-a>'+ICON('link','sm')+'Copier le lien</button><button class="btn pri" data-b>'+ICON('download','sm')+'Imprimer la fiche de box</button>'});
-  sh.querySelector('[data-a]').onclick=function(){P.toast('Lien de la fiche de box copié',{icon:'link'})};sh.querySelector('[data-b]').onclick=function(){sh.close();P.toast('Fiche de box de '+h.name+' envoyée à l’imprimante du bureau',{icon:'download'})}}
+  sh.querySelector('[data-a]').onclick=function(){P.toast('Lien de la fiche de box copié',{icon:'link'})};sh.querySelector('[data-b]').onclick=function(){sh.close();boxPdf(h)}}
 
 function docSheet(h,d){var sh=P.sheet({title:d[0],icon:d[1],body:'<div class="stack" style="--g:14px"><div class="fc-doc"><div class="hrow sp"><b class="s">'+E(h.name)+'</b>'+U.chip(d[3],'line')+'</div><i style="width:70%"></i><i style="width:92%"></i><i style="width:84%"></i><i style="width:60%"></i><i style="width:88%;margin-top:8px"></i><i style="width:76%"></i><i style="width:40%"></i></div>'+
    '<dl class="lb-dl" style="margin:0"><div><dt>Ajouté par</dt><dd>'+E(DEMO?'Claire Dumont':gName())+'</dd></div><div><dt>Le</dt><dd>'+F.dateY(X(h).arrival)+'</dd></div><div><dt>Visible par</dt><dd>'+(h.owner?'Vous et '+D.member(h.owner).first:'L’équipe')+'</dd></div><div><dt>Format</dt><dd>PDF, 1,2 Mo</dd></div></dl></div>',
    foot:'<button class="btn" data-a>'+ICON('send','sm')+'Envoyer au vétérinaire</button><button class="btn pri" data-b>'+ICON('download','sm')+'Télécharger</button>'});
-  sh.querySelector('[data-a]').onclick=function(){sh.close();P.toast('« '+d[0]+' » envoyé '+(DEMO?'au Dr Leclerc':'au vétérinaire')+' par lien sécurisé',{icon:'send'})};sh.querySelector('[data-b]').onclick=function(){P.toast('« '+d[0]+' » téléchargé',{icon:'download'})}}
+  sh.querySelector('[data-a]').onclick=function(){sh.close();P.toast('« '+d[0]+' » envoyé '+(DEMO?'au Dr Leclerc':'au vétérinaire')+' par lien sécurisé',{icon:'send'})};sh.querySelector('[data-b]').onclick=function(){docPdf(h,d)}}
 
 function rationSheet(h,after){var sup=Object.keys(SUPP);
   var sh=P.sheet({title:'Ration de '+h.name.split(' ')[0],icon:'feed',body:'<div class="stack" style="--g:16px"><div class="hrow" style="--g:10px">'+U.hav(h)+'<div><b>'+E(h.name)+'</b><div class="xs mut">'+h.box+' · '+h.weight+' kg · note d’état '+String(nec(h)).replace('.',',')+' sur 5</div></div></div>'+
@@ -1158,7 +1158,7 @@ function msgSheet(h){var own=h.owner?D.member(h.owner):null,to=own?own.first+' '
 
 function moreSheet(h){var A=[['download','Exporter le carnet de santé en PDF','Carnet de santé de '+h.name+' exporté, 14 pages'],['doc','Imprimer la fiche complète','Fiche de '+h.name+' envoyée à l’imprimante du bureau'],['swap','Changer de box','Choisissez le nouveau box sur le plan de l’écurie'],['owner','Transférer la fiche à un nouveau propriétaire','Lien de transfert créé : le carnet de santé suit le cheval'],['link','Donner un accès invité au vétérinaire',DEMO?'Accès invité envoyé au Dr Leclerc, valable 30 jours':'Lien d’accès invité créé, valable 30 jours'],['folder','Archiver le cheval (départ du club)','Départ préparé : le registre des mouvements sera complété à la validation']];
   var sh=P.sheet({title:'Autres actions',icon:'more',body:'<div class="card flat">'+A.map(function(a,k){return '<div class="lb-row click" data-k="'+k+'">'+sq(a[0],'mut','sm')+'<div class="grow t">'+a[1]+'</div>'+ICON('right','sm')+'</div>'}).join('')+'</div>'});
-  on(sh,'[data-k]',function(r){var a=A[+r.getAttribute('data-k')];sh.close();if(a[0]==='swap'&&P.mods.ecurie3d){P.go('ecurie3d',{id:h.id});return}P.toast(a[2],{icon:a[0]})})}
+  on(sh,'[data-k]',function(r){var a=A[+r.getAttribute('data-k')];sh.close();if(a[0]==='swap'&&P.mods.ecurie3d){P.go('ecurie3d',{id:h.id});return}if(a[0]==='download'){healthPdf(h);return}if(a[0]==='doc'){fichePdf(h);return}P.toast(a[2],{icon:a[0]})})}
 
 /* ---------- l'écran ---------- */
 var setTab=function(){};
@@ -1181,7 +1181,7 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
      '<div class="fc-rings">'+RK.map(function(k){return ringHtml(h,k)}).join('')+'</div>'+
      '<dl class="lb-dl" style="margin:0"><div><dt>Propriétaire</dt><dd>'+(own?'<a data-own style="cursor:pointer" class="hrow" title="Ouvrir la fiche adhérent">'+U.av(own,'sm')+'<span class="ellip">'+E(own.first+' '+own.last)+'</span></a>':E(clubName()))+'</dd></div><div><dt>'+(x.rider?'Demi-pensionnaire':'Niveau')+'</dt><dd>'+(x.rider?'<span class="hrow">'+U.av(x.rider,'sm')+'<span class="ellip">'+D.name(x.rider)+'</span></span>':E(h.level||'–'))+'</dd></div>'+
       '<div><dt>Numéro SIRE</dt><dd>'+(x.sireNo?'<button class="mono" data-copy="'+E(x.sireNo)+'" title="Copier le numéro SIRE" style="font-weight:600">'+E(x.sireNo)+' '+ICON('copy','sm')+'</button>':'<span class="mut">À renseigner</span>')+'</dd></div><div><dt>Assurance</dt><dd class="ellip">'+(x.ins.co?E(x.ins.co):'<span class="mut">À renseigner</span>')+'</dd></div></dl>'+
-     '<div class="fc-acts"><button class="btn pri" data-act="care">'+ICON('plus','sm')+'Ajouter un soin</button><button class="btn icon" data-act="photo" title="Prendre une photo">'+ICON('photo','sm')+'</button><button class="btn" data-act="msg">'+ICON('chat','sm')+'Écrire</button><button class="btn icon" data-act="qr" title="Fiche de box et code à scanner">'+ICON('qr','sm')+'</button><button class="btn icon" data-act="more" title="Autres actions">'+ICON('more','sm')+'</button></div></div></div>'+
+     '<div class="fc-acts"><button class="btn pri" data-act="care">'+ICON('plus','sm')+'<span class="fc-al">Ajouter un soin</span><span class="fc-as">Nouveau soin</span></button><button class="btn icon" data-act="photo" title="Prendre une photo">'+ICON('photo','sm')+'</button><button class="btn" data-act="msg">'+ICON('chat','sm')+'Écrire</button><button class="btn icon" data-act="qr" title="Fiche de box et code à scanner">'+ICON('qr','sm')+'</button><button class="btn icon" data-act="more" title="Autres actions">'+ICON('more','sm')+'</button></div></div></div>'+
    (function(){var nd=nextDue(h),R=RULES[nd.k],p=loadP(h),st=dueSt(h,nd.k);
     return '<div class="fc-stats rise">'+
      '<button class="card fc-st d-travail" data-tabgo="travail"><span class="lab"><span class="ico sm">'+ICON('gauge','sm')+'</span>Travail cette semaine</span><span class="v num">'+h.work+'<small>h sur '+h.workMax+'</small></span>'+U.bar(Math.min(100,p),loadC(h))+'</button>'+
@@ -1227,8 +1227,8 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
    adddoc:function(){P.toast('Document ajouté au dossier de '+h.name+' et classé dans ses documents',{icon:'folder'})},
    opendoc:function(){docSheet(h,['Ordonnance et compte rendu','doc','','Santé'])},
    rxadd:function(){careSheet(h,'Vétérinaire')},
-   regpdf:function(){P.toast('Registre d’élevage de '+h.name+' exporté en PDF horodaté',{icon:'download'})},
-    moves:function(){if(!DEMO){P.sheet({title:'Mouvements de '+h.name.split(' ')[0],icon:'route',body:(Array.isArray(h.moves)&&h.moves.length?'<div class="tl">'+h.moves.map(function(m){return '<div class="ev"><b class="s">'+E(m.label||'')+'</b><div class="xs mut">'+F.dateY(m.date)+(m.note?' · '+E(m.note):'')+'</div></div>'}).join('')+'</div>':U.empty('route','Aucun mouvement enregistré','Les entrées, sorties et concours de '+E(h.name.split(' ')[0])+' s’afficheront ici.'))});return}P.sheet({title:'Mouvements de '+h.name.split(' ')[0],icon:'route',body:'<div class="tl">'+[[iso(-4),'Retour du concours de Chantilly','Camion 6 places, 88 km'],[iso(-4),'Sortie : concours CSO Amateur, Chantilly','Départ 6 h 30'],['2026-07-06','Retour de stage, Lamotte-Beuvron','162 km'],['2026-07-03','Sortie : stage d’été','Van 2 places'],[x.arrival,'Entrée au club','Lieu de détention déclaré au SIRE']].slice(h.kind==='club'?2:0).map(function(m){return '<div class="ev"><b class="s">'+m[1]+'</b><div class="xs mut">'+F.dateY(m[0])+' · '+m[2]+'</div></div>'}).join('')+'</div>'})},
+   regpdf:function(){breedPdf(h)},
+    moves:function(){if(!DEMO){P.sheet({title:'Mouvements de '+h.name.split(' ')[0],icon:'route',body:(Array.isArray(h.moves)&&h.moves.length?'<div class="tl">'+h.moves.map(function(m){return '<div class="ev"><b class="s">'+E(m.label||'')+'</b><div class="xs mut">'+F.dateY(m.date)+(m.note?' · '+E(m.note):'')+'</div></div>'}).join('')+'</div>':U.empty('route','Aucun mouvement enregistré','Les entrées, sorties et concours de '+E(h.name.split(' ')[0])+' s’afficheront ici.'))});return}P.sheet({title:'Mouvements de '+h.name.split(' ')[0],icon:'route',body:'<div class="tl">'+demoMoves(h).map(function(m){return '<div class="ev"><b class="s">'+m[1]+'</b><div class="xs mut">'+F.dateY(m[0])+' · '+m[2]+'</div></div>'}).join('')+'</div>'})},
    thr:function(){thrSheet(h)},plan:function(){goOr('planning',{horse:h.id},'Le planning de '+h.name+' s’ouvre dans l’écran Planning')},
    pair:function(){x.sensor=true;draw();P.toast('Capteur de selle associé à '+h.name,{icon:'sensor'})},
    ration:function(){rationSheet(h)},weigh:function(){weighSheet(h)},cure:function(){P.toast('Cure de 3 semaines ajoutée, la première dose part au tableau de ce soir',{icon:'drop'})},
@@ -1268,7 +1268,7 @@ function calEvents(){var ev=[],grp={};
 function icsText(kinds){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Stabl//Soins//FR','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Soins · '+clubName(),'X-WR-TIMEZONE:Europe/Paris'];
   function esc(t){return String(t).replace(/[\\;,]/g,function(c){return '\\'+c}).replace(/\n/g,'\\n')}
   function d8(d){return d.replace(/-/g,'')}
-  calEvents().filter(function(e){return kinds[e.kind]!==false}).forEach(function(e,i){var t=/^\d{1,2}:\d{2}$/.test(e.time||'')?e.time.split(':'):null,uid='soin-'+d8(e.date)+'-'+i+'@piaffe.app';
+  calEvents().filter(function(e){return kinds[e.kind]!==false}).forEach(function(e,i){var t=/^\d{1,2}:\d{2}$/.test(e.time||'')?e.time.split(':'):null,uid='soin-'+d8(e.date)+'-'+i+'@stablapp.fr';
     L.push('BEGIN:VEVENT','UID:'+uid,'DTSTAMP:20261117T094100Z');
     if(t){var hh=('0'+t[0]).slice(-2),end=('0'+Math.min(23,+t[0]+1)).slice(-2);L.push('DTSTART;TZID=Europe/Paris:'+d8(e.date)+'T'+hh+t[1]+'00','DTEND;TZID=Europe/Paris:'+d8(e.date)+'T'+end+t[1]+'00')}
     else{var nx=new Date(e.date+'T12:00:00');nx.setDate(nx.getDate()+1);L.push('DTSTART;VALUE=DATE:'+d8(e.date),'DTEND;VALUE=DATE:'+d8(iso2(nx)))}
@@ -1288,7 +1288,7 @@ function icsSheet(){if(!DEMO&&P.mods['lv-calendriers']){P.go('lv-calendriers');r
     on(b,'[data-cp]',function(){try{navigator.clipboard&&navigator.clipboard.writeText(url)}catch(e){}P.toast('Lien d’abonnement copié',{icon:'copy'})});
     on(b,'[data-app]',function(x){P.toast('Abonnement ajouté à '+x.getAttribute('data-app')+' : les soins apparaissent sous « Soins · '+clubName()+' »',{icon:'calendar_add'})})},
    foot:'<button class="btn ghost" data-dl>'+ICON('download','sm')+'Télécharger le fichier .ics</button><button class="btn pri" data-sub>'+ICON('calendar_add','sm')+'Ouvrir dans mon agenda</button>'});
-  sh.querySelector('[data-dl]').onclick=function(){try{var bl=new Blob([icsText(kinds)],{type:'text/calendar;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='soins-ecurie-des-tilleuls.ics';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){}P.toast('Fichier soins-ecurie-des-tilleuls.ics téléchargé',{icon:'download'})};
+  sh.querySelector('[data-dl]').onclick=function(){var n='soins-'+fslug(clubName())+'.ics';P.download(n,icsText(kinds),null,{msg:'Fichier '+n+' téléchargé : ouvrez-le pour ajouter les soins à votre agenda'})};
   sh.querySelector('[data-sub]').onclick=function(){sh.close();P.toast('Votre agenda s’ouvre pour confirmer l’abonnement',{icon:'calendar_add'})};
   return sh}
 function evBtn(e,i){var c=KINDC[e.kind]||'var(--acc)';return '<button class="so-ev'+(e.todo?' todo':'')+(e.late?' late':'')+'" style="--c:'+c+'" data-ev="'+i+'" title="'+E(e.label)+(e.todo?' (à planifier)':'')+'"><i></i><span>'+E(e.label).replace(' · ','</span><small>')+(e.label.indexOf(' · ')>=0?'</small>':'</span>')+'</button>'}
@@ -1437,11 +1437,38 @@ function careEvSheet(c){var h=D.horse(c.horse),sh=P.sheet({title:c.kind+' · '+h
   sh.querySelector('[data-done]').onclick=function(){c.status='fait';sh.close();P.rerender();P.toast(c.kind+' de '+h.name+' noté comme fait et inscrit au registre',{icon:'checkc',undo:function(){c.status='planifié';P.rerender()}})}}
 
 /* club réel : export du registre (soins faits) en CSV, ajout d'un praticien et d'un médicament */
+/* ---------- Fichiers réels : cheptel (CSV), carnet de santé, fiche, registre, tableau d'écurie (PDF) ---------- */
+function fslug(t){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'fichier'}
+var KINDL={club:'Cheval de club',proprietaire:'Pension propriétaire',demi:'Demi-pension'};
+function stTxt(h){return h.status==='bad'?'Urgent':h.status==='warn'?'À surveiller':'En forme'}
+function herdCsv(list){var rows=[['Box','Nom','Type','Race','Sexe','Âge','Robe','SIRE','Propriétaire','Paddock','État','Travail (h par semaine)','Foin (kg par jour)','Grain (kg par jour)','Complément','Coût par mois (€)']];
+  list.forEach(function(h){var r=h.ration||{};rows.push([h.box||'',h.name,KINDL[h.kind]||h.kind||'',h.breed||'',h.sex||'',h.age||'',h.coat||'',h.sire||'',ownerLine(h),h.paddock||'',stTxt(h),h.work||'',r.hay!=null?kg(r.hay):'',r.grain!=null?kg(r.grain):'',r.supp&&r.supp!=='Aucun'?r.supp:'',h.costMonth||''])});
+  P.download('cheptel-'+fslug(clubName())+'-'+iso(0)+'.csv',rows,null,{msg:'Cheptel exporté : '+list.length+' fiches, prêt pour Excel'})}
+function idKv(h){var x=X(h);return [['Nom',h.name],['Race',h.breed||'Non renseignée'],['Sexe et âge',[h.sex,h.age?h.age+' ans':''].filter(Boolean).join(', ')||'Non renseigné'],['Robe',h.coat||'Non renseignée'],['SIRE',h.sire||'Non renseigné'],['Transpondeur',h.chip||'Non renseigné'],['Box',h.box||'Sans box'],['Propriétaire',ownerLine(h)],['Arrivée au club',x.arrival?F.dateY(x.arrival):'Non renseignée']]}
+function careRows(h){return D.care.filter(function(c){return c.horse===h.id}).sort(function(a,b){return a.date<b.date?1:-1}).map(function(c){return [F.date(c.date),c.kind||'',c.who||'',c.note||'',c.status||'']})}
+function regRows(list){return list.slice().sort(function(a,b){return (a.date+a.time)<(b.date+b.time)?1:-1}).map(function(r){return [F.date(r.date)+(r.time?', '+r.time:''),hname(r.horse),r.prod||'',r.dose||'',r.lot||'',r.rx||'',r.by||'',r.wait||'']})}
+var REGC=['Date','Cheval','Médicament','Dose','Lot','Ordonnance','Par','Délai d’attente'],REGW=[1.3,1.2,1.8,1.6,1,1.2,1.1,1.1];
+function healthPdf(h){var cr=careRows(h),rg=D.register.filter(function(r){return r.horse===h.id}),due=RK.map(function(k){var R=RULES[k],last=h[k];return [R.l,last?'Fait le '+F.dateY(last)+', prochain avant le '+F.dateY(addDays(last,R.every)):'Jamais enregistré']});
+  P.download('carnet-de-sante-'+fslug(h.name)+'.pdf',{title:'Carnet de santé de '+h.name,sub:clubName()+' · édité le '+F.dateY(iso(0)),blocks:[{h:'Identité'},{kv:idKv(h)},{h:'Échéances'},{kv:due},{h:'Soins'},cr.length?{table:{cols:['Date','Soin','Intervenant','Compte rendu','État'],rows:cr,w:[1.1,1.1,1.4,3,1]}}:{p:'Aucun soin enregistré.'},{h:'Traitements'},rg.length?{table:{cols:REGC,rows:regRows(rg),w:REGW}}:{p:'Aucun traitement inscrit au registre.'}]},null,{msg:'Carnet de santé de '+h.name+' téléchargé en PDF'})}
+function fichePdf(h){var r=h.ration||{},up=D.care.filter(function(c){return c.horse===h.id&&c.status!=='fait'&&c.date>=iso(0)}).sort(function(a,b){return a.date<b.date?-1:1});
+  P.download('fiche-'+fslug(h.name)+'.pdf',{title:h.name,sub:'Fiche complète · '+clubName()+' · '+F.dateY(iso(0)),blocks:[{h:'Identité'},{kv:idKv(h)},{h:'Au quotidien'},{kv:[['État',stTxt(h)+(h.alerts&&h.alerts[0]?' : '+h.alerts[0]:'')],['Paddock',h.paddock||'Non renseigné'],['Travail',(h.work||0)+' h par semaine, '+(h.workMax||0)+' h au plus'],['Ration',(r.hay!=null?kg(r.hay)+' kg de foin':'')+(r.grain!=null?', '+kg(r.grain)+' kg de '+grainType(h).toLowerCase():'')+' par jour'],['Complément',r.supp&&r.supp!=='Aucun'?r.supp:'Aucun'],['Consignes',CONS[h.id]||'Aucune']]},{h:'Soins à venir'},up.length?{table:{cols:['Date','Soin','Intervenant','Note'],rows:up.map(function(c){return [F.date(c.date)+(c.time?', '+c.time:''),c.kind||'',c.who||'',c.note||'']}),w:[1.2,1.1,1.4,3]}}:{p:'Aucun soin planifié.'}]},null,{msg:'Fiche de '+h.name+' prête à imprimer (PDF)'})}
+function boxPdf(h){var r=h.ration||{},md=MEDS[h.id],sp=r.supp&&r.supp!=='Aucun'&&SUPP[r.supp];
+  P.download('fiche-de-box-'+fslug(h.box||h.name)+'.pdf',{title:'Box '+(h.box||'')+' · '+h.name,sub:clubName()+' · à coller sur la porte',blocks:[{kv:[['Cheval',h.name+(h.breed?', '+h.breed:'')],['Propriétaire',ownerLine(h)],['Foin',r.hay!=null?kg(r.hay)+' kg par jour, en 3 repas':'Non renseigné'],['Grain',r.grain!=null?kg(r.grain)+' kg par jour, matin et soir':'Non renseigné'],['Complément',sp?r.supp+' ('+sp.dose+', le '+sp.when+')':'Aucun'],['Consignes',CONS[h.id]||'Aucune'],['Traitement',md?[md.matin,md.midi,md.soir].filter(Boolean).join(' · '):'Aucun']]},{p:'Scannez le code de la porte avec un téléphone pour voir la version à jour : ration, soins du jour et contacts d’urgence.'}]},null,{msg:'Fiche de box de '+h.name+' prête à imprimer (PDF)'})}
+function docPdf(h,d){P.download(fslug(d[0])+'-'+fslug(h.name)+'.pdf',{title:d[0],sub:h.name+' · '+clubName(),blocks:[{kv:[['Cheval',h.name],['SIRE',h.sire||'Non renseigné'],['Classé dans',d[3]],['Ajouté par',DEMO?'Claire Dumont':gName()],['Le',F.dateY(X(h).arrival||iso(0))]]},{p:'Copie du document conservé dans le dossier du cheval sur Stabl.'}]},null,{msg:'« '+d[0]+' » téléchargé en PDF'})}
+function demoMoves(h){var x=X(h);return [[iso(-4),'Retour du concours de Chantilly','Camion 6 places, 88 km'],[iso(-4),'Sortie : concours CSO Amateur, Chantilly','Départ 6 h 30'],['2026-07-06','Retour de stage, Lamotte-Beuvron','162 km'],['2026-07-03','Sortie : stage d’été','Van 2 places'],[x.arrival,'Entrée au club','Lieu de détention déclaré au SIRE']].slice(h.kind==='club'?2:0)}
+function movesOf(h){if(!DEMO)return (Array.isArray(h.moves)?h.moves:[]).map(function(m){return [m.date,m.label||'',m.note||'']});return demoMoves(h)}
+function breedPdf(h){var mv=movesOf(h),rg=D.register.filter(function(r){return r.horse===h.id});
+  P.download('registre-elevage-'+fslug(h.name)+'-'+iso(0)+'.pdf',{title:'Registre d’élevage · '+h.name,sub:clubName()+' · extrait horodaté du '+F.dateY(iso(0)),blocks:[{h:'Identité'},{kv:idKv(h)},{h:'Mouvements'},mv.length?{table:{cols:['Date','Mouvement','Détail'],rows:mv.map(function(m){return [m[0]?F.dateY(m[0]):'',m[1],m[2]]}),w:[1.2,2.6,2]}}:{p:'Aucun mouvement enregistré.'},{h:'Traitements'},rg.length?{table:{cols:REGC,rows:regRows(rg),w:REGW}}:{p:'Aucun traitement inscrit au registre.'}]},null,{msg:'Registre d’élevage de '+h.name+' téléchargé (PDF horodaté)'})}
+function registerPdf(all){var lim=all?'':iso(-92),rows=D.register.filter(function(r){return !lim||r.date>=lim});
+  P.download('registre-sanitaire-'+(all?'complet':'trimestre')+'-'+iso(0)+'.pdf',{title:'Registre sanitaire'+(all?'':' du trimestre'),sub:clubName()+' · extrait horodaté du '+F.dateY(iso(0)),blocks:[{p:rows.length+' administration'+(rows.length>1?'s':'')+' de médicaments, avec lot, ordonnance et délai d’attente.'},rows.length?{table:{cols:REGC,rows:regRows(rows),w:REGW}}:{p:'Aucune écriture sur la période.'}]},null,{msg:'Registre sanitaire téléchargé en PDF horodaté'})}
+function rationPdf(fmt){var list=D.horses.slice().sort(function(a,b){return a.box<b.box?-1:1}),lab=fmt==='box';function q(v){return v?kg(v):''}
+  var blocks=lab?[].concat.apply([],list.map(function(h){var m=meals(h);return [{h:'Box '+(h.box||'')+' · '+h.name},{kv:[['Matin, 7 h',q(m.matin.hay)+' kg de foin'+(m.matin.grain?', '+q(m.matin.grain)+' kg de grain':'')],['Midi, 12 h',m.midi.hay?q(m.midi.hay)+' kg de foin':'Rien'],['Soir, 18 h',q(m.soir.hay)+' kg de foin'+(m.soir.grain?', '+q(m.soir.grain)+' kg de grain':'')],['Consignes',CONS[h.id]||'Aucune']]}]})):
+    [{p:'Quantités en kilos. Matin à 7 h, midi à 12 h, soir à 18 h.'},{table:{cols:['Box','Cheval','Matin foin','Matin grain','Midi foin','Midi grain','Soir foin','Soir grain','Compléments et consignes'],rows:list.map(function(h){var m=meals(h),md=MEDS[h.id],r=h.ration||{},sp=r.supp&&r.supp!=='Aucun'&&SUPP[r.supp]?r.supp+' ('+SUPP[r.supp].when+')':'';
+      return [h.box||'',h.name,q(m.matin.hay),q(m.matin.grain),q(m.midi.hay),q(m.midi.grain),q(m.soir.hay),q(m.soir.grain),[md?(md.matin||md.midi):'',sp,CONS[h.id]||''].filter(Boolean).join(' · ')]}),w:[.8,2,.9,.9,.9,.9,.9,.9,3],num:[2,3,4,5,6,7]}}];
+  P.download((lab?'etiquettes-de-box-':'tableau-ecurie-')+iso(0)+'.pdf',{title:lab?'Étiquettes de box':'Distribution des rations',sub:clubName()+' · semaine du '+F.dateY(D.iso(monday())),blocks:blocks},null,{msg:(lab?'Étiquettes de box':'Tableau d’écurie')+' prêt à imprimer (PDF)'})}
 function careCsv(){var rows=[['Date','Cheval','Soin','Intervenant','Compte rendu','Coût']].concat(D.care.filter(function(c){return c.status==='fait'}).sort(function(a,b){return a.date<b.date?-1:1}).map(function(c){return [c.date,hname(c.horse),c.kind,c.who||'',c.note||'',String(c.price||0).replace('.',',')]}))
     .concat(D.register.map(function(x){return [x.date,hname(x.horse),x.prod,x.by||'',x.dose||'','']}));
-  var csv='\ufeff'+rows.map(function(r){return r.map(function(v){v=String(v==null?'':v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(';')}).join('\r\n');
-  try{var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='registre-sanitaire-'+iso(0)+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){}
-  P.toast('Registre sanitaire téléchargé, '+(rows.length-1)+' écriture'+(rows.length>2?'s':''),{icon:'download'})}
+  P.download('registre-sanitaire-'+iso(0)+'.csv',rows,null,{msg:'Registre sanitaire téléchargé, '+(rows.length-1)+' écriture'+(rows.length>2?'s':'')})}
 function pratSheet(){var jobs=[['Vétérinaire','Vétérinaire',['Vétérinaire','Vaccin']],['Maréchal-ferrant','Maréchal',['Maréchal']],['Dentiste équin','Dentiste',['Dentiste']],['Ostéopathe équin','Ostéopathe',['Ostéopathe']]];
   var sh=P.sheet({title:'Ajouter un praticien',icon:'care',body:'<div class="stack" style="--g:12px"><label class="field"><span>Nom</span><input class="in" id="so-pn" placeholder="Dr Camille Martin"></label><label class="field"><span>Métier</span><select class="in" id="so-pj">'+jobs.map(function(j,i){return '<option value="'+i+'">'+j[0]+'</option>'}).join('')+'</select></label><label class="field"><span>Téléphone</span><input class="in" id="so-pp" inputmode="tel"></label></div>',
     foot:'<button class="btn ghost" data-cancel>Annuler</button><button class="btn pri" data-save>'+ICON('check','sm')+'Ajouter</button>'});
@@ -1498,7 +1525,7 @@ P.mod({id:'soins',role:'gerant',group:'Écurie',title:'Soins',icon:'care',n:40,
    seltour:function(){var ids=Object.keys(SO.sel).filter(function(k){return SO.sel[k]}),k=ids[0].split(':')[1];newTourSheet(k,ids.filter(function(i){return i.split(':')[1]===k}).map(function(i){return i.split(':')[0]}))},
    addprat:function(){if(!DEMO){pratSheet();return}P.toast('Invitation prête : envoyez le lien invité au praticien par SMS',{icon:'link'})},
    addmed:function(){if(!DEMO){medSheet();return}P.toast('Boîte reconnue : Phénylbutazone 1 g, lot PB26-1104, péremption 06/2028. Ajoutée au stock.',{icon:'scan'})},
-   regexp:function(){if(!DEMO){careCsv();return}P.toast('Registre sanitaire du 4e trimestre exporté en PDF horodaté',{icon:'download'})},
+   regexp:function(){if(!DEMO){careCsv();return}registerPdf(false)},
    regall:function(){P.sheet({title:'Registre sanitaire',icon:'doc',wide:true,body:T([{l:'Date',f:function(r){return '<span class="num">'+F.date(r.date)+', '+hm(r.time)+'</span>'}},{l:'Cheval',f:function(r){return '<b>'+hname(r.horse)+'</b>'}},{l:'Médicament',f:function(r){return r.prod+'<div class="xs mut">'+r.dose+'</div>'}},{l:'Lot',hide:true,f:function(r){return '<span class="mono">'+r.lot+'</span>'}},{l:'Ordonnance',hide:true,f:function(r){return '<span class="mono">'+r.rx+'</span>'}},{l:'Par',hide:true,k:'by'},{l:'Délai d’attente',hide:true,k:'wait'}],D.register,{card:false})})},
    visit:function(){if(!DEMO){liveForm('care');return}P.toast('Demande de visite sanitaire envoyée au Dr Leclerc pour février 2027',{icon:'send'})},
    rball:function(){var l=allRebill(),s=l.reduce(function(a,q){return a+q.v},0);l.forEach(function(q){ST.rebill[q.id]=1});P.rerender();P.toast(l.length+' soins refacturés pour '+F.eur(s)+', sur les '+(DEMO?'factures de décembre':'prochaines factures'),{icon:'invoice',undo:function(){l.forEach(function(q){delete ST.rebill[q.id]});P.rerender()}})}};
@@ -1575,8 +1602,9 @@ function printSheet(){var list=D.horses.slice().sort(function(a,b){return a.box<
      list.map(function(h){var m=meals(h),md=MEDS[h.id],sp=h.ration.supp!=='Aucun'?h.ration.supp+' ('+SUPP[h.ration.supp].when+')':'';return '<tr><td class="bx">'+h.box+'</td><td><b>'+E(h.name)+'</b></td>'+cell(m.matin)+cell(m.midi)+cell(m.soir)+'<td>'+[md?'<b class="badc">'+(md.matin||md.midi)+'</b>':'',sp,CONS[h.id]?E(CONS[h.id]):''].filter(Boolean).join(' · ')+'</td></tr>'}).join('')+'</tbody></table></div>'+
     '<div class="xs mut" style="margin-top:10px">Quantités en kilos. Un code à scanner en bas de page ouvre la version à jour sur le téléphone.</div></div></div>',
    foot:'<button class="btn ghost" data-pdf>'+ICON('download','sm')+'Télécharger le PDF</button><button class="btn pri" data-pr>'+ICON('doc','sm')+'Imprimer le tableau</button>'});
-  sh.querySelector('[data-pdf]').onclick=function(){P.toast('Tableau d’écurie téléchargé en PDF',{icon:'download'})};
-  sh.querySelector('[data-pr]').onclick=function(){var f=(sh.querySelector('[data-fmt][aria-selected="true"]')||{textContent:'A4 paysage'}).textContent;sh.close();P.toast('Tableau d’écurie envoyé à l’imprimante du bureau, format '+f,{icon:'checkc'})};
+  function fmt(){var b=sh.querySelector('[data-fmt][aria-selected="true"]');return b?b.getAttribute('data-fmt'):'a4'}
+  sh.querySelector('[data-pdf]').onclick=function(){rationPdf(fmt())};
+  sh.querySelector('[data-pr]').onclick=function(){var f=fmt();sh.close();rationPdf(f)};
   return sh}
 
 P.mod({id:'alimentation',role:'gerant',group:'Écurie',title:'Alimentation',icon:'feed',n:50,
@@ -1641,7 +1669,7 @@ P.actions.push(
  DEMO&&{role:'gerant',label:'Ouvrir la fiche d’Ulysse de la Roche',icon:'horse',run:function(){P.go('cheval',{id:'h01'})}},
  {role:'gerant',label:'Planifier une tournée du maréchal',icon:'hoof',run:function(){P.go('soins',{tab:'tours'});setTimeout(function(){newTourSheet('farrier')},60)}},
  {role:'gerant',label:'Planifier les vaccins grippe',icon:'syringe',run:function(){P.go('soins',{tab:'tours'});setTimeout(function(){newTourSheet('vacc')},60)}},
- {role:'gerant',label:'Exporter le registre sanitaire',icon:'download',run:function(){P.go('soins',{tab:'pharma'});P.toast('Registre sanitaire du 4e trimestre exporté en PDF horodaté',{icon:'download'})}},
+ {role:'gerant',label:'Exporter le registre sanitaire',icon:'download',run:function(){P.go('soins',{tab:'pharma'});if(DEMO)registerPdf(false);else careCsv()}},
  {role:'gerant',label:'Imprimer le tableau de distribution',icon:'feed',run:function(){P.go('alimentation',{tab:'board'});setTimeout(printSheet,60)}},
  {role:'gerant',label:'Commander du foin',icon:'hay',run:function(){P.go('alimentation',{tab:'stock'})}},
  {role:'gerant',label:'Valider les chevaux déclarés',icon:'horse',run:function(){P.go('chevaux');setTimeout(function(){declSheet(function(){P.rerender()})},60)}},
@@ -1823,6 +1851,7 @@ P.css(`
 .fc-ring b{font-size:14px}
 .fc-ring span.d{font-size:13px}
 .fc-acts .btn{height:48px}
+.fc-as{display:none}
 .fc-acts .btn.icon{width:48px}
 .fc-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:16px}
 .fc-st{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:18px 20px;text-align:left;cursor:pointer;transition:transform var(--t-2) var(--e-out),box-shadow var(--t-2)}
