@@ -53,5 +53,6 @@ function lancer(fichier, args = [], env = {}) {
   finally { await nav.close(); ancien.kill(); robot.kill(); }
   for (const m of ok) console.log('  ✓', m);
   for (const m of ko) console.log('  ✗', m);
-  if (ko.length) { console.log('--- journal robot ---\n' + robot.journal.slice(-1500)); process.exit(1); }
+  if (ko.length) console.log('--- journal robot ---\n' + robot.journal.slice(-1500));
+  process.exit(ko.length ? 1 : 0);
 })();
