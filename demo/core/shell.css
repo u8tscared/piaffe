@@ -157,7 +157,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tabbar button.more{flex:none;width:56px;border-radius:22px;background:var(--navy);color:var(--navy-ink);margin-left:4px}
 .tabbar button.more::before{display:none}
 .tabbar button.more svg.i{width:24px;height:24px}
-.tabbar .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:20px;height:20px;border-radius:10px;background:var(--cr);color:#fff;font:700 12px/20px var(--f-text);padding:0 5px;box-shadow:0 0 0 2px var(--surface)}
+.tabbar .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:21px;height:21px;border-radius:11px;background:var(--cr);color:#fff;font:700 13px/21px var(--f-text);padding:0 5px;box-shadow:0 0 0 2px var(--surface)}
 
 /* ---------- Feuilles, panneaux, superpositions ---------- */
 .scrim{position:absolute;inset:0;background:rgba(10,22,54,.30);z-index:40;animation:fade var(--t-3) var(--e-out) both}

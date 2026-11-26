@@ -282,7 +282,8 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
  .ck-bars.many>div:nth-child(even):not(.cur) span{visibility:hidden}
  .ck-lg{flex-wrap:wrap;gap:6px 14px;white-space:normal}
  .ck-vr{align-items:start}.ck-vr .btn{margin-top:2px}
- .ck-vr .tx,.ck-vr .mt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+ .ck-vr .tx,.ck-vr .mt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3}
+ .ck-tr .tt,.ck-tr .tm2{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
  .ck-rev .ck-big{font-size:40px}
  .ck-rh{gap:10px}.ck-rh .seg{width:100%}.ck-rh .seg button{flex:1}
  .ck-est b{font-size:26px}
