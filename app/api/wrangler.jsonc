@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*"] },
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*", "/mcp", "/mcp/*", "/oauth/*", "/.well-known/*"] },
   "d1_databases": [{ "binding": "DB", "database_name": "piaffe", "database_id": "REMPLACER_PAR_L_ID_D1", "migrations_dir": "migrations" }],
   "r2_buckets": [{ "binding": "FILES", "bucket_name": "piaffe-files" }],
   // Robot de migration (lot F) : navigateur Browser Rendering et un Durable Object par session.

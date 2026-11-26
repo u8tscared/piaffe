@@ -8,3 +8,4 @@ export { default as icsRoutes } from "./ics/routes";
 export { default as importRoutes } from "./import/routes";
 export { default as onboardingRoutes } from "./onboarding/routes";
 export { default as robotRoutes } from "./robot/routes";
+export { default as mcpRoutes } from "./mcp/routes";
