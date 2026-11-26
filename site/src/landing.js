@@ -29,7 +29,7 @@ R.classList.add('js');
 /* c : [x,y,l,h] en pixels de l’écran d’origine ; m : recadrage téléphone */
 function cropStyle(c,m,iw){var s='--dx:'+c[0]+';--dy:'+c[1]+';--dw:'+c[2]+';--dh:'+c[3];if(m)s+=';--mx:'+m[0]+';--my:'+m[1]+';--mw:'+m[2]+';--mh:'+m[3];if(iw)s+=';--iw:'+iw;return s}
 function img(n,alt,tab){return '<img src="'+SH+n+'.webp" width="'+(tab?1770:2160)+'" height="'+(tab?1230:1350)+'" loading="lazy" alt="'+(alt||'')+'">'}
-function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.stabl.fr/les-tilleuls</span></div>'}
+function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.stablapp.fr/les-tilleuls</span></div>'}
 /* iPhone : n = une capture ou une liste de captures empilées ; o.duo = capture sombre disponible */
 var IOS='<svg viewBox="0 0 78 13" aria-hidden="true"><rect x="0" y="8" width="3.2" height="4.6" rx=".9"/><rect x="4.9" y="5.6" width="3.2" height="7" rx=".9"/><rect x="9.8" y="3" width="3.2" height="9.6" rx=".9"/><rect x="14.7" y=".4" width="3.2" height="12.2" rx=".9"/><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M24.4 4.7a11.2 11.2 0 0 1 15.6 0"/><path d="M27.4 7.7a7 7 0 0 1 9.6 0"/></g><circle cx="32.2" cy="10.8" r="1.6"/><rect x="48.5" y=".9" width="24.5" height="11.6" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="50.2" y="2.6" width="21.1" height="8.2" rx="2.2"/><path d="M74.6 4.8v3.8c.8-.3 1.4-1 1.4-1.9s-.6-1.6-1.4-1.9z" opacity=".45"/></svg>';
 function tel(n,alt,o){o=o||{};var L=[].concat(n),ims=L.map(function(x,i){var lz=o.vite?'':' loading="lazy"';

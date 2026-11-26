@@ -37,7 +37,7 @@ node migration/cli/passerelle.mjs convertir migration/fixtures --sortie /tmp/sor
 
 # voir ce qui partirait vers l'API, puis envoyer (essai par défaut)
 node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --apercu
-node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --url https://app.stabl.fr --cle pk_live_…
+node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --url https://app.stablapp.fr --cle pk_live_…
 
 # contrôles
 node migration/test/tests.mjs

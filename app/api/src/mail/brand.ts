@@ -8,7 +8,7 @@
 export const BRAND = {
   name: "Stabl",
   tagline: "Le logiciel des écuries et centres équestres",
-  logoUrl: "",            // ex. "https://app.stabl.fr/brand/logo-mail@2x.png"
+  logoUrl: "",            // ex. "https://app.stablapp.fr/brand/logo-mail@2x.png"
   logoWidth: 112,
   logoHeight: 28,
   colors: {
@@ -32,7 +32,7 @@ export const BRAND = {
   },
   font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
   legal: "Marceau Ruis (EI), SIREN 934 733 122",
-  supportEmail: "bonjour@stabl.fr",
+  supportEmail: "bonjour@stablapp.fr",
 };
 
 /** Nom d'expéditeur : « Écurie des Tilleuls via Stabl », ou « Stabl » pour les e-mails de la plateforme. */
@@ -41,7 +41,7 @@ export function senderName(clubName?: string | null): string {
   return clubName ? `${clean(clubName)} via ${BRAND.name}` : BRAND.name;
 }
 
-/** Adresse d'envoi extraite de MAIL_FROM (« Stabl <bonjour@stabl.fr> » ou « bonjour@stabl.fr »). */
+/** Adresse d'envoi extraite de MAIL_FROM (« Stabl <bonjour@stablapp.fr> » ou « bonjour@stablapp.fr »). */
 export function senderAddress(mailFrom: string | undefined): string {
   const m = /<([^>]+)>/.exec(mailFrom || "");
   return (m ? m[1] : (mailFrom || "")).trim() || BRAND.supportEmail;

@@ -48,7 +48,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Envoyé à l'inscription pour vérifier l'adresse.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom (facultatif)", verify_url: "Lien de confirmation", code: "Code à 6 chiffres (facultatif)", expires_hours: "Validité du lien en heures (24 par défaut)" },
-    sample: { first: "Léa", verify_url: "https://app.stabl.fr/auth/verify?token=exemple", code: "482913" },
+    sample: { first: "Léa", verify_url: "https://app.stablapp.fr/auth/verify?token=exemple", code: "482913" },
     build: (d) => ({
       subject: d.change ? "Confirmez votre nouvelle adresse e-mail" : "Confirmez votre adresse e-mail",
       preheader: "Un clic pour activer votre compte Stabl.",
@@ -70,7 +70,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Lien pour choisir un nouveau mot de passe.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom (facultatif)", reset_url: "Lien de réinitialisation", expires_minutes: "Validité en minutes (60 par défaut)" },
-    sample: { first: "Léa", reset_url: "https://app.stabl.fr/auth/reset?token=exemple", expires_minutes: 60 },
+    sample: { first: "Léa", reset_url: "https://app.stablapp.fr/auth/reset?token=exemple", expires_minutes: 60 },
     build: (d) => ({
       subject: "Choisissez un nouveau mot de passe",
       preheader: "Vous avez demandé à réinitialiser votre mot de passe.",
@@ -89,7 +89,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Connexion sans mot de passe (pratique pour les parents).",
     category: "essential", sensitive: true,
     fields: { first: "Prénom (facultatif)", login_url: "Lien de connexion", expires_minutes: "Validité en minutes (15 par défaut)" },
-    sample: { first: "Léa", login_url: "https://app.stabl.fr/auth/magic/callback?token=exemple", expires_minutes: 15 },
+    sample: { first: "Léa", login_url: "https://app.stablapp.fr/auth/magic/callback?token=exemple", expires_minutes: 15 },
     build: (d, ctx) => ({
       subject: `Votre lien de connexion à ${clubName(ctx)}`,
       preheader: "Connectez-vous en un clic, sans mot de passe.",
@@ -112,7 +112,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       first: "Prénom de l'invité (facultatif)", inviter_name: "Nom de la personne qui invite (facultatif)",
       invitation_url: "Lien d'acceptation", child_first: "Prénom de l'enfant (rôle parent, facultatif)", expires_days: "Validité en jours (14 par défaut)",
     },
-    sample: { role: "member", first: "Léa", inviter_name: "Claire", invitation_url: "https://app.stabl.fr/invitation/exemple" },
+    sample: { role: "member", first: "Léa", inviter_name: "Claire", invitation_url: "https://app.stablapp.fr/invitation/exemple" },
     build: (d, ctx) => {
       const r = ROLE_INVITE[d.role === "owner" ? "manager" : d.role] || ROLE_INVITE.member;
       const who = d.inviter_name ? `${d.inviter_name}, de ${clubName(ctx)},` : clubName(ctx);
@@ -138,7 +138,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Accueil d'un nouvel adhérent ajouté par le club, avec le lien d'activation de son espace.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom", activation_url: "Lien d'activation de l'espace adhérent (ou action_url)", minor: "true si l'adhérent est mineur (e-mail au parent)", member_first: "Prénom de l'adhérent (si mineur)", forfait: "Nom du forfait (facultatif)", horse_name: "Cheval suivi (propriétaire, facultatif)", first_lesson: "Première reprise, texte libre (facultatif)" },
-    sample: { first: "Léa", activation_url: "https://app.stabl.fr/invitation/exemple", forfait: "Forfait annuel 1 h / semaine", first_lesson: "mercredi 18 novembre à 17 h, Galop 3-4" },
+    sample: { first: "Léa", activation_url: "https://app.stablapp.fr/invitation/exemple", forfait: "Forfait annuel 1 h / semaine", first_lesson: "mercredi 18 novembre à 17 h, Galop 3-4" },
     build: (d, ctx) => ({
       subject: d.first ? `Bienvenue chez ${clubName(ctx)}, ${d.first}` : `Bienvenue chez ${clubName(ctx)}`,
       preheader: "Votre espace adhérent est prêt : réservez, payez et suivez tout depuis votre téléphone.",
@@ -168,7 +168,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Après la création du club : prochaines étapes de la mise en route.",
     category: "essential",
     fields: { first: "Prénom du gérant", club_name: "Nom du club", dashboard_url: "Lien vers le tableau de bord", trial_ends_at: "Fin de l'essai (facultatif)", import_url: "Lien vers l'import de données (facultatif)" },
-    sample: { first: "Claire", club_name: "Écurie des Tilleuls", dashboard_url: "https://app.stabl.fr/", trial_ends_at: "2026-12-24", import_url: "https://app.stabl.fr/reglages/import" },
+    sample: { first: "Claire", club_name: "Écurie des Tilleuls", dashboard_url: "https://app.stablapp.fr/", trial_ends_at: "2026-12-24", import_url: "https://app.stablapp.fr/reglages/import" },
     build: (d) => ({
       subject: `${d.club_name || "Votre club"} est prêt sur ${BRAND.name}`,
       preheader: "Vos prochaines étapes pour démarrer sereinement.",
@@ -196,7 +196,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Facture émise, avec lien de paiement en ligne et PDF en pièce jointe.",
     category: "essential",
     fields: { first: "Prénom", number: "Numéro de facture", amount_cents: "Montant TTC en centimes (ou amount en euros)", due_date: "Date d'échéance", label: "Objet (facultatif)", pay_url: "Lien de paiement en ligne (facultatif)", invoice_url: "Lien vers la facture (facultatif)", sepa: "true si l'échéance sera prélevée automatiquement" },
-    sample: { first: "Léa", number: "F-2026-1173", amount_cents: 52000, due_date: "2026-12-05", label: "Pension complète décembre, Ulysse de la Roche", pay_url: "https://app.stabl.fr/payer/exemple" },
+    sample: { first: "Léa", number: "F-2026-1173", amount_cents: 52000, due_date: "2026-12-05", label: "Pension complète décembre, Ulysse de la Roche", pay_url: "https://app.stablapp.fr/payer/exemple" },
     build: (d, ctx) => ({
       subject: `Facture ${d.number} de ${clubName(ctx)} : ${money(d)}`,
       preheader: `${money(d)} à régler avant le ${dateShort(d.due_date)}.`,
@@ -239,7 +239,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Relance d'une facture impayée, en trois niveaux de ton (1 : courtois, 2 : ferme, 3 : dernière relance).",
     category: "essential",
     fields: { level: "1, 2 ou 3", first: "Prénom", number: "Numéro de facture", amount_cents: "Reste à payer en centimes", due_date: "Échéance dépassée", days_late: "Jours de retard", pay_url: "Lien de paiement" },
-    sample: { level: 1, first: "Léa", number: "F-2026-1173", amount_cents: 41000, due_date: "2026-11-15", days_late: 9, pay_url: "https://app.stabl.fr/payer/exemple" },
+    sample: { level: 1, first: "Léa", number: "F-2026-1173", amount_cents: 41000, due_date: "2026-11-15", days_late: 9, pay_url: "https://app.stablapp.fr/payer/exemple" },
     build: (d, ctx) => {
       const lvl = Math.min(3, Math.max(1, Number(d.level) || 1));
       const subject = lvl === 1 ? `Petit rappel : facture ${d.number}` : lvl === 2 ? `Facture ${d.number} en attente de règlement` : `Dernière relance : facture ${d.number}`;
@@ -268,7 +268,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Un prélèvement ou un paiement par carte a échoué.",
     category: "essential",
     fields: { first: "Prénom", amount_cents: "Montant en centimes", reason: "Motif lisible (facultatif)", number: "Facture (facultatif)", method: "Moyen de paiement (facultatif)", retry_url: "Lien pour régler ou mettre à jour le moyen de paiement" },
-    sample: { first: "Léa", amount_cents: 52000, reason: "provision insuffisante", number: "F-2026-1173", method: "Prélèvement SEPA", retry_url: "https://app.stabl.fr/payer/exemple" },
+    sample: { first: "Léa", amount_cents: 52000, reason: "provision insuffisante", number: "F-2026-1173", method: "Prélèvement SEPA", retry_url: "https://app.stablapp.fr/payer/exemple" },
     build: (d, ctx) => ({
       subject: `Votre paiement de ${money(d)} n'a pas abouti`,
       preheader: "Quelques secondes suffisent pour régulariser.",
@@ -288,7 +288,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Confirmation d'une réservation de reprise, de cours particulier ou de piste.",
     category: "bookings",
     fields: { first: "Prénom", title: "Intitulé", date: "Date", time: "Heure HH:MM", dur: "Durée en minutes", coach: "Moniteur ou coach", arena: "Lieu", horse: "Cheval (facultatif)", manage_url: "Lien pour gérer la réservation", ics_url: "Lien .ics pour l'ajouter à l'agenda (facultatif)", cancel_hours: "Délai d'annulation en heures (facultatif)" },
-    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", dur: 60, coach: "Hugo Lefèvre", arena: "Grand manège", horse: "Quiétude", manage_url: "https://app.stabl.fr/reservations", cancel_hours: 24 },
+    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", dur: 60, coach: "Hugo Lefèvre", arena: "Grand manège", horse: "Quiétude", manage_url: "https://app.stablapp.fr/reservations", cancel_hours: 24 },
     build: (d, ctx) => ({
       subject: `C'est réservé : ${d.title}, ${dayShort(d)}${d.time ? " à " + hour(d.time) : ""}`,
       preheader: "Votre place est confirmée.",
@@ -308,7 +308,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Annulation par le club (météo, absence du moniteur…) ou par le cavalier, avec rattrapage éventuel.",
     category: "essential",
     fields: { first: "Prénom", title: "Intitulé", date: "Date", time: "Heure", reason: "Motif (facultatif)", credit: "true si un rattrapage est crédité", credit_days: "Validité du rattrapage en jours", book_url: "Lien pour réserver un rattrapage", by_member: "true si c'est le cavalier qui a annulé" },
-    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", reason: "Tempête annoncée", credit: true, credit_days: 60, book_url: "https://app.stabl.fr/reservations" },
+    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", reason: "Tempête annoncée", credit: true, credit_days: 60, book_url: "https://app.stablapp.fr/reservations" },
     build: (d, ctx) => ({
       subject: d.by_member ? `Annulation enregistrée : ${d.title}, ${dayShort(d)}` : `Annulé : ${d.title}, ${dayShort(d)}${d.time ? " à " + hour(d.time) : ""}`,
       preheader: d.credit ? "Un rattrapage vous est crédité." : "Nous vous prévenons dès que possible.",
@@ -330,7 +330,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Une place s'est libérée dans un cours où le cavalier était en liste d'attente.",
     category: "waitlist",
     fields: { first: "Prénom", title: "Intitulé", date: "Date", time: "Heure", claim_url: "Lien pour prendre la place", expires_hours: "Délai pour confirmer en heures (12 par défaut)" },
-    sample: { first: "Léa", title: "Galop 5-6", date: "2026-11-26", time: "18:00", claim_url: "https://app.stabl.fr/reservations/exemple", expires_hours: 12 },
+    sample: { first: "Léa", title: "Galop 5-6", date: "2026-11-26", time: "18:00", claim_url: "https://app.stablapp.fr/reservations/exemple", expires_hours: 12 },
     build: (d, ctx) => ({
       subject: `Une place s'est libérée : ${d.title}, ${dayShort(d)}`,
       preheader: "Premier arrivé, premier servi.",
@@ -350,7 +350,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Rappel envoyé la veille d'une reprise ou d'un cours particulier.",
     category: "reminders",
     fields: { first: "Prénom", title: "Intitulé", date: "Date", time: "Heure", dur: "Durée en minutes", coach: "Moniteur", arena: "Lieu", horse: "Cheval attribué (facultatif)", cancel_url: "Lien pour prévenir d'une absence", cancel_hours: "Délai d'annulation en heures" },
-    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", dur: 60, coach: "Hugo Lefèvre", arena: "Grand manège", horse: "Quiétude", cancel_url: "https://app.stabl.fr/reservations" },
+    sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", dur: 60, coach: "Hugo Lefèvre", arena: "Grand manège", horse: "Quiétude", cancel_url: "https://app.stablapp.fr/reservations" },
     build: (d, ctx) => ({
       subject: `Demain ${hour(d.time)} : ${d.title}`,
       preheader: d.horse ? `Vous montez ${d.horse}.` : "On vous attend demain.",
@@ -370,7 +370,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Avertit le gérant quelques jours avant la fin de l'essai gratuit.",
     category: "essential",
     fields: { first: "Prénom", club_name: "Nom du club", days_left: "Jours restants", trial_ends_at: "Date de fin", plan_url: "Lien vers le choix de la formule" },
-    sample: { first: "Claire", club_name: "Écurie des Tilleuls", days_left: 3, trial_ends_at: "2026-11-27", plan_url: "https://app.stabl.fr/reglages/abonnement" },
+    sample: { first: "Claire", club_name: "Écurie des Tilleuls", days_left: 3, trial_ends_at: "2026-11-27", plan_url: "https://app.stablapp.fr/reglages/abonnement" },
     build: (d) => ({
       subject: Number(d.days_left) <= 0 ? "Votre essai est terminé" : `Votre essai se termine dans ${d.days_left} jour${Number(d.days_left) > 1 ? "s" : ""}`,
       preheader: "Choisissez votre formule pour continuer sans interruption.",
@@ -408,7 +408,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Le gérant donne accès aux factures et exports à son cabinet comptable.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom du comptable", inviter_name: "Nom du gérant", firm: "Cabinet (facultatif)", invitation_url: "Lien d'acceptation", expires_days: "Validité en jours" },
-    sample: { first: "Nathalie", inviter_name: "Claire", firm: "Cabinet Expertise Yvelines", invitation_url: "https://app.stabl.fr/invitation/exemple" },
+    sample: { first: "Nathalie", inviter_name: "Claire", firm: "Cabinet Expertise Yvelines", invitation_url: "https://app.stablapp.fr/invitation/exemple" },
     build: (d, ctx) => ({
       subject: `${clubName(ctx)} vous donne accès à sa comptabilité`,
       preheader: "Factures, encaissements, FEC et factures électroniques, en lecture seule.",
@@ -433,7 +433,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Un export demandé (FEC, ventes, factures PDF) est prêt à être téléchargé.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom", export_name: "Nom de l'export", period: "Période (facultatif)", download_url: "Lien de téléchargement", expires_days: "Validité du lien en jours (7 par défaut)" },
-    sample: { first: "Nathalie", export_name: "FEC 2026", period: "du 1er janvier au 31 décembre 2026", download_url: "https://app.stabl.fr/exports/exemple" },
+    sample: { first: "Nathalie", export_name: "FEC 2026", period: "du 1er janvier au 31 décembre 2026", download_url: "https://app.stablapp.fr/exports/exemple" },
     build: (d, ctx) => ({
       subject: `Votre export est prêt : ${d.export_name}`,
       preheader: "Téléchargez-le dès maintenant.",
@@ -452,7 +452,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Contrat de pension, demi-pension, inscription, autorisation parentale… à signer en ligne.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom", title: "Titre du document", horse: "Cheval concerné (facultatif)", sender_name: "Qui l'envoie (facultatif)", sign_url: "Lien de signature", due_date: "À signer avant le (facultatif)" },
-    sample: { first: "Emma", title: "Contrat de demi-pension", horse: "Ulysse de la Roche", sender_name: "Claire", sign_url: "https://app.stabl.fr/signer/exemple", due_date: "2026-11-30" },
+    sample: { first: "Emma", title: "Contrat de demi-pension", horse: "Ulysse de la Roche", sender_name: "Claire", sign_url: "https://app.stablapp.fr/signer/exemple", due_date: "2026-11-30" },
     build: (d, ctx) => ({
       subject: `Document à signer : ${d.title}`,
       preheader: "Signature en ligne en deux minutes, depuis votre téléphone.",
@@ -497,7 +497,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Le club passe à Stabl : ce qui est transféré pour l'adhérent (forfait, solde, reprises, cheval).",
     category: "essential", sensitive: true,
     fields: { first: "Prénom", previous_software: "Ancien logiciel (facultatif)", switch_date: "Date du changement (facultatif)", forfait: "Forfait repris", balance: "Solde repris en euros (négatif = à régler)", lessons: "Prochaines reprises (tableau de textes)", horses: "Chevaux suivis (tableau de noms)", activate_url: "Lien d'activation (si l'activation n'est pas envoyée à part)" },
-    sample: { first: "Léa", previous_software: "Kavalog", switch_date: "2026-12-01", forfait: "Forfait annuel 1 h / semaine", balance: -195, lessons: ["mercredi 17 h, Galop 3-4"], horses: ["Ulysse de la Roche"], activate_url: "https://app.stabl.fr/api/migration/activer/exemple" },
+    sample: { first: "Léa", previous_software: "Kavalog", switch_date: "2026-12-01", forfait: "Forfait annuel 1 h / semaine", balance: -195, lessons: ["mercredi 17 h, Galop 3-4"], horses: ["Ulysse de la Roche"], activate_url: "https://app.stablapp.fr/api/migration/activer/exemple" },
     build: (d, ctx) => {
       const bal = Number(d.balance);
       const balTxt = !isFinite(bal) || d.balance == null ? "" : bal < 0 ? money({ amount: -bal }) + " à régler" : bal > 0 ? "avoir de " + money({ amount: bal }) : "à jour";
@@ -526,7 +526,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Lien d'activation personnel (connexion directe) vers une fiche pré-remplie à vérifier.",
     category: "essential", sensitive: true,
     fields: { first: "Prénom", activate_url: "Lien d'activation", forfait: "Forfait repris (facultatif)", lessons: "Prochaines reprises (tableau, facultatif)", horses: "Chevaux (tableau, facultatif)", expires_days: "Validité du lien en jours (30 par défaut)" },
-    sample: { first: "Léa", activate_url: "https://app.stabl.fr/api/migration/activer/exemple", forfait: "Forfait annuel 1 h / semaine", lessons: ["mercredi 17 h, Galop 3-4"], horses: [] },
+    sample: { first: "Léa", activate_url: "https://app.stablapp.fr/api/migration/activer/exemple", forfait: "Forfait annuel 1 h / semaine", lessons: ["mercredi 17 h, Galop 3-4"], horses: [] },
     build: (d, ctx) => ({
       subject: `${d.first ? d.first + ", votre" : "Votre"} espace ${clubName(ctx)} est prêt`,
       preheader: "Un clic pour l'activer, votre fiche est déjà remplie.",
@@ -548,7 +548,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Relance des adhérents qui n'ont pas encore activé leur espace (niveau 1 à J+3, niveau 2 à J+7).",
     category: "essential", sensitive: true,
     fields: { level: "1 (J+3) ou 2 (J+7)", first: "Prénom", activate_url: "Lien d'activation", expires_days: "Jours restants de validité (facultatif)" },
-    sample: { level: 1, first: "Léa", activate_url: "https://app.stabl.fr/api/migration/activer/exemple" },
+    sample: { level: 1, first: "Léa", activate_url: "https://app.stablapp.fr/api/migration/activer/exemple" },
     build: (d, ctx) => {
       const two = Number(d.level) >= 2;
       return {

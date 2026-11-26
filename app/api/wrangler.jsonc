@@ -14,7 +14,7 @@
   "triggers": { "crons": ["*/10 * * * *", "0 6 * * *"] },
   "vars": {
     "APP_URL": "http://localhost:8787",
-    "MAIL_FROM": "Stabl <bonjour@stabl.fr>",
+    "MAIL_FROM": "Stabl <bonjour@stablapp.fr>",
     "MAIL_PROVIDER": "log",
     "EINVOICE_PROVIDER": "sandbox",
     "PLATFORM_LEGAL_NAME": "Marceau Ruis EI",
