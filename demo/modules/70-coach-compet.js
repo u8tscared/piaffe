@@ -744,7 +744,7 @@ function liveTab(root){var tm=null;
   bar:function(){LIVE.pts+=4;var p=root.querySelector('[data-pts]');p.textContent=LIVE.pts;pulse(p)},ref:function(){LIVE.pts+=4;var p=root.querySelector('[data-pts]');p.textContent=LIVE.pts;pulse(p)},
   pub:function(){LIVE.pub=!LIVE.pub;P.toast(LIVE.pub?'Résultats visibles en direct sur le portail':'Diffusion en direct coupée')},
   screen:function(){P.toast('Classement affiché sur l’écran du club-house',{icon:'expand'})},
-  exportres:function(){P.toast('Fichier des résultats prêt pour la saisie FFE',{icon:'download'})}});
+  exportres:function(){var rows=[['Rang','Cavalier','Cheval','Points','Temps (s)']].concat(LIVE.rank.slice().sort(function(a,b){return a.pts-b.pts||a.t-b.t}).map(function(x,i){return [i+1,nm(x.r),D.horse(x.h).name,x.pts,x.t.toFixed(2).replace('.',',')]}));if(P.xcsv){P.xcsv('resultats-epreuve.csv',rows);P.toast('Fichier des résultats prêt pour la saisie FFE',{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}});
 }
 
 function startList(c){var rs=D.members.filter(function(m){return m.galop>=2&&m.forfait!=='f5'}).slice(c.n*3,c.n*4);

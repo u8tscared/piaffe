@@ -87,7 +87,7 @@ function docPdf(title,sub,texte,lignes){XF('pdf',P.xname?P.xname(title)+'.pdf':'
 function lessonIcs(t,off,start,dur,lieu,desc){XF('ics',P.xname?P.xname(t)+'.ics':'seance.ics',[{t:t,d:D.iso(D.day(off)),s:start,dur:dur||60,lieu:(lieu?lieu+', ':'')+D.club.name,desc:desc||''}],'Fichier agenda prêt : ouvrez-le pour ajouter la séance')}
 /* Photo du cheval : P.horsePhoto (30-chevaux) si présent, sinon sélecteur de fichier natif avec aperçu */
   function takePhoto(cb){
-    if(typeof P.horsePhoto==='function'){try{var r=P.horsePhoto('h01',{onDone:function(u,f){cb(u,f)}});if(r&&r.then)r.then(function(x){if(x)cb(x.url||x,x.file)});return}catch(e){}}
+    if(typeof P.horsePhoto==='function'){try{P.horsePhoto('h01',{done:function(ph){var u=ph&&(ph.url||ph.thumb||ph.blob);if(u&&typeof u!=='string'&&u instanceof Blob)u=URL.createObjectURL(u);cb(typeof u==='string'?u:'',ph,true)}});return}catch(e){}}
     var i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.style.cssText='position:fixed;left:-9999px;opacity:0';
     i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return;cb(URL.createObjectURL(f),f)};document.body.appendChild(i);i.click()}
   function addJournalPhoto(u){A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:'Photo du jour',kind:'travail',mood:4,photo:u,isNew:true})}
@@ -812,7 +812,7 @@ function camSheet(){var act=[2,1,0,0,0,1,0,0,3,1,0,0,0,0,2,0,0,1,4,6,5,3,2,4];
     '<div class="card list" style="margin-top:14px">'+[['23:10','Se couche','Couché 3 h 20 au total, deux cycles de sommeil','moon'],['03:40','Se relève et boit','Abreuvoir : 4 litres','drop'],['07:10','Repas du matin','A tout mangé en 35 minutes','hay'],['08:30','Sortie au paddock','Prairie du bas, retour à 10 h 30','paddock']].map(function(e){return '<div class="li click" data-clip><span class="mono" style="width:44px">'+e[0]+'</span>'+sq(e[3])+'<div class="grow"><div class="t">'+e[1]+'</div><div class="s">'+e[2]+'</div></div>'+ICON('play','sm')+'</div>'}).join('')+'</div>';
     boxCam($('[data-bigcam]',b),{tools:false});$$('[data-clip]',b).forEach(function(c){c.onclick=function(){P.toast('Lecture de l’extrait de '+$('.mono',c).textContent,{icon:'play'})}})},
    foot:'<button class="btn ad-full" data-al>'+ICON('bell','sm')+'Régler mes alertes</button><button class="btn pri ad-full" data-sn>'+ICON('image','sm')+'Prendre une photo</button>'});
-  $('[data-sn]',sh).onclick=function(){takePhoto(function(u){addJournalPhoto(u);sh.close();P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
+  $('[data-sn]',sh).onclick=function(){takePhoto(function(u,f,core){if(!u)return;addJournalPhoto(u);sh.close();if(!core)P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
 
 P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'horse',n:10,short:'Ulysse',phoneTitle:'Ulysse',
  render:function(el,ctx){
@@ -835,7 +835,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
   var g=P.gl.horse($('.ad-3d .gl',el),{points:pts,walk:false,rot:-.9,onPick:function(id){if(id==='pied')careSheet(0);else{CH.tab='soins';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='soins')});body();P.toast(pts.find(function(x){return x.id===id}).label,{icon:'care'})}}});
   var h0=$('.h3d',el);if(h0)h0.classList.add('show');
   boxCam($('[data-cam]',el),{tools:true});
-  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){takePhoto(function(u){addJournalPhoto(u);P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};
+  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){takePhoto(function(u,f,core){if(!u)return;addJournalPhoto(u);if(!core)P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};
   $$('[data-hv]',el).forEach(function(b){b.addEventListener('click',function(){CH.view=b.getAttribute('data-hv');$('.ad-hv',el).setAttribute('data-v',CH.view)})});
   $$('[data-ps]',el).forEach(function(b){b.onclick=function(){prestaSheet(b.getAttribute('data-ps'),function(){if(CH.tab==='presta')body()})}});
   $('[data-allp]',el).onclick=function(){CH.tab='presta';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='presta')});body();$('[data-body]',el).scrollIntoView({behavior:'smooth',block:'start'})};
@@ -899,7 +899,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
     $$('[data-m]',b).forEach(function(m){m.onclick=function(){mood=+m.getAttribute('data-m');$$('[data-m]',b).forEach(function(y){y.classList.toggle('on',+y.getAttribute('data-m')<=mood)})}});
     $$('[data-jk]',b).forEach(function(t){t.onclick=function(){$$('[data-jk]',b).forEach(function(y){y.setAttribute('aria-pressed',y===t)})}});
     var jph=$('[data-jph]',b),jpb=$('[data-jp]',b);function showPh(){jph.innerHTML=photo?'<div class="ad-photo pop" style="height:130px"><img src="'+F.esc(photo)+'" alt="Aperçu de la photo"><button class="btn sm ad-phx" data-jpx title="Retirer la photo">'+ICON('trash','sm')+'Retirer</button></div>':'';if(photo)$('[data-jpx]',jph).onclick=function(){photo=false;showPh();P.toast('Photo retirée',{icon:'image'})}}
-    jpb.onclick=function(){takePhoto(function(u){photo=u;showPh();P.toast('Photo ajoutée',{icon:'image'})})};
+    jpb.onclick=function(){takePhoto(function(u,f,core){if(!u)return;photo=u;showPh();if(!core)P.toast('Photo ajoutée',{icon:'image'})})};
     pub.onclick=function(){var ta=$('#ad-jt',b),tx=ta.value.trim();if(!tx){ta.focus();ta.value='';ta.placeholder='Écrivez quelques mots avant de publier.';return}
       A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:tx,kind:$('[data-jk][aria-pressed="true"]',b).getAttribute('data-jk'),mood:mood,photo:photo,isNew:true});body();A.journal[0].isNew=false;P.toast('Publié dans le journal, '+DPR.first+' et l’équipe sont prévenus')};
     $$('[data-like]',b).forEach(function(x){x.onclick=function(){var j=all[+x.getAttribute('data-like')];j.liked=!j.liked;x.setAttribute('aria-pressed',j.liked);$('span',x).textContent=j.liked?'Merci envoyé':'Dire merci'}})}
