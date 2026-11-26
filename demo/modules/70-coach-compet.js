@@ -48,7 +48,7 @@ P.xpdf=function(name,o){var club=(P.D.club&&P.D.club.name)||'Stabl',pages=[],ops
    all('.ad-mood:not(.ro),.ad-stars')+'{gap:14px}'+all('.cd-c')+'{min-height:44px}'+
    all('.btn::before,.tag::before,.seg>button::before,.ad-pill::before,.ad-like::before,.em-hb::before,.em-pick button::before,.em-3 button::before,.lk::before,.em-gt::before,button[data-who]::before,button.hrow.s::before,.pfa-fu>button::before,.ew-steps>button::before')+'{content:"";position:absolute;left:0;right:0;top:50%;height:max(44px,100%);transform:translateY(-50%)}'+
    all('.btn.icon::before,.ad-fav::before,.ad-stars button::before,.ad-mood button::before,.ad-cam .c4 button::before,.em-ck::before,.ad-wsd::before,.fx-step button::before,[data-snap]::before,.ad-pfc::before,[data-sc]::before,.qq-leave button::before')+'{content:"";position:absolute;left:50%;top:50%;width:max(44px,100%);height:max(44px,100%);transform:translate(-50%,-50%)}'+
-   all('.tog::before')+'{content:"";position:absolute;inset:-6px -4px}'+all('.chk')+'{position:relative}'+all('.chk::before')+'{content:"";position:absolute;inset:-10px}'+
+   all('.tog::before')+'{content:"";position:absolute;inset:-6px -4px}'+all('.chk')+'{position:relative}'+all('.chk::before')+'{content:"";position:absolute;inset:-9px}'+
    /* rien de tronqué : partout, les textes à points de suspension passent à la ligne (sauf aperçus de messages) */
    ['.app[data-role="adherent"] .view','.app[data-role="employe"] .view','.app[data-role="coach"] .view','.app .view:has(.pf-mk)','.app .view:has(.cg-pg)'].map(function(s){return s+' .ellip:not(.ad-tl *):not(.em-msgs *):not(.ad-tls *):not(.pf-mono):not(.chip):not(.chip *)'}).join(',')+'{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;-webkit-line-clamp:none}')})();
 P.xname=function(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'«»]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()};
@@ -146,7 +146,7 @@ P.css(`
 .app.mobile[data-role="coach"] .view .btn{position:relative}.app.mobile[data-role="coach"] .view .btn::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
 .app.mobile[data-role="coach"] .view .btn.sm{height:36px;padding:0 12px;font-size:13px}.app.mobile[data-role="coach"] .view .btn.sm.icon{width:36px;padding:0}
 .app.mobile[data-role="coach"] .view .seg button{height:38px;padding:0 13px}.app.mobile[data-role="coach"] .view .tabs button{padding-top:12px;padding-bottom:12px}
-.app.mobile[data-role="coach"] .view .tog::before{content:"";position:absolute;inset:-11px -4px}.app.mobile[data-role="coach"] .view .chk{position:relative}.app.mobile[data-role="coach"] .view .chk::before{content:"";position:absolute;inset:-12px}
+.app.mobile[data-role="coach"] .view .tog::before{content:"";position:absolute;inset:-11px -4px}.app.mobile[data-role="coach"] .view .chk{position:relative}.app.mobile[data-role="coach"] .view .chk::before{content:"";position:absolute;inset:-9px}
 .app.mobile[data-role="coach"] .view .fx-step button{width:36px;height:36px}
 .app.mobile[data-role="coach"] .view .qq-leave button,.app.mobile .cg-pg .qq-leave button{width:36px;height:36px}
 .app.mobile[data-role="coach"] .view .cd-c{height:40px}
@@ -1423,7 +1423,7 @@ P.css(`
 .cd-slots button small{display:block;font-weight:500;color:var(--mut);font-size:13px}
 .cd-slots button[aria-pressed="true"]{background:var(--acc-pale);box-shadow:inset 0 0 0 1.5px var(--acc)}
 .cd-url{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--r-sm);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);font:500 13px var(--f-mono);min-width:0}
-.cd-url span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-url span{flex:1;min-width:0;overflow-wrap:anywhere}
 .cd-map text{font:600 13px var(--f-text);fill:var(--mut)}
 @container main (min-width:861px){.cd-tabs [data-t="page"]{display:none}}
 @container main (max-width:860px){.cd{grid-template-columns:minmax(0,1fr)}.cd-aside{display:none}}
@@ -1633,7 +1633,7 @@ P.mod({id:'coach-concours',role:'coach',group:'Coaching',title:'Concours',icon:'
    send:function(){var x=CC[ccSel];x.sent=true;draw();P.toast('Horaires de détente et de passage envoyés aux '+x.riders.length+' cavaliers',{icon:'send'})},
    cal:function(b){b.innerHTML=I('check','sm')+'Journée ajoutée à l’agenda';P.toast('Journée de concours ajoutée, vos créneaux du dimanche sont fermés')},
    bilan:function(b){b.innerHTML=I('check','sm')+'Bilan envoyé';P.toast('Bilan du concours envoyé à Léa, Louise et Emma')},
-   imp:function(){P.toast('Déposez le fichier exporté de FFE Compet : Stabl y retrouve vos cavaliers',{icon:'upload'})}});
+   imp:function(){var i=document.createElement('input');i.type='file';i.accept='.csv,.txt,.xlsx,.pdf,text/csv';i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.appendChild(i);i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return;var done=function(n){P.toast(f.name+' importé'+(n?' : '+n+' ligne'+(n>1?'s':'')+' lue'+(n>1?'s':'')+', '+rx.length+' de vos cavaliers retrouvés':', '+rx.length+' de vos cavaliers retrouvés'),{icon:'upload'})};if(/\.(csv|txt)$/i.test(f.name)&&f.text)f.text().then(function(t){done(t.split(/\r?\n/).filter(function(l){return l.trim()}).length)},function(){done(0)});else done(0)};i.click()}});
  }});
 
 /* =====================================================================

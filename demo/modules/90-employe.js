@@ -1045,7 +1045,7 @@ function convHtml(th){var grp=!!th.grp,last=th.msgs[th.msgs.length-1];
    '<form class="em-comp"><button type="button" class="btn icon ghost" data-att title="Joindre une photo">'+ICON('image')+'</button><input placeholder="Écrire à '+(grp?'l’équipe':D.staffer(th.with).first)+'" aria-label="Votre message" autocomplete="off"><button class="btn pri" title="Envoyer">'+ICON('send')+'</button></form>'}
 function bindConv(root,th,after){var box=root.querySelector('.em-conv')||root;
   function re(){box.innerHTML=convHtml(th);var bd=box.querySelector('.bd');bd.scrollTop=1e6;th.msgs.forEach(function(m){m.fresh=false})}
-  function send(x){if(!x.trim())return;var m={w:E.who,t:'9 h 41',x:x.trim(),fresh:true};th.msgs.push(m);th.last=x;re();if(after)after();
+  function send(x){if(!x.trim()){var i0=box.querySelector('input');if(i0){i0.placeholder='Écrivez votre message, puis envoyez';i0.focus()}P.toast('Le message est vide',{icon:'alert'});return}var m={w:E.who,t:'9 h 41',x:x.trim(),fresh:true};th.msgs.push(m);th.last=x;re();if(after)after();
    if(E.offline){E.queue++;return}setTimeout(function(){m.read=true;if(box.isConnected){var r=$$('.rc',box).pop();if(r){r.classList.add('rd');r.innerHTML=ICON('checkc')+(th.grp?'Lu par 2 sur '+th.grp.length:'Lu par '+D.staffer(th.with).first)+' · 9 h 42'}}},P.RM?100:1800)}
   box.addEventListener('submit',function(e){e.preventDefault();var i=box.querySelector('input');send(i.value)});
   on(box,'[data-qr]',function(b){send(b.textContent)});

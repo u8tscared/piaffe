@@ -156,7 +156,7 @@ P.css(`
 .ad-cam .o{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
 .ad-cam .c1{top:10px;left:10px}.ad-cam .c2{top:10px;right:10px;background:rgba(0,0,0,.45);padding:3px 8px;border-radius:5px;backdrop-filter:blur(6px)}
 .ad-cam .c3{bottom:10px;left:10px;font:500 13px var(--f-mono);background:rgba(0,0,0,.45);padding:3px 7px;border-radius:5px}
-.ad-cam .c4{bottom:8px;right:8px}
+.ad-cam .c4{bottom:8px;right:8px;gap:12px}
 .ad-cam .c4 button{width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;backdrop-filter:blur(6px)}
 .ad-cam .fb{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.5)}
 .ad-cam .fb svg{width:64px;height:64px}
@@ -729,7 +729,8 @@ P.css(`
 .ad-3d{height:100%;min-height:360px;border-radius:var(--r-lg);overflow:hidden;background:radial-gradient(120% 90% at 50% 100%,var(--acc-pale),var(--surface) 70%);position:relative}
 .ad-3d .gl{position:absolute!important;inset:0}
 .ad-3d .tp{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap;z-index:3;pointer-events:none}
-.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:3;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none}
+.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:2;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--surface) 80%,transparent);transition:opacity .4s}
+.ad-3d.used .hint{opacity:0}
 .ad-3d .st{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:3}
 .ad-3d .st div{padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px var(--line)}
 .ad-3d .st b{display:block;font:800 15px/1.2 var(--f-display);letter-spacing:-.02em}
@@ -830,6 +831,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
     [['07:10','A tout mangé, crottins normaux',0],['08:30','Paddock, Prairie du bas, 2 heures',0],[COURS.start,'Cours avec Pauline, '+arena(COURS).toLowerCase(),1],['17:00','Pansage et marcheur avec '+DPR.first,1]].map(function(e){return '<div class="'+(e[2]?'nx':'')+'"><span class="h">'+e[0]+'</span><span class="d"></span><span class="ellip'+(e[2]?' mut':'')+'">'+e[1]+'</span></div>'}).join('')+'</div></div></div>'+
    '<div class="ad-ps">'+SERVICES.slice(0,4).map(function(s){return '<button class="ad-pb" data-ps="'+s[0]+'">'+sq(s[1])+'<span class="grow" style="min-width:0"><b class="ellip">'+s[2].replace(' par un moniteur','').replace('Sortie au p','P')+'</b><small class="num">'+F.eur(s[4])+'</small></span></button>'}).join('')+'</div>'+
    U.tabs([['journal','Journal'],['soins','Soins'],['ration','Ration et travail'],['presta','Prestations'],['partage','Partage']],CH.tab,'data-ct')+'<div data-body style="margin-top:16px"></div>';
+  var a3=$('.ad-3d',el);if(a3)a3.addEventListener('pointerdown',function(){a3.classList.add('used')},{once:true});
   var g=P.gl.horse($('.ad-3d .gl',el),{points:pts,walk:false,rot:-.9,onPick:function(id){if(id==='pied')careSheet(0);else{CH.tab='soins';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='soins')});body();P.toast(pts.find(function(x){return x.id===id}).label,{icon:'care'})}}});
   var h0=$('.h3d',el);if(h0)h0.classList.add('show');
   boxCam($('[data-cam]',el),{tools:true});
