@@ -104,6 +104,17 @@ Un gérant (ou un employé) relie son assistant à Stabl en ajoutant l'adresse *
 - **Pour l'écran Connecteurs** (session) : `GET /api/mcp/tools` (adresse du serveur et outils permis à ce rôle), `GET /api/mcp/grants` (assistants reliés ; un employé ne voit que les siens), `DELETE /api/mcp/grants/:id` (retire l'accès et coupe les jetons), `GET /api/mcp/calls?limit=` (journal des 90 derniers jours, gérant).
 - **Déploiement** : `wrangler.jsonc` fait passer `/mcp`, `/oauth/*` et `/.well-known/*` par le Worker avant les fichiers statiques ; `APP_URL` doit valoir `https://app.stablapp.fr` (il donne l'émetteur et l'adresse de la ressource).
 
+### Pages publiques du club · `src/public/`
+
+Pages servies par le Worker (HTML sans cadre, style Stabl, téléphone d'abord, CSP avec nonce, aucun compte demandé). `wrangler.jsonc` fait passer `/c/*` et `/s/*` par le Worker ; `sw.js` ne les met jamais en cache.
+
+- **Carte cadeau** `GET /c/:club/offrir` → `POST /api/public/gifts/:club`. Avec Stripe Connect actif : paiement Checkout sur le compte du club, la carte (`giftcards`) est créée et envoyée par e-mail (`gift_card`) au webhook `checkout.session.completed` (métadonnée `piaffe_gift_id`). Sans Stripe : la demande va dans `giftRequests` (lisible par les gérants), les gérants reçoivent un e-mail (`club_notice`), et l'écran Cadeaux affiche « Réglée : envoyer la carte » → `POST /api/growth/gift-requests/:id/issue` (idempotent).
+- **Avis** `GET /c/:club/avis[?t=]` → `POST /api/public/reviews/:club` : 4 ou 5 étoiles proposent le lien Google du club (`growthCfg/avis.url`), 1 à 3 étoiles deviennent un message privé (`gReviews`, gérants prévenus).
+- **Sondage** `GET /s/:token` → `POST /api/public/surveys/:token` : jeton signé HMAC (`tokens.ts`, clé `SESSION_SECRET`), par sondage et éventuellement par adhérent.
+- **Annonce de cheval** `GET /c/:club/cheval/:ad` : lit l'API publique existante des annonces en ligne ; demande d'essai → `horseLeads`.
+- **Pour le gérant** : `GET /api/growth/links[?member=&survey=]` donne toutes les adresses à partager ; `live/75-public.js` les affiche dans Cadeaux, Avis, Satisfaction et Annonce.
+- Anti-robots : champ piège `site`, délai minimal entre l'affichage et l'envoi, limites par adresse IP et par club.
+
 ## API d'import (pour l'outil de migration)
 
 Authentification : clé d'API du club avec le scope `import` (`Authorization: Bearer pk_live_…`), créée par le gérant dans Réglages, ou session gérant.
@@ -132,7 +143,7 @@ Back-office de l'équipe Stabl (pas celui d'un club), servi par le Worker sur **
 - **Données lisibles hors ligne** : `PL.store` (`live/15-store.js`) = IndexedDB `stabl` (repli localStorage puis mémoire, tout sous try/catch). On y garde le dernier bootstrap du club, `me`, les factures, la file d'écritures.
 - **File d'écritures des données du club** (`live/30-sync.js`) : chaque modification devient une opération `{op, coll, id, data, version, op_id, base, at}` gardée dans IndexedDB (et une copie de secours en localStorage), regroupée par objet, envoyée par lots (100 opérations, ~700 Ko au plus), dans l'ordre. Indicateur : « Hors ligne · 3 changements en attente », « Envoi de 3 changements… », « Tout est à jour ». Déconnexion avec des changements en attente : confirmation. Session : pas de déconnexion hors ligne (le cookie glissant est renouvelé au retour).
 - **Contrat serveur** (`POST /api/records/batch`) : `op_id` (unique) rend chaque opération idempotente (table `record_ops`, gardée 60 jours) : un renvoi répond `duplicate:true` sans rien réécrire ni renvoyer d'e-mail. `base` = l'objet tel que l'appareil l'avait avant la modification : si quelqu'un a écrit entre-temps, le serveur fusionne **champ par champ** (`src/records/merge.ts` : champs différents → les deux gardés ; listes d'ids → ajouts et retraits des deux côtés ; même champ → la modification la plus récente selon `at` gagne et le conflit est signalé `conflicts:[{field, kept}]`, l'appli l'explique en français). Sans `base` (ancien client), conflit classique.
-- **Actions qui exigent internet** (paiement en ligne, e-mail, migration, invitation, export) : grisées hors ligne (`[data-net]`) avec une explication au toucher.
+- **Actions qui exigent internet** (paiement en ligne, e-mail, migration, invitation, export) : grisées hors ligne (`[data-needs-net]`) avec une explication au toucher.
 - **Écran d'accueil** : manifeste complet (standalone, orientation, couleurs, icônes Stabl, `id`), images de démarrage iOS (`static/splash/`), zones sûres ; invitation expliquée « Partager › Sur l'écran d'accueil › Ajouter » sur iPhone et iPad, bouton « Installer » ailleurs (refus mémorisé 30 jours).
 
 ### File générique pour les autres équipes (médias, etc.) : `PL.queue`

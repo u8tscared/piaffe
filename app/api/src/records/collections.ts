@@ -28,6 +28,8 @@ export const ARRAY_COLLS = [
   "pastures", "pastureMoves", "pastureRules", "horseCues", "horseAds", "horseLeads", "horseTrials", "lessonCalls", "lessonCredits",
   // module Croissance (55-croissance.js) : aides, avis, parrainage, sondages, réglages par écran (un objet par écran)
   "aids", "gReviews", "referrals", "surveys", "growthCfg",
+  // pages publiques du club (src/public) : demandes de cartes cadeaux arrivées par /c/:club/offrir (gérant seulement)
+  "giftRequests",
 ] as const;
 
 export const SINGLETON_COLLS = [

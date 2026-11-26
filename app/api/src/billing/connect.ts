@@ -337,6 +337,8 @@ export async function handleConnectEvent(env: Env, ctx: Ctx, evt: any): Promise<
         return activateMandate(env, clubId, evt.account, si) as Promise<"ok" | "ignored">;
       }
       if (o.mode !== "payment") return "ignored";
+      // carte cadeau achetée sur la page publique du club (src/public) : crée la carte et envoie le code
+      if (o.metadata?.piaffe_gift_id) return (await import("../public/routes")).giftPaid(env, ctx, clubId, o);
       const p = await paymentByMeta(db, clubId, o);
       if (!p) return "ignored";
       const pi = typeof o.payment_intent === "string" ? o.payment_intent : o.payment_intent?.id;

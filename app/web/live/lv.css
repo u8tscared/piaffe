@@ -276,7 +276,7 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 body.lv-nogoogle .lv-google,body.lv-nogoogle .lv-or{display:none!important}
 
 /* ---------- Hors connexion : ce qui exige le réseau est grisé (et expliqué au toucher, 10-api.js) ---------- */
-body.lv-offline [data-net],body.lv-offline .lv-inv-act button{opacity:.45;filter:grayscale(1);cursor:not-allowed}
+body.lv-offline [data-needs-net],body.lv-offline .lv-inv-act button{opacity:.45;filter:grayscale(1);cursor:not-allowed}
 /* ---------- Nouvelle version disponible ---------- */
 .lv-update{position:fixed;z-index:60;left:0;right:0;margin:0 auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;
   width:min(560px,calc(100vw - 24px));padding:10px 10px 10px 14px;border-radius:16px;background:var(--surface);color:var(--ink);font-size:14.5px;line-height:1.4;
@@ -294,3 +294,23 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 .lv-a2hs ol .i{vertical-align:-3px;color:var(--acc)}
 .lv-a2hs-ico{flex:none;width:40px;height:40px;border-radius:11px;background:#0a1636;display:grid;place-items:center}
 @media (prefers-reduced-motion:reduce){.lv-update,.lv-a2hs{animation:none}}
+
+/* Connecteurs (Claude, ChatGPT) */
+.lv-cn{display:grid;gap:16px;max-width:920px}
+.lv-cn-addr .eyebrow{margin-bottom:10px}
+.lv-cn-url{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.lv-cn-url .pf-mono{flex:1 1 260px;min-width:0;font:600 16px/1.3 var(--f-mono);padding:13px 16px;border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);overflow-wrap:anywhere;user-select:all}
+.lv-cn-how{margin-top:16px}
+.lv-cn-how ol{margin:12px 0 0;padding-left:22px;display:grid;gap:6px;font-size:15px;line-height:1.5}
+.lv-cn-logo{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#fff;font:800 15px var(--f-display);letter-spacing:-.02em}
+.lv-cn-n{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-bottom:2px}
+.lv-cn-tools{display:flex;flex-wrap:wrap;gap:8px}
+.lv-cn-when{white-space:nowrap}
+@media (max-width:640px){.lv-cn-g{flex-wrap:wrap}.lv-cn-g .grow{flex:1 1 calc(100% - 64px)}.lv-cn-g .btn{margin-left:52px}.lv-cn-url .btn{flex:1 1 100%}}
+/* pages publiques (75-public.js) */
+.lv-pub{margin-bottom:16px}
+.lv-pub-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line,rgba(0,0,0,.08))}
+.lv-pub-row:first-of-type{border-top:0}
+.lv-pub-url{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.lv-gr .hrow{flex-wrap:wrap}
+@media (max-width:640px){.lv-gr{flex-wrap:wrap;padding-left:0;padding-right:0}.lv-gr>.hrow{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;flex:1 1 100%;margin-left:44px}}

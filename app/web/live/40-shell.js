@@ -23,13 +23,18 @@ P.go=function(route,params,opts){var m=P.mods[route];if(!m)return;
     P.toast('Cet écran n’est pas disponible avec votre accès.',{icon:'lock'});return}
   return go0.call(P,route,params,opts)};
 /* équivalents d'un écran d'un autre rôle (lien croisé d'un module) */
-PL.ALIAS={adherent:{cheval:'adh-cheval',planning:'adh-reserver',facturation:'adh-paiements',contrats:'adh-contrats'},employe:{cheval:'emp-cheval',planning:'emp-planning',soins:'emp-soins',chevaux:'emp-chevaux'},coach:{planning:'coach-agenda'}};
+PL.ALIAS={adherent:{cheval:'adh-cheval',planning:'adh-reserver',facturation:'adh-paiements',contrats:'adh-contrats'},employe:{cheval:'emp-cheval',planning:'emp-planning',soins:'emp-soins',chevaux:'emp-chevaux',connecteurs:'lv-connecteurs-emp'},coach:{planning:'coach-agenda'}};
 
 /* ---------- Écrans masqués : partagés par le club ---------- */
 var setOff0=P.prefs.setOff;
 P.prefs.setOff=function(role,list){setOff0.call(P.prefs,role,list);
   if(PL.isManager()&&!PL.sandboxLocal){var o={};o[role]=list;PL.put('/api/onboarding/modules',{modulesOff:o}).catch(function(e){if(!e.offline)PL.fail(e,'Écrans masqués')})}};
-PL.applyModulesOff=function(off){off=off||{};Object.keys(P.roles).forEach(function(r){if(Array.isArray(off[r]))P.store.set('off:'+r,off[r])})};
+PL.applyModulesOff=function(off){off=off||{};
+  /* « Connecteurs » était masqué d'office tant que l'écran n'était qu'une simulation : il est désormais branché (MCP), on le remontre une fois par club */
+  var g=off.gerant,mk='piaffe:live:cn-on:'+(PL.clubId||''),seen=true;try{seen=!!localStorage.getItem(mk)}catch(e){}
+  if(!seen&&Array.isArray(g)&&g.indexOf('connecteurs')>=0){off.gerant=g.filter(function(x){return x!=='connecteurs'});if(PL.isManager()&&!PL.sandboxLocal)PL.put('/api/onboarding/modules',{modulesOff:{gerant:off.gerant}}).catch(function(){})}
+  try{localStorage.setItem(mk,'1')}catch(e){}
+  Object.keys(P.roles).forEach(function(r){if(Array.isArray(off[r]))P.store.set('off:'+r,off[r])})};
 PL.isManager=function(){return PL.role==='owner'||PL.role==='manager'};
 
 /* ---------- Écrans de la démo remplacés ou retouchés après chargement ---------- */
@@ -89,11 +94,11 @@ PL.account=function(){var u=PL.user||{},clubs=PL.clubs||[];
   P.sheet({title:'Mon compte',icon:'user',body:function(b){
     b.innerHTML='<div class="lv-acct stack" style="--g:22px"><div class="lv-acc-h">'+P.ui.av(PL.mePerson)+'<div><b>'+esc(((u.first||'')+' '+(u.last||'')).trim()||u.email)+'</b><span class="mut">'+esc(u.email||'')+'</span>'+(u.email_verified_at?'':'<div style="margin-top:6px">'+P.ui.chip('Adresse à confirmer','warn',true)+'</div>')+'</div></div>'+
       '<div class="stack" style="--g:10px"><div class="eyebrow">Mon profil</div><div class="lv-row2"><label class="lv-fl"><span>Prénom</span><input class="in" id="ac-first" value="'+esc(u.first||'')+'"></label><label class="lv-fl"><span>Nom</span><input class="in" id="ac-last" value="'+esc(u.last||'')+'"></label></div>'+
-      '<label class="lv-fl"><span>Téléphone</span><input class="in" id="ac-phone" value="'+esc(u.phone||'')+'" inputmode="tel"></label><button class="btn" data-ac-save data-net>'+ICON('check','sm')+'Enregistrer mon profil</button></div>'+
-      '<div class="stack" style="--g:10px"><div class="eyebrow">'+(clubs.length>1?'Mes clubs':'Mon club')+'</div><div class="lv-clubs">'+clubs.map(function(c){return '<button class="lv-club" data-net data-club="'+esc(c.id)+'" aria-current="'+(c.id===PL.clubId)+'"><span class="ico">'+ICON('stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc(ROLEFR[c.role]||c.role||'')+'</small></span>'+(c.id===PL.clubId?P.ui.chip('Ouvert','acc'):ICON('right','sm'))+'</button>'}).join('')+'</div>'+
-      (PL.isManager()||!clubs.length?'<button class="btn ghost" data-ac-newclub data-net>'+ICON('plus','sm')+'Créer un autre club</button>':'')+'</div>'+
+      '<label class="lv-fl"><span>Téléphone</span><input class="in" id="ac-phone" value="'+esc(u.phone||'')+'" inputmode="tel"></label><button class="btn" data-ac-save data-needs-net>'+ICON('check','sm')+'Enregistrer mon profil</button></div>'+
+      '<div class="stack" style="--g:10px"><div class="eyebrow">'+(clubs.length>1?'Mes clubs':'Mon club')+'</div><div class="lv-clubs">'+clubs.map(function(c){return '<button class="lv-club" data-needs-net data-club="'+esc(c.id)+'" aria-current="'+(c.id===PL.clubId)+'"><span class="ico">'+ICON('stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc(ROLEFR[c.role]||c.role||'')+'</small></span>'+(c.id===PL.clubId?P.ui.chip('Ouvert','acc'):ICON('right','sm'))+'</button>'}).join('')+'</div>'+
+      (PL.isManager()||!clubs.length?'<button class="btn ghost" data-ac-newclub data-needs-net>'+ICON('plus','sm')+'Créer un autre club</button>':'')+'</div>'+
       '<div class="stack" style="--g:10px"><div class="eyebrow">Apparence</div>'+P.ui.seg([['auto','Automatique'],['light','Clair'],['dark','Sombre']],dk==='auto'?'auto':dk,'data-ac-theme')+'</div>'+
-      '<div class="stack" style="--g:10px"><div class="eyebrow">Sécurité</div><button class="btn ghost" data-ac-pw data-net>'+ICON('lock','sm')+'Changer mon mot de passe</button><button class="btn ghost" data-ac-np>'+ICON('bell','sm')+'E-mails et notifications</button></div>'+
+      '<div class="stack" style="--g:10px"><div class="eyebrow">Sécurité</div><button class="btn ghost" data-ac-pw data-needs-net>'+ICON('lock','sm')+'Changer mon mot de passe</button><button class="btn ghost" data-ac-np>'+ICON('bell','sm')+'E-mails et notifications</button></div>'+
       '<button class="btn" data-ac-out style="color:var(--bad)">'+ICON('logout','sm')+'Se déconnecter</button><p class="lv-note">'+esc(PL.brandName())+' · version '+esc(PL.version||'')+'</p></div>';
     b.querySelector('[data-ac-save]').onclick=function(){var x=this;x.disabled=true;PL.patch('/api/me',{first:b.querySelector('#ac-first').value.trim(),last:b.querySelector('#ac-last').value.trim(),phone:b.querySelector('#ac-phone').value.trim()}).then(function(r){PL.user=r.user||PL.user;PL.setPeople({role:PL.role,person_ref:PL.personRef});P.toast('Profil enregistré');P.renderShell()},function(e){PL.fail(e,'Profil')}).then(function(){x.disabled=false})};
     b.querySelectorAll('[data-club]').forEach(function(x){x.onclick=function(){var id=x.getAttribute('data-club');if(id===PL.clubId)return;PL.switchClub(id)}});

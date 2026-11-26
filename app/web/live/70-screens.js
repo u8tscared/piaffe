@@ -69,7 +69,7 @@ PL.inviteSheet=function(role,o){o=o||{};role=role||'member';var sh=P.sheet({titl
       s.innerHTML='<option value="">Aucune</option>'+l.map(function(p){return '<option value="'+esc(p.id)+'"'+(p.id===o.person_ref?' selected':'')+'>'+esc((p.first+' '+p.last).trim())+'</option>'}).join('')}
     refs();b.querySelectorAll('[data-r]').forEach(function(x){x.onclick=function(){role=x.getAttribute('data-r');b.querySelectorAll('[data-r]').forEach(function(y){y.setAttribute('aria-pressed',y===x)});refs()}});
     b.querySelector('#iv-ref').onchange=function(){var id=this.value,p=D.person(id);if(p){var e=b.querySelector('#iv-email');if(!e.value&&p.email)e.value=p.email;if(!b.querySelector('#iv-first').value)b.querySelector('#iv-first').value=p.first||'';if(!b.querySelector('#iv-last').value)b.querySelector('#iv-last').value=p.last||''}}},
-  foot:'<button class="btn ghost" data-c>Annuler</button><button class="btn pri" data-s data-net>'+ICON('send','sm')+'Envoyer l’invitation</button>'});
+  foot:'<button class="btn ghost" data-c>Annuler</button><button class="btn pri" data-s data-needs-net>'+ICON('send','sm')+'Envoyer l’invitation</button>'});
   sh.querySelector('[data-c]').onclick=function(){sh.close()};
   sh.querySelector('[data-s]').onclick=function(){var x=this,em=sh.querySelector('#iv-email').value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){sh.querySelector('.lv-fmsg').innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>Saisissez une adresse e-mail valide.</span></div>';return}
     btnBusy(x,true);PL.post('/api/invitations',{email:em,role:role,person_ref:sh.querySelector('#iv-ref').value||undefined,first:sh.querySelector('#iv-first').value.trim()||undefined,last:sh.querySelector('#iv-last').value.trim()||undefined})
@@ -78,7 +78,7 @@ PL.inviteSheet=function(role,o){o=o||{};role=role||'member';var sh=P.sheet({titl
         if(PL.features&&!PL.features.mail&&r&&r.invitation_url){btnBusy(x,false);x.style.display='none';sh.querySelector('.lv-fmsg').innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Invitation créée. Les e-mails ne sont pas encore activés : envoyez ce lien à '+esc(em)+' par SMS ou messagerie.</span></div><div class="lv-secret" style="margin-top:8px;word-break:break-all">'+esc(r.invitation_url)+'</div><button class="btn" data-cp style="margin-top:8px">'+ICON('copy','sm')+'Copier le lien</button>';
           sh.querySelector('[data-cp]').onclick=function(){try{navigator.clipboard.writeText(r.invitation_url).then(function(){P.toast('Lien copié')},function(){})}catch(e){}};if(o.done)o.done();return}
         sh.close();P.toast('Invitation envoyée à '+em);if(role==='accountant')PL.accountantInvited=true;if(o.done)o.done();P.rerender()},function(e){btnBusy(x,false);sh.querySelector('.lv-fmsg').innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>'+esc(PL.msg(e))+'</span></div>'})}};
-function renderAccess(el){var run=screen(el,ph('Accès et invitations','Qui accède à '+esc(D.club.name)+', avec quels droits.','<button class="btn pri" data-inv data-net>'+ICON('plus','sm')+'Inviter</button>'),function(){return Promise.all([PL.get('/api/club/users'),opt(PL.get('/api/invitations'))])},function(b,d){
+function renderAccess(el){var run=screen(el,ph('Accès et invitations','Qui accède à '+esc(D.club.name)+', avec quels droits.','<button class="btn pri" data-inv data-needs-net>'+ICON('plus','sm')+'Inviter</button>'),function(){return Promise.all([PL.get('/api/club/users'),opt(PL.get('/api/invitations'))])},function(b,d){
     var users=d[0].users||d[0].members||d[0]||[],inv=d[1].__err?[]:(d[1].invitations||d[1]||[]);inv=inv.filter(function(i){return !i.accepted_at&&!i.revoked_at&&i.status!=='accepted'&&i.status!=='revoked'});
     var h='<div class="g4 rise" style="margin-bottom:18px">'+INV_ROLES.slice(0,4).map(function(r){var n=users.filter(function(u){return u.role===r[0]||(r[0]==='manager'&&u.role==='owner')}).length;return U.kpi({label:r[1]+'s',value:n,icon:r[2]})}).join('')+'</div>';
     h+='<div class="card"><div class="ch"><h3>Personnes ayant accès</h3></div><div class="list">'+users.map(function(u){var me=PL.user&&u.id===PL.user.id||u.user_id===(PL.user||{}).id;return '<div class="li">'+U.av({first:u.first||u.email,last:u.last||'',color:PL.colorOf(u.id||u.user_id)})+'<div class="grow"><b>'+esc(((u.first||'')+' '+(u.last||'')).trim()||u.email)+(me?' <span class="mut">(vous)</span>':'')+'</b><div class="xs mut">'+esc(u.email||'')+'</div></div>'+U.chip(ROLEFR[u.role]||u.role,u.role==='owner'?'acc':'')+(u.status==='suspended'?U.chip('Suspendu','warn'):'')+
@@ -143,6 +143,52 @@ PL.newKeySheet=function(o){o=o||{};var sh=P.sheet({title:'Créer une clé d’AP
       sh.querySelector('.lv-kres').innerHTML='<div class="lv-msg ok">'+ICON('checkc','sm')+'<span>Copiez cette clé maintenant : elle ne sera plus jamais affichée.</span></div><div class="lv-secret">'+esc(r.token)+'</div><button class="btn" data-cpk>'+ICON('copy','sm')+'Copier la clé</button>';
       sh.querySelector('[data-cpk]').onclick=function(){copy(r.token,'Clé copiée')};if(o.done)o.done()},function(e){btnBusy(x,false);PL.fail(e,'Clé d’API')})}};
 
+/* ---------- Connecteurs : Claude, ChatGPT… reliés au club (MCP, voir app/MCP.md) ---------- */
+var CN={app:'claude'};
+var CN_STEPS={claude:['Dans Claude, ouvrez <b>Paramètres › Connecteurs</b>, puis <b>Ajouter un connecteur personnalisé</b>.','Nom : <b>'+esc(PL.brandName?PL.brandName():'Stabl')+'</b>. Collez l’adresse ci-dessus et validez.','Cliquez sur <b>Se connecter</b>, choisissez votre club, puis <b>Autoriser</b>.'],
+  chatgpt:['Dans ChatGPT, ouvrez <b>Paramètres › Applications et connecteurs</b>, puis <b>Créer</b>.','Collez l’adresse ci-dessus. Authentification : <b>OAuth</b>.','Connectez-vous sur la page qui s’ouvre, choisissez votre club, puis <b>Autoriser</b>.']};
+function ago(iso){if(!iso)return 'jamais utilisé';var t=Date.parse(iso),m=Math.round((Date.now()-t)/6e4);if(!(m>=0))return '';
+  if(m<2)return 'à l’instant';if(m<60)return 'il y a '+m+' min';var h=Math.round(m/60);if(h<24)return 'il y a '+h+' h';var d=Math.round(h/24);if(d<2)return 'hier';if(d<31)return 'il y a '+d+' jours';return 'le '+F.dateL(iso.slice(0,10))}
+function cnLogo(name){var n=String(name||'').toLowerCase(),k=/claude/.test(n)?['Cl','#c96442']:/chatgpt|openai/.test(n)?['GP','#10a37f']:/mistral|le chat/.test(n)?['Mi','#fa520f']:[(name||'?').slice(0,2),'var(--acc)'];
+  return '<span class="lv-cn-logo" style="--c:'+k[1]+'">'+esc(k[0])+'</span>'}
+function cnWho(g){var u=g.user||{};return esc(((u.first||'')+' '+(u.last||'')).trim()||u.email||'')}
+function renderConnectors(el){var mgr=PL.isManager();
+  var run=screen(el,ph('Connecteurs','Reliez Claude ou ChatGPT à votre club : il répond avec vos vrais chiffres, en direct.'),function(){
+      return Promise.all([PL.get('/api/mcp/tools'),PL.get('/api/mcp/grants'),mgr?opt(PL.get('/api/mcp/calls?limit=20')):Promise.resolve({calls:[]})])},
+    function(b,d){var info=d[0],grants=(d[1].grants||[]).filter(function(g){return !g.revoked_at}),calls=d[2].__err?null:(d[2].calls||[]),url=info.server_url||(location.origin+'/mcp');
+      var titles={};(info.tools||[]).forEach(function(t){titles[t.name]=t.title||t.name});
+      var h='<div class="lv-cn rise">';
+      /* 1. l'adresse à copier */
+      h+='<div class="card pad tint d-pf lv-cn-addr"><div class="eyebrow">L’adresse à coller dans votre assistant</div>'+
+        '<div class="lv-cn-url"><span class="pf-mono" data-cn-url>'+esc(url)+'</span><button class="btn pri" data-cn-copy>'+ICON('copy','sm')+'Copier</button></div>'+
+        '<div class="lv-cn-how">'+U.seg([['claude','Claude'],['chatgpt','ChatGPT']],CN.app,'data-cn-app')+'<ol data-cn-steps>'+CN_STEPS[CN.app].map(function(s){return '<li>'+s+'</li>'}).join('')+'</ol></div></div>';
+      /* 2. assistants reliés */
+      h+='<div class="card"><div class="ch"><div><h3>Assistants reliés</h3><div class="xs mut">'+(mgr?'Tous ceux de votre équipe. Retirer coupe l’accès tout de suite.':'Ceux que vous avez reliés.')+'</div></div></div>'+
+        (grants.length?'<div class="list">'+grants.map(function(g){var w=(g.scopes||[]).indexOf('ecriture')>=0;
+          return '<div class="li lv-cn-g">'+cnLogo(g.client_name)+'<div class="grow"><div class="lv-cn-n"><b>'+esc(g.client_name||'Assistant')+'</b>'+(w?U.chip('Lecture et ajouts','warn'):U.chip('Lecture','ok'))+'</div>'+
+            '<div class="xs mut">Relié par '+cnWho(g)+' le '+F.dateL(String(g.created_at).slice(0,10))+' · '+(g.calls?g.calls+' question'+(g.calls>1?'s':'')+' · dernière '+ago(g.last_used_at):'pas encore utilisé')+'</div></div>'+
+            '<button class="btn ghost sm" data-cn-rm="'+esc(g.id)+'" data-cn-name="'+esc(g.client_name||'Cet assistant')+'" data-needs-net style="color:var(--bad)">'+ICON('x','sm')+'Retirer</button></div>'}).join('')+'</div>'
+        :'<div class="cb">'+U.empty('plug','Aucun assistant relié','Copiez l’adresse ci-dessus dans Claude ou ChatGPT : il apparaîtra ici.')+'</div>')+'</div>';
+      /* 3. journal (gérant) */
+      if(mgr&&calls)h+='<div class="card"><div class="ch"><div><h3>Dernières questions</h3><div class="xs mut">Ce que les assistants ont lu ou ajouté, sur 90 jours.</div></div></div>'+
+        (calls.length?'<div class="list">'+calls.map(function(c){return '<div class="li"><span class="ico sm" style="color:'+(c.ok?'var(--ok)':'var(--bad)')+'">'+ICON(c.ok?'checkc':'alert','sm')+'</span><div class="grow"><b>'+esc(titles[c.tool]||c.tool)+'</b><div class="xs mut">'+esc(c.client_name||(c.api_key_id?'Clé d’API':'Assistant'))+(c.summary?' · '+esc(String(c.summary).slice(0,120)):'')+'</div></div><span class="xs mut lv-cn-when">'+ago(c.at)+'</span></div>'}).join('')+'</div>'
+        :'<div class="cb"><p class="lv-note" style="margin:0">Aucune question pour l’instant.</p></div>')+'</div>';
+      /* 4. ce qu'il peut faire */
+      var rd=(info.tools||[]).filter(function(t){return !t.write}),wr=(info.tools||[]).filter(function(t){return t.write});
+      h+='<div class="card pad"><h3 style="margin:0 0 6px">Ce que l’assistant peut faire</h3><p class="lv-note" style="margin:0 0 12px">Il voit exactement ce que vous voyez dans '+esc(PL.brandName?PL.brandName():'Stabl')+'. Il ne peut rien supprimer.</p>'+
+        '<div class="lv-cn-tools">'+rd.map(function(t){return '<span class="tag">'+esc(t.title||t.name)+'</span>'}).join('')+'</div>'+
+        (wr.length?'<div class="eyebrow" style="margin:14px 0 8px">Ajouts, si vous cochez « Permettre aussi les ajouts »</div><div class="lv-cn-tools">'+wr.map(function(t){return '<span class="tag">'+esc(t.title||t.name)+'</span>'}).join('')+'</div>':'')+
+        (mgr?'<p class="lv-note" style="margin:14px 0 0">Un outil sans connexion OAuth ? <button class="lv-a" type="button" data-go="lv-cles">Créez une clé d’API</button> avec le droit « read ».</p>':'')+'</div>';
+      b.innerHTML=h+'</div>';
+      b.querySelector('[data-cn-copy]').onclick=function(){copy(url,'Adresse copiée');var x=this;x.innerHTML=ICON('check','sm')+'Copiée';setTimeout(function(){if(x.isConnected)x.innerHTML=ICON('copy','sm')+'Copier'},2200)};
+      b.querySelectorAll('[data-cn-app]').forEach(function(x){x.onclick=function(){CN.app=x.getAttribute('data-cn-app');b.querySelectorAll('[data-cn-app]').forEach(function(y){y.setAttribute('aria-selected',y===x)});
+        b.querySelector('[data-cn-steps]').innerHTML=CN_STEPS[CN.app].map(function(s){return '<li>'+s+'</li>'}).join('')}});
+      b.querySelectorAll('[data-cn-rm]').forEach(function(x){x.onclick=function(){var id=x.getAttribute('data-cn-rm'),n=x.getAttribute('data-cn-name');
+        var sh=P.sheet({title:'Retirer '+n+' ?',icon:'shield',body:'<p class="lv-note" style="margin:0">'+esc(n)+' ne pourra plus lire les données du club. Pour le relier de nouveau, il faudra refaire la connexion depuis l’assistant.</p>',
+          foot:'<button class="btn ghost" data-c>Annuler</button><button class="btn pri" data-ok data-needs-net style="background:var(--bad)">'+ICON('x','sm')+'Retirer l’accès</button>'});
+        sh.querySelector('[data-c]').onclick=function(){sh.close()};
+        sh.querySelector('[data-ok]').onclick=function(){var y=this;btnBusy(y,true);PL.del('/api/mcp/grants/'+encodeURIComponent(id)).then(function(){sh.close();P.toast(n+' n’a plus accès au club',{icon:'shield'});run()},function(e){btnBusy(y,false);PL.fail(e,'Connecteurs')})}}})})}
+
 /* ---------- Import (fichier ou outil de migration) ---------- */
 function renderImport(el){var A=(PL.onbData&&PL.onbData.answers)||{},sw=A.software||'',legacy=['kavalog','equimondo','pegase'].indexOf(sw)>=0,name={kavalog:'Kavalog',equimondo:'Equimondo',pegase:'Pégase'}[sw]||'votre ancien logiciel';
   el.innerHTML=ph('Importer vos données','Adhérents, chevaux, forfaits : reprenez tout sans ressaisie.')+
@@ -179,7 +225,7 @@ var IST={draft:['Brouillon',''],issued:['Émise','acc'],sent:['Envoyée','acc'],
 function invChip(x){var s=IST[x.status]||[x.status_label||x.status,''];if(x.kind==='credit_note')s=['Avoir',''];var d=PL.invoiceToDemo(x);if(d.status==='en retard')s=['En retard','bad'];return U.chip(s[0],s[1],true)}
 function who(x){var c=x.customer||{};return c.name||D.name(c.ref)||c.email||'Client de passage'}
 function renderInvoices(el){var filter=P.prefs.get('lv:invf','all');
-  var run=screen(el,ph('Facturation','Factures conformes, numérotées et au format Factur-X, prêtes pour la facture électronique.','<button class="btn pri" data-new data-net>'+ICON('plus','sm')+'Nouvelle facture</button>'),PL.loadInvoices,function(b,list){
+  var run=screen(el,ph('Facturation','Factures conformes, numérotées et au format Factur-X, prêtes pour la facture électronique.','<button class="btn pri" data-new data-needs-net>'+ICON('plus','sm')+'Nouvelle facture</button>'),PL.loadInvoices,function(b,list){
     var due=list.filter(function(x){return x.kind!=='credit_note'&&x.status!=='draft'&&x.status!=='cancelled'}).reduce(function(s,x){return s+(x.amount_due||0)},0);
     var late=list.filter(function(x){return PL.invoiceToDemo(x).status==='en retard'});
     var month=PL.isoDay().slice(0,7),billed=list.filter(function(x){return x.kind!=='credit_note'&&x.status!=='draft'&&String(x.issue_date||'').slice(0,7)===month}).reduce(function(s,x){return s+(x.total_ttc||0)},0);
@@ -207,7 +253,7 @@ PL.invoiceForm=function(done){var lines=[{label:'',qty:1,price:'',cat:'lesson'}]
       b.querySelectorAll('[data-rm]').forEach(function(x){x.onclick=function(){keep();if(lines.length>1)lines.splice(+x.getAttribute('data-rm'),1);draw()}});
       Object.keys(kept).forEach(function(id){var x=b.querySelector('#'+id);if(x)x.value=kept[id]})}
     function keep(){b.querySelectorAll('[data-l]').forEach(function(x){lines[+x.getAttribute('data-i')][x.getAttribute('data-l')]=x.value})}
-    shEl.keep=keep;draw()},foot:'<button class="btn ghost" data-dr data-net>Enregistrer le brouillon</button><button class="btn pri" data-is data-net>'+ICON('send','sm')+'Émettre et envoyer</button>'});
+    shEl.keep=keep;draw()},foot:'<button class="btn ghost" data-dr data-needs-net>Enregistrer le brouillon</button><button class="btn pri" data-is data-needs-net>'+ICON('send','sm')+'Émettre et envoyer</button>'});
   function payload(){sh.keep&&sh.keep();var c=sh.querySelector('#iv-c').value,ls=lines.filter(function(l){return l.label||l.price}).map(function(l){var p=Math.round((parseFloat(String(l.price).replace(',','.'))||0)*100);return {label:l.label||'Prestation',quantity:1,unit_price:p,category:l.cat}});
     if(!c)throw new Error('Choisissez le client.');if(!ls.length)throw new Error('Ajoutez au moins une ligne.');if(ls.some(function(l){return l.unit_price<=0}))throw new Error('Chaque ligne doit avoir un prix.');
     return {customer_ref:c,label:sh.querySelector('#iv-l').value.trim()||ls[0].label,due_date:sh.querySelector('#iv-d').value||undefined,price_mode:'ttc',lines:ls}}
@@ -218,10 +264,10 @@ var METH=[['transfer','Virement'],['check','Chèque'],['cash','Espèces'],['card
 PL.invoiceSheet=function(x,done){var manager=PL.isManager();var sh=P.sheet({title:esc(x.number||'Brouillon'),icon:'invoice',body:function(b){
     b.innerHTML='<div class="stack" style="--g:16px"><div class="hrow sp"><div><div class="big num">'+eur(x.total_ttc)+'</div><div class="mut">'+esc(who(x))+' · '+esc(x.label||'')+'</div></div>'+invChip(x)+'</div>'+
       '<dl class="lv-kv"><dt>Date</dt><dd>'+(x.issue_date?F.dateY(x.issue_date):'Non émise')+'</dd><dt>Échéance</dt><dd>'+(x.due_date?F.dateY(x.due_date):'–')+'</dd><dt>Reste dû</dt><dd>'+eur(x.amount_due)+'</dd>'+(x.einvoice&&x.einvoice.channel&&x.einvoice.channel!=='none'?'<dt>Facture électronique</dt><dd>'+esc(x.einvoice.channel==='b2b'?'Transmise par la plateforme agréée':'E-reporting')+(x.einvoice.status?' · '+esc(x.einvoice.status):'')+'</dd>':'')+'</dl>'+
-      '<div class="lv-inv-act">'+(x.has_pdf?'<button class="btn" data-pdf data-net>'+ICON('download','sm')+'PDF Factur-X</button>':'')+
-      (manager&&x.status==='draft'?'<button class="btn pri" data-iss data-net>'+ICON('send','sm')+'Émettre et envoyer</button><button class="btn ghost" data-deld data-net style="color:var(--bad)">'+ICON('trash','sm')+'Supprimer</button>':'')+
-      (manager&&x.status!=='draft'&&x.amount_due>0?'<button class="btn pri" data-cash data-net>'+ICON('wallet','sm')+'Encaisser</button><button class="btn" data-link data-net>'+ICON('link','sm')+'Lien de paiement</button>':'')+
-      (manager&&x.status!=='draft'&&x.kind!=='credit_note'&&x.status!=='cancelled'?'<button class="btn ghost" data-cn data-net>'+ICON('swap','sm')+'Établir un avoir</button>':'')+'</div><div class="lv-x"></div></div>'},
+      '<div class="lv-inv-act">'+(x.has_pdf?'<button class="btn" data-pdf data-needs-net>'+ICON('download','sm')+'PDF Factur-X</button>':'')+
+      (manager&&x.status==='draft'?'<button class="btn pri" data-iss data-needs-net>'+ICON('send','sm')+'Émettre et envoyer</button><button class="btn ghost" data-deld data-needs-net style="color:var(--bad)">'+ICON('trash','sm')+'Supprimer</button>':'')+
+      (manager&&x.status!=='draft'&&x.amount_due>0?'<button class="btn pri" data-cash data-needs-net>'+ICON('wallet','sm')+'Encaisser</button><button class="btn" data-link data-needs-net>'+ICON('link','sm')+'Lien de paiement</button>':'')+
+      (manager&&x.status!=='draft'&&x.kind!=='credit_note'&&x.status!=='cancelled'?'<button class="btn ghost" data-cn data-needs-net>'+ICON('swap','sm')+'Établir un avoir</button>':'')+'</div><div class="lv-x"></div></div>'},
     foot:''});
   var X=sh.querySelector('.lv-x');function bad(e){X.innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>'+esc(e.unavailable?'Cette action arrive très bientôt.':PL.msg(e))+'</span></div>'}
   function after(msg){sh.close();P.toast(msg);(done||P.rerender)()}
@@ -231,7 +277,7 @@ PL.invoiceSheet=function(x,done){var manager=PL.isManager();var sh=P.sheet({titl
   on('[data-deld]',function(e){PL.del('/api/invoices/'+x.id).then(function(){after('Brouillon supprimé')},bad)});
   on('[data-link]',function(e){btnBusy(e,true);PL.post('/api/pay/link',{invoice_id:x.id,send:true}).then(function(r){btnBusy(e,false);X.innerHTML='<div class="lv-msg ok">'+ICON('checkc','sm')+'<span>'+(r.sent?'Lien envoyé par e-mail. ':'')+'Valable jusqu’au '+F.dateL(String(r.expires_at).slice(0,10))+'.</span></div><div class="lv-secret" style="margin-top:8px">'+esc(r.url)+'</div>';copy(r.url,'Lien de paiement copié')},function(er){btnBusy(e,false);bad(er)})});
   on('[data-cn]',function(e){btnBusy(e,true);PL.post('/api/invoices/'+x.id+'/credit-note',{}).then(function(){after('Avoir établi')},function(er){btnBusy(e,false);bad(er)})});
-  on('[data-cash]',function(){X.innerHTML='<div class="lv-f" style="margin-top:6px"><div class="lv-row2"><label class="lv-fl"><span>Montant (€)</span><input class="in num" id="cs-a" inputmode="decimal" value="'+((x.amount_due||0)/100).toFixed(2).replace('.',',')+'"></label><label class="lv-fl"><span>Moyen</span><select class="in" id="cs-m">'+METH.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>'}).join('')+'</select></label></div><label class="lv-fl"><span>Date</span><input class="in" type="date" id="cs-d" value="'+PL.isoDay()+'"></label><button class="btn pri" data-cs data-net>'+ICON('check','sm')+'Enregistrer le paiement</button></div>';
+  on('[data-cash]',function(){X.innerHTML='<div class="lv-f" style="margin-top:6px"><div class="lv-row2"><label class="lv-fl"><span>Montant (€)</span><input class="in num" id="cs-a" inputmode="decimal" value="'+((x.amount_due||0)/100).toFixed(2).replace('.',',')+'"></label><label class="lv-fl"><span>Moyen</span><select class="in" id="cs-m">'+METH.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>'}).join('')+'</select></label></div><label class="lv-fl"><span>Date</span><input class="in" type="date" id="cs-d" value="'+PL.isoDay()+'"></label><button class="btn pri" data-cs data-needs-net>'+ICON('check','sm')+'Enregistrer le paiement</button></div>';
     X.querySelector('[data-cs]').onclick=function(){var a=Math.round(parseFloat(X.querySelector('#cs-a').value.replace(',','.'))*100);if(!(a>0))return bad({message:'Indiquez un montant.'});var me=X.querySelector('#cs-m').value;
       PL.post('/api/invoices/'+x.id+'/payments',{amount:a,amount_cents:a,method:me,paid_at:X.querySelector('#cs-d').value}).then(function(){after('Paiement de '+eur(a)+' enregistré')},bad)}})};
 
@@ -271,6 +317,7 @@ P.mod({id:'lv-acces',role:'gerant',group:'Équipe',title:'Accès et invitations'
 P.mod({id:'lv-comptable',role:'gerant',group:'Argent',title:'Comptable',icon:'accounting',n:25,phoneTitle:'Comptable',render:renderAccountant});
 P.mod({id:'lv-calendriers',role:'gerant',group:'Plateforme',title:'Calendriers',icon:'calendar_add',n:47,phoneTitle:'Calendriers',render:renderCal});
 P.mod({id:'lv-cles',role:'gerant',group:'Plateforme',title:'Clés d’API',icon:'key',n:48,phoneTitle:'Clés d’API',render:renderKeys});
+P.mod({id:'lv-connecteurs-emp',role:'employe',group:'Moi',title:'Connecteurs',icon:'plug',n:65,phoneTitle:'Connecteurs',render:renderConnectors});
 P.mod({id:'lv-cal-emp',role:'employe',group:'Moi',title:'Calendrier',icon:'calendar_add',n:60,render:renderCal});
 P.mod({id:'lv-cal-coach',role:'coach',group:'Compte',title:'Calendrier',icon:'calendar_add',n:60,render:renderCal});
 P.mod({id:'lv-cal-adh',role:'adherent',group:'Compte',title:'Calendrier',icon:'calendar_add',n:60,render:renderCal});
@@ -281,9 +328,9 @@ P.mod({id:'cpt-cal',role:'comptable',group:'Compte',title:'Abonnement du club',i
 /* écrans de la démo remplacés par leur version branchée (même identifiant : les liens croisés continuent de marcher) */
 /* Comptabilité : la démo affiche un compte bancaire fictif ; tant qu'aucune banque n'est reliée, on montre l'espace comptable réel */
 function renderCompta(el,ctx){el.innerHTML='<div class="lv-msg info" style="margin-bottom:16px">'+ICON('info','sm')+'<span>Le rapprochement bancaire automatique arrive bientôt : aucun compte n’est encore relié à '+esc(PL.brandName())+'. Vos factures, encaissements et exports comptables sont ci-dessous.</span></div><div data-cpt></div>';renderAccountant(el.querySelector('[data-cpt]'),ctx)}
-PL.replaced=[{id:'compta',render:renderCompta},{id:'facturation',render:renderInvoices},{id:'import',render:renderImport,title:'Importer'},{id:'adh-paiements',render:renderMyInvoices}];
+PL.replaced=[{id:'compta',render:renderCompta},{id:'facturation',render:renderInvoices},{id:'import',render:renderImport,title:'Importer'},{id:'adh-paiements',render:renderMyInvoices},{id:'connecteurs',render:renderConnectors}];
 /* chemins de retour de Stripe et liens directs */
-PL.PATHS={'/abonnement':'lv-abonnement','/paiements-en-ligne':'lv-paiements','/mes-factures':'adh-paiements','/factures':'facturation','/calendriers':'lv-calendriers'};
+PL.PATHS={'/abonnement':'lv-abonnement','/paiements-en-ligne':'lv-paiements','/mes-factures':'adh-paiements','/factures':'facturation','/calendriers':'lv-calendriers','/reglages/connecteurs':'connecteurs','/connecteurs':'connecteurs'};
 PL.planBanner=function(m){if(document.querySelector('.lv-planbar'))return;var v=P.app()&&P.app().querySelector('.main .view');if(!v)return;var b=document.createElement('div');b.className='lv-banner lv-planbar';b.style.margin='10px 16px 0';b.style.background='var(--bad-pale)';b.style.color='var(--bad)';
   b.innerHTML=ICON('alert','sm')+'<span class="grow">'+esc(m||'Votre abonnement est en attente de paiement : les modifications sont suspendues.')+'</span>'+(PL.isManager()?'<button class="btn sm" data-go="lv-abonnement">Régulariser</button>':'');v.parentNode.insertBefore(b,v)};
 })();

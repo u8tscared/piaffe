@@ -11,3 +11,4 @@ export { default as robotRoutes } from "./robot/routes";
 export { default as mcpRoutes } from "./mcp/routes";
 export { default as adminRoutes, adminGuard } from "./admin/routes";
 export { default as mediaRoutes } from "./media/routes";
+export { default as publicRoutes } from "./public/routes";
