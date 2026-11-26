@@ -16,5 +16,7 @@ export function tablesDeCapture(c, nomFichier = 'capture-piaffe.json') {
     groupes.get(sig).lignes.push(cles.map(k => f.champs[k]));
   }
   for (const g of groupes.values()) if (g.lignes.length) tables.push({ fichier: `${logiciel} › fiches ${g.titre || ''}`.trim(), lignes: [g.cles, ...g.lignes], robot: true });
+  // Listes lues en JSON par le robot sans recette (robot/jeux.mjs) : déjà rangées par type.
+  for (const t of c.listes || []) if (Array.isArray(t?.lignes) && t.lignes.length > 1) tables.push({ ...t, robot: true });
   return tables;
 }

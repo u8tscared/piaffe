@@ -56,6 +56,7 @@ const fabriqueCloudflare: FabriqueNavigateur = {
         mouse: { click: (x, y) => p.mouse.click(x, y), wheel: (o) => p.mouse.wheel(o) },
         keyboard: { type: (t) => p.keyboard.type(t), press: (k) => p.keyboard.press(k as any) },
         createCDPSession: () => p.createCDPSession() as any,
+        ajouterScript: async (src) => { await p.evaluateOnNewDocument(src); },
       };
       return { page, sessionId: browser.sessionId?.() ?? null, fermer: () => browser.close().catch(() => {}) };
     } catch (e) {

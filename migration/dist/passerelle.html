@@ -621,18 +621,18 @@ const TYPES = {
     champs: {
       id_source: ['id', 'numero', 'code', 'code client', 'code cavalier', 'numero client', 'numero adherent', 'ref', 'reference', 'identifiant', 'id client'],
       nom_complet: ['cavalier', 'nom prenom', 'nom et prenom', 'adherent', 'client', 'eleve', 'nom complet'],
-      nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage'],
-      prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent'],
-      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'ne e le', 'ne e', 'nee', 'date naissance', 'ddn', 'birth', 'date de naiss'],
+      nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage', 'lastname', 'surname', 'family name', 'nom du cavalier', 'nom membre'],
+      prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent', 'firstname', 'given name', 'prenom membre', 'prenom du cavalier'],
+      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'ne e le', 'ne e', 'nee', 'date naissance', 'ddn', 'birth', 'date de naiss', 'birth date', 'birthdate', 'date of birth', 'dob', 'birthday'],
       sexe: ['sexe', 'civilite', 'genre'],
-      email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier'],
-      telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1'],
+      email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier', 'email address', 'adresse e mail'],
+      telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1', 'phone', 'phone number', 'mobile phone', 'cell phone', 'numero de telephone'],
       telephone2: ['telephone 2', 'tel fixe', 'fixe', 'tel domicile', 'telephone fixe', 'autre telephone'],
       adresse: ['adresse', 'adresse 1', 'rue', 'adresse postale', 'voie'],
       adresse2: ['adresse 2', 'complement adresse', 'complement'],
-      code_postal: ['code postal', 'cp', 'cp ville'],
-      ville: ['ville', 'commune', 'localite'],
-      licence: ['licence', 'numero licence', 'numero de licence', 'licence ffe', 'n licence', 'num licence', 'numero ffe'],
+      code_postal: ['code postal', 'cp', 'cp ville', 'zip', 'zip code', 'postal code', 'postcode'],
+      ville: ['ville', 'commune', 'localite', 'city', 'town'],
+      licence: ['licence', 'numero licence', 'numero de licence', 'licence ffe', 'n licence', 'num licence', 'numero ffe', 'license', 'license number', 'licence number', 'ffe number', 'ffe licence'],
       licence_annee: ['millesime', 'annee licence', 'saison licence', 'licence valide', 'validite licence', 'licence 2027', 'licence 2026'],
       licence_type: ['type licence', 'categorie licence', 'type de licence'],
       galop: ['galop', 'niveau', 'niveau galop', 'galop obtenu', 'degre'],
@@ -653,20 +653,20 @@ const TYPES = {
     indices: ['cheval', 'equide', 'poney', 'sire', 'robe', 'race', 'box'],
     champs: {
       id_source: ['id', 'code', 'code cheval', 'ref', 'reference', 'identifiant', 'numero cheval'],
-      nom: ['nom', 'nom cheval', 'nom du cheval', 'cheval', 'equide', 'nom equide', 'poney', 'nom poney', 'monture'],
-      sire: ['sire', 'numero sire', 'n sire', 'numero sire ifce', 'immatriculation'],
-      ueln: ['ueln', 'numero ueln'],
-      puce: ['puce', 'transpondeur', 'numero transpondeur', 'puce electronique', 'microchip'],
+      nom: ['nom', 'nom cheval', 'nom du cheval', 'cheval', 'equide', 'nom equide', 'poney', 'nom poney', 'monture', 'horse name', 'horse', 'pony name', 'name'],
+      sire: ['sire', 'numero sire', 'n sire', 'numero sire ifce', 'immatriculation', 'sire number', 'sire id', 'num sire'],
+      ueln: ['ueln', 'numero ueln', 'ueln number'],
+      puce: ['puce', 'transpondeur', 'numero transpondeur', 'puce electronique', 'microchip', 'chip', 'chip number', 'microchip number', 'transponder', 'numero de puce'],
       naissance: ['date de naissance', 'naissance', 'annee', 'annee de naissance', 'ne en', 'age'],
       sexe: ['sexe'],
-      race: ['race', 'stud book', 'studbook', 'origine'],
-      robe: ['robe', 'couleur'],
-      taille: ['taille', 'toise', 'hauteur', 'taille cm'],
+      race: ['race', 'stud book', 'studbook', 'origine', 'breed'],
+      robe: ['robe', 'couleur', 'coat', 'color', 'colour', 'coat color'],
+      taille: ['taille', 'toise', 'hauteur', 'taille cm', 'height'],
       type: ['type', 'statut', 'categorie', 'utilisation', 'type de cheval', 'appartenance'],
-      proprietaire: ['proprietaire', 'nom proprietaire', 'owner', 'propriétaire'],
+      proprietaire: ['proprietaire', 'nom proprietaire', 'owner', 'propriétaire', 'owner name'],
       box: ['box', 'numero box', 'boxe', 'stalle', 'logement', 'pre'],
-      arrivee: ['date arrivee', 'arrive le', 'entree', 'date entree'],
-      pension: ['pension', 'formule pension', 'type pension', 'tarif pension'],
+      arrivee: ['date arrivee', 'arrive le', 'entree', 'date entree', 'start date', 'arrival date', 'debut pension'],
+      pension: ['pension', 'formule pension', 'type pension', 'tarif pension', 'formula', 'board', 'board type', 'livery'],
       notes: ['notes', 'remarques', 'commentaire', 'observations', 'caractere'],
     },
   },
@@ -675,9 +675,9 @@ const TYPES = {
     indices: ['tarif', 'forfait', 'prix', 'tva', 'prestation', 'article'],
     champs: {
       id_source: ['id', 'code', 'code article', 'ref', 'reference', 'code prestation'],
-      libelle: ['libelle', 'designation', 'nom', 'prestation', 'article', 'forfait', 'intitule', 'produit'],
+      libelle: ['libelle', 'designation', 'nom', 'prestation', 'article', 'forfait', 'intitule', 'produit', 'name', 'label', 'title', 'product'],
       categorie: ['categorie', 'famille', 'type', 'rubrique'],
-      prix_ttc: ['prix ttc', 'tarif ttc', 'prix', 'tarif', 'montant ttc', 'pu ttc', 'montant'],
+      prix_ttc: ['prix ttc', 'tarif ttc', 'prix', 'tarif', 'montant ttc', 'pu ttc', 'montant', 'price', 'amount', 'price incl tax'],
       prix_ht: ['prix ht', 'tarif ht', 'pu ht', 'montant ht'],
       tva: ['tva', 'taux tva', 'taux', 'tx tva'],
       seances: ['nombre de seances', 'seances', 'nb seances', 'nb cours', 'nombre cours', 'unites'],
@@ -725,16 +725,16 @@ const TYPES = {
     indices: ['reprise', 'cours', 'creneau', 'jour', 'heure', 'moniteur'],
     champs: {
       id_source: ['id', 'code', 'code reprise', 'ref'],
-      libelle: ['reprise', 'cours', 'libelle', 'intitule', 'activite', 'nom reprise', 'creneau'],
+      libelle: ['reprise', 'cours', 'libelle', 'intitule', 'activite', 'nom reprise', 'creneau', 'title', 'lesson', 'activity', 'name'],
       jour: ['jour', 'jour semaine', 'jour de la semaine'],
       date: ['date', 'date cours', 'le'],
-      debut: ['heure', 'debut', 'heure debut', 'de', 'horaire'],
-      fin: ['fin', 'heure fin', 'a', 'jusqu a'],
+      debut: ['heure', 'debut', 'heure debut', 'de', 'horaire', 'start time', 'start', 'starts at', 'time', 'heure de debut'],
+      fin: ['fin', 'heure fin', 'a', 'jusqu a', 'end time', 'end', 'ends at'],
       duree: ['duree', 'duree min', 'temps'],
-      moniteur: ['moniteur', 'monitrice', 'enseignant', 'prof', 'coach', 'encadrant', 'animateur'],
-      niveau: ['niveau', 'galop', 'public', 'groupe'],
+      moniteur: ['moniteur', 'monitrice', 'enseignant', 'prof', 'coach', 'encadrant', 'animateur', 'instructor', 'instructor first name', 'instructor name', 'teacher', 'trainer', 'moniteur prenom'],
+      niveau: ['niveau', 'galop', 'public', 'groupe', 'level'],
       lieu: ['lieu', 'carriere', 'manege', 'piste', 'terrain'],
-      places: ['places', 'capacite', 'nb places', 'effectif max', 'max'],
+      places: ['places', 'capacite', 'nb places', 'effectif max', 'max', 'capacity', 'spots', 'seats'],
       inscrits: ['inscrits', 'cavaliers', 'participants', 'eleves'],
       cavalier: ['cavalier', 'nom cavalier', 'eleve', 'adherent'],
       cheval: ['cheval', 'poney', 'monture', 'equide'],
@@ -759,13 +759,41 @@ const TYPES = {
     libelle: 'Soins et registre d’élevage',
     indices: ['soin', 'vaccin', 'vermifuge', 'marechal', 'veterinaire', 'traitement'],
     champs: {
-      cheval: ['cheval', 'nom cheval', 'equide', 'poney'],
+      cheval: ['cheval', 'nom cheval', 'equide', 'poney', 'horse name', 'horse', 'cheval nom'],
       date: ['date', 'date soin', 'date intervention', 'fait le'],
-      type: ['type', 'soin', 'intervention', 'acte', 'nature', 'type de soin'],
+      type: ['type', 'soin', 'intervention', 'acte', 'nature', 'type de soin', 'care type', 'kind'],
       detail: ['detail', 'produit', 'description', 'libelle', 'traitement', 'medicament'],
-      intervenant: ['intervenant', 'veterinaire', 'praticien', 'marechal', 'par'],
-      prochain: ['prochain', 'rappel', 'prochaine date', 'a refaire le', 'date rappel'],
-      cout: ['cout', 'montant', 'prix', 'tarif'],
+      intervenant: ['intervenant', 'veterinaire', 'praticien', 'marechal', 'par', 'practitioner', 'vet', 'farrier', 'provider'],
+      prochain: ['prochain', 'rappel', 'prochaine date', 'a refaire le', 'date rappel', 'next date', 'next', 'due date', 'reminder'],
+      cout: ['cout', 'montant', 'prix', 'tarif', 'cost', 'price', 'amount'],
+    },
+  },
+  stocks: {
+    libelle: 'Stocks, fourrage et pharmacie',
+    indices: ['stock', 'fourrage', 'foin', 'paille', 'granule', 'litiere', 'inventaire', 'pharmacie'],
+    champs: {
+      libelle: ['article', 'produit', 'designation', 'libelle', 'nom', 'item', 'name', 'fourrage', 'aliment'],
+      categorie: ['categorie', 'famille', 'type', 'rayon', 'category'],
+      quantite: ['quantite', 'qte', 'stock', 'en stock', 'stock actuel', 'quantity', 'qty', 'reste'],
+      unite: ['unite', 'conditionnement', 'unit', 'format'],
+      seuil: ['seuil', 'stock mini', 'stock minimum', 'minimum', 'seuil alerte', 'min', 'reorder level'],
+      conso: ['consommation', 'conso jour', 'consommation jour', 'par jour', 'daily'],
+      prix: ['prix', 'prix unitaire', 'pu', 'cout', 'price', 'unit price', 'prix achat'],
+      fournisseur: ['fournisseur', 'supplier', 'vendor'],
+    },
+  },
+  fournisseurs: {
+    libelle: 'Fournisseurs et intervenants',
+    indices: ['fournisseur', 'supplier', 'vendor', 'intervenant', 'praticien'],
+    champs: {
+      nom: ['fournisseur', 'nom', 'raison sociale', 'societe', 'entreprise', 'supplier', 'vendor', 'company', 'nom fournisseur'],
+      categorie: ['categorie', 'activite', 'metier', 'type', 'specialite', 'category'],
+      contact: ['contact', 'interlocuteur', 'nom contact'],
+      email: ['email', 'mail', 'courriel', 'e mail'],
+      telephone: ['telephone', 'tel', 'portable', 'phone', 'mobile'],
+      siret: ['siret', 'siren', 'numero siret'],
+      compte: ['compte', 'compte fournisseur', 'compte auxiliaire', 'code fournisseur'],
+      ville: ['ville', 'city', 'commune'],
     },
   },
 };
@@ -811,7 +839,7 @@ function devinerType(entetes, nomFichier = '') {
     for (const i of def.indices) { if (nf.includes(i)) sc += 2; if (entetes.some(e => cle(e).includes(i))) sc += 0.5; }
     // champs qui signent un type
     const signes = { adherents: ['licence', 'galop', 'prenom'], chevaux: ['sire', 'robe', 'race', 'puce'], factures: ['numero', 'total_ttc'],
-      reglements: ['moyen', 'montant'], prestations: ['prix_ttc', 'tva'], reprises: ['jour', 'debut', 'moniteur'], equipe: ['poste', 'contrat'], soins: ['cheval', 'type'] }[t];
+      reglements: ['moyen', 'montant'], prestations: ['prix_ttc', 'tva'], reprises: ['jour', 'debut', 'moniteur'], equipe: ['poste', 'contrat'], soins: ['cheval', 'type'], stocks: ['quantite', 'seuil', 'unite'], fournisseurs: ['siret', 'categorie', 'compte'] }[t];
     sc += signes.filter(c => champs.has(c)).length * 1.5;
     return { type: t, score: sc, colonnes };
   }).sort((a, b) => b.score - a.score);
@@ -882,6 +910,8 @@ const L = [
   ['ekurie', 'Ekurie', 'equestre', 'web', 'ekurie.fr', 'ekurie\\.fr', false, null],
   ['izidoor', 'Izidoor', 'equestre', 'web', 'izidoor.io', 'izidoor\\.io', false, null],
   ['gestequit', 'GestEquit', 'equestre', 'web', 'gestequit.com', 'gestequit\\.com', false, null],
+  ['isibox', 'Isibox', 'equestre', 'web', null, 'isibox\\.', false, null],
+  ['horsemanager', 'Horsemanager', 'equestre', 'web', null, 'horse-?manager\\.', false, null],
   // ---- Fédération et État ----
   ['ffe', 'FFE Club SIF', 'federation', 'web', 'ffe.com', 'ffe\\.com', false, ['Dans FFE Club SIF, exportez la liste des licenciés de la saison (Excel).', 'Déposez-la avec les autres fichiers : Stabl rapproche les licences des fiches adhérents.'], 'Fédération française d’équitation'],
   ['ffecompet', 'FFE Compet', 'federation', 'web', 'ffe.com', null, true, ['Dans FFE Compet, exportez les engagements et résultats au format CSV ou XLS.', 'Déposez le fichier ici.'], 'Fédération française d’équitation'],
@@ -890,6 +920,7 @@ const L = [
   ['helloasso', 'HelloAsso', 'adhesions', 'web', 'helloasso.com', 'helloasso\\.com', false, EXPORT_PAIEMENT],
   ['assoconnect', 'AssoConnect', 'adhesions', 'web', 'assoconnect.com', 'assoconnect\\.com', false, EXPORT_PAIEMENT],
   ['simpliasso', 'SimpliAsso', 'adhesions', 'web', 'simpliasso.fr', 'simpliasso\\.', false, EXPORT_PAIEMENT],
+  ['clubeo', 'Clubeo', 'adhesions', 'web', 'clubeo.com', 'clubeo\\.com', false, EXPORT_PAIEMENT],
   ['stripe', 'Stripe', 'adhesions', 'web', 'stripe.com', 'stripe\\.com', true, ['Dans le tableau de bord Stripe, ouvrez Clients puis Exporter (CSV).', 'Faites de même pour Paiements et, si vous en avez, Abonnements.', 'Déposez les fichiers ici.']],
   ['sumup', 'SumUp', 'adhesions', 'web', 'sumup.com', 'sumup\\.(com|fr)', false, ['Dans votre espace SumUp, exportez l’historique des transactions (CSV ou Excel).', 'Déposez le fichier ici : Stabl le rapproche des factures.']],
   ['gocardless', 'GoCardless', 'adhesions', 'web', 'gocardless.com', 'gocardless\\.com', false, ['Dans GoCardless, exportez les clients et les mandats (CSV).', 'Déposez les fichiers ici : les mandats de prélèvement restent à faire signer de nouveau ou à transférer avec l’accord de GoCardless.']],
@@ -913,6 +944,8 @@ const L = [
   ['axonaut', 'Axonaut', 'compta', 'web', 'axonaut.com', 'axonaut\\.com', false, EXPORT_COMPTA],
   ['henrri', 'Henrri', 'compta', 'web', 'henrri.com', 'henrri\\.com', false, EXPORT_COMPTA],
   ['isagri', 'Isagri', 'compta', 'bureau', 'isagri.fr', 'isagri\\.fr', false, EXPORT_COMPTA],
+  ['dougs', 'Dougs', 'compta', 'web', 'dougs.fr', 'dougs\\.fr', false, EXPORT_COMPTA],
+  ['fec', 'Export FEC (comptable)', 'compta', null, null, null, true, ['Demandez à votre comptable (ou exportez depuis votre logiciel de comptabilité) le FEC de l’exercice : un fichier texte qui commence par JournalCode.', 'Déposez-le ici : Stabl lit les clients, les factures, ce qui reste dû, les fournisseurs, le plan de comptes et la TVA.']],
   // ---- RH, planning et paie ----
   ['payfit', 'PayFit', 'rh', 'web', 'payfit.com', 'payfit\\.com', false, EXPORT_RH],
   ['silae', 'Silae', 'rh', 'les-deux', 'silae.fr', 'silae\\.fr', false, EXPORT_RH],
@@ -931,7 +964,7 @@ const L = [
 
 function modesPour(forme, id) {
   if (id === 'papier') return ['export'];
-  if (['excel', 'numbers', 'libreoffice', 'apple-calendrier', 'sire'].includes(id)) return ['export'];
+  if (['excel', 'numbers', 'libreoffice', 'apple-calendrier', 'sire', 'fec'].includes(id)) return ['export'];
   if (forme === 'web') return ['robot', 'codes', 'export'];
   if (forme === 'bureau') return ['ordinateur', 'export'];
   if (forme === 'les-deux') return ['robot', 'ordinateur', 'codes', 'export'];
@@ -977,7 +1010,12 @@ const R = {
   planity: ['remplace', 'Changé. Vos cavaliers réservent directement dans Stabl ; on reprend contacts et rendez-vous.', null, null],
   qonto: ['branche', null, 'Gardé. Votre compte reste chez Qonto ; on rapproche virements et prélèvements des factures (par export, branchement direct bientôt).', null],
   pennylane: ['branche', null, 'Gardé. Stabl envoie factures et encaissements à votre comptable.', null],
-  tiime: ['branche', null, COMPTA_EXPORT, null], indy: ['branche', null, COMPTA_EXPORT, null], sage: ['branche', null, COMPTA_EXPORT, null],
+  clubeo: ['au_choix', 'Changé. Stabl gère adhésions, paiements en ligne et nouvelles du club ; on reprend membres et historique, puis vous résiliez.', 'Gardé. Votre site Clubeo reste en ligne ; on reprend vos membres et l’historique des adhésions par export.', 'l’historique des adhésions'],
+  // Comptabilité : toujours « Intégrer » (le comptable garde son outil). Tiime et Indy facturent aussi : « Changer » ne remplace que la facturation.
+  tiime: ['au_choix', 'Facturation changée. Stabl fait vos factures et encaissements ; Tiime garde la comptabilité et reçoit les écritures (FEC). On reprend clients et factures.', COMPTA_EXPORT, 'les clients et factures (FEC)'],
+  indy: ['au_choix', 'Facturation changée. Stabl fait vos factures et encaissements ; Indy garde la comptabilité et reçoit les écritures (FEC). On reprend clients et factures.', COMPTA_EXPORT, 'les clients et factures (FEC)'],
+  sage: ['branche', null, COMPTA_EXPORT, null], dougs: ['branche', null, 'Gardé. Votre comptable Dougs reçoit les écritures de Stabl (FEC) ; on reprend clients et factures depuis votre FEC.', 'les clients et factures (FEC)'],
+  fec: ['branche', null, 'Lu. Stabl reprend clients, factures, ce qui reste dû, fournisseurs, plan de comptes et TVA depuis le FEC ; votre comptable continue avec son outil.', 'le fichier des écritures'],
   ebp: ['branche', null, COMPTA_EXPORT, null], cegid: ['branche', null, COMPTA_EXPORT, null], ciel: ['branche', null, COMPTA_EXPORT, null],
   quickbooks: ['branche', null, COMPTA_EXPORT, null], isagri: ['branche', null, COMPTA_EXPORT, null],
   axonaut: ['remplace', 'Changé. Stabl fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
@@ -989,7 +1027,7 @@ const R = {
   'outlook-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
 };
 // Gratuits ou inclus ailleurs : rien à résilier par lettre, il suffit d'arrêter de s'en servir.
-const SANS_LETTRE = new Set(['helloasso', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
+const SANS_LETTRE = new Set(['helloasso', 'fec', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
 for (const l of Object.values(LOGICIELS)) {
   let r = R[l.id];
   if (!r) r = ['remplace', l.famille === 'equestre' ? CHANGE_GESTION(l) : l.id === 'papier' ? 'Changé. On vous aide à tout mettre dans Stabl : modèle Excel à remplir ou saisie guidée à l’accueil.' : TABLEUR, null, null];
@@ -1045,6 +1083,8 @@ function tablesDeCapture(c, nomFichier = 'capture-piaffe.json') {
     groupes.get(sig).lignes.push(cles.map(k => f.champs[k]));
   }
   for (const g of groupes.values()) if (g.lignes.length) tables.push({ fichier: `${logiciel} › fiches ${g.titre || ''}`.trim(), lignes: [g.cles, ...g.lignes], robot: true });
+  // Listes lues en JSON par le robot sans recette (robot/jeux.mjs) : déjà rangées par type.
+  for (const t of c.listes || []) if (Array.isArray(t?.lignes) && t.lignes.length > 1) tables.push({ ...t, robot: true });
   return tables;
 }
 
@@ -1070,6 +1110,208 @@ function tableDeICS(texte) {
 
 return { estICS, tableDeICS };
 })();
+__m["fec.mjs"] = (() => {
+// FEC : le fichier des écritures comptables (format légal français, article A47 A-1 du livre des procédures fiscales).
+// Tout logiciel de comptabilité sait l'exporter (Pennylane, Tiime, Indy, QuickBooks, Sage, EBP, Cegid, Dougs, Isagri…).
+// On en tire, sans rien inventer :
+//   - le résumé comptable : exercice, journaux, plan de comptes, TVA, chiffre d'affaires, équilibre des écritures ;
+//   - les clients (comptes 411 et comptes auxiliaires) avec ce qu'ils doivent encore ;
+//   - les factures de vente (journal qui débite un compte client) et leur état (lettrée = réglée) ;
+//   - les règlements reçus (crédit d'un compte client hors journal de ventes) ;
+//   - les fournisseurs (comptes 401).
+// Ces tables passent ensuite par la même passerelle que les autres fichiers (types fixés, colonnes fixées).
+const { lireCSV } = __m["csv.mjs"];
+const { cle } = __m["texte.mjs"];
+
+const COLONNES_FEC = ['JournalCode', 'JournalLib', 'EcritureNum', 'EcritureDate', 'CompteNum', 'CompteLib', 'CompAuxNum', 'CompAuxLib',
+  'PieceRef', 'PieceDate', 'EcritureLib', 'Debit', 'Credit', 'EcritureLet', 'DateLet', 'ValidDate', 'Montantdevise', 'Idevise'];
+
+const premiereLigne = t => String(t || '').replace(/^﻿/, '').split(/\r?\n/, 1)[0] || '';
+function estFEC(texte) {
+  const l = cle(premiereLigne(texte));
+  return /journalcode/.test(l) && /ecriturenum/.test(l) && /comptenum/.test(l);
+}
+
+const nombre = v => {
+  const s = String(v ?? '').trim().replace(/\s/g, '');
+  if (!s) return 0;
+  const n = parseFloat(s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s);
+  return Number.isFinite(n) ? n : 0;
+};
+const jour = v => { const s = String(v ?? '').trim(); const m = /^(\d{4})(\d{2})(\d{2})$/.exec(s) || /^(\d{4})-(\d{2})-(\d{2})/.exec(s); if (m) return `${m[1]}-${m[2]}-${m[3]}`; const f = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s); return f ? `${f[3]}-${f[2]}-${f[1]}` : null; };
+const arrondi = n => Math.round(n * 100) / 100;
+const euros = n => arrondi(n).toFixed(2).replace('.', ',');
+
+// Texte du FEC -> lignes objets. Séparateur tabulation ou barre verticale (les deux sont légaux), parfois point-virgule.
+function lireFEC(texte) {
+  const t = String(texte || '').replace(/^﻿/, '');
+  const tete = premiereLigne(t);
+  const sep = tete.includes('\t') ? '\t' : tete.includes('|') ? '|' : ';';
+  const { lignes } = lireCSV(t, sep);
+  if (lignes.length < 2) return { lignes: [], erreurs: ['Le FEC ne contient aucune écriture.'] };
+  const h = lignes[0].map(x => String(x).toLowerCase().replace(/[^a-z]/g, ''));
+  const idx = Object.fromEntries(COLONNES_FEC.map(c => [c, h.indexOf(c.toLowerCase())]));
+  // Variante des BNC / micro-entreprises : Montant + Sens au lieu de Débit / Crédit.
+  const iMontant = h.indexOf('montant'), iSens = h.indexOf('sens');
+  const manquent = ['JournalCode', 'EcritureNum', 'CompteNum'].filter(c => idx[c] < 0);
+  if (manquent.length) return { lignes: [], erreurs: ['Colonnes obligatoires absentes : ' + manquent.join(', ') + '.'] };
+  const g = (l, c) => idx[c] >= 0 ? String(l[idx[c]] ?? '').trim() : '';
+  const out = [];
+  for (const l of lignes.slice(1)) {
+    if (!l.some(v => String(v).trim())) continue;
+    let debit = nombre(g(l, 'Debit')), credit = nombre(g(l, 'Credit'));
+    if (idx.Debit < 0 && iMontant >= 0) { const m = nombre(l[iMontant]); if (/^c/i.test(String(l[iSens] || ''))) credit = m; else debit = m; }
+    out.push({
+      journal: g(l, 'JournalCode'), journalLib: g(l, 'JournalLib'), num: g(l, 'EcritureNum'), date: jour(g(l, 'EcritureDate')),
+      compte: g(l, 'CompteNum'), compteLib: g(l, 'CompteLib'), aux: g(l, 'CompAuxNum'), auxLib: g(l, 'CompAuxLib'),
+      piece: g(l, 'PieceRef'), pieceDate: jour(g(l, 'PieceDate')), libelle: g(l, 'EcritureLib'), debit, credit,
+      lettrage: g(l, 'EcritureLet'), dateLet: jour(g(l, 'DateLet')),
+    });
+  }
+  return { lignes: out, erreurs: [] };
+}
+
+const estClient = l => /^411/.test(l.compte) || (/^41/.test(l.compte) && !!l.aux);
+const estFournisseur = l => /^401/.test(l.compte) || /^40[0-8]/.test(l.compte);
+const tiersDe = l => ({ code: l.aux || l.compte, nom: l.auxLib || l.compteLib || l.aux || l.compte });
+
+function analyserFEC(texte, nom = 'FEC.txt') {
+  const { lignes, erreurs } = lireFEC(texte);
+  const journaux = new Map(), comptes = new Map(), clients = new Map(), fournisseurs = new Map(), ecritures = new Map();
+  for (const l of lignes) {
+    const j = journaux.get(l.journal) || { code: l.journal, libelle: l.journalLib || l.journal, lignes: 0, debit: 0, credit: 0 };
+    j.lignes++; j.debit += l.debit; j.credit += l.credit; journaux.set(l.journal, j);
+    const c = comptes.get(l.compte) || { numero: l.compte, libelle: l.compteLib, classe: l.compte.slice(0, 1), debit: 0, credit: 0 };
+    c.debit += l.debit; c.credit += l.credit; comptes.set(l.compte, c);
+    const k = l.journal + '#' + l.num;
+    const e = ecritures.get(k) || { journal: l.journal, num: l.num, date: l.date, debit: 0, credit: 0, lignes: [] };
+    e.debit += l.debit; e.credit += l.credit; e.lignes.push(l); ecritures.set(k, e);
+    const T = estClient(l) ? clients : estFournisseur(l) ? fournisseurs : null;
+    if (T) { const t = tiersDe(l); const x = T.get(t.code) || { ...t, debit: 0, credit: 0 }; x.debit += l.debit; x.credit += l.credit; T.set(t.code, x); }
+  }
+  const desequilibres = [...ecritures.values()].filter(e => Math.abs(e.debit - e.credit) > 0.009).slice(0, 20).map(e => ({ journal: e.journal, ecriture: e.num, ecart: arrondi(e.debit - e.credit) }));
+  // Journal de ventes : le code VT/VE/VEN, sinon le journal qui débite le plus souvent un compte client.
+  const ventes = new Set([...journaux.keys()].filter(j => /^(v|ve|vt|ven|vte|ventes?)$/i.test(j) || /vente/i.test(journaux.get(j).libelle)));
+  if (!ventes.size) {
+    const n = new Map(); for (const l of lignes) if (estClient(l) && l.debit > 0) n.set(l.journal, (n.get(l.journal) || 0) + 1);
+    const best = [...n.entries()].sort((a, b) => b[1] - a[1])[0]; if (best) ventes.add(best[0]);
+  }
+  const somme = (re, sens) => arrondi([...comptes.values()].filter(c => re.test(c.numero)).reduce((a, c) => a + (sens === 'c' ? c.credit - c.debit : c.debit - c.credit), 0));
+  const dates = lignes.map(l => l.date).filter(Boolean).sort();
+  const comptabilite = {
+    format: 'fec', fichier: nom, exercice: dates.length ? { debut: dates[0], fin: dates[dates.length - 1] } : null,
+    lignes: lignes.length, ecritures: ecritures.size, equilibre: !desequilibres.length, desequilibres,
+    total_debit: arrondi(lignes.reduce((a, l) => a + l.debit, 0)), total_credit: arrondi(lignes.reduce((a, l) => a + l.credit, 0)),
+    journaux: [...journaux.values()].map(j => ({ ...j, debit: arrondi(j.debit), credit: arrondi(j.credit) })),
+    comptes: [...comptes.values()].sort((a, b) => a.numero.localeCompare(b.numero)).map(c => ({ numero: c.numero, libelle: c.libelle, classe: c.classe, solde: arrondi(c.debit - c.credit) })),
+    chiffre_affaires_ht: somme(/^70/, 'c'),
+    tva: { collectee: somme(/^4457/, 'c'), deductible: somme(/^4456/, 'd') },
+    clients: clients.size, fournisseurs: fournisseurs.size, erreurs,
+  };
+
+  // Clients : solde négatif = ce que le client doit encore (même convention que les fiches adhérents).
+  const tClients = [['Code client', 'Client', 'Solde'], ...[...clients.values()].map(c => [c.code, c.nom, euros(-(c.debit - c.credit))])];
+  // Factures : une écriture du journal de ventes qui touche un compte client.
+  const tFactures = [['N° facture', 'Date', 'Code client', 'Client', 'Désignation', 'Montant TTC', 'Reste dû']];
+  const tReglements = [['Date', 'Code client', 'Client', 'Montant', 'Référence']];
+  for (const e of ecritures.values()) {
+    const cl = e.lignes.filter(estClient);
+    if (!cl.length) continue;
+    if (ventes.has(e.journal)) {
+      for (const l of cl) {
+        const ttc = arrondi(l.debit - l.credit); if (!ttc) continue;
+        const t = tiersDe(l);
+        tFactures.push([l.piece || e.num, l.pieceDate || l.date, t.code, t.nom, l.libelle || 'Facture', euros(ttc), euros(l.lettrage ? 0 : Math.max(0, ttc))]);
+      }
+    } else {
+      for (const l of cl) if (l.credit > 0) { const t = tiersDe(l); tReglements.push([l.date, t.code, t.nom, euros(l.credit - l.debit), l.piece || e.num]); }
+    }
+  }
+  const tFournisseurs = [['Fournisseur', 'Compte fournisseur', 'Catégorie'], ...[...fournisseurs.values()].map(f => [f.nom, f.code, 'Fournisseur'])];
+  const base = nom.replace(/\.[^.]+$/, '');
+  const tables = [
+    { fichier: nom, feuille: 'clients', lignes: tClients, type: 'adherents', logiciel: 'fec' },
+    { fichier: nom, feuille: 'factures', lignes: tFactures, type: 'factures', logiciel: 'fec' },
+    { fichier: nom, feuille: 'règlements', lignes: tReglements, type: 'reglements', logiciel: 'fec' },
+    { fichier: nom, feuille: 'fournisseurs', lignes: tFournisseurs, type: 'fournisseurs', logiciel: 'fec' },
+  ].filter(t => t.lignes.length > 1);
+  if (!tables.length) tables.push({ fichier: nom, feuille: base, lignes: [], logiciel: 'fec' });
+  tables[0].comptabilite = comptabilite;
+  return { comptabilite, tables };
+}
+
+return { COLONNES_FEC, estFEC, lireFEC, analyserFEC };
+})();
+__m["helloasso.mjs"] = (() => {
+// HelloAsso : export CSV des adhésions et des paiements (Administration › Adhésions › Exporter, ou Paiements › Exporter).
+// HelloAsso reste branché à Stabl (relation « Intégrer ») : on reprend l'historique sans rien ressaisir.
+// Un export mélange l'adhérent, le payeur (souvent un parent), la formule et le paiement sur la même ligne :
+// on en fait trois tables propres (adhérents, formules, règlements) que la passerelle range ensuite comme les autres.
+const { cle } = __m["texte.mjs"];
+
+// Rangement des colonnes : chaque colonne HelloAsso -> un rôle. L'ordre compte (le plus précis d'abord).
+const ROLES = [
+  ['payeur_prenom', /^prenom (du )?payeur$/], ['payeur_nom', /^nom (du )?payeur$/], ['payeur_email', /^(e ?mail|courriel) (du )?payeur$/],
+  ['reference', /^(numero|reference|ref)( de (la )?commande| commande| du paiement| paiement)?$|^numero$/],
+  ['formule', /^(formule|tarif|nom (du |de la )?(tarif|formule)|type d adhesion|campagne|nom de la campagne)$/],
+  ['montant', /^(montant( du tarif| tarif| total| paye| de la commande| du paiement)?|prix|total)$/],
+  ['date', /^(date( de la commande| du paiement| d adhesion| de paiement)?)$/],
+  ['statut', /^(statut|etat)( de la commande| du paiement| de l adhesion)?$/],
+  ['moyen', /^(moyen|mode)( de paiement| de reglement)?$/],
+  ['prenom', /^(prenom|prenom (de l )?adherent|prenom du participant|first name)$/], ['nom', /^(nom|nom (de l )?adherent|nom du participant|last name)$/],
+  ['email', /^(e ?mail|courriel|adresse e ?mail|e ?mail (de l )?adherent)$/], ['naissance', /^date de naissance$/],
+  ['telephone', /^(telephone|numero de telephone|portable|mobile)$/], ['adresse', /^adresse$/], ['code_postal', /^code postal$/], ['ville', /^ville$/],
+  ['licence', /licence/], ['code_promo', /code promo/],
+];
+function rangerColonnes(entetes) {
+  const r = {}, pris = new Set();
+  entetes.forEach((h, i) => {
+    const k = cle(h);
+    for (const [role, re] of ROLES) if (!pris.has(role) && re.test(k)) { r[i] = role; pris.add(role); return; }
+  });
+  return r;
+}
+function estHelloAsso(entetes, nomFichier = '') {
+  const k = entetes.map(cle);
+  const signes = [k.some(x => /payeur/.test(x)), k.some(x => /^formule$|^tarif$|nom du tarif/.test(x)), k.some(x => /statut (de la )?commande|reference commande|numero de commande/.test(x)), /helloasso/i.test(nomFichier)];
+  return signes.filter(Boolean).length >= 2;
+}
+const PAYE = /valid|pay|autoris|effectu|regle|confirm|succes|^ok$/;
+const REFUSE = /refus|annul|rembours|echou|abandon|attente|en cours/;
+
+function tablesHelloAsso(lignes, nom = 'helloasso.csv') {
+  const h = lignes.findIndex(l => estHelloAsso(l, nom)); if (h < 0) return null;
+  const entetes = lignes[h].map(String), roles = rangerColonnes(entetes);
+  const col = role => { const i = Object.keys(roles).find(i => roles[i] === role); return i === undefined ? -1 : +i; };
+  const v = (l, role) => { const i = col(role); return i >= 0 ? String(l[i] ?? '').trim() : ''; };
+  const adh = [['Nom', 'Prénom', 'Date de naissance', 'Email', 'Téléphone', 'Adresse', 'Code postal', 'Ville', 'Licence', 'Forfait', 'Responsable', 'Email responsable']];
+  const reg = [['Date', 'Client', 'Montant', 'Mode de paiement', 'Référence']];
+  const formules = new Map();
+  let ignores = 0;
+  for (const l of lignes.slice(h + 1)) {
+    if (!l.some(x => String(x).trim())) continue;
+    const statut = cle(v(l, 'statut'));
+    const nomA = v(l, 'nom') || v(l, 'payeur_nom'), prenomA = v(l, 'prenom') || v(l, 'payeur_prenom');
+    if (!nomA && !prenomA) continue;
+    const payeur = [v(l, 'payeur_nom').toUpperCase(), v(l, 'payeur_prenom')].filter(Boolean).join(' ');
+    const autrePayeur = payeur && cle(payeur) !== cle(nomA + ' ' + prenomA);
+    const formule = v(l, 'formule');
+    adh.push([nomA, prenomA, v(l, 'naissance'), v(l, 'email') || (autrePayeur ? '' : v(l, 'payeur_email')), v(l, 'telephone'), v(l, 'adresse'), v(l, 'code_postal'), v(l, 'ville'),
+      v(l, 'licence'), formule, autrePayeur ? payeur : '', autrePayeur ? v(l, 'payeur_email') : '']);
+    if (formule && !formules.has(cle(formule))) formules.set(cle(formule), [formule, v(l, 'montant')]);
+    if (statut && (REFUSE.test(statut) || !PAYE.test(statut))) { ignores++; continue; }
+    if (v(l, 'montant')) reg.push([v(l, 'date'), autrePayeur ? payeur : `${nomA.toUpperCase()} ${prenomA}`.trim(), v(l, 'montant'), v(l, 'moyen') || 'Paiement en ligne', v(l, 'reference')]);
+  }
+  const tables = [
+    { fichier: nom, feuille: 'adhérents', lignes: adh, type: 'adherents', logiciel: 'helloasso' },
+    { fichier: nom, feuille: 'formules', lignes: [['Libellé', 'Prix TTC'], ...formules.values()], type: 'prestations', logiciel: 'helloasso' },
+    { fichier: nom, feuille: 'paiements', lignes: reg, type: 'reglements', logiciel: 'helloasso' },
+  ].filter(t => t.lignes.length > 1);
+  return { tables, ignores, colonnes: Object.fromEntries(Object.entries(roles).map(([i, r]) => [entetes[i], r])) };
+}
+
+return { rangerColonnes, estHelloAsso, tablesHelloAsso };
+})();
 __m["lire.mjs"] = (() => {
 // Point d'entrée commun : un fichier (nom + octets) -> liste de tables.
 const { decoder } = __m["texte.mjs"];
@@ -1077,23 +1319,28 @@ const { lireCSV } = __m["csv.mjs"];
 const { lireXLSX } = __m["xlsx.mjs"];
 const { estCapture, tablesDeCapture } = __m["capture.mjs"];
 const { estICS, tableDeICS } = __m["ics.mjs"];
+const { estFEC, analyserFEC } = __m["fec.mjs"];
+const { tablesHelloAsso } = __m["helloasso.mjs"];
 
 async function lireFichier(nom, octets, { inflate } = {}) {
   const ext = (nom.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
   const b = octets instanceof Uint8Array ? octets : new Uint8Array(octets);
   if (ext === 'xlsx' || ext === 'xlsm' || (b[0] === 0x50 && b[1] === 0x4b)) {
     const feuilles = await lireXLSX(b, inflate);
-    return feuilles.map(f => ({ fichier: nom, feuille: feuilles.length > 1 ? f.nom : null, lignes: f.lignes }));
+    return feuilles.flatMap(f => tablesHelloAsso(f.lignes, nom)?.tables || [{ fichier: nom, feuille: feuilles.length > 1 ? f.nom : null, lignes: f.lignes }]);
   }
   if (ext === 'xls' && b[0] === 0xd0 && b[1] === 0xcf) {
     return [{ fichier: nom, lignes: [], erreur: 'Ancien format Excel (.xls) : ouvrez-le dans Excel ou LibreOffice et enregistrez-le en .xlsx ou .csv.' }];
   }
   const { texte, encodage } = decoder(b);
   if (estCapture(texte)) return tablesDeCapture(JSON.parse(texte), nom);
+  if (estFEC(texte)) return analyserFEC(texte, nom).tables;
   if (estICS(texte)) return [{ fichier: nom, lignes: tableDeICS(texte), encodage, type: 'reprises' }];
   if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Stabl : ignoré.' }];
   if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
   const { lignes, separateur } = lireCSV(texte);
+  const ha = tablesHelloAsso(lignes, nom);
+  if (ha) return ha.tables.map(t => ({ ...t, encodage, separateur }));
   return [{ fichier: nom, lignes, encodage, separateur }];
 }
 
@@ -1132,9 +1379,11 @@ function construirePaquet(tables, options = {}) {
     lues.push(r);
   }
   // Ordre utile : les personnes d'abord, puis ce qui s'y rattache.
-  const ordre = ['adherents', 'equipe', 'prestations', 'chevaux', 'factures', 'reglements', 'reprises', 'soins'];
+  const ordre = ['adherents', 'equipe', 'prestations', 'chevaux', 'factures', 'reglements', 'reprises', 'soins', 'fournisseurs', 'stocks'];
   lues.sort((a, b) => ordre.indexOf(a.source.type) - ordre.indexOf(b.source.type));
   for (const r of lues) P['ajouter_' + r.source.type](r);
+  // Comptabilité (FEC) : le résumé est joint ; les clients et les factures arrivent par les tables ci-dessus.
+  for (const t of tables) if (t.comptabilite) P.comptabilite = t.comptabilite;
   P.finaliser();
   return P.json();
 }
@@ -1180,6 +1429,7 @@ class Paquet {
     this.sources = []; this.avertissements = [];
     this.personnes = []; this.chevaux = []; this.prestations = []; this.abonnements = [];
     this.factures = []; this.reglements = []; this.reprises = []; this.equipe = []; this.soins = [];
+    this.stocks = []; this.fournisseurs = []; this.comptabilite = null;
     this.idx = { licence: new Map(), email: new Map(), nomNaiss: new Map(), nom: new Map(), idSource: new Map(), famille: new Map() };
     this.fusions = 0;
   }
@@ -1446,6 +1696,25 @@ class Paquet {
     }
   }
 
+  // ---------- Stocks et fournisseurs ----------
+  ajouter_fournisseurs(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const nom = V.texte(e.nom); if (!nom || this.fournisseurs.some(f => cle(f.nom) === cle(nom))) continue;
+      this.fournisseurs.push({ ref: 'fo' + String(this.fournisseurs.length + 1).padStart(3, '0'), nom, categorie: V.texte(e.categorie), contact: V.texte(e.contact),
+        email: V.email(e.email), telephone: V.telephone(e.telephone), siret: (V.texte(e.siret) || '').replace(/\s+/g, '') || null, compte: V.texte(e.compte), ville: V.texte(e.ville),
+        origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
+  ajouter_stocks(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const libelle = V.texte(e.libelle); if (!libelle) continue;
+      this.stocks.push({ ref: 'st' + String(this.stocks.length + 1).padStart(3, '0'), libelle, categorie: V.texte(e.categorie), quantite: V.montant(e.quantite),
+        unite: V.texte(e.unite), seuil: V.montant(e.seuil), conso_jour: V.montant(e.conso), prix: V.montant(e.prix), fournisseur: V.texte(e.fournisseur),
+        origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
   // ---------- Fin ----------
   finaliser() {
     // Familles : code famille commun, sinon même e-mail ou même responsable.
@@ -1485,6 +1754,7 @@ class Paquet {
       sources: this.sources,
       personnes: this.personnes, chevaux: this.chevaux, prestations: this.prestations, abonnements: this.abonnements,
       factures: this.factures, reglements: this.reglements, reprises: this.reprises, equipe: this.equipe, soins: this.soins,
+      stocks: this.stocks, fournisseurs: this.fournisseurs, ...(this.comptabilite ? { comptabilite: this.comptabilite } : {}),
       controle: {
         personnes: this.personnes.length, cavaliers: this.personnes.filter(p => p.roles.includes('cavalier')).length,
         responsables: this.personnes.filter(p => p.roles.includes('responsable')).length,
@@ -1495,7 +1765,7 @@ class Paquet {
         chiffre_factures_ttc: Math.round(this.factures.reduce((a, f) => a + f.total_ttc, 0) * 100) / 100,
         impayes_factures_ttc: Math.round(impayes * 100) / 100, soldes_negatifs_fiches: Math.round(soldes * 100) / 100,
         reglements: this.reglements.length, encaisse_ttc: Math.round(this.reglements.reduce((a, r) => a + r.montant, 0) * 100) / 100,
-        reprises: this.reprises.length, soins: this.soins.length,
+        reprises: this.reprises.length, soins: this.soins.length, stocks: this.stocks.length, fournisseurs: this.fournisseurs.length,
         sans_email: this.personnes.filter(p => p.roles.includes('cavalier') && !p.email && !p.responsables.length).length,
       },
       avertissements: this.avertissements,
@@ -1684,8 +1954,10 @@ function versLots(paquet, aujourdhui = new Date().toISOString().slice(0, 10)) {
     paid: f.paye, rest: f.reste, method: MOYEN[f.moyen] || null, imported: true }) }));
   const payments = paquet.reglements.map(r => ({ external_id: 'reglement:' + [r.date, r.montant, r.reference || r.ref].join(':'), data: clean({
     date: r.date, member: ext(P, r.client), amount: r.montant, method: MOYEN[r.moyen] || null, invoice: r.facture ? 'ext:facture:' + r.facture : null, ref: r.reference, deposit: r.remise }) }));
+  const stock = (paquet.stocks || []).map(s => ({ external_id: 'stock:' + cle(s.libelle).replace(/ /g, '-'), data: clean({
+    name: s.libelle, unit: s.unite, qty: s.quantite, min: s.seuil, daily: s.conso_jour, price: s.prix, supplier: s.fournisseur, category: s.categorie }) }));
   // Ordre d'envoi : ce qui est référencé avant ce qui référence.
-  return [['staff', staff], ['forfaits', forfaits], ['members', members], ['horses', horses], ['lessons', lessons], ['care', care], ['invoices', invoices], ['payments', payments]]
+  return [['staff', staff], ['forfaits', forfaits], ['members', members], ['horses', horses], ['lessons', lessons], ['care', care], ['invoices', invoices], ['payments', payments], ['stock', stock]]
     .filter(([, items]) => items.length).map(([coll, items]) => ({ coll, items }));
 }
 
@@ -1950,6 +2222,8 @@ return { FAMILLES_OUTILS, QUESTIONS, questionsActives, decisionsPossibles, decis
 __m["robot-distant.mjs"] = (() => {
 // Connexion assistée : le navigateur Stabl (côté serveur) ouvre l'ancien logiciel, le gérant voit son écran
 // dans la page et s'y connecte lui-même (double authentification comprise). Rien à installer.
+// Connexion automatique : le gérant a confié son identifiant et son mot de passe (option « Donnez-nous vos codes ») ;
+// le robot se connecte seul, et si le logiciel demande un code de vérification, la page le demande au gérant.
 // Contrat HTTP : robot/serveur-local.mjs (mêmes routes en production sous /api/v1/migration/robot).
 // Les touches tapées partent directement au navigateur distant : elles ne sont ni stockées ni journalisées.
 
@@ -1976,6 +2250,10 @@ const STYLE = `
 .rd-jauge i{display:block;height:100%;width:8%;background:#3ccf8e;transition:width .4s}
 .rd-aide{padding:10px 14px;font:400 13px/1.45 Inter,system-ui,sans-serif;color:#aab4cc;background:#151e33}
 .rd-saisie{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.rd-code{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;background:#22305a;font:500 14px/1.4 Inter,system-ui,sans-serif}
+.rd-code[hidden]{display:none}
+.rd-code label{flex:1 1 220px}
+.rd-code input{font:600 18px/1 Inter,system-ui,sans-serif;letter-spacing:.2em;width:9em;padding:8px 10px;border-radius:10px;border:0}
 `;
 
 function el(tag, attrs = {}, ...enfants) {
@@ -2001,7 +2279,7 @@ const TOUCHES = new Set(['Enter', 'Tab', 'Backspace', 'Delete', 'Escape', 'Arrow
  * surCapture(file) reçoit la capture (fichier piaffe-capture JSON) ; par défaut, on émet l'événement
  * « piaffe:capture » sur window avec { detail: { fichier } }.
  */
-async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {}) {
+async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture, acces = null } = {}) {
   const zone = cible || document.getElementById('robot-distant');
   if (!zone) throw new Error('Zone #robot-distant absente.');
   if (!document.getElementById('rd-style')) document.head.append(el('style', { id: 'rd-style' }, STYLE));
@@ -2023,17 +2301,21 @@ async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {
   const voile = el('div', { class: 'rd-voile' }, el('div', {}, voileTitre, voileTexte, el('div', { class: 'rd-jauge' }, jauge)));
   const saisie = el('input', { class: 'rd-saisie', type: 'text', autocomplete: 'off', 'aria-label': 'Saisie vers ' + nom });
   const ecran = el('div', { class: 'rd-ecran', tabindex: '0', role: 'application', 'aria-label': 'Écran distant : cliquez puis tapez' }, attente, img, voile, saisie);
+  const champCode = el('input', { name: 'code', inputmode: 'numeric', autocomplete: 'one-time-code', maxlength: '12', required: '', 'aria-label': 'Code de vérification' });
+  const formCode = el('form', { class: 'rd-code', hidden: '' }, el('label', {}, 'Votre logiciel vient de vous envoyer un code (SMS, e-mail ou application). Tapez-le ici :'), champCode, el('button', { class: 'rd-btn principal', type: 'submit' }, 'Envoyer le code'));
+  const aide = el('div', { class: 'rd-aide' }, acces
+    ? 'Le robot se connecte avec l’identifiant que vous avez confié. Vous voyez l’écran en direct. Vos identifiants sont effacés dès la connexion faite.'
+    : 'Connectez-vous comme d’habitude, directement dans cet écran. Stabl ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.');
   const boite = el('div', { class: 'rd', 'data-phase': 'connexion' },
     el('div', { class: 'rd-barre' }, el('span', { class: 'rd-point' }), titre, btnFini, btnStop),
-    ecran,
-    el('div', { class: 'rd-aide' }, 'Connectez-vous comme d’habitude, directement dans cet écran. Stabl ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.'));
+    ecran, formCode, aide);
   zone.append(boite);
 
   let session;
-  try { session = await appel('', { method: 'POST', body: JSON.stringify({ adresse }) }); }
+  try { session = await appel('', { method: 'POST', body: JSON.stringify(acces ? { adresse, acces, consentement: true } : { adresse }) }); }
   catch (err) { attente.textContent = err.message; boite.dataset.phase = 'erreur'; return null; }
   const { id, largeur = 1280, hauteur = 800 } = session;
-  titre.textContent = nom + ' : connectez-vous';
+  titre.textContent = acces ? 'Connexion automatique à ' + nom + '…' : nom + ' : connectez-vous';
 
   const envoyer = e => appel('/' + id + '/entree', { method: 'POST', body: JSON.stringify(e) }).catch(() => {});
   const coord = ev => {
@@ -2043,6 +2325,11 @@ async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {
     return { x: Math.round((ev.clientX - r.left - ox) / k), y: Math.round((ev.clientY - r.top - oy) / k) };
   };
   const enConnexion = () => boite.dataset.phase === 'connexion';
+  formCode.addEventListener('submit', ev => {
+    ev.preventDefault(); const code = champCode.value.trim(); if (!code) return;
+    champCode.value = ''; formCode.hidden = true;
+    appel('/' + id + '/code', { method: 'POST', body: JSON.stringify({ code }) }).catch(err => { aide.textContent = err.message; });
+  });
   ecran.addEventListener('click', ev => { if (!enConnexion()) return; saisie.focus({ preventScroll: true }); envoyer({ type: 'clic', ...coord(ev) }); });
   ecran.addEventListener('wheel', ev => { if (!enConnexion()) return; ev.preventDefault(); envoyer({ type: 'defiler', dy: Math.round(ev.deltaY) }); }, { passive: false });
   // Le texte passe par un champ caché (claviers mobiles, accents, collage) et part par petits morceaux.
@@ -2060,7 +2347,14 @@ async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {
   flux.addEventListener('etat', async ev => {
     const e = JSON.parse(ev.data);
     boite.dataset.phase = e.phase;
+    if (e.phase === 'connexion') {
+      if (e.progression) titre.textContent = e.progression;
+      formCode.hidden = e.attente !== 'code';
+      if (e.attente === 'code') setTimeout(() => champCode.focus(), 50);
+      if (e.message) { aide.textContent = e.message; titre.textContent = nom + ' : connectez-vous'; }
+    }
     if (e.phase === 'copie') {
+      formCode.hidden = true;
       titre.textContent = 'Connecté : copie de ' + nom; btnFini.hidden = true; saisie.blur();
       const vus = (e.lignes ? e.lignes + ' lignes copiées' : '') + (e.fiches ? (e.lignes ? ', ' : '') + e.fiches + ' fiches' : '');
       voileTexte.textContent = (e.progression || 'Le robot parcourt ' + nom + ' en lecture seule.') + (vus ? ' · ' + vus + '.' : '');
@@ -2121,7 +2415,8 @@ const calme = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const etat = { tables: [], paquet: null };
 const rep = { depart: null, principal: null, adresse: null, outils: [], choix: {} };
-const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // vide tant que le serveur n'ouvre pas la reprise par codes
+const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // ancien envoi chiffré (core/acces.mjs), si le robot en ligne n'est pas là
+const robotEnLigne = () => !!globalThis.PiaffeRobot?.disponible?.();
 const COULEURS = { equestre: 'hz', federation: 'tm', adhesions: 'mo', agenda: 'rd', compta: 'mo', rh: 'tm', tableurs: 'hz', papier: 'pf' };
 const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Stabl', au_choix: 'Au choix' };
 const COURT = { depart: 'Départ', principal: 'Logiciel', outils: 'Outils', choix: 'Choix', plan: 'Plan', recuperation: 'Récupération' };
@@ -2316,11 +2611,15 @@ function cartesModes(l) {
   const blocs = {
     robot: blocAssistee(l.nom, adresse, false),
     ordinateur: `<ol><li>Téléchargez le robot Stabl pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Stabl et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
-    codes: `<p>Confiez-nous l’accès : notre robot fait la migration à votre place, puis efface vos identifiants.</p>
-      ${SERVEUR_MIGRATION ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
-      <form id="codes" class="codes" autocomplete="off"><input name="identifiant" placeholder="Identifiant ${esc(l.nom)}" ${SERVEUR_MIGRATION ? '' : 'disabled'}><input name="motDePasse" type="password" placeholder="Mot de passe" ${SERVEUR_MIGRATION ? '' : 'disabled'}>
-      <label class="plein"><input type="checkbox" name="doubleAuth" ${SERVEUR_MIGRATION ? '' : 'disabled'}> Mon compte a une double authentification (code par SMS ou application) : on vous appellera pour le saisir ensemble.</label>
-      <button class="bouton second plein" ${SERVEUR_MIGRATION ? '' : 'disabled'}>Envoyer de façon chiffrée</button><p class="fine plein" id="codes-sortie">Chiffré dans votre navigateur avant envoi, effacé après la migration.</p></form>`,
+    codes: (() => {
+      const actif = robotEnLigne() || SERVEUR_MIGRATION, off = actif ? '' : 'disabled';
+      return `<p>Confiez-nous l’accès : le robot Stabl se connecte à ${esc(l.nom)} à votre place, copie tout en lecture seule, puis efface vos identifiants.</p>
+      ${actif ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
+      <form id="codes" class="codes" autocomplete="off" data-adresse="${esc(adresse || '')}" data-nom="${esc(l.nom)}"><input name="identifiant" placeholder="Identifiant ${esc(l.nom)}" required ${off}><input name="motDePasse" type="password" placeholder="Mot de passe" required ${off}>
+      <label class="plein"><input type="checkbox" name="consentement" required ${off}> J’autorise Stabl à se connecter à mon compte ${esc(l.nom)} pour copier mes données, une seule fois.</label>
+      <p class="fine plein">Double authentification (code par SMS ou application) : le robot vous demandera le code ici même, au bon moment.</p>
+      <button class="bouton second plein" ${off}>Lancer la copie</button><p class="fine plein" id="codes-sortie">Envoyé par connexion sécurisée, chiffré sur nos serveurs, effacé dès la connexion faite.</p></form><div id="codes-robot"></div>`;
+    })(),
     export: `<ol>${l.voies[0].etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` +
       (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Stabl rapproche les licences et complète les fiches.</p>` : '') +
       (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Stabl reconnaît les colonnes tout seul.</p>` : ''),
@@ -2365,10 +2664,19 @@ document.addEventListener('submit', async e => {
   if (e.target.id !== 'codes') return;
   e.preventDefault();
   const f = new FormData(e.target), s = $('#codes-sortie');
+  const acces = { identifiant: String(f.get('identifiant') || ''), mot_de_passe: String(f.get('motDePasse') || '') };
+  if (!f.get('consentement')) { s.textContent = 'Cochez la case pour autoriser la connexion.'; return; }
+  e.target.reset();
+  if (robotEnLigne()) {
+    // Le robot en ligne se connecte tout de suite ; l'écran s'affiche juste en dessous, le code de vérification y sera demandé.
+    s.textContent = 'Connexion en cours…';
+    await globalThis.PiaffeRobot.ouvrir(e.target.dataset.adresse || rep.adresse, { nom: e.target.dataset.nom, acces, cible: $('#codes-robot') });
+    s.textContent = 'Vos identifiants ont été effacés. Pensez à changer votre mot de passe dans votre ancien logiciel.';
+    return;
+  }
   try {
-    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
+    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: acces.identifiant, motDePasse: acces.mot_de_passe, doubleAuth: true });
     s.textContent = 'Reçu et chiffré. Nous vous prévenons dès que la migration est prête (' + (r.statut || 'en attente') + ').';
-    e.target.reset();
   } catch (err) { s.textContent = err.code === 'indisponible' ? 'Bientôt disponible : rien n’a été envoyé.' : 'Échec : ' + err.message; }
 });
 

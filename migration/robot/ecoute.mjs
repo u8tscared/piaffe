@@ -1,7 +1,7 @@
 // Robot SANS recette, injecté au début de chaque page de l'ancien logiciel (addInitScript / evaluateOnNewDocument).
 // Il voit ce que la page charge, sur n'importe quel logiciel en ligne :
 //   1. écoute : chaque réponse JSON (fetch, XHR) est fouillée ; chaque liste d'objets devient un « jeu » aplati
-//      (une ligne par objet, une colonne par champ : « owner.lastName » -> « last name »), jamais les champs secrets ;
+//      (une ligne par objet, une colonne par champ : « owner.lastName » -> « owner last name »), jamais les champs secrets ;
 //   2. relit : les lectures faites avant son arrivée (performance.getEntries) sont redemandées une fois ;
 //   3. tourne les pages : page=, offset=, skip=, curseur, lien « next », puis les listes par dates (planning, réservations,
 //      factures du mois) redemandées de 24 mois en arrière à 12 mois devant ;
@@ -27,7 +27,7 @@ export function robotDansLaPage() {
     for (const [k, v] of Object.entries(o || {})) {
       if (k === '__proto__' || SECRET.test(k)) continue;
       const key = nk(k); const full = pre ? pre + ' ' + key : key;
-      if (v == null) { if (!(key in out)) out[key] = ''; continue; }
+      if (v == null) { const kk = pre ? full : key; if (!(kk in out)) out[kk] = ''; continue; }
       if (Array.isArray(v)) {
         if (v.every(x => x == null || typeof x !== 'object')) out[key in out ? full : key] = v.filter(x => x != null).join(', ').slice(0, 500);
         else if (d < 3) { const nm = v.map(x => x && (x.name || x.label || x.title || x.nom || x.libelle)).filter(Boolean); if (nm.length) out[key in out ? full : key] = nm.join(', ').slice(0, 500); else out[(key in out ? full : key) + ' nb'] = v.length; }
@@ -35,7 +35,7 @@ export function robotDansLaPage() {
       }
       if (typeof v === 'object') { if (d < 4) flat(v, key, out, d + 1); continue; }
       if (typeof v === 'string' && (v.length > 2000 || /^(ey[\w-]{10,}\.){2}|^[A-Za-z0-9+/]{120,}={0,2}$|^data:/.test(v))) continue;
-      out[key in out && pre ? full : key] = v;
+      out[pre ? full : key] = v; // « owner.lastName » -> « owner last name » : le nom du parent dit ce qu'est le champ
     }
     return out;
   }

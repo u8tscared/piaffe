@@ -71,3 +71,66 @@ console.log(`${n} contrôles réussis.`);
   t('homonymes non fusionnés', () => assert.equal(q.personnes.filter(p => p.prenom === 'Léa' && p.nom === 'Martin').length, 2));
   console.log(`${n} contrôles réussis (avec agenda et robot).`);
 }
+
+// FEC, HelloAsso, catalogue, robot sans recette (garde-fous, classement des listes, recettes propres)
+{
+  const { tablesDesJeux, classerJeu } = await import('../robot/jeux.mjs');
+  const G = await import('../robot/garde-fous.mjs');
+  const { nettoyerRecette, valeursDuClub } = await import('../robot/recettes.mjs');
+  const { scriptRobot } = await import('../robot/ecoute.mjs');
+  const { LOGICIELS } = await import('../core/logiciels.mjs');
+  const fec = await lireFichier('fec-exemple.txt', fs.readFileSync(path.join(ici, '../essais/fec-exemple.txt')), { inflate });
+  const qf = construirePaquet(fec, { aujourdhui: '2026-11-24' });
+  t('FEC : résumé comptable', () => {
+    const c = qf.comptabilite; assert.equal(c.format, 'fec'); assert.equal(c.equilibre, true); assert.ok(c.journaux.some(j => j.code === 'VT'));
+    assert.ok(c.chiffre_affaires_ht > 1000); assert.ok(c.tva.collectee > 0 && c.tva.deductible > 0);
+  });
+  t('FEC : clients, factures lettrées, règlements, fournisseurs', () => {
+    assert.equal(qf.factures.length, 2); assert.ok(qf.factures.some(f => f.reste === 0)); assert.ok(qf.factures.some(f => f.reste > 0));
+    assert.equal(qf.reglements.length, 1); assert.equal(qf.fournisseurs.length, 1); assert.ok(qf.personnes.some(p => /martin/i.test(p.nom)));
+  });
+  const ha = await lireFichier('helloasso-adhesions.csv', fs.readFileSync(path.join(ici, '../essais/helloasso-adhesions.csv')), { inflate });
+  const qh = construirePaquet(ha, { aujourdhui: '2026-11-24' });
+  t('HelloAsso : adhérents, payeur parent, paiements validés seulement', () => {
+    assert.ok(qh.sources.every(s => s.logiciel === 'helloasso'));
+    assert.equal(qh.controle.encaisse_ttc, 235); assert.ok(qh.personnes.some(p => p.prenom === 'Zoé')); assert.ok(qh.personnes.some(p => p.prenom === 'Claire'));
+  });
+  t('catalogue : 60 logiciels au moins, Pennylane / SumUp / FFE jamais remplacés', () => {
+    assert.ok(Object.keys(LOGICIELS).length >= 60);
+    for (const id of ['kavalog', 'equimondo', 'isibox', 'pegase', 'horsemanager', 'clubeo', 'helloasso', 'pennylane', 'tiime', 'indy', 'quickbooks', 'sage', 'ebp', 'cegid', 'dougs', 'fec']) assert.ok(LOGICIELS[id], id);
+    for (const id of ['pennylane', 'sumup', 'ffe']) assert.ok(!decisionsPossibles(id).includes('changer'), id);
+  });
+  t('robot : listes JSON classées dans le monde équestre', () => {
+    const j = (key, fields, label = '') => ({ key, fields, label, rows: [Object.fromEntries(fields.map(f => [f, 'x']))], n: 1 });
+    assert.equal(classerJeu(j('api:h/api/horses#items', ['name', 'breed', 'sire number'])).genre, 'chevaux');
+    assert.equal(classerJeu(j('api:h/api/riders#data', ['first name', 'last name', 'galop'])).genre, 'cavaliers');
+    assert.equal(classerJeu(j('api:h/api/invoices#', ['number', 'total', 'due date'])).genre, 'factures');
+    assert.equal(classerJeu(j('api:h/api/care-events#', ['horse name', 'type', 'next date'])).genre, 'soins');
+    assert.equal(classerJeu(j('api:h/api/ledger/entries#', ['journal', 'account', 'debit', 'credit'])).genre, 'comptabilite');
+    assert.equal(classerJeu(j('api:h/api/stock#', ['article', 'quantity', 'unit'])).genre, 'stocks');
+  });
+  t('robot : écritures lues en JSON -> même lecture que le FEC', () => {
+    const rows = [{ journal: 'VT', 'entry number': '1', date: '2026-09-05', account: '411000', 'aux label': 'MARTIN Léa', debit: 120, credit: 0 }, { journal: 'VT', 'entry number': '1', date: '2026-09-05', account: '706000', debit: 0, credit: 120 }];
+    const r = tablesDesJeux([{ key: 'api:h/api/ledger/entries#', fields: Object.keys(rows[0]), rows, n: 2 }], 'essai');
+    assert.equal(r.comptabilite.equilibre, true); assert.equal(r.comptabilite.chiffre_affaires_ht, 120);
+  });
+  t('garde-fous : décidés par le code', () => {
+    const s = new G.Sites('https://app.logiciel.fr/accueil');
+    for (const x of ['Supprimer', 'Déconnexion', 'Ajouter un cavalier', 'Payer maintenant', 'Envoyer la facture', 'Vider la corbeille', 'Annuler la réservation']) assert.ok(G.interdit(x), x);
+    for (const x of ['Cavaliers', 'Rechercher', 'Page suivante', 'Factures', 'Paiements', 'Abonnements']) assert.ok(!G.interdit(x), x);
+    assert.ok(!G.clicPermis({ quoi: 'Facebook', href: 'https://facebook.com/x' }, s));
+    assert.ok(!G.clicPermis({ quoi: 'Valider', post: true }, s)); assert.ok(G.clicPermis({ quoi: 'Rechercher', post: true }, s));
+    assert.ok(!G.adressePermise('https://app.logiciel.fr/cavaliers/12/edit', s)); assert.ok(!G.adressePermise('https://autre.fr/', s)); assert.ok(G.adressePermise('https://app.logiciel.fr/cavaliers?page=2', s));
+    assert.ok(!G.filtresPermis([{ n: 'token', v: 'x' }])); assert.ok(G.filtresPermis([{ n: 'from', v: '2025-01-01' }]));
+    const d = G.ecartDate('2026-12-01', new Date('2026-11-26T10:00:00Z')); assert.equal(d.ecart, 5); assert.equal(G.dateDe(d, new Date('2027-01-01T00:00:00Z')), '2027-01-06');
+  });
+  t('recette : aucune donnée du club', () => {
+    const jeux = [{ rows: [{ nom: 'DURAND', prenom: 'Alice', email: 'alice@exemple.fr' }] }];
+    const r = nettoyerRecette({ origine: 'https://app.logiciel.fr/accueil', script: [{ a: 'clic', t: 'Cavaliers', h: '/cavaliers' }, { a: 'clic', t: 'DURAND' }, { a: 'champ', t: 'Recherche', v: 'Alice' }, { a: 'champ', t: 'Du', v: '2026-01-01' }, { a: 'aller', url: '/cavaliers/123456789/fiche?jeton=abc' }, { a: 'clic', t: 'Supprimer' }], etapes: [{ chemin: '/cavaliers?page=2', titre: 'Cavaliers', signature: 'nom|prénom' }], genres: ['cavaliers', 'inconnu'] }, { valeursClub: valeursDuClub(jeux) });
+    const txt = JSON.stringify(r);
+    for (const x of ['DURAND', 'Alice', 'alice@', '123456789', 'jeton', 'Supprimer', 'inconnu']) assert.ok(!txt.includes(x), x);
+    assert.deepEqual(r.script.map(s => s.a), ['clic', 'champ']); assert.equal(r.script[1].d.f, 'iso'); assert.equal(r.etapes[0].chemin, '/cavaliers');
+  });
+  t('robot de la page : autonome et injectable', () => { const s = scriptRobot({ historiqueJours: 99999 }); assert.ok(s.includes('__stablMxHist=3650')); assert.ok(s.includes('var __name')); new Function(s); });
+  console.log(`${n} contrôles réussis (avec FEC, HelloAsso et robot sans recette).`);
+}

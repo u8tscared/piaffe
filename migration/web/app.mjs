@@ -21,7 +21,8 @@ const calme = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const etat = { tables: [], paquet: null };
 const rep = { depart: null, principal: null, adresse: null, outils: [], choix: {} };
-const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // vide tant que le serveur n'ouvre pas la reprise par codes
+const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // ancien envoi chiffré (core/acces.mjs), si le robot en ligne n'est pas là
+const robotEnLigne = () => !!globalThis.PiaffeRobot?.disponible?.();
 const COULEURS = { equestre: 'hz', federation: 'tm', adhesions: 'mo', agenda: 'rd', compta: 'mo', rh: 'tm', tableurs: 'hz', papier: 'pf' };
 const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Stabl', au_choix: 'Au choix' };
 const COURT = { depart: 'Départ', principal: 'Logiciel', outils: 'Outils', choix: 'Choix', plan: 'Plan', recuperation: 'Récupération' };
@@ -216,11 +217,15 @@ function cartesModes(l) {
   const blocs = {
     robot: blocAssistee(l.nom, adresse, false),
     ordinateur: `<ol><li>Téléchargez le robot Stabl pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Stabl et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
-    codes: `<p>Confiez-nous l’accès : notre robot fait la migration à votre place, puis efface vos identifiants.</p>
-      ${SERVEUR_MIGRATION ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
-      <form id="codes" class="codes" autocomplete="off"><input name="identifiant" placeholder="Identifiant ${esc(l.nom)}" ${SERVEUR_MIGRATION ? '' : 'disabled'}><input name="motDePasse" type="password" placeholder="Mot de passe" ${SERVEUR_MIGRATION ? '' : 'disabled'}>
-      <label class="plein"><input type="checkbox" name="doubleAuth" ${SERVEUR_MIGRATION ? '' : 'disabled'}> Mon compte a une double authentification (code par SMS ou application) : on vous appellera pour le saisir ensemble.</label>
-      <button class="bouton second plein" ${SERVEUR_MIGRATION ? '' : 'disabled'}>Envoyer de façon chiffrée</button><p class="fine plein" id="codes-sortie">Chiffré dans votre navigateur avant envoi, effacé après la migration.</p></form>`,
+    codes: (() => {
+      const actif = robotEnLigne() || SERVEUR_MIGRATION, off = actif ? '' : 'disabled';
+      return `<p>Confiez-nous l’accès : le robot Stabl se connecte à ${esc(l.nom)} à votre place, copie tout en lecture seule, puis efface vos identifiants.</p>
+      ${actif ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
+      <form id="codes" class="codes" autocomplete="off" data-adresse="${esc(adresse || '')}" data-nom="${esc(l.nom)}"><input name="identifiant" placeholder="Identifiant ${esc(l.nom)}" required ${off}><input name="motDePasse" type="password" placeholder="Mot de passe" required ${off}>
+      <label class="plein"><input type="checkbox" name="consentement" required ${off}> J’autorise Stabl à se connecter à mon compte ${esc(l.nom)} pour copier mes données, une seule fois.</label>
+      <p class="fine plein">Double authentification (code par SMS ou application) : le robot vous demandera le code ici même, au bon moment.</p>
+      <button class="bouton second plein" ${off}>Lancer la copie</button><p class="fine plein" id="codes-sortie">Envoyé par connexion sécurisée, chiffré sur nos serveurs, effacé dès la connexion faite.</p></form><div id="codes-robot"></div>`;
+    })(),
     export: `<ol>${l.voies[0].etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` +
       (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Stabl rapproche les licences et complète les fiches.</p>` : '') +
       (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Stabl reconnaît les colonnes tout seul.</p>` : ''),
@@ -265,10 +270,19 @@ document.addEventListener('submit', async e => {
   if (e.target.id !== 'codes') return;
   e.preventDefault();
   const f = new FormData(e.target), s = $('#codes-sortie');
+  const acces = { identifiant: String(f.get('identifiant') || ''), mot_de_passe: String(f.get('motDePasse') || '') };
+  if (!f.get('consentement')) { s.textContent = 'Cochez la case pour autoriser la connexion.'; return; }
+  e.target.reset();
+  if (robotEnLigne()) {
+    // Le robot en ligne se connecte tout de suite ; l'écran s'affiche juste en dessous, le code de vérification y sera demandé.
+    s.textContent = 'Connexion en cours…';
+    await globalThis.PiaffeRobot.ouvrir(e.target.dataset.adresse || rep.adresse, { nom: e.target.dataset.nom, acces, cible: $('#codes-robot') });
+    s.textContent = 'Vos identifiants ont été effacés. Pensez à changer votre mot de passe dans votre ancien logiciel.';
+    return;
+  }
   try {
-    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: f.get('identifiant'), motDePasse: f.get('motDePasse'), doubleAuth: !!f.get('doubleAuth') });
+    const r = await envoyerAcces(SERVEUR_MIGRATION, { logiciel: rep.principal, adresse: rep.adresse, identifiant: acces.identifiant, motDePasse: acces.mot_de_passe, doubleAuth: true });
     s.textContent = 'Reçu et chiffré. Nous vous prévenons dès que la migration est prête (' + (r.statut || 'en attente') + ').';
-    e.target.reset();
   } catch (err) { s.textContent = err.code === 'indisponible' ? 'Bientôt disponible : rien n’a été envoyé.' : 'Échec : ' + err.message; }
 });
 

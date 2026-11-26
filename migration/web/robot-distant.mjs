@@ -1,5 +1,7 @@
 // Connexion assistée : le navigateur Stabl (côté serveur) ouvre l'ancien logiciel, le gérant voit son écran
 // dans la page et s'y connecte lui-même (double authentification comprise). Rien à installer.
+// Connexion automatique : le gérant a confié son identifiant et son mot de passe (option « Donnez-nous vos codes ») ;
+// le robot se connecte seul, et si le logiciel demande un code de vérification, la page le demande au gérant.
 // Contrat HTTP : robot/serveur-local.mjs (mêmes routes en production sous /api/v1/migration/robot).
 // Les touches tapées partent directement au navigateur distant : elles ne sont ni stockées ni journalisées.
 
@@ -26,6 +28,10 @@ const STYLE = `
 .rd-jauge i{display:block;height:100%;width:8%;background:#3ccf8e;transition:width .4s}
 .rd-aide{padding:10px 14px;font:400 13px/1.45 Inter,system-ui,sans-serif;color:#aab4cc;background:#151e33}
 .rd-saisie{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.rd-code{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;background:#22305a;font:500 14px/1.4 Inter,system-ui,sans-serif}
+.rd-code[hidden]{display:none}
+.rd-code label{flex:1 1 220px}
+.rd-code input{font:600 18px/1 Inter,system-ui,sans-serif;letter-spacing:.2em;width:9em;padding:8px 10px;border-radius:10px;border:0}
 `;
 
 function el(tag, attrs = {}, ...enfants) {
@@ -51,7 +57,7 @@ const TOUCHES = new Set(['Enter', 'Tab', 'Backspace', 'Delete', 'Escape', 'Arrow
  * surCapture(file) reçoit la capture (fichier piaffe-capture JSON) ; par défaut, on émet l'événement
  * « piaffe:capture » sur window avec { detail: { fichier } }.
  */
-export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture } = {}) {
+export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCapture, acces = null } = {}) {
   const zone = cible || document.getElementById('robot-distant');
   if (!zone) throw new Error('Zone #robot-distant absente.');
   if (!document.getElementById('rd-style')) document.head.append(el('style', { id: 'rd-style' }, STYLE));
@@ -73,17 +79,21 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
   const voile = el('div', { class: 'rd-voile' }, el('div', {}, voileTitre, voileTexte, el('div', { class: 'rd-jauge' }, jauge)));
   const saisie = el('input', { class: 'rd-saisie', type: 'text', autocomplete: 'off', 'aria-label': 'Saisie vers ' + nom });
   const ecran = el('div', { class: 'rd-ecran', tabindex: '0', role: 'application', 'aria-label': 'Écran distant : cliquez puis tapez' }, attente, img, voile, saisie);
+  const champCode = el('input', { name: 'code', inputmode: 'numeric', autocomplete: 'one-time-code', maxlength: '12', required: '', 'aria-label': 'Code de vérification' });
+  const formCode = el('form', { class: 'rd-code', hidden: '' }, el('label', {}, 'Votre logiciel vient de vous envoyer un code (SMS, e-mail ou application). Tapez-le ici :'), champCode, el('button', { class: 'rd-btn principal', type: 'submit' }, 'Envoyer le code'));
+  const aide = el('div', { class: 'rd-aide' }, acces
+    ? 'Le robot se connecte avec l’identifiant que vous avez confié. Vous voyez l’écran en direct. Vos identifiants sont effacés dès la connexion faite.'
+    : 'Connectez-vous comme d’habitude, directement dans cet écran. Stabl ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.');
   const boite = el('div', { class: 'rd', 'data-phase': 'connexion' },
     el('div', { class: 'rd-barre' }, el('span', { class: 'rd-point' }), titre, btnFini, btnStop),
-    ecran,
-    el('div', { class: 'rd-aide' }, 'Connectez-vous comme d’habitude, directement dans cet écran. Stabl ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.'));
+    ecran, formCode, aide);
   zone.append(boite);
 
   let session;
-  try { session = await appel('', { method: 'POST', body: JSON.stringify({ adresse }) }); }
+  try { session = await appel('', { method: 'POST', body: JSON.stringify(acces ? { adresse, acces, consentement: true } : { adresse }) }); }
   catch (err) { attente.textContent = err.message; boite.dataset.phase = 'erreur'; return null; }
   const { id, largeur = 1280, hauteur = 800 } = session;
-  titre.textContent = nom + ' : connectez-vous';
+  titre.textContent = acces ? 'Connexion automatique à ' + nom + '…' : nom + ' : connectez-vous';
 
   const envoyer = e => appel('/' + id + '/entree', { method: 'POST', body: JSON.stringify(e) }).catch(() => {});
   const coord = ev => {
@@ -93,6 +103,11 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
     return { x: Math.round((ev.clientX - r.left - ox) / k), y: Math.round((ev.clientY - r.top - oy) / k) };
   };
   const enConnexion = () => boite.dataset.phase === 'connexion';
+  formCode.addEventListener('submit', ev => {
+    ev.preventDefault(); const code = champCode.value.trim(); if (!code) return;
+    champCode.value = ''; formCode.hidden = true;
+    appel('/' + id + '/code', { method: 'POST', body: JSON.stringify({ code }) }).catch(err => { aide.textContent = err.message; });
+  });
   ecran.addEventListener('click', ev => { if (!enConnexion()) return; saisie.focus({ preventScroll: true }); envoyer({ type: 'clic', ...coord(ev) }); });
   ecran.addEventListener('wheel', ev => { if (!enConnexion()) return; ev.preventDefault(); envoyer({ type: 'defiler', dy: Math.round(ev.deltaY) }); }, { passive: false });
   // Le texte passe par un champ caché (claviers mobiles, accents, collage) et part par petits morceaux.
@@ -110,7 +125,14 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
   flux.addEventListener('etat', async ev => {
     const e = JSON.parse(ev.data);
     boite.dataset.phase = e.phase;
+    if (e.phase === 'connexion') {
+      if (e.progression) titre.textContent = e.progression;
+      formCode.hidden = e.attente !== 'code';
+      if (e.attente === 'code') setTimeout(() => champCode.focus(), 50);
+      if (e.message) { aide.textContent = e.message; titre.textContent = nom + ' : connectez-vous'; }
+    }
     if (e.phase === 'copie') {
+      formCode.hidden = true;
       titre.textContent = 'Connecté : copie de ' + nom; btnFini.hidden = true; saisie.blur();
       const vus = (e.lignes ? e.lignes + ' lignes copiées' : '') + (e.fiches ? (e.lignes ? ', ' : '') + e.fiches + ' fiches' : '');
       voileTexte.textContent = (e.progression || 'Le robot parcourt ' + nom + ' en lecture seule.') + (vus ? ' · ' + vus + '.' : '');
