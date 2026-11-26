@@ -85,6 +85,12 @@ function XF(kind,name,o,msg){var f=P['x'+kind];if(f){f(name,o);P.toast(msg||(nam
 function invPdf(inv){var ht=inv.amount/(1+(inv.vat||0)/100);XF('pdf',inv.id+'.pdf',{titre:(inv.amount<0?'Avoir ':'Facture ')+inv.id,sous:D.club.name+' · '+(ME?ME.first+' '+ME.last:''),lignes:[['Objet',inv.label],['Date',F.dateY?F.dateY(inv.date):inv.date],['Montant HT',F.eur(Math.round(ht*100)/100)],['TVA '+(inv.vat||0)+' %',F.eur(Math.round((inv.amount-ht)*100)/100)],['Total TTC',F.eur(inv.amount)],['Règlement',inv.method||''],['État',inv.status]],texte:[inv.status==='payée'?'Facture acquittée. Merci.':'À régler en ligne sur app.stablapp.fr ou par prélèvement SEPA.']},inv.id+'.pdf téléchargé')}
 function docPdf(title,sub,texte,lignes){XF('pdf',P.xname?P.xname(title)+'.pdf':'document.pdf',{titre:title,sous:sub,lignes:lignes||[],texte:texte||[]},title+' téléchargé')}
 function lessonIcs(t,off,start,dur,lieu,desc){XF('ics',P.xname?P.xname(t)+'.ics':'seance.ics',[{t:t,d:D.iso(D.day(off)),s:start,dur:dur||60,lieu:(lieu?lieu+', ':'')+D.club.name,desc:desc||''}],'Fichier agenda prêt : ouvrez-le pour ajouter la séance')}
+/* Photo du cheval : P.horsePhoto (30-chevaux) si présent, sinon sélecteur de fichier natif avec aperçu */
+  function takePhoto(cb){
+    if(typeof P.horsePhoto==='function'){try{var r=P.horsePhoto('h01',{onDone:function(u,f){cb(u,f)}});if(r&&r.then)r.then(function(x){if(x)cb(x.url||x,x.file)});return}catch(e){}}
+    var i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.style.cssText='position:fixed;left:-9999px;opacity:0';
+    i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return;cb(URL.createObjectURL(f),f)};document.body.appendChild(i);i.click()}
+  function addJournalPhoto(u){A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:'Photo du jour',kind:'travail',mood:4,photo:u,isNew:true})}
 /* ---------- Styles communs ---------- */
 P.css(`
 /* Pastille « 410 € » de l’onglet Paiements : elle reste dans son onglet au lieu de toucher le bouton « Tous les écrans » */
@@ -256,7 +262,7 @@ P.css(`
 .ad-q:active{transform:scale(.96)}
 .ad-q .ico{width:46px;height:46px;border-radius:15px;position:relative}
 .ad-q .ico em{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--bad);color:var(--on-acc);font:700 13px/22px var(--f-text);text-align:center;box-shadow:0 0 0 2.5px var(--surface)}
-.ad-q b{display:block;font-size:15px}.ad-q small{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-q b{display:block;font-size:15px}.ad-q small{display:block;font-size:13px;color:var(--mut);line-height:1.3}
 @container main (max-width:620px){.ad-quick{gap:4px}.ad-q{flex-direction:column;gap:8px;padding:2px 0;min-height:0;background:none;box-shadow:none;text-align:center}.ad-q:hover{transform:none;box-shadow:none}.ad-q .ico{width:62px;height:62px;border-radius:20px}.ad-q .ico svg.i{width:26px;height:26px}.ad-q small{display:none}.ad-q b{font-size:13px;font-weight:600}}
 /* tuile « prochaine séance » (héros) */
 .ad-next{padding:24px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
@@ -750,6 +756,8 @@ P.css(`
 .ad-j p{color:var(--ink-2);margin-top:6px;line-height:1.5}
 .ad-photo{margin-top:10px;height:150px;border-radius:var(--r-md);background:linear-gradient(160deg,color-mix(in srgb,var(--c4) 45%,var(--surface)),color-mix(in srgb,var(--acc) 35%,var(--surface)));display:grid;place-items:center;color:color-mix(in srgb,var(--ink) 55%,transparent);position:relative;overflow:hidden}
 .ad-photo svg{width:72px;height:72px}
+.ad-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ad-photo .ad-phx{position:absolute!important;right:8px;top:8px;background:color-mix(in srgb,var(--surface) 88%,transparent)}
 .ad-photo span{position:absolute;left:10px;bottom:8px;font-size:13px;font-weight:600;background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 7px;border-radius:5px;color:var(--ink)}
 .ad-mood{display:inline-flex;gap:2px}
 .ad-mood button,.ad-mood span{width:30px;height:30px;display:grid;place-items:center;color:var(--line-2);transition:transform var(--t-2) var(--e-spring),color var(--t-2)}
@@ -803,7 +811,7 @@ function camSheet(){var act=[2,1,0,0,0,1,0,0,3,1,0,0,0,0,2,0,0,1,4,6,5,3,2,4];
     '<div class="card list" style="margin-top:14px">'+[['23:10','Se couche','Couché 3 h 20 au total, deux cycles de sommeil','moon'],['03:40','Se relève et boit','Abreuvoir : 4 litres','drop'],['07:10','Repas du matin','A tout mangé en 35 minutes','hay'],['08:30','Sortie au paddock','Prairie du bas, retour à 10 h 30','paddock']].map(function(e){return '<div class="li click" data-clip><span class="mono" style="width:44px">'+e[0]+'</span>'+sq(e[3])+'<div class="grow"><div class="t">'+e[1]+'</div><div class="s">'+e[2]+'</div></div>'+ICON('play','sm')+'</div>'}).join('')+'</div>';
     boxCam($('[data-bigcam]',b),{tools:false});$$('[data-clip]',b).forEach(function(c){c.onclick=function(){P.toast('Lecture de l’extrait de '+$('.mono',c).textContent,{icon:'play'})}})},
    foot:'<button class="btn ad-full" data-al>'+ICON('bell','sm')+'Régler mes alertes</button><button class="btn pri ad-full" data-sn>'+ICON('image','sm')+'Prendre une photo</button>'});
-  $('[data-sn]',sh).onclick=function(){P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
+  $('[data-sn]',sh).onclick=function(){takePhoto(function(u){addJournalPhoto(u);sh.close();P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
 
 P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'horse',n:10,short:'Ulysse',phoneTitle:'Ulysse',
  render:function(el,ctx){
@@ -825,7 +833,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
   var g=P.gl.horse($('.ad-3d .gl',el),{points:pts,walk:false,rot:-.9,onPick:function(id){if(id==='pied')careSheet(0);else{CH.tab='soins';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='soins')});body();P.toast(pts.find(function(x){return x.id===id}).label,{icon:'care'})}}});
   var h0=$('.h3d',el);if(h0)h0.classList.add('show');
   boxCam($('[data-cam]',el),{tools:true});
-  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'})};
+  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){takePhoto(function(u){addJournalPhoto(u);P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};
   $$('[data-hv]',el).forEach(function(b){b.addEventListener('click',function(){CH.view=b.getAttribute('data-hv');$('.ad-hv',el).setAttribute('data-v',CH.view)})});
   $$('[data-ps]',el).forEach(function(b){b.onclick=function(){prestaSheet(b.getAttribute('data-ps'),function(){if(CH.tab==='presta')body()})}});
   $('[data-allp]',el).onclick=function(){CH.tab='presta';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='presta')});body();$('[data-body]',el).scrollIntoView({behavior:'smooth',block:'start'})};
@@ -848,7 +856,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
       '<div data-jph></div><div class="hrow wrap" style="--g:6px;margin-top:10px">'+['Travail','Balade','Soin','Consigne'].map(function(t,i){return '<button class="tag" data-manual data-jk="'+t.toLowerCase()+'" aria-pressed="'+(i===0)+'">'+t+'</button>'}).join('')+'</div>'+
       '<div class="hrow sp wrap" style="margin-top:12px;--g:10px"><div class="hrow" style="--g:8px"><span class="s mut">Ressenti</span><span class="ad-mood" data-mood>'+[1,2,3,4,5].map(function(i){return '<button class="'+(i<=4?'on':'')+'" data-m="'+i+'" title="'+i+' sur 5">'+ICON('heart')+'</button>'}).join('')+'</span></div><div class="hrow" style="--g:8px"><button class="btn" data-jp title="Ajouter une photo">'+ICON('image','sm')+'Photo</button><button class="btn pri" data-jpub>'+ICON('send','sm')+'Publier</button></div></div>'+
       '<div class="xs mut" style="margin-top:10px">'+ICON('eye','sm')+' Visible par vous, '+DPR.first+' et l’équipe du club</div></div></div></div>'+
-     '<div class="card" data-jl>'+all.map(function(j,i){var who=D.person(j.who);return '<div class="ad-j'+(j.isNew?' new':'')+'">'+U.av(j.who)+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b class="s">'+who.first+' '+who.last+'</b>'+U.chip(j.role,j.who==='m001'?'acc':'line')+'<span class="xs mut" style="margin-left:auto">'+j.when+'</span></div><p>'+F.esc(j.text)+'</p>'+(j.photo?'<div class="ad-photo">'+HORSE_GLYPH()+'<span>Photo ajoutée à 9 h 41</span></div>':'')+
+     '<div class="card" data-jl>'+all.map(function(j,i){var who=D.person(j.who);return '<div class="ad-j'+(j.isNew?' new':'')+'">'+U.av(j.who)+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b class="s">'+who.first+' '+who.last+'</b>'+U.chip(j.role,j.who==='m001'?'acc':'line')+'<span class="xs mut" style="margin-left:auto">'+j.when+'</span></div><p>'+F.esc(j.text)+'</p>'+(j.photo?(typeof j.photo==='string'?'<div class="ad-photo"><img src="'+F.esc(j.photo)+'" alt="Photo d’Ulysse"></div>':'<div class="ad-photo">'+HORSE_GLYPH()+'<span>Photo ajoutée à 9 h 41</span></div>'):'')+
        '<div class="hrow" style="--g:12px;margin-top:8px">'+moodRO(j.mood)+'<span class="chip">'+cap(j.kind)+'</span><button class="ad-like" data-manual data-like="'+i+'" aria-pressed="'+(!!j.liked)+'" style="margin-left:auto">'+ICON('heart','sm')+'<span>'+(j.liked?'Merci envoyé':'Dire merci')+'</span></button></div></div></div>'}).join('')+'</div></div>'+
      '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Cette semaine</h3><span class="xs mut">4 séances</span></div><div class="cb"><div class="hrow" style="--g:14px">'+U.ring(Math.round(UL.work/UL.workMax*100),UL.work+' h','var(--acc)',64)+'<div class="grow"><div class="b">Charge de travail équilibrée</div><div class="s mut">'+UL.work+' heures sur '+UL.workMax+' recommandées au maximum</div></div></div><div class="note">'+ICON('sensor','sm')+'<span>Capteur de selle hier : 52 minutes, dont 38 % au galop.</span></div></div></div>'+
       '<div class="card ad-b"><div class="ch"><h3>Prochain soin</h3><button class="btn ghost sm" data-tosoins>Tous'+ICON('arrow','sm')+'</button></div><div class="cb"><div class="ad-row">'+sq('hoof','warn')+'<div class="grow"><div class="t">Maréchal, jeudi à 9 h</div><div class="s">Benoît Gautier · ferrure complète</div></div></div></div></div></div></div>'}
@@ -888,7 +896,8 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
    var pub=$('[data-jpub]',b);if(pub){var mood=4,photo=false;
     $$('[data-m]',b).forEach(function(m){m.onclick=function(){mood=+m.getAttribute('data-m');$$('[data-m]',b).forEach(function(y){y.classList.toggle('on',+y.getAttribute('data-m')<=mood)})}});
     $$('[data-jk]',b).forEach(function(t){t.onclick=function(){$$('[data-jk]',b).forEach(function(y){y.setAttribute('aria-pressed',y===t)})}});
-    $('[data-jp]',b).onclick=function(){photo=!photo;$('[data-jph]',b).innerHTML=photo?'<div class="ad-photo pop" style="height:110px">'+HORSE_GLYPH()+'<span>IMG_2026-11-17.jpg</span></div>':'';P.toast(photo?'Photo ajoutée':'Photo retirée',{icon:'image'})};
+    var jph=$('[data-jph]',b),jpb=$('[data-jp]',b);function showPh(){jph.innerHTML=photo?'<div class="ad-photo pop" style="height:130px"><img src="'+F.esc(photo)+'" alt="Aperçu de la photo"><button class="btn sm ad-phx" data-jpx title="Retirer la photo">'+ICON('trash','sm')+'Retirer</button></div>':'';if(photo)$('[data-jpx]',jph).onclick=function(){photo=false;showPh();P.toast('Photo retirée',{icon:'image'})}}
+    jpb.onclick=function(){takePhoto(function(u){photo=u;showPh();P.toast('Photo ajoutée',{icon:'image'})})};
     pub.onclick=function(){var ta=$('#ad-jt',b),tx=ta.value.trim();if(!tx){ta.focus();ta.value='';ta.placeholder='Écrivez quelques mots avant de publier.';return}
       A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:tx,kind:$('[data-jk][aria-pressed="true"]',b).getAttribute('data-jk'),mood:mood,photo:photo,isNew:true});body();A.journal[0].isNew=false;P.toast('Publié dans le journal, '+DPR.first+' et l’équipe sont prévenus')};
     $$('[data-like]',b).forEach(function(x){x.onclick=function(){var j=all[+x.getAttribute('data-like')];j.liked=!j.liked;x.setAttribute('aria-pressed',j.liked);$('span',x).textContent=j.liked?'Merci envoyé':'Dire merci'}})}
@@ -1189,7 +1198,7 @@ P.mod({id:'adh-progression',role:'adherent',group:'Équitation',title:'Progressi
   $('[data-prog]',el).onclick=function(){P.sheet({title:'Programme du '+G.next,icon:'list',body:'<p class="s mut" style="margin-bottom:14px">Le programme officiel de la FFE, coché au fil des séances par vos moniteurs.</p><div class="card list">'+(kid?[['Trotter enlevé en changeant de diagonal',1],['Galoper en équilibre sur ses étriers',1],['Partir au galop sur le bon pied',0],['Sauter un petit obstacle isolé au trot',0],['Connaître les robes et les marques',1],['Entretenir son matériel',1]]:[['Enchaîner un parcours de 1 m',1],['Présenter une reprise de niveau Amateur 3',1],['Longer un cheval aux trois allures',0],['Théorie : règlement de compétition',0],['Soins : reconnaître une boiterie',1]]).map(function(t){return '<div class="li">'+(t[1]?sq('check','ok'):'<span class="av sq" style="--c:var(--bg-2);color:var(--mut)">'+ICON('hourglass')+'</span>')+'<div class="grow t">'+t[0]+'</div>'+U.chip(t[1]?'Validé':'À travailler',t[1]?'ok':'')+'</div>'}).join('')+'</div>'})};
   $('[data-dip]',el).onclick=function(){docPdf('Diplômes de '+p.first,'Galops fédéraux obtenus · '+D.club.name,['Relevé des diplômes enregistrés au club. Le diplôme officiel reste consultable sur votre espace FFE.'],Array.apply(null,Array(G.g)).map(function(_,i){return ['Galop '+(i+1),'Obtenu']}))};
   $('[data-quiz]',el).onclick=function(){quizSheet(P.rerender)};
-  $('[data-exp]',el).onclick=function(){XF('csv','seances-'+p.first.toLowerCase()+'.csv',[['Date','Séance','Cheval','Durée (min)','Avec','Ressenti (sur 5)','Note du moniteur']].concat(G.ses.map(function(s){return [s[0],s[1],D.horse(s[2]).name,s[4],s[3]?D.name(s[3]):'En autonomie',s[5],s[6]]})),'Historique des séances téléchargé')};
+  $('[data-exp]',el).onclick=function(){XF('csv','seances-'+P.xname(p.first)+'.csv',[['Date','Séance','Cheval','Durée (min)','Avec','Ressenti (sur 5)','Note du moniteur']].concat(G.ses.map(function(s){return [s[0],s[1],D.horse(s[2]).name,s[4],s[3]?D.name(s[3]):'En autonomie',s[5],s[6]]})),'Historique des séances téléchargé')};
  }});
 
 /* =====================================================================
