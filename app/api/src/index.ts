@@ -21,11 +21,8 @@ import { cron as mcpCron } from "./mcp/routes";
  *   /api/*       API JSON de l'application (session) et API publique /api/v1 (clés pk_live_)
  *   /ics/*       flux de calendrier ICS à jeton                                 (lot ics)
  *   /webhooks/*  Stripe, plateforme de facturation, fournisseur d'e-mail
-<<<<<<< HEAD
  *   /mcp, /oauth/*, /.well-known/*  connecteur MCP pour Claude, ChatGPT…            (lot mcp)
-=======
  *   /admin/*     espace admin de l'équipe Stabl                                  (src/admin)
->>>>>>> worktree-agent-a2e6cce9afc6dec01
  *   le reste     application web statique (../web/dist)
  */
 const app = new Hono<AppEnv>();
@@ -45,11 +42,8 @@ app.route("/", R.icsRoutes);
 app.route("/", R.importRoutes);
 app.route("/", R.onboardingRoutes);
 app.route("/", R.robotRoutes);
-<<<<<<< HEAD
 app.route("/", R.mcpRoutes);
-=======
 app.route("/", R.adminRoutes);
->>>>>>> worktree-agent-a2e6cce9afc6dec01
 
 app.all("/api/*", (c) => c.json({ error: { code: "not_found", message: "Route d'API inconnue." } }, 404));
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));
