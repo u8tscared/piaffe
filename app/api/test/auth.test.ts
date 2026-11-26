@@ -6,7 +6,7 @@ import { seed } from "./helpers";
 describe("mots de passe", () => {
   it("hache en PBKDF2-SHA256 au format attendu et vérifie", async () => {
     const h = await hashPassword("un mot de passe solide");
-    expect(h).toMatch(/^pbkdf2\$sha256\$100000\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{43}$/);
+    expect(h).toMatch(/^pbkdf2\$sha256\$30000\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{43}$/);
     expect((await verifyPassword("un mot de passe solide", h)).ok).toBe(true);
     expect((await verifyPassword("un mot de passe faux", h)).ok).toBe(false);
     expect((await verifyPassword("x", null)).ok).toBe(false);
@@ -89,7 +89,7 @@ describe("inscription et connexion", () => {
     await env.DB.prepare("UPDATE users SET password_hash = ? WHERE email = ?").bind(await hashPassword(PW, 20000), email).run();
     expect((await post("/auth/login", { email, password: PW })).status).toBe(200);
     const row = await env.DB.prepare("SELECT password_hash FROM users WHERE email = ?").bind(email).first<any>();
-    expect(row.password_hash).toMatch(/^pbkdf2\$sha256\$100000\$/);
+    expect(row.password_hash).toMatch(/^pbkdf2\$sha256\$30000\$/);
   });
 
   it("déconnecte : la session ne marche plus", async () => {

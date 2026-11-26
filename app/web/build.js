@@ -172,4 +172,25 @@ if (PASS) {
   fs.mkdirSync(path.join(DIST, 'migration'), { recursive: true }); fs.writeFileSync(path.join(DIST, 'migration', 'index.html'), ph);
 }
 for (const f of fs.readdirSync(DIST)) if (/^\.|^404\.html$/.test(f)) fs.rmSync(path.join(DIST, f));
+
+/* En-têtes de sécurité des fichiers statiques (servis par Cloudflare sans passer par le Worker) : _headers.
+   CSP stricte pour l'appli : seuls les scripts intégrés à cette version (empreintes SHA-256) s'exécutent,
+   plus three.js sur cdnjs ; réseau limité au serveur Stabl et aux deux services publics utilisés
+   (géocodage api-adresse.data.gouv.fr, météo open-meteo.com). */
+const crypto = require('crypto');
+const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + crypto.createHash('sha256').update(m[1], 'utf8').digest('base64') + "'");
+const CSP_COMMON = "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; " +
+  "img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; " +
+  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com https://connect.stripe.com https://accounts.google.com; " +
+  "connect-src 'self' https://api-adresse.data.gouv.fr https://api.open-meteo.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com";
+const SEC = ['  Strict-Transport-Security: max-age=31536000; includeSubDomains', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
+  '  X-Frame-Options: DENY', '  Permissions-Policy: camera=(self), microphone=(), geolocation=(self), payment=(), usb=()', '  Cross-Origin-Opener-Policy: same-origin'];
+fs.writeFileSync(path.join(DIST, '_headers'), [
+  '/*', ...SEC, "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' https://cdnjs.cloudflare.com " + hashes.join(' '),
+  '/migration/*', '  ! Content-Security-Policy', "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
+  '/sw.js', '  Cache-Control: no-cache',
+  '/index.html', '  Cache-Control: no-cache',
+  '/', '  Cache-Control: no-cache',
+  '/splash/*', '  Cache-Control: public, max-age=604800',
+  ''].join('\n'));
 console.log('OK', 'app/web/dist/index.html', (html.length / 1024).toFixed(0) + ' Ko', coreFiles.length + ' fichiers du socle,', mods.length + ' modules,', liveAll.length + ' scripts live,', migScript ? 'catalogue migration intégré,' : 'sans catalogue migration,', PASS ? 'passerelle /migration/' : 'sans passerelle', PROBE ? '(sonde : three.js local)' : '');

@@ -82,7 +82,8 @@ S.flush=function(o){o=o||{};if(!PL.clubId||PL.readonly||!S.loaded)return Promise
   if(navigator.onLine===false&&!o.force){S.setState('offline');return Promise.resolve()}
   /* un objet en cours d'envoi bloque ses suivants (ordre garanti par objet) */
   var sending={},batch=[];
-  for(var i=0;i<S.queue.length&&batch.length<CHUNK;i++){var q=S.queue[i],key=q.coll+'/'+q.id;if(sending[key])continue;sending[key]=1;batch.push(q)}
+  /* lots de 100 opérations et d'environ 700 Ko au plus */
+  for(var i=0,size=0;i<S.queue.length&&batch.length<CHUNK;i++){var q=S.queue[i],key=q.coll+'/'+q.id;if(sending[key])continue;var sz=(ser(q.data)||'').length+(ser(q.base)||'').length+200;if(batch.length&&size+sz>7e5)break;size+=sz;sending[key]=1;batch.push(q)}
   if(!batch.length)return Promise.resolve();
   batch.forEach(function(q){q.inflight=true});S.busy=true;S.setState('saving');
   var body={ops:batch.map(function(q){var x={op:q.op,coll:q.coll,id:q.id,op_id:q.opId,at:q.at};if(q.data)x.data=q.data;if(q.version!=null)x.version=q.version;if(q.base!==undefined)x.base=q.base;return x})};

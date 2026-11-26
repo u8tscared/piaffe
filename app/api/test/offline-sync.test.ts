@@ -4,7 +4,7 @@ import { merge3 } from "../src/records/merge";
 
 /* Mode hors connexion : rejeu idempotent (op_id), fusion champ par champ des modifications concurrentes. */
 const batch = (token: string, ops: unknown[]) =>
-  call("/api/records/batch", { method: "POST", token, json: { ops } }).then(async (r) => ({ status: r.status, body: (await r.json()) as any }));
+  call("/api/records/batch", { method: "POST", token, json: { ops } }).then(async (r: Response) => ({ status: r.status, body: (await r.json()) as any }));
 
 describe("fusion à trois voies (merge3)", () => {
   it("garde les champs changés de chaque côté", () => {

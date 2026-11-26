@@ -26,7 +26,7 @@ function hero(){
     '<div class="lv-proof"><span>'+ICON('shield','sm')+'Données hébergées en Europe</span><span>'+ICON('card','sm')+'Paiements par Stripe</span><span>'+ICON('invoice','sm')+'Facture électronique prête</span></div></aside>';
 }
 function shell(inner){var r=root();r.innerHTML='<div class="lv-auth">'+hero()+'<main class="lv-side"><div class="lv-card lv-view">'+inner+'</div></main></div>';return r.querySelector('.lv-card')}
-function pw(id,ph,auto){return '<div class="lv-pw"><input class="in" type="password" id="'+id+'" placeholder="'+(ph||'')+'" autocomplete="'+(auto||'current-password')+'" required minlength="8"><button type="button" data-eye title="Afficher le mot de passe" aria-label="Afficher le mot de passe">'+EYE+'</button></div>'}
+function pw(id,ph,auto){return '<div class="lv-pw"><input class="in" type="password" id="'+id+'" placeholder="'+(ph||'')+'" autocomplete="'+(auto||'current-password')+'" required minlength="10"><button type="button" data-eye title="Afficher le mot de passe" aria-label="Afficher le mot de passe">'+EYE+'</button></div>'}
 function field(label,input,hint){return '<label class="lv-fl"><span>'+label+(hint?' <span class="lv-hint">'+hint+'</span>':'')+'</span>'+input+'</label>'}
 function msg(el,text,kind){var m=el.querySelector('.lv-msgs');if(!m)return;m.innerHTML=text?'<div class="lv-msg '+(kind||'')+'">'+ICON(kind==='ok'?'checkc':kind==='info'?'info':'alert','sm')+'<span>'+text+'</span></div>':''}
 function busy(btn,on){if(!btn)return;btn.classList.toggle('busy',on);btn.disabled=on}
@@ -38,10 +38,10 @@ function bindCommon(el){
   var f=el.querySelector('input:not([type=hidden])');if(f&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!el.contains(a))f.focus()},60);
 }
 PL.isTouch=function(){return matchMedia('(pointer:coarse)').matches};
-function strength(v){var s=0;if(v.length>=8)s++;if(v.length>=12)s++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;return Math.min(4,s)}
+function strength(v){var s=0;if(v.length>=10)s++;if(v.length>=14)s++;if(/[A-Z]/.test(v)&&/[a-z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;return Math.min(4,s)}
 function bindMeter(el,id){var i=el.querySelector('#'+id),m=el.querySelector('.lv-meter i'),t=el.querySelector('.lv-mt');if(!i||!m)return;
   i.addEventListener('input',function(){var s=strength(i.value),C=['var(--bad)','var(--bad)','var(--warn)','var(--ok)','var(--ok)'],L=['Trop court','Faible','Correct','Solide','Excellent'];
-    m.style.setProperty('--v',(i.value?Math.max(10,s*25):0)+'%');m.style.setProperty('--c',C[s]);if(t)t.textContent=i.value?L[s]:'Au moins 8 caractères'})}
+    m.style.setProperty('--v',(i.value?Math.max(10,s*25):0)+'%');m.style.setProperty('--c',C[s]);if(t)t.textContent=i.value?L[s]:'Au moins 10 caractères'})}
 
 /* ---------- Vues ---------- */
 var V={};
@@ -64,12 +64,12 @@ V.signup=function(o){var el=shell('<h2>Créez votre compte</h2><p class="lv-sub"
   '<button class="lv-google" data-google type="button">'+GOOGLE+'Continuer avec Google</button><div class="lv-or">ou avec votre e-mail</div>'+
   '<form class="lv-f" novalidate><div class="lv-msgs"></div><div class="lv-row2">'+field('Prénom','<input class="in" id="lv-first" autocomplete="given-name" required>')+field('Nom','<input class="in" id="lv-last" autocomplete="family-name" required>')+'</div>'+
   field('Adresse e-mail','<input class="in" type="email" id="lv-email" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">')+
-  field('Mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 8 caractères</span>')+
+  field('Mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 10 caractères</span>')+
   mainBtn('Créer mon compte')+'<p class="lv-note">En créant un compte, vous acceptez les conditions d’utilisation et la politique de confidentialité de '+esc(PL.brandName())+'.</p></form>'+
   '<p class="lv-foot">Déjà un compte ? <a href="/connexion" class="lv-a" data-view="login">Se connecter</a></p>');
   bindCommon(el);bindMeter(el,'lv-pass');
   el.querySelector('form').onsubmit=function(e){e.preventDefault();var f=el.querySelector('#lv-first').value.trim(),l=el.querySelector('#lv-last').value.trim(),em=el.querySelector('#lv-email').value.trim(),pa=el.querySelector('#lv-pass').value,b=el.querySelector('[type=submit]');
-    if(!f||!l)return msg(el,'Indiquez votre prénom et votre nom.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))return msg(el,'Saisissez une adresse e-mail valide.');if(pa.length<8)return msg(el,'Choisissez un mot de passe d’au moins 8 caractères.');
+    if(!f||!l)return msg(el,'Indiquez votre prénom et votre nom.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))return msg(el,'Saisissez une adresse e-mail valide.');if(pa.length<10)return msg(el,'Choisissez un mot de passe d’au moins 10 caractères.');
     busy(b,true);msg(el,'');PL.post('/auth/signup',{email:em,password:pa,first:f,last:l}).then(function(){PL.justSignedUp=true;PL.afterAuth()},function(x){busy(b,false);msg(el,x.status===409?'Un compte existe déjà avec cette adresse. Connectez-vous ou réinitialisez votre mot de passe.':PL.msg(x))})}};
 V.forgot=function(o){var el=shell('<div class="lv-big-ico">'+ICON('key')+'</div><h2>Mot de passe oublié</h2><p class="lv-sub">Indiquez votre adresse : nous vous envoyons un lien pour en choisir un nouveau.</p>'+
   '<form class="lv-f" novalidate><div class="lv-msgs"></div>'+field('Adresse e-mail','<input class="in" type="email" id="lv-email" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">')+mainBtn('Envoyer le lien')+'</form>'+
@@ -94,10 +94,10 @@ V.verifyToken=function(o){var el=shell('<div class="lv-big-ico">'+ICON('hourglas
     function(x){el.querySelector('h2').textContent='Lien expiré ou déjà utilisé';el.querySelector('.lv-sub').textContent=x.status===400||x.status===404?'Ce lien de vérification n’est plus valable. Connectez-vous pour en recevoir un nouveau.':PL.msg(x);
       el.insertAdjacentHTML('beforeend','<button class="btn pri lv-btn-main" data-go-on><span class="lv-bt">Continuer</span></button>');el.querySelector('[data-go-on]').onclick=function(){history.replaceState(null,'','/');PL.start()}})};
 V.reset=function(o){var el=shell('<div class="lv-big-ico">'+ICON('lock')+'</div><h2>Nouveau mot de passe</h2><p class="lv-sub">Choisissez un mot de passe que vous n’utilisez pas ailleurs.</p>'+
-  '<form class="lv-f" novalidate><div class="lv-msgs"></div>'+field('Nouveau mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 8 caractères</span>')+
+  '<form class="lv-f" novalidate><div class="lv-msgs"></div>'+field('Nouveau mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 10 caractères</span>')+
   field('Confirmation',pw('lv-pass2','','new-password'))+mainBtn('Enregistrer et me connecter')+'</form>');bindCommon(el);bindMeter(el,'lv-pass');
   el.querySelector('form').onsubmit=function(e){e.preventDefault();var a=el.querySelector('#lv-pass').value,c=el.querySelector('#lv-pass2').value,b=el.querySelector('[type=submit]');
-    if(a.length<8)return msg(el,'Choisissez un mot de passe d’au moins 8 caractères.');if(a!==c)return msg(el,'Les deux mots de passe ne sont pas identiques.');
+    if(a.length<10)return msg(el,'Choisissez un mot de passe d’au moins 10 caractères.');if(a!==c)return msg(el,'Les deux mots de passe ne sont pas identiques.');
     busy(b,true);PL.post('/auth/password/reset',{token:o.token,password:a}).then(function(){history.replaceState(null,'','/');PL.afterAuth({info:'Mot de passe enregistré.'})},function(x){busy(b,false);msg(el,x.status===400||x.status===404?'Ce lien n’est plus valable. Demandez-en un nouveau depuis « Mot de passe oublié ».':PL.msg(x))})}};
 var ROLE_FR={owner:'gérant',manager:'gérant',staff:'membre de l’équipe',coach:'coach',member:'adhérent',accountant:'comptable'};
 V.invite=function(o){var el=shell('<div class="lv-big-ico">'+ICON('mail')+'</div><h2>Invitation</h2><p class="lv-sub">Un instant, nous ouvrons votre invitation.</p><div class="lv-msgs"></div>');
@@ -112,10 +112,10 @@ V.invite=function(o){var el=shell('<div class="lv-big-ico">'+ICON('mail')+'</div
     el.innerHTML='<h2>Rejoindre '+esc(club)+'</h2><p class="lv-sub">Créez votre accès en quelques secondes.</p>'+head+
       '<button class="lv-google" data-google type="button">'+GOOGLE+'Continuer avec Google</button><div class="lv-or">ou choisissez un mot de passe</div>'+
       '<form class="lv-f" novalidate><div class="lv-msgs"></div><div class="lv-row2">'+field('Prénom','<input class="in" id="lv-first" autocomplete="given-name" value="'+esc(inv.first||'')+'">')+field('Nom','<input class="in" id="lv-last" autocomplete="family-name" value="'+esc(inv.last||'')+'">')+'</div>'+
-      field('Adresse e-mail','<input class="in" type="email" id="lv-email" value="'+esc(inv.email||'')+'" readonly>')+field('Mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 8 caractères</span>')+mainBtn('Créer mon accès')+'</form>'+
+      field('Adresse e-mail','<input class="in" type="email" id="lv-email" value="'+esc(inv.email||'')+'" readonly>')+field('Mot de passe',pw('lv-pass','','new-password')+'<div class="lv-meter"><i></i></div><span class="lv-hint lv-mt">Au moins 10 caractères</span>')+mainBtn('Créer mon accès')+'</form>'+
       '<p class="lv-foot">Vous avez déjà un compte ? <a href="/connexion" class="lv-a" data-view="login">Se connecter</a> puis rouvrez le lien.</p>';
     PL.authNext=location.pathname;bindCommon(el);bindMeter(el,'lv-pass');
-    el.querySelector('form').onsubmit=function(e){e.preventDefault();var b=el.querySelector('[type=submit]'),pa=el.querySelector('#lv-pass').value;if(pa.length<8)return msg(el,'Choisissez un mot de passe d’au moins 8 caractères.');
+    el.querySelector('form').onsubmit=function(e){e.preventDefault();var b=el.querySelector('[type=submit]'),pa=el.querySelector('#lv-pass').value;if(pa.length<10)return msg(el,'Choisissez un mot de passe d’au moins 10 caractères.');
       busy(b,true);PL.post('/auth/invitations/'+encodeURIComponent(o.token)+'/accept',{password:pa,first:el.querySelector('#lv-first').value.trim(),last:el.querySelector('#lv-last').value.trim()}).then(function(r){history.replaceState(null,'','/');if(r&&r.club_id)PL.wantClub=r.club_id;PL.start()},function(x){busy(b,false);if(x.status===409&&x.code==='account_exists'){PL.authNext=location.pathname;V.login({email:inv.email,info:'Un compte existe déjà pour cette adresse : connectez-vous pour accepter l’invitation.'});return}msg(el,PL.msg(x))})}},
   function(x){el.querySelector('h2').textContent='Invitation introuvable';el.querySelector('.lv-sub').textContent=x.unavailable?'Les invitations ne sont pas encore disponibles sur ce serveur.':'Ce lien a expiré ou a déjà été utilisé. Demandez à votre club de vous renvoyer une invitation.';
     el.insertAdjacentHTML('beforeend','<button class="btn pri lv-btn-main" data-view="login"><span class="lv-bt">Aller à la connexion</span></button>');bindCommon(el)})};

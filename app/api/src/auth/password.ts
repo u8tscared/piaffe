@@ -1,8 +1,21 @@
 import { b64url, b64urlDecode, safeEqual } from "../lib/crypto";
 import { bad } from "../lib/http";
 
-/** Paramètres actuels. Workers limite PBKDF2 à 100 000 itérations. */
-export const PBKDF2_ITER = 100_000;
+/**
+ * Coût du hachage. Workers limite PBKDF2 à 100 000 itérations (plafond, et valeur conseillée sur Workers Paid).
+ * Sur le palier gratuit (10 ms de CPU par requête), 100 000 itérations prennent environ 19 ms : la connexion
+ * échouerait par moments (erreur 1102). Par défaut 30 000 (environ 5 ms) ; la variable PASSWORD_ITERATIONS
+ * (wrangler.jsonc) permet de remonter à 100 000 en passant au plan payant : chaque mot de passe est alors
+ * re-haché au nouveau coût à la connexion suivante (needsRehash), sans rien demander aux utilisateurs.
+ */
+export const PBKDF2_MAX = 100_000;
+export const PBKDF2_DEFAULT = 30_000;
+export let PBKDF2_ITER = PBKDF2_DEFAULT;
+/** Appelé à chaque requête avec la variable d'environnement (bornée entre 10 000 et 100 000). */
+export function setPasswordIterations(v: unknown) {
+  const n = parseInt(String(v ?? ""), 10);
+  PBKDF2_ITER = Number.isFinite(n) ? Math.min(PBKDF2_MAX, Math.max(10_000, n)) : PBKDF2_DEFAULT;
+}
 const SALT_BYTES = 16;
 const HASH_BITS = 256;
 const enc = new TextEncoder();
@@ -27,7 +40,7 @@ export async function verifyPassword(password: string, stored: string | null | u
     return { ok: false, needsRehash: false };
   }
   const iter = parseInt(parts[2], 10);
-  if (!Number.isFinite(iter) || iter < 1000 || iter > PBKDF2_ITER) return { ok: false, needsRehash: false };
+  if (!Number.isFinite(iter) || iter < 1000 || iter > PBKDF2_MAX) return { ok: false, needsRehash: false };
   let salt: Uint8Array, expected: Uint8Array;
   try { salt = b64urlDecode(parts[3]); expected = b64urlDecode(parts[4]); } catch { return { ok: false, needsRehash: false }; }
   const got = await derive(password, salt, iter, expected.length * 8);

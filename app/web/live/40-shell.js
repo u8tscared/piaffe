@@ -101,10 +101,10 @@ PL.account=function(){var u=PL.user||{},clubs=PL.clubs||[];
     b.querySelectorAll('[data-ac-theme]').forEach(function(x){x.addEventListener('click',function(){var v=x.getAttribute('data-ac-theme'),r=document.documentElement;if(v==='auto'){r.removeAttribute('data-theme');P.store.set('theme',null)}else{r.setAttribute('data-theme',v);P.store.set('theme',v)}})});
     b.querySelector('[data-ac-pw]').onclick=function(){PL.changePassword()};var np=b.querySelector('[data-ac-np]');if(np)np.onclick=function(){PL.notifPrefs()};
     b.querySelector('[data-ac-out]').onclick=PL.logout}})};
-PL.changePassword=function(){var sh=P.sheet({title:'Changer de mot de passe',icon:'lock',body:'<div class="lv-f"><label class="lv-fl"><span>Mot de passe actuel</span><input class="in" type="password" id="pw0" autocomplete="current-password"></label><label class="lv-fl"><span>Nouveau mot de passe <span class="lv-hint">au moins 8 caractères</span></span><input class="in" type="password" id="pw1" autocomplete="new-password"></label></div>',
+PL.changePassword=function(){var sh=P.sheet({title:'Changer de mot de passe',icon:'lock',body:'<div class="lv-f"><label class="lv-fl"><span>Mot de passe actuel</span><input class="in" type="password" id="pw0" autocomplete="current-password"></label><label class="lv-fl"><span>Nouveau mot de passe <span class="lv-hint">au moins 10 caractères</span></span><input class="in" type="password" id="pw1" autocomplete="new-password"></label></div>',
   foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok>Enregistrer</button>'});
   sh.querySelector('[data-x2]').onclick=function(){sh.close()};
-  sh.querySelector('[data-ok]').onclick=function(){var a=sh.querySelector('#pw0').value,n=sh.querySelector('#pw1').value;if(n.length<8){P.toast('Choisissez au moins 8 caractères.',{icon:'alert'});return}
+  sh.querySelector('[data-ok]').onclick=function(){var a=sh.querySelector('#pw0').value,n=sh.querySelector('#pw1').value;if(n.length<10){P.toast('Choisissez au moins 10 caractères.',{icon:'alert'});return}
     PL.patch('/api/me',{current_password:a,new_password:n}).then(function(){sh.close();P.toast('Mot de passe changé. Vos autres appareils ont été déconnectés.')},function(e){PL.fail(e,'Mot de passe')})}};
 /* déconnexion : jamais de perte silencieuse des changements faits hors ligne */
 PL.logout=function(force){var n=PL.sync?PL.sync.pending():0;

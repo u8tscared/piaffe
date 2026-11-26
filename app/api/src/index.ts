@@ -4,6 +4,7 @@ import type { AppEnv, Env } from "./env";
 import { errorHandler } from "./lib/http";
 import { loadAuth } from "./lib/auth";
 import { csrf } from "./auth/csrf";
+import { setPasswordIterations } from "./auth/password";
 import * as R from "./routes-registry";
 import { cron as authCron } from "./auth/routes";
 import { cron as recordsCron } from "./records/routes";
@@ -26,6 +27,18 @@ import { cron as robotCron } from "./robot/routes";
 const app = new Hono<AppEnv>();
 app.onError(errorHandler);
 app.use("*", secureHeaders({ crossOriginResourcePolicy: false }));
+/* CSP des réponses du Worker (JSON, PDF, ICS, petites pages HTML de désinscription ou d'activation) : rien ne s'exécute.
+   Les pages statiques de l'appli ont leur propre CSP (app/web/dist/_headers, empreintes des scripts). */
+const API_CSP = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data: https:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
+for (const p of ["/api/*", "/auth/*", "/ics/*", "/webhooks/*"]) app.use(p, async (c, next) => { await next(); if (!c.res.headers.has("content-security-policy")) c.res.headers.set("content-security-policy", API_CSP); });
+/* Limite de taille des requêtes : 1 Mo pour le JSON (les imports et fichiers ont leurs routes et leurs limites). */
+const BIG = /^\/api\/(records\/batch|v1\/import|migration|media|medias|files|uploads?|einvoicing\/sandbox)|^\/webhooks\//;
+app.use("*", async (c, next) => {
+  const len = parseInt(c.req.header("content-length") || "0", 10);
+  if (len > 1_048_576 && !BIG.test(c.req.path) && (c.req.header("content-type") || "").includes("json"))
+    return c.json({ error: { code: "too_large", message: "Requête trop volumineuse (1 Mo au plus)." } }, 413);
+  return next();
+});
 app.use("*", loadAuth);
 /* Protection CSRF sur toute l'API et l'authentification (chaque lot la pose aussi sur ses routes, mais
    plusieurs routes de paiement et de facturation l'avaient oubliée). Exceptions : la désinscription en un clic
@@ -67,6 +80,7 @@ export function withSecrets(env: Env): Env | null {
 
 export default {
   fetch(req: Request, env: Env, ctx: ExecutionContext) {
+    setPasswordIterations(env.PASSWORD_ITERATIONS);
     const e = withSecrets(env);
     if (!e) {
       const p = new URL(req.url).pathname;

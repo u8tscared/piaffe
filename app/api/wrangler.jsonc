@@ -23,6 +23,8 @@
     "PLATFORM_SIRET": "93473312200014",
     "PLATFORM_ADDRESS": "36 rue Jacques-Louis Hénon, 69004 Lyon, France",
     "PLATFORM_VAT_REGIME": "franchise",
+    // Coût du hachage des mots de passe : 30000 tient dans les 10 ms du palier gratuit ; 100000 sur Workers Paid.
+    "PASSWORD_ITERATIONS": "30000",
     "PLATFORM_LEGAL_NOTE": "Entrepreneur individuel, micro-entreprise, dispensé d’immatriculation au RCS. APE 70.22Z"
   }
   // Secrets (wrangler secret put …) : SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
