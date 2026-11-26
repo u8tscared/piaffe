@@ -1,3 +1,4 @@
+import { aidsMention, applyAids, pendingAids, selectAids, type Aid } from "./aids";
 import type { Env } from "../env";
 import { all, json, one, run, audit } from "../lib/db";
 import { newId, nowIso } from "../lib/ids";
@@ -307,7 +308,7 @@ function businessProcess(kind: string, cat: string, hasDeposits: boolean): strin
   return letter + (hasDeposits ? "4" : "1");
 }
 
-export async function buildSnapshot(env: Env, i: InvoiceRow, number: string, issueDate: string, dueDate: string | null, lines: any[]): Promise<Snapshot> {
+export async function buildSnapshot(env: Env, i: InvoiceRow, number: string, issueDate: string, dueDate: string | null, lines: any[], aids: Aid[] = []): Promise<Snapshot> {
   const db = env.DB;
   const isPlatform = i.club_id === PLATFORM_CLUB;
   const st = isPlatform ? { ...(await getSettings(db, PLATFORM_CLUB)) } : await getSettings(db, i.club_id);
@@ -335,8 +336,9 @@ export async function buildSnapshot(env: Env, i: InvoiceRow, number: string, iss
   const iban = st.iban;
   let means = method ? PAY_METHODS[method].untdid : iban ? "58" : "1";
   if ((means === "58" || means === "30") && !iban) means = "1";
+  const aidTotal = i.kind === "invoice" ? aids.reduce((a, x) => a + x.amount, 0) : 0;
   const terms = i.kind === "credit_note" ? "Avoir à déduire de votre prochaine facture ou remboursé selon le moyen de paiement initial."
-    : due <= 0 ? "Facture réglée." : dueDate && dueDate > issueDate ? `Paiement au plus tard le ${dueDate.split("-").reverse().join("/")}.` : "Paiement à réception.";
+    : due - aidTotal <= 0 ? "Facture réglée." : dueDate && dueDate > issueDate ? `Paiement au plus tard le ${dueDate.split("-").reverse().join("/")}.` : "Paiement à réception.";
   const notes: Snapshot["notes"] = [];
   const mentions: string[] = [];
   const regimeMention = REGIME_MENTION[seller.regime];
@@ -350,6 +352,7 @@ export async function buildSnapshot(env: Env, i: InvoiceRow, number: string, iss
     notes.push({ code: "PMD", text: `Pénalités de retard : ${st.late_penalty_text}` }, { code: "PMT", text: "Indemnité forfaitaire pour frais de recouvrement : 40 EUR" }, { code: "AAB", text: "Pas d'escompte pour paiement anticipé" });
   }
   if (i.kind === "deposit") mentions.push("Facture d'acompte : le solde fera l'objet d'une facture définitive qui déduira cet acompte.");
+  if (aidTotal) { const txt = aidsMention(aids, due); mentions.push(txt); notes.push({ code: "AAI", text: txt }); }
   if (deposits.length) { const txt = "Acomptes déduits : " + deposits.map((d) => `${d.number} du ${d.date.split("-").reverse().join("/")}`).join(", ") + "."; mentions.push(txt); notes.push({ code: "AAI", text: txt }); }
   if (original) mentions.push(`Avoir sur la facture ${original.number} du ${original.date.split("-").reverse().join("/")}.${i.notes ? " Motif : " + i.notes : ""}`);
   else if (i.notes) notes.push({ code: "AAI", text: i.notes });
@@ -400,7 +403,9 @@ export async function issueInvoice(env: Env, clubId: string, id: string, userId:
   // Numéro provisoire pour construire le snapshot : il est remplacé par le vrai dans la même requête SQL.
   const probe = await one<{ value: number }>(db, "SELECT value FROM invoice_counters WHERE club_id = ? AND series = ?", clubId, series);
   const draftNumber = `${series}-${String((probe?.value || 0) + 1).padStart(5, "0")}`;
-  const snap = await buildSnapshot(env, cur, draftNumber, issueDate, dueDate, lines);
+  // aides de l'adhérent (Pass'Sport, ANCV, CAF, CSE, mairie) : réglées par un tiers, déduites du reste à payer
+  const aids = cur.kind === "invoice" && cur.customer_ref && clubId !== PLATFORM_CLUB ? selectAids(await pendingAids(db, clubId, cur.customer_ref), payable(cur)) : [];
+  const snap = await buildSnapshot(env, cur, draftNumber, issueDate, dueDate, lines, aids);
   const channel = cur.issuer === "platform" ? (cur.customer_siren ? "b2b" : "none") : channelFor(cur, regime, st);
   const einvStatus = channel === "b2b" ? "pending" : channel === "b2c" ? "ereporting" : "not_required";
   const now = nowIso();
@@ -436,6 +441,11 @@ export async function issueInvoice(env: Env, clubId: string, id: string, userId:
   try { await ensureDocuments(env, inv); } catch (e) { console.error("Génération du PDF", (e as Error)?.message); }
   if (cur.kind === "credit_note" && cur.original_id) await recompute(env, clubId, cur.original_id);
   inv = await recompute(env, clubId, id);
+  if (aids.length) {
+    await applyAids(env, clubId, id, inv.number!, aids, userId, (amount, method, reference, note) =>
+      addPayment(env, clubId, id, { amount, method, reference, note, user_id: userId, paid_at: issueDate }).catch((e) => console.error("Aide non enregistrée", (e as Error)?.message)));
+    inv = await recompute(env, clubId, id);
+  }
   await emit(env, null, { type: "invoice.issued", club_id: clubId, invoice_id: id, number: inv.number, kind: inv.kind });
   const send = opts.send ?? st.send_on_issue;
   if (send && inv.customer_email) inv = await sendInvoice(env, inv);

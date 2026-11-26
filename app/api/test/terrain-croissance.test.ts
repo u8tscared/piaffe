@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { call, env, seed } from "./helpers";
 
 /* Modules Terrain (45-terrain.js) et Croissance (55-croissance.js) : collections, droits, crédit de séance, annonces publiques. */
-const batch = (token: string, ops: unknown[]) => call("/api/records/batch", { method: "POST", token, json: { ops } }).then(async (r) => ({ status: r.status, j: (await r.json()) as any }));
+const batch = (token: string, ops: unknown[]) => call("/api/records/batch", { method: "POST", token, json: { ops } }).then(async (r: Response) => ({ status: r.status, j: (await r.json()) as any }));
 const up = (coll: string, id: string, data: unknown) => ({ op: "upsert", coll, id, data });
 const rec = async (club: string, coll: string, id: string) => {
   const r = await env.DB.prepare("SELECT data, version, deleted FROM records WHERE club_id = ? AND coll = ? AND id = ?").bind(club, coll, id).first<any>();

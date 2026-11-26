@@ -256,6 +256,8 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
   }
 
   if (coll === "lessonCredits" && next && (role === "owner" || role === "manager")) return protect(next, prev, CREDIT_SERVER_FIELDS);
+  // une aide déduite d'une facture émise y reste attachée (sinon elle pourrait être déduite deux fois)
+  if (coll === "aids" && next) next = protect(next, prev, ["invoice", "invoiceNumber"]);
   if (role === "owner" || role === "manager") return next;
   if (role === "accountant") throw deny();
 
