@@ -640,7 +640,7 @@ P.css(`
 .em-meta span{display:inline-flex;align-items:center;gap:5px;min-width:0}
 .em-meta svg.i{width:14px;height:14px}
 .em-meta .w{color:var(--ink-2);font-weight:600}
-.em-cl{font-size:13px;color:var(--warn);font-weight:500;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.em-cl{font-size:13px;color:var(--warn);font-weight:500;margin-top:5px;line-height:1.35}
 .em-cl.bad{color:var(--bad)}
 .em-bxs{font:600 13px var(--f-mono);color:var(--mut);padding:2px 6px;border-radius:6px;background:var(--bg-2);margin-left:6px;vertical-align:1px}
 .em-pg{display:flex;flex-direction:column;gap:10px;padding:14px 16px}
@@ -673,7 +673,7 @@ P.mod({id:'emp-chevaux',role:'employe',group:'Écurie',title:'Chevaux',icon:'hor
      return '<div class="em-pg"><div class="hrow sp wrap"><div><b>Groupe '+g+'</b> <span class="s mut">· '+PADT[g]+'</span></div>'+U.chip(st==='out'?'Dehors':st==='back'?'Rentrés':'Au box',st==='out'?'ok':'',true)+'</div><div class="hrow wrap" style="--g:6px">'+G[n][g].map(function(h){return '<button class="em-hp" data-go="emp-cheval" data-id="'+h.id+'">'+U.hav(h,'sm')+h.name.split(' ')[0]+'</button>'}).join('')+'</div>'+
       '<button class="btn em-b" data-pad="'+k+'" data-st="'+st+'" data-n="'+G[n][g].length+'">'+ICON(st==='out'?'stable':'paddock')+(st==='out'?'Marquer le groupe rentré':st==='back'?'Ressortir le groupe':'Marquer le groupe sorti')+'</button></div>'}).join('')+'</div>'}).join('')+
     '<div class="card"><div class="ch" style="padding-bottom:4px"><h3>Restent au box</h3><span class="s mut num">'+stay.length+' chevaux</span></div>'+stay.map(function(h){return '<button class="em-row" data-go="emp-cheval" data-id="'+h.id+'">'+U.hav(h)+'<div class="grow"><div class="t">'+h.name+' <span class="em-bxs">'+h.box+'</span></div><div class="s">'+h.alerts[0]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div></div>'}
-  function draw(){el.innerHTML=hd('Chevaux',D.horses.length+' chevaux · '+outNow+' dehors en ce moment · '+works+' travaillent aujourd’hui',U.seg([['list',ICON('list','sm')+'Liste'],['pad',ICON('paddock','sm')+'Paddocks']],view,'data-view')+'<button class="btn icon" data-scan title="Scanner le QR code d’un box">'+ICON('qr')+'</button>')+
+  function draw(){el.innerHTML=hd('Chevaux',D.horses.length+' chevaux · '+outNow+' dehors en ce moment · '+works+' travaillent aujourd’hui',U.seg([['list',ICON('list','sm')+'Liste'],['pad',ICON('paddock','sm')+'Paddocks']],view,'data-view')+'<button class="btn" data-scan title="Scanner le QR code d’un box">'+ICON('qr','sm')+'Scanner</button>')+
     (view==='list'?'<div class="stack" style="--g:12px"><div class="search">'+ICON('search')+'<input class="in em-in" type="search" placeholder="Nom, box ou race" value="'+F.esc(q)+'" aria-label="Chercher un cheval"></div><div class="em-tags scroll-x">'+FL.map(function(x){return '<button class="tag" data-manual data-f="'+x[0]+'" aria-pressed="'+(f===x[0])+'">'+x[1]+' <b>'+x[2]+'</b></button>'}).join('')+'</div><div data-list>'+list()+'</div></div>':pads())}
   el.addEventListener('input',function(e){if(e.target.matches('.em-in')){q=e.target.value;el.querySelector('[data-list]').innerHTML=list()}});
   on(el,'[data-f]',function(b){f=b.getAttribute('data-f');$$('[data-f]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)});var dl=el.querySelector('[data-list]');dl.innerHTML=list();sw(dl)});
@@ -870,7 +870,7 @@ P.css(`
 .em-plan g[data-zone]{cursor:pointer}
 .em-plan g[data-zone]:hover rect.z{stroke:var(--acc)}
 .em-plan g.on rect.z{fill:var(--acc-pale);stroke:var(--acc);stroke-width:2}
-.em-plan text{font:600 9.5px var(--f-text);fill:var(--ink-2);pointer-events:none}
+.em-plan text{font:600 13.5px var(--f-text);fill:var(--ink-2);pointer-events:none}
 .em-plan g.on text{fill:var(--acc)}
 .em-plan .pin{transform-box:fill-box;transform-origin:50% 100%;animation:em-pin .5s var(--e-spring) both}
 .em-plan .pin path{fill:var(--bad);stroke:var(--surface);stroke-width:1.5}
@@ -916,8 +916,13 @@ P.css(`
 `);
 
 var ZN=[['pad1','Paddock d’hiver',8,8,100,60,1],['pad2','Prairie du bas',116,8,110,60,1],['pad3','Paddock des poneys',234,8,98,60,1],['man','Grand manège',8,76,120,64],['car','Carrière d’honneur',136,76,196,64],['ecp','Écurie principale',8,148,150,40],['ecq','Écurie des poneys',8,194,150,38],['sel','Sellerie',166,148,60,40],['han','Hangar à foin',166,194,60,38],['pca','Petite carrière',234,148,98,40],['lon','Rond de longe',234,194,98,38]];
+/* libellé du plan : 13,5 unités, sur deux lignes si la case est trop étroite */
+function planLbl(z){var t=z[1],cx=z[2]+z[4]/2,cy=z[3]+z[5]/2,w=t.length*7.1;
+  if(w<=z[4]-10||t.indexOf(' ')<0)return '<text x="'+cx+'" y="'+(cy+4.5)+'" text-anchor="middle">'+t+'</text>';
+  var sp=[],i=-1;while((i=t.indexOf(' ',i+1))>=0)sp.push(i);var m=sp.reduce(function(a,b){return Math.abs(b-t.length/2)<Math.abs(a-t.length/2)?b:a});
+  return '<text x="'+cx+'" y="'+(cy-3)+'" text-anchor="middle"><tspan x="'+cx+'">'+t.slice(0,m)+'</tspan><tspan x="'+cx+'" dy="15">'+t.slice(m+1)+'</tspan></text>'}
 function planSvg(sel,meZone){var s='<svg class="em-plan" viewBox="0 0 340 240" role="img" aria-label="Plan de l’écurie">';
-  ZN.forEach(function(z){s+='<g data-zone="'+z[0]+'" class="'+(z[6]?'gr ':'')+(sel===z[0]?'on':'')+'"><rect class="z" x="'+z[2]+'" y="'+z[3]+'" width="'+z[4]+'" height="'+z[5]+'" rx="7"/><text x="'+(z[2]+z[4]/2)+'" y="'+(z[3]+z[5]/2+3.5)+'" text-anchor="middle">'+z[1]+'</text></g>'});
+  ZN.forEach(function(z){s+='<g data-zone="'+z[0]+'" class="'+(z[6]?'gr ':'')+(sel===z[0]?'on':'')+'"><rect class="z" x="'+z[2]+'" y="'+z[3]+'" width="'+z[4]+'" height="'+z[5]+'" rx="7"/>'+planLbl(z)+'</g>'});
   var p=ZN.find(function(z){return z[0]===(meZone||sel)});if(p){var cx=p[2]+p[4]/2,cy=p[3]-2;if(meZone)s+='<circle class="halo" cx="'+cx+'" cy="'+(cy+6)+'" r="14"/>';
    s+='<g class="pin'+(meZone?' me':'')+'"><path d="M'+cx+' '+(cy+8)+'c-5-6-8-9.500-8-13a8 8 0 0 1 16 0c0 3.500-3 7-8 13z"/><circle cx="'+cx+'" cy="'+(cy-5)+'" r="2.800"/></g>'}
   return s+'</svg>'}
@@ -1297,7 +1302,7 @@ P.css(`
 .app[data-role="employe"] .view .tag{min-height:42px}
 .app[data-role="employe"] .view .em-ck{width:44px;height:44px}
 .app[data-role="employe"] .view .btn.sm.em-tlist{min-height:34px}
-.app[data-role="employe"] .view .em-gt{padding-block:10px}
+.app[data-role="employe"] .view .em-gt{padding-block:10px;min-height:44px}
 }
 `);
 

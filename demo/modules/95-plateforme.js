@@ -116,6 +116,7 @@ P.css(`
 .pfa-fu{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:780px;width:100%;margin:0 auto}
 .pfa-fu button{flex:none;font-size:13px;font-weight:500;padding:6px 11px;border-radius:99px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap;color:var(--ink-2)}
 .pfa-fu button:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.app.mobile .pfa-fu button{min-height:44px}
 .pfa-comp{display:flex;align-items:center;gap:6px;padding:5px 5px 5px 6px;border-radius:16px;box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-1);background:var(--surface);max-width:780px;width:100%;margin:0 auto;transition:box-shadow var(--t-2)}
 .pfa-comp:focus-within{box-shadow:inset 0 0 0 1.5px var(--acc),var(--ring)}
 .pfa-comp input{flex:1;border:0;outline:0;background:none;min-width:0;height:44px;font-size:15px;padding:0 6px}
@@ -963,7 +964,7 @@ function tabMCP(ctx){
   h+='<div class="card"><div class="ch"><h3>Bon à savoir</h3></div><div class="cb stack" style="--g:10px"><div class="s" style="line-height:1.5">Chaque réponse porte <span class="pf-mono">donnees_du</span> : l’assistant sait de quand datent les données.</div><div class="s" style="line-height:1.5">Sans OAuth, une clé d’API du club (<span class="pf-mono">pk_live_…</span>) suffit : droit lecture, et écriture pour les ajouts.</div><div class="hr"></div><div><div class="xs mut" style="margin-bottom:6px">Questions à essayer</div><div class="hrow wrap" style="--g:6px">'+['Fais le point du jour','Quels soins cette semaine ?','Qui n’a pas payé ?','Où reste-t-il de la place mercredi ?'].map(function(p){return '<button class="tag" data-prompt="'+esc(p)+'">'+p+'</button>'}).join('')+'</div></div></div></div></div>';
 
   /* journal des appels */
-  var ST={ok:['Lecture',''],conf:['Ajout confirmé','ok'],no:['Refusé','bad']};
+  var ST={ok:['Lecture',''],conf:['Ajouté','ok'],no:['Refusé','bad']};
   h+='<div class="card"><div class="ch" style="padding-bottom:10px"><div><h3>Journal des appels</h3><div class="xs mut" style="margin-top:2px">Gardé 90 jours : qui, quel assistant, quel outil, quel résultat</div></div><button class="btn sm" data-go="assistant" data-p-tab="journal">Journal complet'+ICON('arrow','sm')+'</button></div><div class="pfc-call h"><span>Heure</span><span>Assistant</span><span>Outil et arguments</span><span>Résultat</span><span></span></div>'+
    D.mcpCalls.map(function(c){var p=D.person(c.who),s=ST[c.st];return '<div class="pfc-call"><span class="tm num">'+c.t+'</span><span class="w1 ellip"><b>'+c.cl+'</b> · '+p.first+'</span><span class="t1" style="min-width:0"><div class="pf-mono ellip">'+c.tool+'</div><div class="a">'+esc(c.args)+'</div></span><span class="r1 ellip'+(c.st==='no'?' badc':'')+'">'+c.res+'</span><span class="s1" style="text-align:right">'+U.chip(c.st==='ok'?c.ms+' ms':s[0],s[1])+'</span></div>'}).join('')+'</div></div>';
   return h}

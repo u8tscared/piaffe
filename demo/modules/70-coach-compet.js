@@ -45,12 +45,12 @@ P.xpdf=function(name,o){var club=(P.D.club&&P.D.club.name)||'Stabl',pages=[],ops
 (function(){var S=['.app.mobile[data-role="adherent"] .view','.app.mobile[data-role="employe"] .view','.app.mobile[data-role="coach"] .view','.app.mobile .view:has(.pf-mk)','.app.mobile[data-role="adherent"] .sheet','.app.mobile[data-role="employe"] .sheet','.app.mobile[data-role="coach"] .sheet'];
   function all(sel){return S.map(function(s){return sel.split(',').map(function(x){return s+' '+x}).join(',')}).join(',')}
   P.css(all('.btn,.tag,.ad-pill,.ad-like,.ad-fav,.ad-stars button,.ad-mood button,.ad-cam .c4 button,.em-hb,.em-pick button,.em-3 button,.em-ck,.ad-wsd,.fx-step button,.lk,[data-snap],.ad-pfc,.em-gt,button[data-who],[data-sc],button.hrow.s,.pfa-fu>button,.ew-steps>button,.qq-leave button,.cd-c')+'{position:relative}'+
-   all('.ad-mood,.ad-stars')+'{gap:14px}'+all('.cd-c')+'{min-height:44px}'+
+   all('.ad-mood:not(.ro),.ad-stars')+'{gap:14px}'+all('.cd-c')+'{min-height:44px}'+
    all('.btn::before,.tag::before,.seg>button::before,.ad-pill::before,.ad-like::before,.em-hb::before,.em-pick button::before,.em-3 button::before,.lk::before,.em-gt::before,button[data-who]::before,button.hrow.s::before,.pfa-fu>button::before,.ew-steps>button::before')+'{content:"";position:absolute;left:0;right:0;top:50%;height:max(44px,100%);transform:translateY(-50%)}'+
    all('.btn.icon::before,.ad-fav::before,.ad-stars button::before,.ad-mood button::before,.ad-cam .c4 button::before,.em-ck::before,.ad-wsd::before,.fx-step button::before,[data-snap]::before,.ad-pfc::before,[data-sc]::before,.qq-leave button::before')+'{content:"";position:absolute;left:50%;top:50%;width:max(44px,100%);height:max(44px,100%);transform:translate(-50%,-50%)}'+
    all('.tog::before')+'{content:"";position:absolute;inset:-6px -4px}'+all('.chk')+'{position:relative}'+all('.chk::before')+'{content:"";position:absolute;inset:-10px}'+
-   /* rien de tronqué : sur téléphone, les textes à points de suspension passent à la ligne (sauf aperçus de messages) */
-   S.slice(0,4).concat(['.app.mobile .view:has(.cg-pg)']).map(function(s){return s+' .ellip:not(.ad-tl *):not(.em-msgs *):not(.ad-tls *):not(.pf-mono):not(.chip):not(.chip *)'}).join(',')+'{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;-webkit-line-clamp:none}')})();
+   /* rien de tronqué : partout, les textes à points de suspension passent à la ligne (sauf aperçus de messages) */
+   ['.app[data-role="adherent"] .view','.app[data-role="employe"] .view','.app[data-role="coach"] .view','.app .view:has(.pf-mk)','.app .view:has(.cg-pg)'].map(function(s){return s+' .ellip:not(.ad-tl *):not(.em-msgs *):not(.ad-tls *):not(.pf-mono):not(.chip):not(.chip *)'}).join(',')+'{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;-webkit-line-clamp:none}')})();
 P.xname=function(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'«»]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()};
 })();
 (function(){
