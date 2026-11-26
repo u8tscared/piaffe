@@ -4,10 +4,16 @@
   "lang": "fr",
   "dir": "ltr",
   "description": "Le logiciel de gestion des centres équestres et des écuries.",
+  "id": "/",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
+  "prefer_related_applications": false,
   "background_color": "#ffffff",
   "theme_color": "#0a1636",
   "categories": [
