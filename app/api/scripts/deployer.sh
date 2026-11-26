@@ -81,5 +81,5 @@ VARS=()
 if [ $ESSAI = 1 ]; then $W deploy --dry-run "${VARS[@]}"; echo; echo "Essai terminé : rien n'a été publié."; exit 0; fi
 $W deploy "${VARS[@]}"
 
-printf '\n\033[32m✓ Stabl est en ligne.\033[0m Vérifiez %s/api/health puis créez votre compte.\n' "${APP_URL:-l'adresse affichée ci-dessus}"
+printf '\n\033[32m✓ Stabl est en ligne.\033[0m Vérifiez %s/api/health puis créez votre compte.\n' "${APP_URL:-à l’adresse affichée ci-dessus}"
 grep -q '"APP_URL": "http://localhost' "$CONF" && [ -z "${APP_URL:-}" ] && echo "Attention : APP_URL vaut encore http://localhost:8787 ; relancez avec APP_URL=https://… pour que les liens des e-mails soient justes." || true
