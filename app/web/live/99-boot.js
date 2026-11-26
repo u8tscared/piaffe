@@ -28,6 +28,9 @@ function fatal(title,text,retry){document.body.classList.add('lv-booting');var r
 var Q=new URLSearchParams(location.search),PATH=location.pathname.replace(/\/+$/,'')||'/';
 function clean(path){try{history.replaceState(null,'',(path||'/')+location.hash)}catch(e){}}
 var CACHE='piaffe:live:boot:';
+/* « qui suis-je ? » sans 401 dans la console : un visiteur reçoit {user:null}, traité comme une session absente */
+PL.setFeatures=function(f){if(!f)return;PL.features=f;try{document.body.classList.toggle('lv-nogoogle',!f.google);document.body.classList.toggle('lv-nomail',!f.mail);document.body.classList.toggle('lv-nopay',!f.payments)}catch(e){}};
+PL.me=function(){return PL.get('/api/me?soft=1').then(function(me){if(me)PL.setFeatures(me.features);if(!me||!me.user)throw PL.err(401,'unauthorized','Connectez-vous pour continuer.');return me})};
 function cacheBoot(b){try{localStorage.setItem(CACHE+PL.clubId,JSON.stringify(b))}catch(e){}}
 function cachedBoot(id){try{return JSON.parse(localStorage.getItem(CACHE+id)||'null')}catch(e){return null}}
 
@@ -48,8 +51,8 @@ function special(){if(routed)return null;routed=true;
 PL.start=function(o){o=o||{};if(started){location.reload();return}
   loading();
   var sp=special();
-  if(sp&&sp.always){return PL.get('/api/me').then(function(me){PL.user=me.user;PL.clubs=me.clubs||[]},function(){PL.user=null}).then(function(){PL.auth(sp.auth,sp.o)})}
-  PL.get('/api/me').then(function(me){afterMe(me,o)},function(e){
+  if(sp&&sp.always){return PL.me().then(function(me){PL.user=me.user;PL.clubs=me.clubs||[]},function(){PL.user=null}).then(function(){PL.auth(sp.auth,sp.o)})}
+  PL.me().then(function(me){afterMe(me,o)},function(e){
     if(e.status===401){PL.user=null;var v={'/inscription':'signup','/mot-de-passe-oublie':'forgot','/lien-magique':'magic'}[PATH]||'login';
       if(v==='login'&&PATH!=='/connexion'&&PATH!=='/'&&!/^\/(inscription)/.test(PATH))PL.authNext=PATH+location.search;
       var opt={};if(PL.authMsg){opt[PL.authMsgKind==='info'?'info':'error']=PL.authMsg;PL.authMsg=null}if(o.info)opt.info=o.info;
@@ -100,7 +103,7 @@ PL.saveClubLegal=function(c){c=c||D.club||{};if(!PL.isManager||!PL.isManager())r
   return PL.patch('/api/onboarding/club',body).catch(function(e){if(e&&e.status===400)try{P.toast(esc(PL.msg(e)),{icon:'alert'})}catch(x){}})};
 
 /* lancement de l'application */
-function launch(b,role){
+function launch(b,role){if(b.features)PL.setFeatures(b.features);
   var st=(b.club&&b.club.settings)||{};PL.sandbox=!!st.sandbox;
   PL.applyBoot(b);
   if(PL.sandbox&&PL.demoToday){try{D.today=new Date(PL.demoToday)}catch(e){}}

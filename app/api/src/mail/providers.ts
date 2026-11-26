@@ -1,3 +1,4 @@
+import { isLocalDev } from "../lib/features";
 /*
  * Fournisseurs d'envoi, appelés en fetch direct (aucun SDK) :
  *  - log    : n'envoie rien, journalise le destinataire masqué (défaut, tests, développement) ;
@@ -46,6 +47,7 @@ export async function deliver(env: Env, m: OutgoingMail): Promise<SendResult> {
     logSent.push(m);
     if (logSent.length > 200) logSent.shift();
     console.log("[mail:log]", m.subject, "→", maskEmail(m.to));
+    if (isLocalDev(env)) { const links = (m.text || m.html || "").match(/https?:\/\/[^\s"'<>)]+/g) || []; for (const l of [...new Set(links)].filter((x) => !/unsubscribe|logo/.test(x)).slice(0, 3)) console.log("  lien :", l); }
     return { ok: true, providerId: "log_" + m.id };
   }
   if (!env.MAIL_API_KEY) return { ok: false, retry: true, error: "MAIL_API_KEY manquante" };

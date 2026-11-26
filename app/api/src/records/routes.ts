@@ -9,6 +9,7 @@ import { publicUser, getUser } from "../auth/users";
 import { MAX_OPS, SINGLETON_COLLS, SINGLETON_ID } from "./collections";
 import { applyBatch, bootstrapData, changesSince, type Principal } from "./store";
 import { registerTriggers } from "./triggers";
+import { features } from "../lib/features";
 
 registerTriggers();
 
@@ -54,7 +55,7 @@ app.get("/api/club/bootstrap", slideSession, async (c) => {
   return c.json({
     club: clubOut,
     me: { user: u ? publicUser(u) : null, role: p.role, person_ref: p.personRef, person_ids: (p.personRef || "").split(",").filter(Boolean) },
-    data, versions, singletons: SINGLETON_COLLS, singleton_id: SINGLETON_ID, server_time: nowIso(),
+    data, versions, singletons: SINGLETON_COLLS, singleton_id: SINGLETON_ID, server_time: nowIso(), features: features(c.env),
   });
 });
 
@@ -91,4 +92,5 @@ export default app;
 export async function cron(env: AppEnv["Bindings"], cronExpr: string): Promise<void> {
   if (cronExpr !== "0 6 * * *") return;
   await run(env.DB, "DELETE FROM records WHERE deleted = 1 AND updated_at < ?", new Date(Date.now() - 90 * 864e5).toISOString());
+  await run(env.DB, "DELETE FROM record_ops WHERE at < ?", new Date(Date.now() - 60 * 864e5).toISOString());
 }

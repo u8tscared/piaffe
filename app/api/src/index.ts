@@ -49,9 +49,38 @@ app.route("/", R.robotRoutes);
 app.all("/api/*", (c) => c.json({ error: { code: "not_found", message: "Route d'API inconnue." } }, 404));
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));
 
+/**
+ * SESSION_SECRET signe les liens de désinscription, d'activation et de calendrier. Absent, ces liens seraient
+ * falsifiables : en local (APP_URL en http://localhost) on prend une valeur de développement, en production
+ * on refuse de servir l'API avec un message clair (scripts/deployer.sh le crée automatiquement).
+ */
+const DEV_SECRET = "dev-local-uniquement-0123456789abcdef0123456789";
+let warned = false;
+export function withSecrets(env: Env): Env | null {
+  if (env.SESSION_SECRET && env.SESSION_SECRET.length >= 32) return env;
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(env.APP_URL || "")) {
+    if (!warned) { warned = true; console.warn("SESSION_SECRET absent : valeur de développement utilisée (local seulement)."); }
+    return { ...env, SESSION_SECRET: DEV_SECRET };
+  }
+  return null;
+}
+
 export default {
-  fetch: app.fetch,
-  async scheduled(ev: ScheduledController, env: Env, ctx: ExecutionContext) {
+  fetch(req: Request, env: Env, ctx: ExecutionContext) {
+    const e = withSecrets(env);
+    if (!e) {
+      const p = new URL(req.url).pathname;
+      if (/^\/(api|auth|ics|webhooks)(\/|$)/.test(p)) {
+        console.error("SESSION_SECRET manquant ou trop court : lancez « npx wrangler secret put SESSION_SECRET » (32 caractères ou plus).");
+        return Response.json({ error: { code: "misconfigured", message: "Le service est en cours de configuration. Réessayez dans quelques minutes." } }, { status: 503 });
+      }
+      return app.fetch(req, env, ctx);
+    }
+    return app.fetch(req, e, ctx);
+  },
+  async scheduled(ev: ScheduledController, rawEnv: Env, ctx: ExecutionContext) {
+    const env = withSecrets(rawEnv);
+    if (!env) { console.error("cron ignoré : SESSION_SECRET manquant"); return; }
     for (const f of [authCron, recordsCron, billingCron, invoicingCron, mailCron, icsCron, importCron, onboardingCron, robotCron]) {
       ctx.waitUntil(f(env, ev.cron).catch((e) => console.error("cron", e)));
     }
