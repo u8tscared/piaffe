@@ -502,7 +502,7 @@ function kpi(label,icon,val,sub,dom,tint){return '<div class="card lb-kpi'+(tint
 function heroTile(o){return '<div class="card tint lb-hero d-'+(o.dom||'chevaux')+'"><div class="lb-hc"><div class="lb-eb">'+(o.icon?ICON(o.icon,'sm'):'')+o.eyebrow+'</div><div class="lb-hb"><span class="big">'+o.big+'</span><span class="lb-hu">'+o.unit+'</span></div>'+(o.sub?'<p class="lb-hs">'+o.sub+'</p>':'')+(o.stats?'<div class="lb-hst">'+o.stats.map(function(x){return '<div><b class="num">'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('')+'</div>':'')+(o.acts?'<div class="lb-ha">'+o.acts+'</div>':'')+'</div>'+(o.illu&&window.ILLU&&ILLU[o.illu]?'<div class="lb-hi lb-hi-'+o.illu+'">'+ILLU[o.illu]({size:null})+'</div>':'')+'</div>'}
 /* robe du cheval : couleurs du portrait illustré */
 var ROBE={'Alezan':'al','Alezan brûlé':'ab','Bai':'ba','Bai brun':'bb','Noir':'no','Gris':'gr','Palomino':'pa','Isabelle':'is','Rouan':'ro','Pie alezan':'pi'};
-function portrait(h,cls){var i=hi(h),nb=i%3===1&&h.coat!=='Pie alezan';return '<div class="hx-por r-'+(ROBE[h.coat]||'al')+(nb?' nb':'')+' '+(cls||'')+'">'+(window.ILLU?ILLU.cheval({size:null,cls:'hx-il'}):'')+'</div>'}
+function portrait(h,cls){var ph=phMain(h);if(ph)return '<div class="hx-por ph '+(cls||'')+'"><img src="'+E(ph)+'" alt="'+E(h.name)+'" loading="lazy" decoding="async"></div>';var i=hi(h),nb=i%3===1&&h.coat!=='Pie alezan';return '<div class="hx-por r-'+(ROBE[h.coat]||'al')+(nb?' nb':'')+' '+(cls||'')+'">'+(window.ILLU?ILLU.cheval({size:null,cls:'hx-il'}):'')+'</div>'}
 function cnt(n,fmt){return '<span data-count="'+n+'" data-fmt="'+(fmt||'')+'">'+(fmt==='eur'?F.eur(n):F.num(n))+'</span>'}
 /* tableau maison : fusionne correctement les classes « n » et « hide-s » */
 function T(cols,rows,o){o=o||{};function cl(c){var k=[c.n?'n':'',c.hide?'hide-s':''].join(' ').trim();return k?' class="'+k+'"':''}
@@ -534,7 +534,7 @@ var SORTS={box:['Box',function(a,b){return a.box<b.box?-1:1}],name:['Nom',functi
 
 function horseCard(h){var nd=nextDue(h),R=RULES[nd.k],p=loadP(h),over=p>100,nt=nd.n<0?'bad':nd.n<=RULES[nd.k].soon?'warn':'';
   return '<div class="card hx-c st-'+h.status+'" data-go="cheval" data-id="'+h.id+'" role="link" tabindex="0" aria-label="'+E(h.name)+', box '+h.box+'">'+
-   '<div class="hx-top">'+portrait(h)+'<div class="hx-bx"><span class="num">'+h.box+'</span><small>'+(h.visitor?'De passage':h.deal?(h.deal==='pair'?'Mise au pair':'Commodat'):KL[h.kind])+'</small></div>'+pinBtn(h)+
+   '<div class="hx-top">'+portrait(h)+'<button class="hx-cam" data-phcap="'+h.id+'" title="Prendre '+E(h.name.split(' ')[0])+' en photo">'+ICON('photo','sm')+'</button><div class="hx-bx"><span class="num">'+h.box+'</span><small>'+(h.visitor?'De passage':h.deal?(h.deal==='pair'?'Mise au pair':'Commodat'):KL[h.kind])+'</small></div>'+pinBtn(h)+
     '<div class="hx-stt">'+stChip(h)+(isRest(h)&&h.status!=='bad'?U.chip('Au repos','line'):'')+(over?U.chip('Surcharge','bad'):'')+'</div></div>'+
    '<div class="hx-bd"><div><h3 class="ellip">'+E(h.name)+'</h3><div class="hx-sub ellip">'+h.breed+' · '+h.coat.toLowerCase()+' · '+h.age+' ans</div></div>'+
    (h.alerts.length?'<div class="hx-al '+(h.status==='bad'?'bad':'')+'">'+ICON('alert','sm')+'<span>'+E(h.alerts[0])+'</span></div>':'<div class="hx-al ok">'+ICON('checkc','sm')+'<span>'+E(h.mood)+', '+h.level.toLowerCase()+'</span></div>')+
@@ -847,7 +847,7 @@ P.mod({id:'chevaux',role:'gerant',group:'Écurie',title:'Chevaux',icon:'horse',n
    4. Fiche cheval
    ===================================================================== */
 var FS={tab:'vue',care:'all',jr:'all'},ST={extra:{},jr:{},rebill:{},fed:{matin:{},midi:{},soir:{}},orders:{}};
-var TABS=[['vue','Vue d’ensemble'],['sante','Santé'],['travail','Travail'],['alim','Alimentation'],['journal','Journal partagé'],['couts','Coûts'],['camera','Caméra du box']];
+var TABS=[['vue','Vue d’ensemble'],['sante','Santé'],['travail','Travail'],['alim','Alimentation'],['journal','Journal partagé'],['couts','Coûts'],['camera','Caméra du box'],['photos','Photos']];
 function tone(s){return s==='bad'?'var(--bad)':s==='warn'?'var(--warn)':'var(--ok)'}
 function allCare(h){return careLog(h).concat(ST.extra[h.id]||[]).sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0})}
 function ringHtml(h,k){var R=RULES[k],n=dueN(h,k),st=dueSt(h,k),v=Math.max(4,Math.min(100,n/R.every*100));
@@ -1051,6 +1051,7 @@ function camScene(){return '<svg viewBox="0 0 640 360" preserveAspectRatio="xMid
   '<path d="M262 236l-8 44M300 246l-2 40M388 248l6 38M420 232l12 44" stroke="#b9c3bc" stroke-width="13" stroke-linecap="round"/>'+
   '<g class="hd"><path d="M248 196c-22-14-46-44-54-74 14-10 34-6 48 10 14 18 22 40 26 58z" fill="#d6ded8"/><path d="M196 124c-14 14-32 44-40 70 6 10 20 12 30 4 10-22 22-44 34-58z" fill="#dfe6e1"/><path d="M204 118l-4-20 14 12zM222 114l4-20 8 18z" fill="#dfe6e1"/><circle cx="196" cy="146" r="3.4" fill="#fff"/></g></g>'+
   '<rect width="640" height="360" filter="url(#fcn)"/></svg>'}
+function tabPhotos(h){return '<div class="card pad"><div class="ch" style="padding:0 0 14px"><h3>Photos de '+E(h.name.split(' ')[0])+'</h3><span class="xs mut">Profil, marques et soins, datés</span></div><div data-phgal></div></div>'}
 function tabCam(h,x){var cam=D.cameras.find(function(c){return c.box===h.box});
   if(!DEMO&&!cam)return '<div class="card rise">'+U.empty('camera','Aucune caméra dans ce box','Reliez une caméra depuis les connecteurs pour surveiller '+E(h.name.split(' ')[0])+' à distance.','<button class="btn sm" data-act="cams">Voir les caméras</button>')+'</div>';
   var bad=h.status==='bad',col=bad?[['Debout',52,'var(--acc)'],['Couché',31,'var(--warn)'],['Mange',17,'var(--c7)']]:[['Debout',58,'var(--acc)'],['Couché',14,'var(--c2)'],['Mange',28,'var(--c7)']];
@@ -1071,9 +1072,10 @@ function zoneSheet(h,id){var z=zones(h)[id],R=z.k?RULES[z.k]:null;
     '<div class="note '+(z.st==='ok'?'ok':z.st)+'">'+ICON(z.st==='ok'?'checkc':'alert','sm')+'<span>'+z.sum+'</span></div>'+
     (R?'<div class="g2" style="--g:10px"><div class="card soft" style="padding:12px"><div class="xs mut">Dernier passage</div><b>'+F.dateY(h[z.k])+'</b></div><div class="card soft" style="padding:12px"><div class="xs mut">Prochain</div><b>'+F.dateY(due(h,z.k))+'</b></div></div>':'')+
     '<div><div class="eyebrow" style="margin-bottom:12px">Historique de la zone</div><div class="tl">'+z.ev.map(function(e){return '<div class="ev" style="--c:'+tone(z.st)+'"><div class="hrow sp"><b class="s">'+E(e.t)+'</b></div><div class="xs mut">'+(F.days(e.d)===0?'Aujourd’hui':F.dateY(e.d))+' · '+E(e.w)+'</div></div>'}).join('')+'</div></div>'+
-    '<button class="btn ghost" data-ph style="justify-content:flex-start">'+ICON('image','sm')+'Ajouter une photo de la zone</button></div>',
+    '<div><div class="hrow sp" style="margin-bottom:10px"><div class="eyebrow">Photos de la zone</div><button class="btn sm" data-ph>'+ICON('camera','sm')+'Photographier</button></div><div data-phz></div></div></div>',
    foot:'<button class="btn ghost" data-all>Tout le carnet de santé</button><button class="btn pri" data-new>'+ICON('plus','sm')+'Noter une observation</button>'});
-  sh.querySelector('[data-ph]').onclick=function(){P.toast('Photo ajoutée au dossier « '+z.l+' »',{icon:'image'})};
+  phGallery(sh.querySelector('[data-phz]'),h,{zone:id,after:function(){zoneSheet(h,id)}});
+  sh.querySelector('[data-ph]').onclick=function(){phCapture(h,{kind:'soin',zone:id,zoneLabel:z.l,done:function(){zoneSheet(h,id)}})};
   sh.querySelector('[data-all]').onclick=function(){sh.close();setTab('sante')};
   sh.querySelector('[data-new]').onclick=function(){careSheet(h,z.k?RULES[z.k].k:'Vétérinaire',z.l)};
   return sh}
@@ -1174,12 +1176,12 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
      '<div class="fc-st-top"><span class="fc-hint">'+ICON('rotate','sm')+'<span class="hide-s">Faites tourner '+E(h.name.split(' ')[0])+', touchez un point</span><span class="only-s">Touchez un point</span></span><button class="btn sm" data-move title="Voir le cheval en mouvement">'+ICON('play','sm')+'<span>En mouvement</span></button></div>'+
      '<div class="fc-zones scroll-x">'+ZK.map(function(k){return '<button class="fc-z" data-zone="'+k+'"><i style="--c:'+tone(z[k].st)+'"></i>'+z[k].l+'</button>'}).join('')+'</div></div>'+
     '<div class="fc-id"><div class="hrow wrap" style="--g:6px">'+stChip(h)+kindChip(h)+U.chip('Box '+h.box,'line')+(isRest(h)?U.chip('Au repos','line'):'')+'</div>'+
-     '<div class="fc-nm"><h1>'+E(h.name)+'</h1><div class="mut" style="margin-top:6px">'+(DEMO?h.breed+' · '+h.sex.toLowerCase()+' '+h.coat.toLowerCase()+' · '+h.age+' ans · '+(h.height/100).toFixed(2).replace('.',',')+' m':[h.breed,((h.sex||'')+' '+(h.coat||'')).trim().toLowerCase(),h.age?h.age+' ans':'',+h.height?(h.height/100).toFixed(2).replace('.',',')+' m':''].filter(Boolean).map(E).join(' · '))+'</div></div>'+
+     '<div class="fc-nm">'+(function(){var u=phMain(h);return '<button class="fc-ph'+(u?'':' none')+'" data-fcph title="'+(u?'Voir les photos de '+E(h.name.split(' ')[0]):'Prendre '+E(h.name.split(' ')[0])+' en photo')+'">'+(u?'<img src="'+E(u)+'" alt="'+E(h.name)+'">':ICON('photo')+'<span>Photo</span>')+'</button>'})()+'<div class="fc-nmt"><h1>'+E(h.name)+'</h1><div class="mut" style="margin-top:6px">'+(DEMO?h.breed+' · '+h.sex.toLowerCase()+' '+h.coat.toLowerCase()+' · '+h.age+' ans · '+(h.height/100).toFixed(2).replace('.',',')+' m':[h.breed,((h.sex||'')+' '+(h.coat||'')).trim().toLowerCase(),h.age?h.age+' ans':'',+h.height?(h.height/100).toFixed(2).replace('.',',')+' m':''].filter(Boolean).map(E).join(' · '))+'</div></div></div>'+
      (h.alerts.length?'<div class="note '+(h.status==='bad'?'bad':'warn')+'">'+ICON('alert','sm')+'<span>'+h.alerts.map(E).join('. ')+'.</span></div>':'')+
      '<div class="fc-rings">'+RK.map(function(k){return ringHtml(h,k)}).join('')+'</div>'+
      '<dl class="lb-dl" style="margin:0"><div><dt>Propriétaire</dt><dd>'+(own?'<a data-own style="cursor:pointer" class="hrow" title="Ouvrir la fiche adhérent">'+U.av(own,'sm')+'<span class="ellip">'+E(own.first+' '+own.last)+'</span></a>':E(clubName()))+'</dd></div><div><dt>'+(x.rider?'Demi-pensionnaire':'Niveau')+'</dt><dd>'+(x.rider?'<span class="hrow">'+U.av(x.rider,'sm')+'<span class="ellip">'+D.name(x.rider)+'</span></span>':E(h.level||'–'))+'</dd></div>'+
       '<div><dt>Numéro SIRE</dt><dd>'+(x.sireNo?'<button class="mono" data-copy="'+E(x.sireNo)+'" title="Copier le numéro SIRE" style="font-weight:600">'+E(x.sireNo)+' '+ICON('copy','sm')+'</button>':'<span class="mut">À renseigner</span>')+'</dd></div><div><dt>Assurance</dt><dd class="ellip">'+(x.ins.co?E(x.ins.co):'<span class="mut">À renseigner</span>')+'</dd></div></dl>'+
-     '<div class="fc-acts"><button class="btn pri" data-act="care">'+ICON('plus','sm')+'Ajouter un soin</button><button class="btn" data-act="msg">'+ICON('chat','sm')+'Écrire</button><button class="btn icon" data-act="qr" title="Fiche de box et code à scanner">'+ICON('qr','sm')+'</button><button class="btn icon" data-act="more" title="Autres actions">'+ICON('more','sm')+'</button></div></div></div>'+
+     '<div class="fc-acts"><button class="btn pri" data-act="care">'+ICON('plus','sm')+'Ajouter un soin</button><button class="btn icon" data-act="photo" title="Prendre une photo">'+ICON('photo','sm')+'</button><button class="btn" data-act="msg">'+ICON('chat','sm')+'Écrire</button><button class="btn icon" data-act="qr" title="Fiche de box et code à scanner">'+ICON('qr','sm')+'</button><button class="btn icon" data-act="more" title="Autres actions">'+ICON('more','sm')+'</button></div></div></div>'+
    (function(){var nd=nextDue(h),R=RULES[nd.k],p=loadP(h),st=dueSt(h,nd.k);
     return '<div class="fc-stats rise">'+
      '<button class="card fc-st d-travail" data-tabgo="travail"><span class="lab"><span class="ico sm">'+ICON('gauge','sm')+'</span>Travail cette semaine</span><span class="v num">'+h.work+'<small>h sur '+h.workMax+'</small></span>'+U.bar(Math.min(100,p),loadC(h))+'</button>'+
@@ -1201,7 +1203,7 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
 
   /* onglets */
   var body=el.querySelector('#fc-body'),clock=null;
-  function draw(){var f={vue:tabVue,sante:tabSante,travail:tabTravail,alim:tabAlim,journal:tabJournal,couts:tabCouts,camera:tabCam,repro:tabRepro}[FS.tab]||tabVue;body.innerHTML=f(h,x);P.animate(body);swap(body);
+  function draw(){var f={vue:tabVue,sante:tabSante,travail:tabTravail,alim:tabAlim,journal:tabJournal,couts:tabCouts,camera:tabCam,repro:tabRepro,photos:tabPhotos}[FS.tab]||tabVue;body.innerHTML=f(h,x);var pg=body.querySelector('[data-phgal]');if(pg)phGallery(pg,h,{after:function(){P.rerender()}});P.animate(body);swap(body);
     if(clock){clearInterval(clock);clock=null}var ck=body.querySelector('[data-clock]');
     if(ck){var s=7;clock=setInterval(function(){if(!ck.isConnected){clearInterval(clock);return}s++;ck.textContent=DEMO?'17/11/2026 09:'+String(41+Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'):new Date().toLocaleString('fr-FR')},1000)}}
   setTab=function(t){FS.tab=t;P.$$('[data-ct]',el).forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-ct')===t)});draw();var tb=el.querySelector('.fc-tabs');if(tb&&tb.scrollIntoView)tb.scrollIntoView({block:'start',behavior:P.RM?'auto':'smooth'})};
@@ -1210,6 +1212,7 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
   on(el,'[data-tabgo]',function(b){setTab(b.getAttribute('data-tabgo'))});
   on(el,'[data-ring]',function(b){var R=RULES[b.getAttribute('data-ring')];FS.care=R?R.k:'all';setTab('sante')});
   on(el,'[data-zone]',function(b){zoneSheet(h,b.getAttribute('data-zone'))});
+  on(el,'[data-fcph]',function(){if(phMain(h))setTab('photos');else phCapture(h,{})});
   on(el,'[data-cf]',function(b){FS.care=b.getAttribute('data-cf');draw()});
   on(el,'[data-jf]',function(b){FS.jr=b.getAttribute('data-jf');draw()});
   on(el,'[data-doc]',function(r){var docs=DOCS.filter(function(d){return h.owner||(d[3]!=='Contrat'&&d[0]!=='Carte d’immatriculation')});docSheet(h,docs[+r.getAttribute('data-doc')])});
@@ -1218,7 +1221,7 @@ P.mod({id:'cheval',role:'gerant',group:'Écurie',title:'Fiche cheval',icon:'hors
   on(el,'[data-copy]',function(b){try{var cp=navigator.clipboard&&navigator.clipboard.writeText(b.getAttribute('data-copy'));if(cp&&cp.catch)cp.catch(function(){})}catch(e){}P.toast('Numéro SIRE copié',{icon:'copy'})});
   on(el,'[data-given]',function(b){var o=rx(h)[0],t=b.parentNode.querySelector('[data-givent]');setTimeout(function(){var n=P.$$('[data-given][aria-checked="true"]',b.parentNode).length;if(t)t.textContent=n+' prises sur '+o.given.length;P.toast(b.getAttribute('aria-checked')==='true'?'Prise notée au registre, signée '+(DEMO?'Claire Dumont':gName()):'Prise retirée du registre',{icon:'pill'})},0)});
   var ACT={
-   care:function(){careSheet(h)},msg:function(){msgSheet(h)},qr:function(){qrSheet(h)},more:function(){moreSheet(h)},
+   care:function(){careSheet(h)},photo:function(){phCapture(h,{})},msg:function(){msgSheet(h)},qr:function(){qrSheet(h)},more:function(){moreSheet(h)},
     sire:function(){if(!DEMO){P.toast('La comparaison avec l’IFCE arrive bientôt.',{icon:'info'});return}P.toast('Identité conforme à la fiche de l’IFCE, vérifiée à l’instant',{icon:'checkc'})},
    editid:function(){P.sheet({title:'Modifier l’identité',icon:'edit',body:'<div class="stack" style="--g:12px"><div class="g2" style="--g:12px">'+[['Nom',h.name],['Box',h.box],['Paddock',h.paddock],['Niveau',h.level],['Taille (cm)',h.height],['Caractère',h.mood]].map(function(a){return '<label class="field"><span>'+a[0]+'</span><input class="in" value="'+E(a[1])+'"></label>'}).join('')+'</div><div class="note">'+ICON('lock','sm')+'<span>Le numéro SIRE, la robe et les origines viennent de l’IFCE et ne se modifient pas ici.</span></div></div>',foot:'<button class="btn pri" data-s>Enregistrer</button>'}).querySelector('[data-s]').onclick=function(){P.closeSheets();P.toast('Fiche de '+h.name+' mise à jour')}},
    adddoc:function(){P.toast('Document ajouté au dossier de '+h.name+' et classé dans ses documents',{icon:'folder'})},
@@ -1946,4 +1949,254 @@ P.css(`
 }
 @media (prefers-reduced-motion:reduce){.lb-sw,.al-box.al-just,.al-box.al-just .chk{animation:none}}
 `);
+
+/* =====================================================================
+   7. Photos du cheval : appareil photo, recadrage, compression, galerie
+   Magasin : window.STABL_MEDIA (appli réelle, app/web/live/65-medias.js : R2 + file hors ligne)
+   sinon magasin local de la démo (mémoire + vignettes en stockage local).
+   Contrat d'un magasin : list(horseId) → Promise<[photo]>, add(horseId, o) → Promise<photo>,
+   remove(horseId, id) → Promise, src(id, thumb) → url|null, onChange(fn).
+   photo = {id, horse, kind:'profil'|'marques'|'soin', zone, note, url, thumb, date, author, pending?}
+   ===================================================================== */
+/* icône d'appareil photo (l'icône camera du jeu est une caméra vidéo) */
+if(window.ICONS&&!ICONS.photo)ICONS.photo='<path d="M3.5 9a2.5 2.5 0 0 1 2.5-2.5h1.9l1.5-2.2h5.2l1.5 2.2H18A2.5 2.5 0 0 1 20.5 9v7.5A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z"/><circle cx="12" cy="12.6" r="3.4"/><circle cx="17.2" cy="9.6" r=".9" class="f"/>';
+var PHK='stabl:demo:photos:v1',PHM='stabl:demo:photos:main:v1';
+var PHL={profil:'Profil',marques:'Marques et robe',soin:'Soin'};
+function phId(){var a=new Uint8Array(9);try{crypto.getRandomValues(a)}catch(e){for(var i=0;i<9;i++)a[i]=Math.random()*256}return 'med_'+Date.now().toString(36)+Array.prototype.map.call(a,function(b){return (b%36).toString(36)}).join('')}
+function blobUrl(b){return new Promise(function(res){if(!b){res(null);return}var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){res(null)};r.readAsDataURL(b)})}
+var PHD=(function(){var m={},subs=[];
+  try{m=JSON.parse(localStorage.getItem(PHK)||'{}')||{}}catch(e){m={}}
+  /* on garde la vignette seule dans le stockage local (quota de quelques Mo) ; la photo entière vit le temps de la visite */
+  function save(){var c={};Object.keys(m).forEach(function(h){c[h]=m[h].slice(0,24).map(function(p){var q=Object.assign({},p);q.url=p.thumb;return q})});
+    try{localStorage.setItem(PHK,JSON.stringify(c))}catch(e){try{Object.keys(c).forEach(function(h){c[h]=c[h].slice(0,4)});localStorage.setItem(PHK,JSON.stringify(c))}catch(e2){}}}
+  function fire(h){subs.forEach(function(f){try{f(h)}catch(e){}})}
+  return {
+    list:function(h){return Promise.resolve((m[h]||[]).slice())},
+    add:function(h,o){return Promise.all([blobUrl(o.blob),blobUrl(o.thumb)]).then(function(u){
+      var p={id:o.id||phId(),horse:h,kind:o.kind||'profil',zone:o.zone||null,note:o.note||'',url:u[0],thumb:u[1]||u[0],date:new Date().toISOString(),author:o.author||'',w:o.w,h:o.h};
+      (m[h]=m[h]||[]).unshift(p);save();fire(h);return p})},
+    remove:function(h,id){m[h]=(m[h]||[]).filter(function(p){return p.id!==id});save();fire(h);return Promise.resolve()},
+    src:function(id,thumb){for(var h in m)for(var i=0;i<m[h].length;i++)if(m[h][i].id===id)return thumb?m[h][i].thumb:m[h][i].url;return null},
+    onChange:function(f){subs.push(f)}}})();
+function PHS(){return window.STABL_MEDIA||PHD}
+/* photo principale : champ photo du cheval (synchronisé dans l'appli) ; dans la démo, retenue dans le stockage local */
+(function(){if(window.STABL_MEDIA)return;var mm={};try{mm=JSON.parse(localStorage.getItem(PHM)||'{}')||{}}catch(e){}
+  Object.keys(mm).forEach(function(hid){var h=D.horse(hid);if(h&&PHD.src(mm[hid],true))h.photo=mm[hid]})})();
+function phSetMain(h,id){h.photo=id||null;if(!window.STABL_MEDIA){var mm={};try{mm=JSON.parse(localStorage.getItem(PHM)||'{}')||{}}catch(e){}if(id)mm[h.id]=id;else delete mm[h.id];try{localStorage.setItem(PHM,JSON.stringify(mm))}catch(e){}}}
+function phMain(h){if(!h||!h.photo)return null;var u=PHS().src(h.photo,true);return u||null}
+function phAuthor(){return DEMO?'Claire Dumont':(gName()||'Vous')}
+
+/* ---------- Image : chargement, recadrage, compression ---------- */
+function phLoad(file){return new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.decoding='async';
+  im.onload=function(){res({im:im,u:u,w:im.naturalWidth,h:im.naturalHeight})};im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('image'))};im.src=u})}
+function phBlob(cv,type,q){return new Promise(function(res){try{cv.toBlob(function(b){res(b)},type,q)}catch(e){res(null)}})}
+/* WebP (ou JPEG si le navigateur ne sait pas l'écrire), 1600 px au plus, 400 Ko au plus */
+function phEncode(src,sx,sy,sw,sh,maxSide,maxBytes){
+  var sc=Math.min(1,maxSide/Math.max(sw,sh)),qs=[.84,.76,.68,.6,.5];
+  function pass(scale){var cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(sw*scale));cv.height=Math.max(1,Math.round(sh*scale));
+    var g=cv.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(src,sx,sy,sw,sh,0,0,cv.width,cv.height);
+    var i=0,type='image/webp';
+    function next(){return phBlob(cv,type,qs[i]).then(function(b){
+      if(b&&type==='image/webp'&&b.type!=='image/webp'){type='image/jpeg';return next()}
+      if(!b)return null;
+      if(b.size<=maxBytes||i>=qs.length-1){if(b.size>maxBytes&&scale>.3)return pass(scale*.8);return {blob:b,w:cv.width,h:cv.height}}
+      i++;return next()})}
+    return next()}
+  return pass(sc)}
+
+/* ---------- Feuille : prendre ou choisir une photo, recadrer, enregistrer ---------- */
+var PHF=[['sq','Carré',1],['pt','Portrait',3/4],['ls','Paysage',4/3]];
+function phCapture(h,o){o=o||{};var kind=o.kind||'profil',zone=o.zone||null,zl=o.zoneLabel||'';
+  var title=kind==='soin'?'Photo de soin'+(zl?' : '+zl.toLowerCase():''):kind==='marques'?'Photo des marques':'Photo de '+h.name.split(' ')[0];
+  var canCam=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+  var sh=P.sheet({title:title,icon:'image',wide:true,body:function(b){
+    b.innerHTML='<div class="phx-pick stack" style="--g:14px">'+
+      '<div class="phx-hero">'+U.hav(h)+'<div class="grow"><b>'+E(h.name)+'</b><div class="xs mut">'+(kind==='soin'?'La photo rejoint le carnet de santé'+(zl?', zone '+E(zl.toLowerCase()):''):kind==='marques'?'Robe, balzanes, épis et marques : pour reconnaître le cheval d’un coup d’œil':'Mettez le cheval de profil, tout le corps dans le cadre, à la lumière du jour')+'</div></div></div>'+
+      '<div class="phx-opts">'+
+       '<label class="phx-opt pri"><input type="file" accept="image/*" capture="environment" data-phin hidden>'+ICON('photo')+'<span><b>Prendre une photo</b><small>Ouvre l’appareil photo du téléphone</small></span></label>'+
+       '<label class="phx-opt"><input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/*" data-phin hidden>'+ICON('image')+'<span><b>Choisir dans la galerie</b><small>Une photo déjà prise</small></span></label>'+
+       (canCam?'<button type="button" class="phx-opt" data-phcam>'+ICON('scan')+'<span><b>Viser avec le cadre</b><small>Un guide pour cadrer le cheval de profil</small></span></button>':'')+
+      '</div>'+
+      (kind!=='soin'?'<div class="field"><span>Type de photo</span>'+U.seg([['profil','Profil'],['marques','Marques et robe']],kind,'data-phk')+'</div>':'')+
+     '</div><div class="phx-edit" hidden></div><div class="phx-live" hidden></div>';
+    var pick=b.querySelector('.phx-pick'),ed=b.querySelector('.phx-edit'),lv=b.querySelector('.phx-live');
+    P.$$('[data-phk]',b).forEach(function(x){x.onclick=function(){kind=x.getAttribute('data-phk');P.$$('[data-phk]',b).forEach(function(y){y.setAttribute('aria-pressed',y===x);y.setAttribute('aria-selected',y===x)})}});
+    P.$$('[data-phin]',b).forEach(function(inp){inp.onchange=function(){var f=inp.files&&inp.files[0];inp.value='';if(f)open(f)}});
+    var cb=b.querySelector('[data-phcam]');if(cb)cb.onclick=live;
+    function open(f){if(!/^image\//.test(f.type||'image/')&&!/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||'')){P.toast('Ce fichier n’est pas une photo',{icon:'alert'});return}
+      phLoad(f).then(function(x){editor(x)},function(){P.toast('Impossible de lire cette photo. Essayez une photo JPEG ou PNG.',{icon:'alert',ms:5000})})}
+    /* appareil photo dans la page, avec un cadre-guide */
+    function live(){pick.hidden=true;lv.hidden=false;
+      lv.innerHTML='<div class="phx-cam"><video playsinline muted autoplay></video><div class="phx-guide" aria-hidden="true"><div class="phx-gf">'+(window.ILLU?ILLU.cheval({size:null,still:true,cls:'phx-gil'}):'')+'</div><span>Mettez le cheval de profil</span></div></div>'+
+        '<div class="hrow sp" style="margin-top:12px"><button class="btn ghost" data-phback>'+ICON('back','sm')+'Retour</button><button class="btn pri lg" data-phshot>'+ICON('photo','sm')+'Prendre la photo</button></div>';
+      var v=lv.querySelector('video'),stream=null;
+      function stop(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}}
+      (function watch(){if(!v.isConnected||lv.hidden){stop();return}setTimeout(watch,500)})();
+      navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false}).then(function(s){if(!v.isConnected){s.getTracks().forEach(function(t){t.stop()});return}stream=s;v.srcObject=s},function(){stop();lv.hidden=true;pick.hidden=false;P.toast('L’appareil photo n’est pas accessible. Autorisez-le ou choisissez une photo.',{icon:'camera',ms:5200})});
+      lv.querySelector('[data-phback]').onclick=function(){stop();lv.hidden=true;pick.hidden=false};
+      lv.querySelector('[data-phshot]').onclick=function(){if(!v.videoWidth){P.toast('L’image arrive, un instant',{icon:'camera'});return}
+        var cv=document.createElement('canvas');cv.width=v.videoWidth;cv.height=v.videoHeight;cv.getContext('2d').drawImage(v,0,0);stop();lv.hidden=true;
+        editor({im:cv,u:null,w:cv.width,h:cv.height})}}
+    /* recadrage : faire glisser pour placer, molette ou deux doigts pour zoomer */
+    function editor(x){pick.hidden=true;ed.hidden=false;var fmt=kind==='profil'?'ls':'sq',zoom=1,cx=x.w/2,cy=x.h/2,main=kind==='profil'&&(!h.photo||o.main);
+      ed.innerHTML='<div class="phx-crop"><canvas></canvas><div class="phx-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>'+
+        '<div class="phx-tools"><div class="phx-fmt">'+U.seg(PHF.map(function(f){return [f[0],f[1]]}),fmt,'data-phf')+'</div>'+
+        '<label class="phx-zoom" title="Zoom">'+ICON('minus','sm')+'<input type="range" min="1" max="3" step="0.01" value="1" data-phz aria-label="Zoom">'+ICON('plus','sm')+'</label></div>'+
+        (kind==='profil'?'<label class="phx-main">'+U.chk(main,'phmain')+'<span>En faire la photo principale de '+E(h.name.split(' ')[0])+'</span></label>':'')+
+        '<label class="field"><span>Légende (facultatif)</span><input class="in" data-phnote maxlength="200" placeholder="'+(kind==='soin'?'Ce qu’on voit, depuis quand…':kind==='marques'?'Balzane postérieur gauche, liste en tête…':'Au pré, après la tonte…')+'"></label>'+
+        '<div class="phx-foot"><button class="btn ghost" data-phre>'+ICON('refresh','sm')+'Changer de photo</button><button class="btn pri" data-phok>'+ICON('check','sm')+'Enregistrer la photo</button></div>';
+      var box=ed.querySelector('.phx-crop'),cv=box.querySelector('canvas'),g=cv.getContext('2d'),FW=0,FH=0,s=1;
+      function ratio(){return PHF.filter(function(f){return f[0]===fmt})[0][2]}
+      function layout(){var aw=Math.min(ed.clientWidth||520,560),r=ratio(),mh=Math.max(240,Math.min(460,window.innerHeight*.5));FW=aw;FH=aw/r;if(FH>mh){FH=mh;FW=FH*r}
+        box.style.width=Math.round(FW)+'px';box.style.height=Math.round(FH)+'px';var dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(FW*dpr);cv.height=Math.round(FH*dpr);draw()}
+      function clamp(){s=Math.max(FW/x.w,FH/x.h)*zoom;var hw=FW/s/2,hh=FH/s/2;cx=Math.max(hw,Math.min(x.w-hw,cx));cy=Math.max(hh,Math.min(x.h-hh,cy))}
+      function draw(){clamp();var k=cv.width/FW;g.setTransform(k,0,0,k,0,0);g.clearRect(0,0,FW,FH);g.imageSmoothingQuality='high';g.drawImage(x.im,FW/2-cx*s,FH/2-cy*s,x.w*s,x.h*s)}
+      requestAnimationFrame(layout);
+      var ptr=new Map(),last=null,pd=0;
+      box.addEventListener('pointerdown',function(e){box.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});last={x:e.clientX,y:e.clientY};if(ptr.size===2){var a=Array.from(ptr.values());pd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}});
+      box.addEventListener('pointermove',function(e){if(!ptr.has(e.pointerId))return;ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});
+        if(ptr.size>=2){var a=Array.from(ptr.values()),d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pd){zoom=Math.max(1,Math.min(3,zoom*d/pd));zr.value=zoom}pd=d;draw();return}
+        cx-=(e.clientX-last.x)/s;cy-=(e.clientY-last.y)/s;last={x:e.clientX,y:e.clientY};draw()});
+      function upp(e){ptr.delete(e.pointerId);pd=0;var a=Array.from(ptr.values());last=a[0]||null}
+      box.addEventListener('pointerup',upp);box.addEventListener('pointercancel',upp);
+      box.addEventListener('wheel',function(e){e.preventDefault();zoom=Math.max(1,Math.min(3,zoom*(e.deltaY<0?1.08:1/1.08)));zr.value=zoom;draw()},{passive:false});
+      var zr=ed.querySelector('[data-phz]');zr.oninput=function(){zoom=+zr.value;draw()};
+      P.$$('[data-phf]',ed).forEach(function(bt){bt.onclick=function(){fmt=bt.getAttribute('data-phf');P.$$('[data-phf]',ed).forEach(function(y){y.setAttribute('aria-pressed',y===bt);y.setAttribute('aria-selected',y===bt)});layout()}});
+      var mk=ed.querySelector('[data-id="phmain"]');if(mk)mk.addEventListener('click',function(){setTimeout(function(){main=mk.getAttribute('aria-checked')==='true'},0)});
+      ed.querySelector('[data-phre]').onclick=function(){if(x.u)URL.revokeObjectURL(x.u);ed.hidden=true;ed.innerHTML='';pick.hidden=false};
+      var ok=ed.querySelector('[data-phok]');
+      ok.onclick=function(){if(ok.disabled)return;ok.disabled=true;ok.innerHTML='<span class="phx-spin"></span>Compression…';clamp();
+        var sw=FW/s,shh=FH/s,sx=cx-sw/2,sy=cy-shh/2,note=ed.querySelector('[data-phnote]').value.trim();
+        phEncode(x.im,sx,sy,sw,shh,1600,400*1024).then(function(full){if(!full)throw new Error('encode');
+          return phEncode(x.im,sx,sy,sw,shh,480,60*1024).then(function(th){return {full:full,th:th}})}).then(function(r){
+          if(x.u)URL.revokeObjectURL(x.u);
+          return PHS().add(h.id,{id:phId(),blob:r.full.blob,thumb:r.th&&r.th.blob,w:r.full.w,h:r.full.h,kind:kind,zone:zone,care:o.care||null,note:note,author:phAuthor()})}).then(function(p){
+          if(main||kind==='profil'&&!h.photo)phSetMain(h,p.id);
+          sh.close();P.toast(p.pending?'Photo enregistrée sur l’appareil, envoi au retour du réseau':'Photo ajoutée à la fiche de '+E(h.name.split(' ')[0]),{icon:p.pending?'wifi':'image'});
+          if(o.done)o.done(p);else P.rerender()},function(e){ok.disabled=false;ok.innerHTML=ICON('check','sm')+'Enregistrer la photo';P.toast(e&&e.message&&e.message.length>12?e.message:'La photo n’a pas pu être enregistrée. Réessayez.',{icon:'alert',ms:5200})})};
+    }
+  }});
+  return sh}
+
+/* ---------- Visionneuse ---------- */
+function phView(h,p,list,done){var i=list.indexOf(p);
+  var sh=P.sheet({title:PHL[p.kind]||'Photo',icon:'image',wide:true,body:function(b){
+    function draw(){p=list[i];var isMain=h.photo===p.id;
+      b.innerHTML='<div class="phx-big"><img src="'+E(p.url||p.thumb)+'" alt="'+E(PHL[p.kind]+' de '+h.name)+'">'+(list.length>1?'<button class="phx-nav l" data-phv="-1" title="Photo précédente">'+ICON('left')+'</button><button class="phx-nav r" data-phv="1" title="Photo suivante">'+ICON('right')+'</button>':'')+'</div>'+
+        '<div class="phx-meta"><div class="grow"><div class="hrow wrap" style="--g:6px">'+U.chip(PHL[p.kind]||'Photo','line')+(p.zone&&p.kind==='soin'?U.chip(zoneLabel(h,p.zone),'warn'):'')+(isMain?U.chip('Photo principale','acc',true):'')+(p.pending?U.chip('En attente d’envoi','warn',true):'')+'</div>'+
+        (p.note?'<p class="s" style="margin-top:8px">'+E(p.note)+'</p>':'')+'<div class="xs mut" style="margin-top:6px">'+F.dateY(String(p.date||'').slice(0,10))+' à '+new Date(p.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}).replace(':',' h ')+(p.author?' · par '+E(p.author):'')+'</div></div>'+
+        '<span class="xs mut num">'+(i+1)+' / '+list.length+'</span></div>'+
+        '<div class="phx-va">'+(p.kind==='profil'&&!isMain?'<button class="btn" data-phmain>'+ICON('star','sm')+'Définir comme photo principale</button>':'')+
+        '<button class="btn ghost danger" data-phdel>'+ICON('trash','sm')+'Supprimer</button></div>';
+      P.$$('[data-phv]',b).forEach(function(x){x.onclick=function(){i=(i+(+x.getAttribute('data-phv'))+list.length)%list.length;draw()}});
+      var mb=b.querySelector('[data-phmain]');if(mb)mb.onclick=function(){phSetMain(h,p.id);draw();P.toast('Photo principale de '+E(h.name.split(' ')[0])+' changée',{icon:'star'});if(done)done()};
+      var db=b.querySelector('[data-phdel]');db.onclick=function(){
+        if(!db.classList.contains('cf')){db.classList.add('cf');db.classList.remove('ghost');db.innerHTML=ICON('trash','sm')+'Confirmer la suppression';var t=setTimeout(function(){if(db.isConnected){db.classList.remove('cf');db.classList.add('ghost');db.innerHTML=ICON('trash','sm')+'Supprimer'}},4000);return}
+        db.disabled=true;PHS().remove(h.id,p.id).then(function(){if(h.photo===p.id){var nx=list.filter(function(q){return q.id!==p.id&&q.kind==='profil'})[0];phSetMain(h,nx?nx.id:null)}
+          sh.close();P.toast('Photo supprimée',{icon:'trash'});if(done)done()},function(e){db.disabled=false;P.toast(e&&e.message||'Suppression impossible pour l’instant',{icon:'alert'})})}}
+    draw()}});
+  return sh}
+function zoneLabel(h,z){try{var Z=zones(h);return Z[z]?Z[z].l:z}catch(e){return z}}
+
+/* ---------- Galerie (onglet Photos de la fiche et feuille de zone) ---------- */
+var PHG={f:'all'};
+function phGallery(host,h,o){o=o||{};host.innerHTML='<div class="phx-gal"><div class="phx-sk"></div><div class="phx-sk"></div><div class="phx-sk"></div></div>';
+  function render(list){if(!host.isConnected)return;var all=list;
+    if(o.zone)list=list.filter(function(p){return p.zone===o.zone});
+    else if(PHG.f!=='all')list=list.filter(function(p){return p.kind===PHG.f});
+    var cnt={all:all.length};all.forEach(function(p){cnt[p.kind]=(cnt[p.kind]||0)+1});
+    host.innerHTML=(o.zone?'':'<div class="hrow sp wrap phx-gh"><div class="scroll-x">'+U.seg([['all','Toutes ('+cnt.all+')'],['profil','Profil'+(cnt.profil?' ('+cnt.profil+')':'')],['marques','Marques'+(cnt.marques?' ('+cnt.marques+')':'')],['soin','Soins'+(cnt.soin?' ('+cnt.soin+')':'')]],PHG.f,'data-phgf')+'</div>'+
+      '<button class="btn pri" data-phadd>'+ICON('photo','sm')+'Prendre une photo</button></div>')+
+      (list.length?'<div class="phx-gal rise">'+list.map(function(p,k){return '<button class="phx-th" data-phi="'+k+'" title="Agrandir"><img src="'+E(p.thumb||p.url)+'" alt="'+E(PHL[p.kind]||'Photo')+'" loading="lazy">'+
+        (h.photo===p.id?'<span class="phx-b acc">'+ICON('star','sm')+'Principale</span>':p.pending?'':'')+(p.pending?'<span class="phx-b warn">'+ICON('wifi','sm')+'En attente d’envoi</span>':'')+
+        '<span class="phx-cap"><b>'+F.date(String(p.date||'').slice(0,10))+'</b>'+(p.author?'<span class="ellip">'+E(p.author)+'</span>':'')+'</span></button>'}).join('')+'</div>'
+       :'<div class="phx-empty">'+(window.ILLU&&!o.zone?ILLU.cheval({size:88}):'')+'<b>'+(o.zone?'Aucune photo de cette zone':PHG.f==='all'?'Aucune photo de '+E(h.name.split(' ')[0])+' pour l’instant':'Aucune photo dans cette catégorie')+'</b><span class="s mut">'+(o.zone?'Une photo datée aide le vétérinaire à suivre l’évolution.':'Une photo de profil aide toute l’équipe à reconnaître le cheval au pré.')+'</span>'+(o.zone?'':'<button class="btn pri" data-phadd>'+ICON('photo','sm')+'Prendre une photo</button>')+'</div>');
+    P.$$('[data-phgf]',host).forEach(function(x){x.onclick=function(){PHG.f=x.getAttribute('data-phgf');render(all)}});
+    P.$$('[data-phadd]',host).forEach(function(x){x.onclick=function(){phCapture(h,{kind:PHG.f==='marques'?'marques':'profil',done:function(){if(o.after)o.after();else load()}})}});
+    P.$$('[data-phi]',host).forEach(function(x){x.onclick=function(){phView(h,list[+x.getAttribute('data-phi')],list,function(){if(o.after)o.after();else load()})}});
+    if(P.animate)P.animate(host)}
+  function load(){PHS().list(h.id).then(render,function(e){if(!host.isConnected)return;host.innerHTML='<div class="phx-empty"><b>Photos indisponibles</b><span class="s mut">'+E(e&&e.message||'Réessayez dans un instant.')+'</span></div>'})}
+  load();return load}
+
+
+/* le bouton photo d'une carte ne doit pas ouvrir la fiche */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-phcap]');if(!b)return;e.preventDefault();e.stopPropagation();var h=D.horse(b.getAttribute('data-phcap'));if(h)phCapture(h,{done:function(){P.rerender()}})},true);
+P.actions.push({role:'gerant',label:'Prendre un cheval en photo',icon:'camera',run:function(){var st=P.state||{},h=st.route==='cheval'&&st.params&&D.horse(st.params.id)||D.horses[0];if(h)phCapture(h,{});else P.toast('Ajoutez d’abord un cheval',{icon:'horse'})}});
+P.css(`
+.hx-por.ph{background:var(--surface-2)}
+.hx-por.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.hx-top .hx-por.ph{inset:0;width:auto;height:auto;right:0;bottom:0;transform:none!important}
+.hx-top .hx-por.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,44,.42),rgba(8,18,44,0) 46%,rgba(8,18,44,0) 62%,rgba(8,18,44,.38))}
+.hx-c .hx-top:has(.hx-por.ph){color:#fff}
+.hx-c .hx-top:has(.hx-por.ph) .hx-bx{text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.hx-cam{position:absolute;top:12px;right:60px;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,var(--surface) 78%,transparent);color:var(--pi);z-index:2;opacity:0;transition:opacity var(--t-1),background var(--t-1)}
+.hx-c:hover .hx-cam,.hx-cam:focus-visible{opacity:1}.hx-cam:hover{background:var(--surface)}
+@media (hover:none){.hx-cam{opacity:1}}
+.app.mobile .hx-cam{opacity:1}
+.fc-nm{display:flex;gap:16px;align-items:center;min-width:0}
+.fc-nmt{min-width:0;flex:1}
+.app.mobile .fc-nmt>.mut{margin-top:0!important}
+.fc-ph{flex:none;width:84px;height:84px;border-radius:22px;overflow:hidden;display:grid;place-items:center;background:var(--hz-bg);color:var(--hz-ink);transition:transform var(--t-2) var(--e-spring)}
+.fc-ph:hover{transform:scale(1.04)}
+.fc-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.fc-ph.none{border:2px dashed color-mix(in srgb,var(--hz-ink) 35%,transparent);display:flex;flex-direction:column;justify-content:center;gap:2px;font-size:13px;font-weight:700}
+@container main (max-width:760px){.fc-ph{width:64px;height:64px;border-radius:18px}.fc-ph.none span{display:none}}
+.phx-hero{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-md);background:var(--hz-bg);color:var(--hz-ink)}
+.phx-hero .xs{color:inherit;opacity:.85}
+.phx-opts{display:grid;gap:10px}
+.phx-opt{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;width:100%;transition:border-color var(--t-1),background var(--t-1)}
+.phx-opt:hover{border-color:var(--acc);background:var(--acc-bg)}
+.phx-opt svg.i{width:26px;height:26px;flex:none;color:var(--acc)}
+.phx-opt span{display:flex;flex-direction:column;gap:2px}.phx-opt b{font-size:16px}.phx-opt small{font-size:13.5px;color:var(--mut)}
+.phx-opt.pri{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}.phx-opt.pri svg.i,.phx-opt.pri small{color:var(--on-acc)}.phx-opt.pri small{opacity:.85}
+.phx-opt.pri:hover{background:var(--acc-deep)}
+.phx-opt:focus-within{outline:2px solid var(--acc);outline-offset:2px}
+.phx-crop{position:relative;margin:0 auto;border-radius:18px;overflow:hidden;background:var(--surface-2);touch-action:none;cursor:grab;user-select:none}
+.phx-crop:active{cursor:grabbing}
+.phx-crop canvas{width:100%;height:100%;display:block}
+.phx-grid{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.75);border-radius:inherit}
+.phx-grid i{position:absolute;background:rgba(255,255,255,.4)}
+.phx-grid i:nth-child(1),.phx-grid i:nth-child(2){top:0;bottom:0;width:1px}.phx-grid i:nth-child(1){left:33.33%}.phx-grid i:nth-child(2){left:66.66%}
+.phx-grid i:nth-child(3),.phx-grid i:nth-child(4){left:0;right:0;height:1px}.phx-grid i:nth-child(3){top:33.33%}.phx-grid i:nth-child(4){top:66.66%}
+.phx-tools{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:14px 0 12px}
+.phx-zoom{display:flex;align-items:center;gap:8px;color:var(--mut);flex:1 1 160px;max-width:260px}
+.phx-zoom input{flex:1;accent-color:var(--acc)}
+.phx-main{display:flex;align-items:center;gap:10px;margin:4px 0 12px;font-weight:600;cursor:pointer}
+.phx-foot{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:14px}
+.phx-foot .btn.pri{flex:1 1 220px;justify-content:center}
+.phx-spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:phxSp .8s linear infinite}
+@keyframes phxSp{to{transform:rotate(360deg)}}
+.phx-cam{position:relative;border-radius:18px;overflow:hidden;background:#0b1220;aspect-ratio:4/3}
+.phx-cam video{width:100%;height:100%;object-fit:cover;display:block}
+.phx-guide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none}
+.phx-gf{width:78%;aspect-ratio:4/3;border:2px dashed rgba(255,255,255,.8);border-radius:22px;display:grid;place-items:center;overflow:hidden}
+.phx-gf .illu{width:86%;height:86%;opacity:.32;filter:grayscale(1) brightness(3)}
+.phx-guide span{font-weight:700;color:#fff;background:rgba(8,18,44,.55);padding:6px 12px;border-radius:999px;font-size:14px}
+.phx-gh{margin-bottom:14px;gap:10px}
+.phx-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.phx-sk{aspect-ratio:1;border-radius:16px;background:var(--surface-2);animation:phxPulse 1.2s ease-in-out infinite alternate}
+@keyframes phxPulse{to{opacity:.5}}
+.phx-th{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--surface-2);display:block;padding:0;transition:transform var(--t-2) var(--e-out)}
+.phx-th:hover{transform:translateY(-2px)}
+.phx-th img{width:100%;height:100%;object-fit:cover;display:block}
+.phx-th .phx-cap{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;color:#fff;background:linear-gradient(180deg,rgba(8,18,44,0),rgba(8,18,44,.72));font-size:13px;line-height:1.25}
+.phx-th .phx-cap b{font-size:13.5px}.phx-th .phx-cap span{max-width:100%;opacity:.9}
+.phx-b{position:absolute;top:8px;left:8px;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 8px 3px 6px;border-radius:999px;background:var(--surface);color:var(--acc-deep)}
+.phx-b svg.i{width:15px;height:15px}
+.phx-b.warn{background:var(--warn-pale);color:var(--ink)}
+.phx-b.acc+.phx-b.warn{top:38px}
+.phx-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:22px 12px}
+.phx-empty .btn{margin-top:6px}
+.phx-big{position:relative;border-radius:18px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;max-height:62vh}
+.phx-big img{max-width:100%;max-height:62vh;display:block;object-fit:contain}
+.phx-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--ink)}
+.phx-nav.l{left:10px}.phx-nav.r{right:10px}
+.phx-meta{display:flex;gap:12px;align-items:flex-start;margin:14px 0}
+.phx-va{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.phx-va .danger{color:var(--bad)}
+.phx-va .danger.cf{background:var(--bad);border-color:var(--bad);color:#fff}
+@container main (max-width:520px){.phx-gal{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.phx-gh .btn{width:100%;justify-content:center}}
+@media (prefers-reduced-motion:reduce){.phx-sk,.phx-spin{animation:none}}
+`);
+
 })();
