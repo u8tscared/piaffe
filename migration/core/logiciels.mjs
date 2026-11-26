@@ -46,6 +46,8 @@ const L = [
   ['ekurie', 'Ekurie', 'equestre', 'web', 'ekurie.fr', 'ekurie\\.fr', false, null],
   ['izidoor', 'Izidoor', 'equestre', 'web', 'izidoor.io', 'izidoor\\.io', false, null],
   ['gestequit', 'GestEquit', 'equestre', 'web', 'gestequit.com', 'gestequit\\.com', false, null],
+  ['isibox', 'Isibox', 'equestre', 'web', null, 'isibox\\.', false, null],
+  ['horsemanager', 'Horsemanager', 'equestre', 'web', null, 'horse-?manager\\.', false, null],
   // ---- Fédération et État ----
   ['ffe', 'FFE Club SIF', 'federation', 'web', 'ffe.com', 'ffe\\.com', false, ['Dans FFE Club SIF, exportez la liste des licenciés de la saison (Excel).', 'Déposez-la avec les autres fichiers : Stabl rapproche les licences des fiches adhérents.'], 'Fédération française d’équitation'],
   ['ffecompet', 'FFE Compet', 'federation', 'web', 'ffe.com', null, true, ['Dans FFE Compet, exportez les engagements et résultats au format CSV ou XLS.', 'Déposez le fichier ici.'], 'Fédération française d’équitation'],
@@ -54,6 +56,7 @@ const L = [
   ['helloasso', 'HelloAsso', 'adhesions', 'web', 'helloasso.com', 'helloasso\\.com', false, EXPORT_PAIEMENT],
   ['assoconnect', 'AssoConnect', 'adhesions', 'web', 'assoconnect.com', 'assoconnect\\.com', false, EXPORT_PAIEMENT],
   ['simpliasso', 'SimpliAsso', 'adhesions', 'web', 'simpliasso.fr', 'simpliasso\\.', false, EXPORT_PAIEMENT],
+  ['clubeo', 'Clubeo', 'adhesions', 'web', 'clubeo.com', 'clubeo\\.com', false, EXPORT_PAIEMENT],
   ['stripe', 'Stripe', 'adhesions', 'web', 'stripe.com', 'stripe\\.com', true, ['Dans le tableau de bord Stripe, ouvrez Clients puis Exporter (CSV).', 'Faites de même pour Paiements et, si vous en avez, Abonnements.', 'Déposez les fichiers ici.']],
   ['sumup', 'SumUp', 'adhesions', 'web', 'sumup.com', 'sumup\\.(com|fr)', false, ['Dans votre espace SumUp, exportez l’historique des transactions (CSV ou Excel).', 'Déposez le fichier ici : Stabl le rapproche des factures.']],
   ['gocardless', 'GoCardless', 'adhesions', 'web', 'gocardless.com', 'gocardless\\.com', false, ['Dans GoCardless, exportez les clients et les mandats (CSV).', 'Déposez les fichiers ici : les mandats de prélèvement restent à faire signer de nouveau ou à transférer avec l’accord de GoCardless.']],
@@ -77,6 +80,8 @@ const L = [
   ['axonaut', 'Axonaut', 'compta', 'web', 'axonaut.com', 'axonaut\\.com', false, EXPORT_COMPTA],
   ['henrri', 'Henrri', 'compta', 'web', 'henrri.com', 'henrri\\.com', false, EXPORT_COMPTA],
   ['isagri', 'Isagri', 'compta', 'bureau', 'isagri.fr', 'isagri\\.fr', false, EXPORT_COMPTA],
+  ['dougs', 'Dougs', 'compta', 'web', 'dougs.fr', 'dougs\\.fr', false, EXPORT_COMPTA],
+  ['fec', 'Export FEC (comptable)', 'compta', null, null, null, true, ['Demandez à votre comptable (ou exportez depuis votre logiciel de comptabilité) le FEC de l’exercice : un fichier texte qui commence par JournalCode.', 'Déposez-le ici : Stabl lit les clients, les factures, ce qui reste dû, les fournisseurs, le plan de comptes et la TVA.']],
   // ---- RH, planning et paie ----
   ['payfit', 'PayFit', 'rh', 'web', 'payfit.com', 'payfit\\.com', false, EXPORT_RH],
   ['silae', 'Silae', 'rh', 'les-deux', 'silae.fr', 'silae\\.fr', false, EXPORT_RH],
@@ -95,7 +100,7 @@ const L = [
 
 function modesPour(forme, id) {
   if (id === 'papier') return ['export'];
-  if (['excel', 'numbers', 'libreoffice', 'apple-calendrier', 'sire'].includes(id)) return ['export'];
+  if (['excel', 'numbers', 'libreoffice', 'apple-calendrier', 'sire', 'fec'].includes(id)) return ['export'];
   if (forme === 'web') return ['robot', 'codes', 'export'];
   if (forme === 'bureau') return ['ordinateur', 'export'];
   if (forme === 'les-deux') return ['robot', 'ordinateur', 'codes', 'export'];
@@ -141,7 +146,12 @@ const R = {
   planity: ['remplace', 'Changé. Vos cavaliers réservent directement dans Stabl ; on reprend contacts et rendez-vous.', null, null],
   qonto: ['branche', null, 'Gardé. Votre compte reste chez Qonto ; on rapproche virements et prélèvements des factures (par export, branchement direct bientôt).', null],
   pennylane: ['branche', null, 'Gardé. Stabl envoie factures et encaissements à votre comptable.', null],
-  tiime: ['branche', null, COMPTA_EXPORT, null], indy: ['branche', null, COMPTA_EXPORT, null], sage: ['branche', null, COMPTA_EXPORT, null],
+  clubeo: ['au_choix', 'Changé. Stabl gère adhésions, paiements en ligne et nouvelles du club ; on reprend membres et historique, puis vous résiliez.', 'Gardé. Votre site Clubeo reste en ligne ; on reprend vos membres et l’historique des adhésions par export.', 'l’historique des adhésions'],
+  // Comptabilité : toujours « Intégrer » (le comptable garde son outil). Tiime et Indy facturent aussi : « Changer » ne remplace que la facturation.
+  tiime: ['au_choix', 'Facturation changée. Stabl fait vos factures et encaissements ; Tiime garde la comptabilité et reçoit les écritures (FEC). On reprend clients et factures.', COMPTA_EXPORT, 'les clients et factures (FEC)'],
+  indy: ['au_choix', 'Facturation changée. Stabl fait vos factures et encaissements ; Indy garde la comptabilité et reçoit les écritures (FEC). On reprend clients et factures.', COMPTA_EXPORT, 'les clients et factures (FEC)'],
+  sage: ['branche', null, COMPTA_EXPORT, null], dougs: ['branche', null, 'Gardé. Votre comptable Dougs reçoit les écritures de Stabl (FEC) ; on reprend clients et factures depuis votre FEC.', 'les clients et factures (FEC)'],
+  fec: ['branche', null, 'Lu. Stabl reprend clients, factures, ce qui reste dû, fournisseurs, plan de comptes et TVA depuis le FEC ; votre comptable continue avec son outil.', 'le fichier des écritures'],
   ebp: ['branche', null, COMPTA_EXPORT, null], cegid: ['branche', null, COMPTA_EXPORT, null], ciel: ['branche', null, COMPTA_EXPORT, null],
   quickbooks: ['branche', null, COMPTA_EXPORT, null], isagri: ['branche', null, COMPTA_EXPORT, null],
   axonaut: ['remplace', 'Changé. Stabl fait vos factures, avoirs et relances ; on reprend clients et factures.', null, null],
@@ -153,7 +163,7 @@ const R = {
   'outlook-contacts': ['remplace', 'Changé. Vos contacts sont rattachés aux fiches cavaliers et familles.', null, null],
 };
 // Gratuits ou inclus ailleurs : rien à résilier par lettre, il suffit d'arrêter de s'en servir.
-const SANS_LETTRE = new Set(['helloasso', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
+const SANS_LETTRE = new Set(['helloasso', 'fec', 'paypal', 'google-agenda', 'outlook', 'apple-calendrier', 'henrri', 'excel', 'google-sheets', 'numbers', 'libreoffice', 'google-contacts', 'outlook-contacts', 'papier']);
 for (const l of Object.values(LOGICIELS)) {
   let r = R[l.id];
   if (!r) r = ['remplace', l.famille === 'equestre' ? CHANGE_GESTION(l) : l.id === 'papier' ? 'Changé. On vous aide à tout mettre dans Stabl : modèle Excel à remplir ou saisie guidée à l’accueil.' : TABLEUR, null, null];

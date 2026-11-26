@@ -6,15 +6,26 @@
  * ou sur POST /demarrer. Les paquets partent vers l'API d'import (job en simulation, dry_run) ; le gérant
  * confirme ensuite comme avec la passerelle (POST /api/v1/import/jobs/:id/commit {"dry_run": false}).
  *
+ * Connexion automatique (« Donnez-nous vos codes ») : l'identifiant et le mot de passe arrivent scellés (coffre.ts,
+ * AES-GCM lié à cette session), restent scellés en mémoire, sont ouverts une seule fois pour remplir le formulaire
+ * de l'ancien logiciel, puis effacés. Un code de vérification demandé par le logiciel est demandé au gérant dans la
+ * page (événement « etat » {attente: "code"}, réponse POST /code). Si la connexion échoue, le gérant se connecte
+ * lui-même dans l'écran, comme en connexion assistée.
+ *
  * Ce qui n'est JAMAIS conservé : les frappes du gérant (identifiants, mots de passe, codes) vont directement
  * au navigateur distant, sans journal ni stockage. Le jeton de session Stabl du gérant (pour les appels à
  * l'API d'import) et la capture restent en mémoire seulement, et disparaissent à la fermeture.
  * Le stockage du Durable Object ne contient que : club, utilisateur, dates, identifiant du navigateur.
+ * Ce que le robot a appris du logiciel (recette, sans aucune donnée du club) est enregistré pour le club suivant.
  */
 import { DurableObject } from "cloudflare:workers";
 import type { Env } from "../env";
-import { CONTROLES_AVANT_COPIE, HAUTEUR, LARGEUR, QUALITE_JPEG, T, TEXTE_MAX, TOUCHES } from "./reglages";
-import { estConnecte, migrerDepuisPage, versLots, type PageRobot } from "./migration";
+import { CONTROLES_AVANT_COPIE, HAUTEUR, HISTORIQUE_JOURS, LARGEUR, QUALITE_JPEG, T, TEXTE_MAX, TOUCHES } from "./reglages";
+import { estConnecte, familleDe, migrerDepuisPage, POURQUOI, scriptRobot, seConnecter, versLots, type PageRobot } from "./migration";
+import { ouvrirScelle, type EnvRobot } from "./coffre";
+import { creerPilote } from "./ia";
+import { one, run } from "../lib/db";
+import { newId } from "../lib/ids";
 import { navigateur, NavigateurIndisponible, type NavigateurOuvert } from "./navigateur";
 
 export type Phase = "connexion" | "copie" | "termine" | "erreur";
@@ -27,6 +38,10 @@ export interface EtatSession {
   clients: Set<Ecrivain>; signal: { arret: boolean }; vu: number; ouverte: boolean;
   capture: Record<string, unknown> | null; job_id: string | null; screencast: boolean;
   fin: Record<string, unknown> | null;
+  /** Identifiants scellés (connexion automatique), effacés dès la tentative de connexion faite. */
+  scelle: string | null; adresse: string; hotes: string[];
+  /** Code de vérification attendu du gérant. */
+  attenteCode: ((code: string) => void) | null;
 }
 
 const enc = new TextEncoder();
@@ -35,6 +50,7 @@ const MSG = {
   session: "Cette session de connexion assistée est terminée. Relancez-la depuis la page de migration.",
   phase: "Le robot a déjà pris la main : la saisie n'est possible que pendant la connexion.",
   pasFini: "La copie n'est pas encore terminée.",
+  pasDeCode: "Aucun code n'est demandé pour l'instant.",
   entree: "Action inconnue : utilisez clic, texte, touche ou defiler.",
   navigateur: "Le navigateur Stabl n'a pas pu démarrer. Réessayez dans une minute ou déposez un export de votre logiciel.",
   copie: "La copie s'est interrompue.",
@@ -72,6 +88,16 @@ export class RobotSession extends DurableObject<Env> {
       let e: any = null; try { e = await req.json(); } catch { /* corps invalide */ }
       return this.entree(s, e);
     }
+    if (action === "code" && req.method === "POST") {
+      let e: any = null; try { e = await req.json(); } catch { /* corps invalide */ }
+      const r = s.attenteCode;
+      if (!r) return erreur(409, "pas_de_code", MSG.pasDeCode);
+      const code = typeof e?.code === "string" ? e.code.replace(/\s+/g, "").slice(0, 12) : "";
+      if (!code) return erreur(400, "code", "Tapez le code reçu.");
+      s.attenteCode = null; r(code);
+      this.etatConnexion(s, { auto: true, progression: "Code envoyé, connexion…" });
+      return json({ ok: true });
+    }
     if (action === "demarrer" && req.method === "POST") {
       if (s.phase === "connexion") this.ctx.waitUntil(this.demarrer(s));
       return json({ ok: true, phase: s.phase }, 202);
@@ -87,7 +113,7 @@ export class RobotSession extends DurableObject<Env> {
   }
 
   /* ---------- création ---------- */
-  private async creer(b: { id: string; adresse: string; club_id: string; user_id: string; jeton: string; logiciel?: string | null }) {
+  private async creer(b: { id: string; adresse: string; club_id: string; user_id: string; jeton: string; logiciel?: string | null; scelle?: string | null }) {
     if (this.etat || (await this.ctx.storage.get("meta"))) return erreur(409, "session_existe", "Cette session existe déjà.");
     let nav: NavigateurOuvert;
     try { nav = await navigateur().ouvrir(this.env); }
@@ -99,14 +125,18 @@ export class RobotSession extends DurableObject<Env> {
       id: b.id, club: b.club_id, user: b.user_id, jeton: b.jeton, logiciel: b.logiciel || null, nav, phase: "connexion",
       progression: {}, clients: new Set(), signal: { arret: false }, vu: Date.now(), ouverte: true,
       capture: null, job_id: null, screencast: false, fin: null,
+      scelle: typeof b.scelle === "string" ? b.scelle : null, adresse: b.adresse, hotes: [], attenteCode: null,
     };
     this.etat = s;
     await this.ctx.storage.put<Meta>("meta", { id: b.id, club_id: b.club_id, user_id: b.user_id, cree_le: new Date().toISOString(), browser_session: nav.sessionId ?? null });
     await this.ctx.storage.setAlarm(Date.now() + T.alarme);
+    // Le robot de la page écoute dès le premier écran ce que le logiciel charge (lecture seule, aucun champ secret).
+    await nav.page.ajouterScript?.(scriptRobot({ historiqueJours: HISTORIQUE_JOURS })).catch(() => {});
     await nav.page.goto(b.adresse, { waitUntil: "load", timeout: T.chargement }).catch(() => {});
     this.ctx.waitUntil(this.boucleImages(s));
-    this.ctx.waitUntil(this.surveillerConnexion(s));
-    return json({ id: b.id, largeur: LARGEUR, hauteur: HAUTEUR }, 201);
+    const auto = !!s.scelle;
+    this.ctx.waitUntil(auto ? this.connexionAuto(s) : this.surveillerConnexion(s));
+    return json({ id: b.id, largeur: LARGEUR, hauteur: HAUTEUR, ...(auto ? { auto: true } : {}) }, 201);
   }
 
   /* ---------- flux SSE ---------- */
@@ -175,6 +205,32 @@ export class RobotSession extends DurableObject<Env> {
     } catch { /* page en cours de navigation */ }
     return json({ ok: true });
   }
+  private etatConnexion(s: EtatSession, e: Record<string, unknown>) {
+    s.progression = e;
+    this.diffuser(s, "etat", { phase: "connexion", ...e });
+  }
+  /** Connexion avec les identifiants confiés ; en cas d'échec, le gérant prend la main dans l'écran. */
+  private async connexionAuto(s: EtatSession) {
+    const scelle = s.scelle; s.scelle = null;
+    this.etatConnexion(s, { auto: true, progression: "Connexion à votre ancien logiciel…" });
+    let r: { ok: boolean; pourquoi?: string; hotes?: string[] } = { ok: false, pourquoi: "connexion" };
+    const acces = scelle ? await ouvrirScelle(this.env as EnvRobot, scelle, s.id) : null;
+    if (acces && s.nav) {
+      const demanderCode = () => new Promise<string>((ok) => {
+        s.attenteCode = ok;
+        this.etatConnexion(s, { auto: true, attente: "code", progression: "Votre logiciel demande un code de vérification." });
+        setTimeout(() => { if (s.attenteCode === ok) { s.attenteCode = null; ok(""); } }, T.attenteCode);
+      });
+      try { r = await seConnecter(s.nav.page, { adresse: s.adresse, identifiant: acces.identifiant, motDePasse: acces.mot_de_passe, demanderCode }); }
+      catch { r = { ok: false, pourquoi: "connexion" }; }
+      acces.identifiant = ""; acces.mot_de_passe = "";
+    }
+    s.attenteCode = null;
+    if (!s.ouverte) return;
+    if (r.ok) { s.hotes = r.hotes || []; return this.demarrer(s); }
+    this.etatConnexion(s, { auto: false, message: (POURQUOI[r.pourquoi || "connexion"] || POURQUOI.connexion) + " Connectez-vous vous-même dans l'écran ci-dessous." });
+    return this.surveillerConnexion(s);
+  }
   private async surveillerConnexion(s: EtatSession) {
     let stable = 0;
     while (s.ouverte && s.phase === "connexion") {
@@ -193,11 +249,13 @@ export class RobotSession extends DurableObject<Env> {
     try {
       const recette = await this.recette(s);
       const r = await migrerDepuisPage(s.nav.page, {
-        logiciel: s.logiciel, recette, signal: s.signal,
+        logiciel: s.logiciel, famille: familleDe(s.logiciel), recette, signal: s.signal, hotes: s.hotes,
+        ia: creerPilote(this.env as EnvRobot), historiqueJours: HISTORIQUE_JOURS, limiteMs: T.copie,
         surEtat: (e) => { s.vu = Date.now(); s.progression = e; this.diffuser(s, "etat", { phase: "copie", ...e }); },
       });
       if (!s.ouverte) return;
       s.capture = r.capture;
+      if (r.ok && r.recette) await this.apprendre(s, r.recette).catch(() => {});
       const envoi = await this.envoyerVersImport(s, r.paquet);
       s.phase = "termine";
       s.fin = { controle: r.paquet.controle ?? null, ...envoi };
@@ -215,11 +273,29 @@ export class RobotSession extends DurableObject<Env> {
     s.vu = Date.now();
   }
 
+  /** Logiciel d'une recette : celui du catalogue, sinon l'adresse (logiciel encore inconnu). */
+  private logicielDeRecette(s: EtatSession): string | null {
+    if (s.logiciel) return s.logiciel;
+    try { return ("site-" + new URL(s.adresse).hostname.toLowerCase()).replace(/[^a-z0-9_.-]/g, "-").slice(0, 40); } catch { return null; }
+  }
+  /** Ce qui a marché devient la recette du logiciel pour le club suivant (nettoyée : aucune donnée du club). */
+  private async apprendre(s: EtatSession, recette: Record<string, any>) {
+    const logiciel = this.logicielDeRecette(s);
+    if (!logiciel || !recette?.origine) return;
+    const nom = new URL(recette.origine).hostname.toLowerCase().replace(/[^a-z0-9_.-]/g, "-").slice(0, 60);
+    const brut = JSON.stringify(recette);
+    if (brut.length > 256 * 1024) return;
+    // Même table que POST /api/v1/migration/recettes (réservé aux clés « migration ») : le robot écrit lui-même.
+    const v = ((await one<{ v: number | null }>(this.env.DB, "SELECT MAX(version) AS v FROM migration_recipes WHERE software = ? AND name = ?", logiciel, nom))?.v || 0) + 1;
+    await run(this.env.DB, "INSERT INTO migration_recipes (id, software, name, version, recipe, notes, created_by_club) VALUES (?,?,?,?,?,?,?)",
+      newId("rcp"), logiciel, nom, v, brut, "apprise par le robot", s.club);
+  }
   /** Chemin déjà appris pour ce logiciel (recettes partagées, sans aucune donnée de club), s'il vise la même origine. */
   private async recette(s: EtatSession) {
-    if (!s.logiciel || !s.nav) return null;
+    const logiciel = this.logicielDeRecette(s);
+    if (!logiciel || !s.nav) return null;
     try {
-      const r = await this.appelApp("GET", "/api/v1/migration/recettes?logiciel=" + encodeURIComponent(s.logiciel), s);
+      const r = await this.appelApp("GET", "/api/v1/migration/recettes?logiciel=" + encodeURIComponent(logiciel), s);
       if (!r.ok) return null;
       const origine = new URL(s.nav.page.url()).origin;
       const rec = ((await r.json()) as any).recettes?.map((x: any) => x.recette).find((x: any) => x?.origine === origine && Array.isArray(x.etapes));
@@ -278,7 +354,8 @@ export class RobotSession extends DurableObject<Env> {
     const s = this.etat;
     this.etat = null;
     if (s) {
-      s.ouverte = false; s.signal.arret = true; s.jeton = ""; s.capture = null;
+      s.ouverte = false; s.signal.arret = true; s.jeton = ""; s.capture = null; s.scelle = null;
+      if (s.attenteCode) { const r = s.attenteCode; s.attenteCode = null; r(""); }
       const nav = s.nav; s.nav = null;
       await nav?.fermer().catch(() => {});
       for (const w of s.clients) w.close().catch(() => {});

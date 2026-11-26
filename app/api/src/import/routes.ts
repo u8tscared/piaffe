@@ -11,6 +11,12 @@ import { emit } from "../lib/events";
 import { CSV_FIELDS, decode, detectDelimiter, findHeaderRow, guessColl, mapColumns, parseCsv, rowsToItems } from "./csv";
 import { normalizeItem } from "./schema";
 import campaign, { cron as campaignCron } from "./campaign";
+// @ts-ignore : module JavaScript du fil migration (passerelle), sans déclaration de types
+import { lireFichier } from "../../../../migration/core/lire.mjs";
+// @ts-ignore : module JavaScript du fil migration (passerelle), sans déclaration de types
+import { construirePaquet } from "../../../../migration/core/paquet.mjs";
+// @ts-ignore : module JavaScript du fil migration (passerelle), sans déclaration de types
+import { versLots } from "../../../../migration/core/vers-api.mjs";
 
 const app = new Hono<AppEnv>();
 
@@ -234,6 +240,72 @@ app.post("/api/v1/import/csv", async (c) => {
   if (!j.item_count) throw bad("empty_csv", "Aucune ligne exploitable avec ce mappage : vérifiez les colonnes Nom, Prénom ou Nom du cheval.");
   const report = await commitJob(c, j, dry);
   return c.json({ action: "commit", detected, coll, mapping, job_id: jobId, report });
+});
+
+/* ---------- Import de n'importe quel fichier : Excel, CSV, FEC, export HelloAsso, capture du robot ----------
+ * Même lecture que la passerelle (migration/core) : le type de chaque tableau et le rôle de chaque colonne sont
+ * devinés tout seuls ; un FEC donne aussi le résumé comptable (exercice, journaux, plan de comptes, TVA, équilibre).
+ *   POST /api/v1/import/fichier   multipart (champ « file ») | JSON {nom, content | content_b64} | corps brut (?nom=)
+ *   action=preview (défaut) : ce qui a été compris, sans rien écrire ; action=commit (+ dry_run=true pour simuler).
+ *   POST /api/v1/import/fec       même chose, pour un fichier des écritures comptables. */
+const inflateBrut = async (o: Uint8Array) => new Uint8Array(await new Response(new Blob([o]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+async function fichierRecu(c: Context<AppEnv>): Promise<{ nom: string; octets: Uint8Array; opt: Record<string, string> }> {
+  const ct = c.req.header("content-type") || "";
+  const opt: Record<string, string> = { ...c.req.query() };
+  let octets: Uint8Array, nom = opt.nom || "";
+  if (ct.startsWith("multipart/form-data")) {
+    const form = await c.req.parseBody();
+    const f = form.file ?? form.fichier;
+    if (!(f instanceof File)) throw bad("missing_file", "Envoyez le fichier dans le champ « file » du formulaire.", { field: "file" });
+    if (f.size > MAX_CSV_BYTES) throw bad("file_too_large", "Fichier trop volumineux : 10 Mo au maximum.");
+    octets = new Uint8Array(await f.arrayBuffer()); nom = nom || f.name;
+    for (const [k, v] of Object.entries(form)) if (typeof v === "string") opt[k] = v;
+  } else if (ct.startsWith("application/json")) {
+    const b = await body<Record<string, any>>(c);
+    if (typeof b.content === "string") octets = new TextEncoder().encode(b.content);
+    else if (typeof b.content_b64 === "string") { try { octets = Uint8Array.from(atob(b.content_b64), (x) => x.charCodeAt(0)); } catch { throw bad("invalid_field", "« content_b64 » n'est pas du base64 valide."); } }
+    else throw bad("missing_file", "Indiquez le contenu du fichier dans « content » (texte) ou « content_b64 » (base64).");
+    for (const [k, v] of Object.entries(b)) if (k !== "content" && k !== "content_b64" && typeof v !== "object") opt[k] = String(v);
+    nom = String(b.nom || nom);
+  } else {
+    octets = new Uint8Array(await c.req.arrayBuffer());
+    if (!octets.length) throw bad("missing_file", "Le corps de la requête est vide : envoyez le contenu du fichier.");
+  }
+  if (octets.length > MAX_CSV_BYTES) throw bad("file_too_large", "Fichier trop volumineux : 10 Mo au maximum.");
+  return { nom: (nom || "fichier.csv").slice(0, 200), octets, opt };
+}
+async function importerFichier(c: Context<AppEnv>, nom: string, octets: Uint8Array, opt: Record<string, string>) {
+  let tables: any[];
+  try { tables = await lireFichier(nom, octets, { inflate: inflateBrut }); }
+  catch { throw bad("unreadable_file", "Ce fichier n'a pas pu être lu. Enregistrez-le en .xlsx ou en .csv et réessayez."); }
+  const erreur = tables.find((t) => t.erreur);
+  if (erreur && tables.every((t) => !t.lignes?.length)) throw bad("unreadable_file", erreur.erreur);
+  const paquet = construirePaquet(tables);
+  const lots = (versLots(paquet) as { coll: Coll; items: { external_id: string; data: unknown }[] }[]).filter((l) => l.items.length);
+  const sources = paquet.sources.map((x: any) => ({ fichier: x.fichier, feuille: x.feuille, logiciel: x.logiciel, type: x.type, lignes: x.lignes, colonnes: x.colonnes, ignorees: x.ignorees }));
+  const resume = { sources, controle: paquet.controle, comptabilite: paquet.comptabilite ? { ...paquet.comptabilite, comptes: paquet.comptabilite.comptes.length, journaux: paquet.comptabilite.journaux } : null,
+    lots: Object.fromEntries(lots.map((l) => [l.coll, l.items.length])), avertissements: (paquet.avertissements || []).slice(0, 50) };
+  if ((opt.action || "preview").toLowerCase() !== "commit")
+    return c.json({ action: "preview", ...resume, next: "Si le rangement vous convient, renvoyez le fichier avec action=commit (dry_run=true pour simuler)." });
+  if (!lots.length) throw bad("empty_file", "Aucune donnée exploitable dans ce fichier.");
+  const dry = ["1", "true", "oui"].includes(String(opt.dry_run || "").toLowerCase());
+  const brut = String(opt.source || sources.find((x: any) => x.logiciel)?.logiciel || "fichier").toLowerCase();
+  const jobId = await createJob(c, /^[a-z0-9][a-z0-9_.-]{0,39}$/.test(brut) ? brut : "fichier", dry);
+  let j = (await one<JobRow>(c.env.DB, "SELECT * FROM import_jobs WHERE id = ?", jobId))!;
+  for (const l of lots) for (let i = 0; i < l.items.length; i += MAX_ITEMS_PER_CALL) {
+    await stageItems(c, j, l.coll, l.items.slice(i, i + MAX_ITEMS_PER_CALL));
+    j = (await one<JobRow>(c.env.DB, "SELECT * FROM import_jobs WHERE id = ?", jobId))!;
+  }
+  const report = await commitJob(c, j, dry);
+  return c.json({ action: "commit", ...resume, job_id: jobId, report });
+}
+app.post("/api/v1/import/fichier", async (c) => { const f = await fichierRecu(c); return importerFichier(c, f.nom, f.octets, f.opt); });
+app.post("/api/v1/import/fec", async (c) => {
+  const f = await fichierRecu(c);
+  const tete = new TextDecoder().decode(f.octets.slice(0, 600)).toLowerCase().replace(/[^a-z]/g, "");
+  if (!(tete.includes("journalcode") && tete.includes("ecriturenum") && tete.includes("comptenum")))
+    throw bad("not_fec", "Ce fichier n'est pas un FEC : la première ligne doit contenir JournalCode, EcritureNum, CompteNum…");
+  return importerFichier(c, /\.(txt|csv|tsv)$/i.test(f.nom) ? f.nom : f.nom + ".txt", f.octets, f.opt);
 });
 
 /* ---------- Outil de migration : recettes et incidents ---------- */

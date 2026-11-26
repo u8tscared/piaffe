@@ -1,26 +1,26 @@
 // Point d'entrée du robot côté serveur, pour le Worker Cloudflare (Browser Rendering) comme pour le serveur local.
 //
-//   const r = await migrerDepuisPage(page, { logiciel: 'kavalog', recette, envoyer, surEtat, signal });
+//   const r = await migrerDepuisPage(page, { logiciel: 'kavalog', recette, envoyer, surEtat, signal, ia });
+//   const r = await migrerAvecAcces(page, { adresse, identifiant, motDePasse, demanderCode, ajouterScript, ... });
 //
-// - page     : page Puppeteer (@cloudflare/puppeteer) ou Playwright, sur laquelle le gérant vient de se connecter.
-// - recette  : chemin déjà appris pour ce logiciel (facultatif) ; sinon exploration automatique.
+// - page     : page Puppeteer (@cloudflare/puppeteer) ou Playwright, connectée (par le gérant ou par le robot).
+// - recette  : chemin déjà appris pour ce logiciel (facultatif) ; sinon le robot cherche tout seul.
+// - ia       : pilote facultatif (un modèle Claude) pour ce que le robot ne trouve pas ; sans lui, tout marche quand même.
 // - envoyer  : async ({coll, items}) => … appelé lot par lot (≤ 500 objets) pour POST /api/v1/import/jobs/:id/items.
 // - surEtat  : rappel de progression pour la vue en direct.
-// Renvoie { paquet (sans les données brutes), recette (à enregistrer, ne contient aucune donnée du club), incidents }.
-// Les identifiants tapés par le gérant ne passent jamais par ce code : ils vont directement du clavier au navigateur.
-import { Explorateur } from './explorateur.mjs';
-import { tablesDeCapture } from '../core/capture.mjs';
-import { construirePaquet } from '../core/paquet.mjs';
+// Renvoie { paquet, recette (à enregistrer, ne contient aucune donnée du club), incidents, contrat, resume, trace }.
+// En connexion assistée, les identifiants tapés par le gérant ne passent jamais par ce code. En connexion automatique,
+// ils ne servent qu'à remplir le formulaire de l'ancien logiciel (auto.mjs), sans journal ni stockage.
+import { copier, migrerAvecAcces, seConnecter, genresAttendus, POURQUOI } from './auto.mjs';
+import { scriptRobot } from './ecoute.mjs';
 import { versLots } from '../core/vers-api.mjs';
 
-export async function migrerDepuisPage(page, { logiciel = null, recette = null, envoyer = null, surEtat = () => {}, signal = { arret: false }, fiches = true } = {}) {
-  const ex = new Explorateur(page, { surEtat, signal, fiches });
-  if (recette?.etapes?.length) await ex.rejouer(recette);
-  if (!recette || ex.incidents.length || !ex.tables.length) await ex.explorer();
-  const capture = ex.capture(logiciel);
-  const paquet = construirePaquet(tablesDeCapture(capture));
-  if (envoyer) for (const lot of versLots(paquet)) for (let i = 0; i < lot.items.length; i += 500) await envoyer({ coll: lot.coll, items: lot.items.slice(i, i + 500) });
-  return { capture, paquet, recette: capture.recette, incidents: capture.incidents };
+export { migrerAvecAcces, seConnecter, genresAttendus, POURQUOI, scriptRobot };
+
+export async function migrerDepuisPage(page, { envoyer = null, ...o } = {}) {
+  const r = await copier(page, o);
+  if (envoyer) for (const lot of versLots(r.paquet)) for (let i = 0; i < lot.items.length; i += 500) await envoyer({ coll: lot.coll, items: lot.items.slice(i, i + 500) });
+  return r;
 }
 
 // Le gérant est-il connecté ? (plus de champ mot de passe, et la page a du contenu ou un menu)

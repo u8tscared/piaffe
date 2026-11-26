@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
-import { migrerDepuisPage, estConnecte, adresseAutorisee } from './entree.mjs';
+import { migrerDepuisPage, estConnecte, adresseAutorisee, scriptRobot, seConnecter, POURQUOI } from './entree.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -17,16 +17,19 @@ const LARGEUR = 1280, HAUTEUR = 800, INACTIVITE = 20 * 60 * 1000;
 const sessions = new Map();
 let navigateur;
 
-async function nouvelleSession(adresse) {
+async function nouvelleSession(adresse, acces = null) {
   navigateur = navigateur || await chromium.launch();
   const contexte = await navigateur.newContext({ viewport: { width: LARGEUR, height: HAUTEUR }, locale: 'fr-FR', acceptDownloads: false });
+  // Le robot de la page écoute dès le premier écran ce que le logiciel charge (lecture seule, aucun champ secret).
+  await contexte.addInitScript(scriptRobot());
   const page = await contexte.newPage();
   const s = { id: crypto.randomBytes(18).toString('base64url'), contexte, page, phase: 'connexion', etat: {}, clients: new Set(), signal: { arret: false }, vu: Date.now(), capture: null };
   sessions.set(s.id, s);
   page.on('dialog', d => d.dismiss().catch(() => {}));          // aucune boîte de dialogue ne bloque le robot
   await page.goto(adresse, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
   s.adresseDepart = page.url();
-  boucleImages(s); surveillerConnexion(s);
+  boucleImages(s);
+  if (acces) connexionAuto(s, adresse, acces); else surveillerConnexion(s);
   return s;
 }
 
@@ -49,11 +52,27 @@ async function surveillerConnexion(s) {
     if (stable >= 2) return demarrer(s);
   }
 }
-async function demarrer(s) {
+// Identifiants confiés : le robot se connecte seul ; un code de vérification est demandé au gérant dans la page.
+// Les identifiants ne vivent que le temps de la connexion, puis sont oubliés. En cas d'échec, le gérant se connecte lui-même.
+async function connexionAuto(s, adresse, acces) {
+  s.etat = { auto: true, progression: 'Connexion à votre ancien logiciel…' }; diffuser(s, 'etat', { phase: 'connexion', ...s.etat });
+  const demanderCode = () => new Promise(r => {
+    s.attenteCode = r; s.etat = { auto: true, attente: 'code', progression: 'Votre logiciel demande un code de vérification.' }; diffuser(s, 'etat', { phase: 'connexion', ...s.etat });
+    setTimeout(() => { if (s.attenteCode === r) { s.attenteCode = null; r(''); } }, 5 * 60e3);
+  });
+  let c;
+  try { c = await seConnecter(s.page, { adresse, identifiant: acces.identifiant, motDePasse: acces.mot_de_passe, demanderCode }); }
+  catch { c = { ok: false, pourquoi: 'connexion' }; }
+  acces.identifiant = acces.mot_de_passe = ''; s.attenteCode = null;
+  if (c.ok) return demarrer(s, c.hotes);
+  s.etat = { auto: false, message: POURQUOI[c.pourquoi] + ' Connectez-vous vous-même dans l’écran ci-dessous.' }; diffuser(s, 'etat', { phase: 'connexion', ...s.etat });
+  surveillerConnexion(s);
+}
+async function demarrer(s, hotes = []) {
   if (s.phase !== 'connexion') return;
   s.phase = 'copie'; diffuser(s, 'etat', { phase: 'copie' });
   try {
-    const r = await migrerDepuisPage(s.page, { signal: s.signal, surEtat: e => { s.etat = e; diffuser(s, 'etat', { phase: 'copie', ...e }); } });
+    const r = await migrerDepuisPage(s.page, { hotes, signal: s.signal, surEtat: e => { s.etat = e; diffuser(s, 'etat', { phase: 'copie', ...e }); } });
     s.capture = r.capture; s.phase = 'termine';
     diffuser(s, 'etat', { phase: 'termine', controle: r.paquet.controle });
   } catch (err) { s.phase = 'erreur'; diffuser(s, 'etat', { phase: 'erreur', message: String(err.message || err) }); }
@@ -85,9 +104,11 @@ http.createServer(async (req, res) => {
     if (!m) return json(res, 404, { error: { code: 'introuvable' } });
     const [, id, action] = m;
     if (!id && req.method === 'POST') {
-      const { adresse } = await corps(req);
+      const { adresse, acces, consentement } = await corps(req);
       if (!adresseAutorisee(adresse, { local: LOCAL })) return json(res, 400, { error: { code: 'adresse', message: 'Adresse refusée : indiquez l’adresse https de votre logiciel.' } });
-      const s = await nouvelleSession(adresse);
+      const a = acces && typeof acces.identifiant === 'string' && typeof acces.mot_de_passe === 'string' && acces.identifiant && acces.mot_de_passe ? { identifiant: acces.identifiant.slice(0, 200), mot_de_passe: acces.mot_de_passe.slice(0, 200) } : null;
+      if (a && consentement !== true) return json(res, 400, { error: { code: 'consentement', message: 'Cochez la case qui autorise Stabl à se connecter à votre logiciel.' } });
+      const s = await nouvelleSession(adresse, a);
       return json(res, 201, { id: s.id, largeur: LARGEUR, hauteur: HAUTEUR });
     }
     const s = sessions.get(id); if (!s) return json(res, 404, { error: { code: 'session', message: 'Session terminée.' } });
@@ -99,6 +120,12 @@ http.createServer(async (req, res) => {
     }
     if (action === 'entree' && req.method === 'POST') { await entree(s, await corps(req)); return json(res, 200, { ok: true }); }
     if (action === 'demarrer' && req.method === 'POST') { demarrer(s); return json(res, 202, { ok: true }); }
+    if (action === 'code' && req.method === 'POST') {
+      const { code } = await corps(req); const r = s.attenteCode;
+      if (!r) return json(res, 409, { error: { code: 'pas_de_code', message: 'Aucun code n’est demandé pour l’instant.' } });
+      s.attenteCode = null; r(String(code || '').slice(0, 12)); s.etat = { auto: true, progression: 'Code envoyé, connexion…' }; diffuser(s, 'etat', { phase: 'connexion', ...s.etat });
+      return json(res, 200, { ok: true });
+    }
     if (action === 'capture') { if (!s.capture) return json(res, 409, { error: { code: 'pas_fini' } }); const c = s.capture; fermer(s); return json(res, 200, c); }
     if (!action && req.method === 'DELETE') { fermer(s); return json(res, 200, { ok: true }); }
     json(res, 404, { error: { code: 'introuvable' } });

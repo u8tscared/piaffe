@@ -9,8 +9,9 @@ const sig = t => t.entetes.map(h => String(h).toLowerCase().trim()).join('|');
 const cheminDe = url => { const u = new URL(url); for (const k of [...u.searchParams.keys()]) if (/^(page|p|offset|start|debut)$/i.test(k)) u.searchParams.delete(k); return u.pathname + (u.search || ''); };
 
 export class Explorateur {
-  constructor(page, { pause = 700, maxPages = 150, maxFiches = 3000, fiches = true, signal = { arret: false }, surEtat = () => {} } = {}) {
-    Object.assign(this, { page, pause, maxPages, maxFiches, fiches, signal, surEtat });
+  constructor(page, { pause = 700, maxPages = 150, maxFiches = 3000, fiches = true, signal = { arret: false }, surEtat = () => {}, surPage = null, permis = null } = {}) {
+    // surPage(url) : appelé après la lecture de chaque écran (robot de la page) ; permis(url) : garde-fou des adresses.
+    Object.assign(this, { page, pause, maxPages, maxFiches, fiches, signal, surEtat, surPage, permis });
     this.tables = []; this.fiches_ = []; this.etapes = []; this.incidents = []; this.journal = []; this.pages = 0;
   }
   noter(m) { this.journal.push(m); this.journal = this.journal.slice(-40); this.surEtat(this.etat()); }
@@ -70,16 +71,17 @@ export class Explorateur {
     while (file.length && this.pages < this.maxPages && !this.signal.arret) {
       const url = file.shift();
       const cle = cheminDe(url);
-      if (vues.has(cle) || !url.startsWith(origine)) continue;
+      if (vues.has(cle) || !url.startsWith(origine) || (this.permis && !this.permis(url))) continue;
       vues.add(cle); this.pages++;
       this.surEtat(this.etat(`Lecture de ${new URL(url).pathname}`));
       if (this.page.url() !== url) await this.aller(url);
       const r = await this.copierListe(new URL(url).pathname + ' · ');
       if (r.connexion) { this.noter('Le logiciel a fermé la session : reconnectez-vous, la copie reprendra.'); return { deconnecte: true }; }
+      if (this.surPage) await this.surPage(url);
       for (const l of r.page.liens || []) if (!vues.has(cheminDe(l.href))) file.push(l.href);
       if (this.fiches) for (const liste of r.details) for (const [k, d] of liste.slice(0, this.maxFiches).entries()) {
         if (this.signal.arret) break;
-        if (vues.has(cheminDe(d))) continue; vues.add(cheminDe(d));
+        if (vues.has(cheminDe(d)) || (this.permis && !this.permis(d))) continue; vues.add(cheminDe(d));
         this.surEtat(this.etat(`Fiches détaillées : ${k + 1}/${liste.length}`));
         await this.aller(d);
         this.rangerFiches(await this.lire());
@@ -97,6 +99,7 @@ export class Explorateur {
       const p = await this.lire();
       if (!p.tables.some(t => sig(t) === s.signature)) this.incidents.push({ origine: recette.origine, etape: s.chemin, attendu: s.signature, trouve: p.tables.map(sig), le: new Date().toISOString() });
       await this.copierListe((s.titre || s.chemin) + ' · ');
+      if (this.surPage) await this.surPage(recette.origine + s.chemin);
     }
   }
 
