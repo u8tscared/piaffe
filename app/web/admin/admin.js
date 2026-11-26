@@ -472,7 +472,7 @@
   function importForm() {
     var h = drawerHead('Importer des centres', 'Fichier CSV avec une ligne d’en-tête : nom, ville, e-mail, source (téléphone et notes en option).');
     h += '<div class="body"><label class="f">Fichier CSV<input type="file" id="csvf" accept=".csv,text/csv,text/plain"></label>' +
-      '<label class="f">ou collez le contenu<textarea id="csvt" style="min-height:140px" placeholder="nom;ville;email;source&#10;Écurie des Saules;Lyon;contact@ecurie-des-saules.fr;Annuaire FFE"></textarea></label>' +
+      '<label class="f">ou collez le contenu<textarea id="csvt" style="min-height:140px" placeholder="nom;ville;email;source&#10;Écurie des Saules;Lyon;contact@ecurie-des-saules.exemple;Annuaire FFE"></textarea></label>' +
       '<label class="f">Origine des adresses (si le fichier n’a pas de colonne « source »)<input type="text" id="csvs" placeholder="Annuaire FFE 2026"></label>' +
       '<div class="actions"><button class="btn pri" id="csvgo">Vérifier le fichier</button></div><div id="csvres"></div></div>';
     openDrawer(h);
