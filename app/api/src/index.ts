@@ -3,6 +3,7 @@ import { secureHeaders } from "hono/secure-headers";
 import type { AppEnv, Env } from "./env";
 import { errorHandler } from "./lib/http";
 import { loadAuth } from "./lib/auth";
+import { csrf } from "./auth/csrf";
 import * as R from "./routes-registry";
 import { cron as authCron } from "./auth/routes";
 import { cron as recordsCron } from "./records/routes";
@@ -26,6 +27,12 @@ const app = new Hono<AppEnv>();
 app.onError(errorHandler);
 app.use("*", secureHeaders({ crossOriginResourcePolicy: false }));
 app.use("*", loadAuth);
+/* Protection CSRF sur toute l'API et l'authentification (chaque lot la pose aussi sur ses routes, mais
+   plusieurs routes de paiement et de facturation l'avaient oubliée). Exceptions : la désinscription en un clic
+   (RFC 8058, envoyée par le client de messagerie sans en-tête Origin), protégée par son jeton signé. */
+const CSRF_EXEMPT = /^\/api\/mail\/unsubscribe$/;
+app.use("/api/*", async (c, next) => (CSRF_EXEMPT.test(c.req.path) ? next() : csrf(c, next)));
+app.use("/auth/*", csrf);
 
 app.get("/api/health", (c) => c.json({ ok: true, service: "piaffe", time: new Date().toISOString() }));
 
