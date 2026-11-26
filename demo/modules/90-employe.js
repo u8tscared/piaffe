@@ -857,7 +857,7 @@ P.mod({id:'emp-soins',role:'employe',group:'Écurie',title:'Soins du jour',icon:
   on(el,'[data-tab]',function(b){if(tab===b.getAttribute('data-tab'))return;tab=b.getAttribute('data-tab');first=true;draw();swBody(el)});
   on(el,'[data-care]',function(b){careSheet(D.empCare.find(function(c){return c.id===b.getAttribute('data-care')}),draw)});
   on(el,'[data-later]',function(b){var c=D.empCare.find(function(q){return q.id===b.getAttribute('data-later')}),old=c.t,ol=c.late;c.t='14:00';c.late=false;draw();say('Soin reporté à 14 h, Claire est prévenue',{icon:'clock',undo:function(){c.t=old;c.late=ol;if(el.isConnected)draw()}})});
-  on(el,'[data-pdf]',function(){P.toast('Registre sanitaire du 4e trimestre exporté en PDF',{icon:'download'})});
+  on(el,'[data-pdf]',function(){if(!P.xpdf){P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'});return}P.xpdf('registre-sanitaire-T4-2026.pdf',{titre:'Registre sanitaire · 4e trimestre 2026',sous:D.club.name+' · détenteur d’équidés',tableau:{cols:['N°','Date','Cheval','Acte','Par'],rows:D.empRegister.map(function(r){var h=D.horse(r.horse);return [r.n,r.d,h?h.name:'',r.what,D.name(r.by)]})},texte:['Registre tenu conformément à l’arrêté du 5 juin 2000. Conservation : 5 ans.']});P.toast('Registre sanitaire téléchargé',{icon:'download'})});
   online(el,draw);draw()}});
 
 /* =====================================================================
@@ -1089,7 +1089,7 @@ function paySheet(d){var p=d.pay,s=P.sheet({title:d.t,icon:'doc',body:p?'<div cl
    '<div class="note">'+ICON('lock','sm')+'<span>Vos bulletins sont gardés 50 ans dans votre coffre personnel. Vous y gardez accès même après votre départ de l’écurie.</span></div></div>':
    '<div class="stack" style="--g:14px"><div class="card flat" style="padding:16px"><div class="hrow">'+ico('doc','lg')+'<div><b>'+d.t+'</b><div class="s mut">'+d.s+'</div></div></div></div><div class="note">'+ICON('shield','sm')+'<span>Document signé et archivé par l’Écurie des Tilleuls. Seuls vous et Claire pouvez le consulter.</span></div></div>',
    foot:(p?'<button class="btn em-b" data-err>Signaler une erreur</button>':'')+'<button class="btn em-b pri" style="flex:1" data-dl>'+ICON('download')+'Télécharger le PDF</button>'});
-  s.querySelector('[data-dl]').onclick=function(){s.close();P.toast(d.t+' téléchargé',{icon:'download'})};var er=s.querySelector('[data-err]');if(er)er.onclick=function(){s.close();P.toast('Claire est prévenue, elle revient vers vous',{icon:'send'})}}
+  s.querySelector('[data-dl]').onclick=function(){s.close();if(!P.xpdf){P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'});return}P.xpdf(P.xname(d.t)+'.pdf',{titre:d.t,sous:'Antoine Leroy · '+D.club.name,lignes:p?[['Salarié','Antoine Leroy, palefrenier soigneur'],['Convention','Centres équestres, coefficient 121'],['Heures payées',p.h],['Heures supplémentaires',p.sup],['Salaire brut',p.brut],['Net avant impôt',p.net]]:[['Document',d.s||'']],texte:['Document archivé par '+D.club.name+'.']});P.toast(d.t+' téléchargé',{icon:'download'})};var er=s.querySelector('[data-err]');if(er)er.onclick=function(){s.close();P.toast('Claire est prévenue, elle revient vers vous',{icon:'send'})}}
 
 P.mod({id:'emp-conges',role:'employe',group:'Moi',title:'Congés et documents',icon:'holiday',n:30,phoneTitle:'Congés',
  render:function(el,ctx){var first=true;
