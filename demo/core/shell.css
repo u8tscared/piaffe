@@ -449,3 +449,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .side .nv:has(.bdg) .lb{font-size:14.5px}
 .side .nv{gap:10px}
 .side .acc-g .nv{gap:8px;padding-right:6px}
+/* cibles tactiles : petits boutons, onglets segmentés et étiquettes cliquables gardent leur dessin mais reçoivent une zone de 44 px (téléphone, tablette tactile) */
+:where(.app.mobile, .app.rail) :where(.btn.sm, .seg>button, button.tag, a.tag){position:relative}
+:where(.app.mobile, .app.rail) :where(.btn.sm, .seg>button, button.tag, a.tag)::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}
+@media (pointer:coarse){:where(.btn.sm, .seg>button, button.tag, a.tag){position:relative}:where(.btn.sm, .seg>button, button.tag, a.tag)::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}}
