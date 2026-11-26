@@ -20,12 +20,14 @@ import { cron as robotCron } from "./robot/routes";
  *   /api/*       API JSON de l'application (session) et API publique /api/v1 (clés pk_live_)
  *   /ics/*       flux de calendrier ICS à jeton                                 (lot ics)
  *   /webhooks/*  Stripe, plateforme de facturation, fournisseur d'e-mail
+ *   /admin/*     espace admin de l'équipe Stabl                                  (src/admin)
  *   le reste     application web statique (../web/dist)
  */
 const app = new Hono<AppEnv>();
 app.onError(errorHandler);
 app.use("*", secureHeaders({ crossOriginResourcePolicy: false }));
 app.use("*", loadAuth);
+app.use("*", R.adminGuard); // vue admin en lecture seule, clubs suspendus, journal des erreurs 5xx (src/admin/guard.ts)
 
 app.get("/api/health", (c) => c.json({ ok: true, service: "piaffe", time: new Date().toISOString() }));
 
@@ -38,6 +40,7 @@ app.route("/", R.icsRoutes);
 app.route("/", R.importRoutes);
 app.route("/", R.onboardingRoutes);
 app.route("/", R.robotRoutes);
+app.route("/", R.adminRoutes);
 
 app.all("/api/*", (c) => c.json({ error: { code: "not_found", message: "Route d'API inconnue." } }, 404));
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));

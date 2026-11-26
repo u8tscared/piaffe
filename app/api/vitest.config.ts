@@ -18,6 +18,7 @@ export default defineConfig(async () => {
             STRIPE_CONNECT_WEBHOOK_SECRET: "whsec_test_connect",
             GOOGLE_CLIENT_ID: "google-client-test",
             GOOGLE_CLIENT_SECRET: "google-secret-test",
+            ADMIN_EMAILS: "admin.stabl@exemple.fr, seconde.admin@exemple.fr",
           },
         },
       }),

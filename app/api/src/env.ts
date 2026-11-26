@@ -27,6 +27,8 @@ export interface Env {
   STRIPE_CONNECT_WEBHOOK_SECRET?: string;
   /** Secret des routes /admin/billing/* (24 caractères ou plus). */
   BILLING_ADMIN_SECRET?: string;
+  /** Espace admin : adresses e-mail des admins Stabl, séparées par des virgules (secret, jamais dans le code). */
+  ADMIN_EMAILS?: string;
   /** "automatic" pour Stripe Tax, sinon absent. */
   STRIPE_TAX?: string;
   /** Browser Rendering (robot de migration, lot F). */
