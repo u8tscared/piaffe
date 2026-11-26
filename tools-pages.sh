@@ -15,5 +15,6 @@ cp brand/stabl/web/manifest-site.webmanifest _pages/manifest.webmanifest && cp b
 cp -r site/shots _pages/shots && rm -rf _pages/shots/_png
 node migration/tools/construire.mjs >/dev/null && mkdir -p _pages/passerelle && cp migration/dist/passerelle.html _pages/passerelle/index.html
 touch _pages/.nojekyll
+echo "stablapp.fr" > _pages/CNAME
 node site/build.js >/dev/null
 echo "OK _pages"
