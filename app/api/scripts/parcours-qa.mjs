@@ -315,6 +315,19 @@ async function offlineScenario(g, Emp, club) {
   ok(rec(club.id, "lessons")[0].cap === 7, "modification de la reprise arrivée");
   const ind2 = await pe.evaluate(() => (document.querySelector("[data-lv-pill]") || {}).innerText || "");
   ok(/à jour/i.test(ind2), "indicateur « Tout est à jour » (" + ind2.replace(/\s+/g, " ") + ")");
+
+  /* modifications concurrentes : deux appareils hors ligne changent le même objet */
+  await Emp.ctx.setOffline(true); await g.context().setOffline(true); await sleep(200);
+  await g.evaluate(() => { const h = DATA.horses.find((x) => x.name === "Quartz"); h.paddock = "Pré des chênes"; const l = DATA.lessons[0]; l.riders = l.riders.concat(["m_hors_ligne_g"]); P.rerender(); });
+  await pe.evaluate(() => { const h = DATA.horses.find((x) => x.name === "Quartz"); h.box = "B12"; P.rerender(); });
+  await sleep(800);
+  await Emp.ctx.setOffline(false); await pe.evaluate(() => window.dispatchEvent(new Event("online"))); await synced(pe, 20000);
+  await g.context().setOffline(false); await g.evaluate(() => window.dispatchEvent(new Event("online"))); await synced(g, 20000);
+  const q = rec(club.id, "horses").find((h) => h.name === "Quartz");
+  ok(q.box === "B12" && q.paddock === "Pré des chênes", "même cheval modifié sur deux appareils hors ligne : les deux champs sont gardés (box " + q.box + ", paddock " + q.paddock + ")");
+  const L = rec(club.id, "lessons")[0];
+  ok(L.riders.includes("m_hors_ligne_g") && L.riders.length >= 2, "réservations de la reprise conservées (" + L.riders.length + " cavaliers)");
+  ok(await g.evaluate(() => DATA.horses.find((x) => x.name === "Quartz").box === "B12"), "le gérant voit la version fusionnée");
 }
 
 main().catch(async (e) => { console.error("\n✗ ÉCHEC : " + (e && e.stack || e)); if (problems.length) console.error(problems.join("\n")); process.exit(1); });
