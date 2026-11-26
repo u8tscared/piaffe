@@ -5,6 +5,7 @@ import { nowIso } from "../lib/ids";
 import { isColl, isSingleton, ID_RE, MAX_OBJECT_BYTES, SINGLETON_ID } from "./collections";
 import { buildCtx, ctxCollections, PolicyError, prepareWrite, projectRead, type PolicyCtx, type Row } from "./policy";
 import { merge3, type MergeConflict } from "./merge";
+import { creditEffect, loadCreditInfo, planCredit } from "./credits";
 
 export interface Principal { role: Role; personRef: string | null; userId: string | null; actor: string; clubId: string }
 interface RecRow { coll: string; id: string; data: string; version: number; deleted: number; updated_at: string }
@@ -124,6 +125,8 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
   }
   const ctx = await loadCtx(env, p);
   const now = nowIso();
+  // Séances recréditées (cours en direct) : forfait, cartes et crédits déjà donnés des cavaliers concernés
+  const credits = await loadCreditInfo(db, p.clubId, ops);
   const stmts: D1PreparedStatement[] = [];
   const pending: { idx: number; stmt: number; coll: string; id: string; version: number; data: Row | null; previous: Row | null; deleted: boolean; merged?: boolean; conflicts?: MergeConflict[] }[] = [];
   const batchOps = new Set<string>();
@@ -175,7 +178,11 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
       return;
     }
     let final: Row | null;
-    try { final = prepareWrite(ctx, o.coll, live?.data ?? null, next); }
+    let effect: ReturnType<typeof planCredit> = null;
+    try {
+      final = prepareWrite(ctx, o.coll, live?.data ?? null, next);
+      if (o.coll === "lessonCredits") effect = planCredit(credits, o.id, live?.data ?? null, final, now);
+    }
     catch (e) {
       if (e instanceof PolicyError) { results[idx] = errRes(o, e.code, e.message); return; }
       throw e;
@@ -194,6 +201,7 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
       const version = serverVersion + 1;
       pending.push({ idx, stmt: stmts.length - 1, coll: o.coll, id: o.id, version, data: final, previous: live?.data ?? null, deleted: false, merged: !!merged, conflicts });
       if (opId) stmts.push(recordOp(db, p.clubId, opId, o.coll, o.id, now));
+      if (effect) stmts.push(creditEffect(db, p, effect, o.id, version, false, now));
       current.set(key, { data: final, version, deleted: false });
     } else {
       stmts.push(db.prepare("UPDATE records SET deleted = 1, version = version + 1, updated_by = ?, updated_at = ? WHERE club_id = ? AND coll = ? AND id = ? AND version = ?")
@@ -201,6 +209,7 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
       const version = serverVersion + 1;
       pending.push({ idx, stmt: stmts.length - 1, coll: o.coll, id: o.id, version, data: null, previous: live!.data, deleted: true });
       if (opId) stmts.push(recordOp(db, p.clubId, opId, o.coll, o.id, now));
+      if (effect) stmts.push(creditEffect(db, p, effect, o.id, version, true, now));
       current.set(key, { data: live!.data, version, deleted: true });
     }
   });

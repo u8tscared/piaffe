@@ -22,6 +22,10 @@ export const ARRAY_COLLS = [
   "mcpCalls", "mcpClients", "mcpTools", "pensionExtras", "pensionPlans", "pfRights", "pfTarifs", "pfTut", "pharmacy",
   "planExtras", "planHolidays", "planStages", "planVacations", "practitioners", "quotes", "receipts", "recurring",
   "register", "reviews", "sales", "schedules", "shopItems", "signups", "tours", "walkins", "webhookLog", "webhooks",
+  // module Terrain (45-terrain.js) : prés, vente de chevaux, cours en direct
+  "pastures", "pastureMoves", "pastureRules", "horseCues", "horseAds", "horseLeads", "horseTrials", "lessonCalls", "lessonCredits",
+  // module Croissance (55-croissance.js) : aides, avis, parrainage, sondages, réglages par écran (un objet par écran)
+  "aids", "gReviews", "referrals", "surveys", "growthCfg",
 ] as const;
 
 export const SINGLETON_COLLS = [

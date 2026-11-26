@@ -24,6 +24,7 @@ export interface PolicyCtx {
   coRiders: Set<string>;    // adhérent : cavaliers des mêmes reprises que sa famille
   coachIds: Set<string>;    // coach : ses ids (c.. et s.. lié)
   students: Set<string>;    // coach : cavaliers de ses reprises et de coachStudents
+  coachLessons: Set<string>; // coach : ses reprises
 }
 
 export class PolicyError extends Error {
@@ -41,7 +42,7 @@ export function ctxCollections(role: Role): string[] {
 
 export function buildCtx(role: Role, personRef: string | null, rows: Record<string, Row[]>): PolicyCtx {
   const personIds = new Set((personRef || "").split(",").map((s) => s.trim()).filter(Boolean));
-  const ctx: PolicyCtx = { role, personIds, family: new Set(), horses: new Set(), coRiders: new Set(), coachIds: new Set(), students: new Set() };
+  const ctx: PolicyCtx = { role, personIds, family: new Set(), horses: new Set(), coRiders: new Set(), coachIds: new Set(), students: new Set(), coachLessons: new Set() };
   if (role === "member") {
     const members = rows.members || [];
     const fams = new Set(members.filter((m) => personIds.has(m.id) && m.fam).map((m) => m.fam));
@@ -60,7 +61,7 @@ export function buildCtx(role: Role, personRef: string | null, rows: Record<stri
       if (personIds.has(c.id) && c.staff) ctx.coachIds.add(c.staff);
       if (c.staff && personIds.has(c.staff)) ctx.coachIds.add(c.id);
     }
-    for (const l of rows.lessons || []) if (ctx.coachIds.has(l.coach)) for (const r of l.riders || []) ctx.students.add(r);
+    for (const l of rows.lessons || []) if (ctx.coachIds.has(l.coach)) { ctx.coachLessons.add(l.id); for (const r of l.riders || []) ctx.students.add(r); }
     for (const s of rows.coachStudents || []) {
       if (s.coach && !ctx.coachIds.has(s.coach)) continue;
       for (const k of ["member", "rider", "id"]) if (typeof s[k] === "string" && /^m/.test(s[k])) ctx.students.add(s[k]);
@@ -104,13 +105,23 @@ const STAFF_READ = new Set([
   "vans", "carpool", "shifts", "empShifts", "empTasks", "empCare", "empConsignes", "empIncidents", "empPresence", "empRegister",
   "empNights", "empNotes", "empThreads", "empDocs", "empLeaves", "empHugo", "planExtras", "planHolidays", "planStages", "planVacations",
   "tours", "schedules", "forfaits", "halfboard", "club", "facts", "pensionPlans", "pensionExtras", "walkins", "declarations", "notifs",
+  "pastures", "pastureMoves", "pastureRules", "horseCues", "horseAds", "horseTrials", "lessonCalls", "lessonCredits",
 ]);
 /** Collections que l'employé peut modifier. */
 const STAFF_WRITE = new Set([
   "horses", "care", "journal", "journalMore", "tasks", "stock", "equipment", "camEvents", "pharmacy", "boxGuests", "lessons",
   "trackBookings", "empTasks", "empCare", "empConsignes", "empIncidents", "empPresence", "empRegister", "empNotes", "empThreads",
   "empLeaves", "walkins", "tours",
+  "pastureMoves", "lessonCalls", "lessonCredits",
 ]);
+/** Terrain : collections du cours en direct (appel, séances recréditées), écrites par l'équipe et le moniteur de la reprise. */
+const LESSON_LIVE = new Set(["lessonCalls", "lessonCredits"]);
+/** Champs d'un crédit de séance fixés par le serveur (forme du crédit, compteur réellement crédité). */
+export const CREDIT_SERVER_FIELDS = ["kind", "applied", "label"];
+/** Annonce de vente : statuts visibles hors du bureau, et champs internes jamais montrés aux adhérents ni au public. */
+export const AD_PUBLISHED = new Set(["en ligne", "sous option"]);
+export const AD_PUBLIC_FIELDS = ["id", "horse", "price", "status", "since", "health", "results", "vet", "photos", "text", "title"];
+
 /** Champs d'un cheval que seul le gérant change (propriété, statut économique, coût). */
 const HORSE_MANAGER_FIELDS = ["owner", "kind", "costMonth"];
 
@@ -147,6 +158,9 @@ export function projectRead(ctx: PolicyCtx, coll: string, r: Row): Row | null {
     if (coll === "journal" || coll === "journalMore") return r;
     if (coll.startsWith("coach") && !isSingleton(coll)) return r.coach === undefined || ctx.coachIds.has(r.coach) ? r : null;
     if (coll === "coachRules" || coll === "coachDeals") return r;
+    if (coll === "pastures" || coll === "pastureMoves" || coll === "pastureRules" || coll === "horseCues") return r;
+    if (LESSON_LIVE.has(coll)) return ctx.coachLessons.has(r.lesson) || touches(r, ["member"], ctx.students) ? r : null;
+    if (coll === "horseAds") return AD_PUBLISHED.has(String(r.status || "")) ? pick(r, AD_PUBLIC_FIELDS) : null;
     if (coll === "facts" || CLUB_PUBLIC.has(coll)) return r;
     return null;
   }
@@ -183,6 +197,34 @@ export function projectRead(ctx: PolicyCtx, coll: string, r: Row): Row | null {
       return null; // faits de la démo propres au gérant
     case "adhFamily": case "adhResults": case "adhReviews":
       return !hasPersonField(r) || touches(r, PERSON_FIELDS, fam) ? r : null;
+    // Terrain : « au pré n° 3 depuis 8 h 30 » pour ses chevaux seulement
+    case "pastures":
+      return pick(r, ["id", "n", "name", "group"]);
+    case "pastureMoves": case "horseCues":
+      return ctx.horses.has(r.horse) ? r : null;
+    case "horseAds":
+      return AD_PUBLISHED.has(String(r.status || "")) ? pick(r, AD_PUBLIC_FIELDS) : null;
+    case "lessonCredits":
+      return fam.has(r.member) ? omit(r, ["by"]) : null;
+    case "lessonCalls": {
+      // l'appel d'une reprise : seulement ce qui concerne sa famille (présence et mot du moniteur)
+      const mine = (k: string) => (Array.isArray(r[k]) ? r[k].filter((x: string) => fam.has(x)) : []);
+      const present = mine("present"), absent = mine("absent");
+      if (!present.length && !absent.length) return null;
+      const notes: Row = {};
+      for (const id of Object.keys(r.notes || {})) if (fam.has(id)) notes[id] = r.notes[id];
+      return { id: r.id, lesson: r.lesson, date: r.date, done: r.done, present, absent, notes };
+    }
+    // Croissance : ses aides, ses parrainages, ses avis, ses réponses aux sondages
+    case "aids": case "gReviews":
+      return fam.has(r.member) ? r : null;
+    case "referrals":
+      return fam.has(r.by) ? r : null;
+    case "surveys": {
+      const answers = (Array.isArray(r.answers) ? r.answers : []).filter((a: Row) => a && fam.has(a.member));
+      if (!answers.length) return null;
+      return { id: r.id, title: r.title, kind: r.kind, coach: r.coach, date: r.date, questions: r.questions, answers };
+    }
   }
   return CLUB_PUBLIC.has(coll) ? r : null;
 }
@@ -213,11 +255,13 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
     next = protect(next!, prev, INVOICE_LOCKED_FIELDS);
   }
 
+  if (coll === "lessonCredits" && next && (role === "owner" || role === "manager")) return protect(next, prev, CREDIT_SERVER_FIELDS);
   if (role === "owner" || role === "manager") return next;
   if (role === "accountant") throw deny();
 
   if (role === "staff") {
     if (!STAFF_WRITE.has(coll)) throw deny();
+    if (coll === "lessonCredits" && next) return protect(next, prev, CREDIT_SERVER_FIELDS);
     if (coll === "horses") {
       if (del || !prev) throw deny("Seul le gérant ajoute ou retire un cheval.");
       return protect(next!, prev, HORSE_MANAGER_FIELDS);
@@ -244,6 +288,10 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
       if (prev && prev.coach !== undefined && !ctx.coachIds.has(prev.coach)) throw deny();
       if (next && next.coach !== undefined && !ctx.coachIds.has(next.coach)) throw deny();
       return next;
+    }
+    if (LESSON_LIVE.has(coll)) {
+      if ((prev && !ctx.coachLessons.has(prev.lesson)) || (next && !ctx.coachLessons.has(next.lesson))) throw deny("Cette reprise n'est pas la vôtre.");
+      return coll === "lessonCredits" && next ? protect(next, prev, CREDIT_SERVER_FIELDS) : next;
     }
     if (coll === "coaches" && prev && ctx.coachIds.has(prev.id) && !del) {
       return protect(next!, prev, ["id", "ext", "staff", "rating", "reviews", "rate"]);
@@ -291,6 +339,27 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
     case "contracts": {
       if (!prev || del || !touches(prev, ["party", "signers"], fam)) throw deny();
       return signContract(ctx, prev, next!);
+    }
+    case "referrals": {
+      // parrainage : l'adhérent invite un ami ; le statut et la récompense restent au club
+      if (prev && !fam.has(prev.by)) throw deny();
+      if (del) { if (prev && prev.status !== "invite") throw deny("Ce parrainage est déjà en cours : il ne peut plus être retiré."); return null; }
+      if (!fam.has(next!.by)) throw deny("Parrainez au nom d'une personne de votre famille.");
+      return prev ? { ...protect(next!, prev, ["status", "reward", "rewardedAt", "forfait", "by"]) } : { ...omit(next!, ["reward", "rewardedAt"]), status: "invite" };
+    }
+    case "surveys": {
+      // sondage : il ne remplit que la réponse de sa famille, une fois
+      if (!prev || del) throw deny();
+      const before: Row[] = Array.isArray(prev.answers) ? prev.answers : [];
+      const asked: Row[] = Array.isArray(next!.answers) ? next!.answers.filter((a: unknown) => a && typeof a === "object") : [];
+      const answers = before.map((a) => {
+        if (!a || !fam.has(a.member) || !a.pending) return a;
+        const n = asked.find((x) => x.member === a.member);
+        if (!n || n.pending) return a;
+        const g = (v: unknown) => (typeof v === "number" && v >= 1 && v <= 5 ? Math.round(v) : undefined);
+        return { member: a.member, global: g(n.global), coach: g(n.coach), again: !!n.again, text: typeof n.text === "string" ? n.text.slice(0, 2000) : "", at: new Date().toISOString() };
+      });
+      return { ...prev, answers };
     }
     case "entries": case "entriesMore": case "coachBookings": case "boxRequests": case "adhReviews": case "reviews": {
       const f = coll === "boxRequests" || coll === "reviews" || coll === "adhReviews" ? (next?.by !== undefined || prev?.by !== undefined ? "by" : "member") : coll === "coachBookings" ? "member" : "rider";
