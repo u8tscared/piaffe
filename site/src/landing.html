@@ -1,27 +1,27 @@
-<title>Stabl</title>
+<title>Stabl · Logiciel de gestion pour centres équestres et écuries</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Stabl, le logiciel tout-en-un des centres équestres : planning, chevaux et soins, adhérents, facturation, comptabilité, équipe, caméras, concours et Stabl AI.">
+<meta name="description" content="{{description}}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /*__CSS__*/
 </style>
 
 <div class="pg" id="top" data-demo="{{demobase}}">
 
-<a class="annonce" href="#ai"><span class="an-tag">Nouveau</span><span class="an-t">Stabl AI répond avec les chiffres de votre écurie</span>{{i:arrow}}</a>
+<a class="annonce" href="#tarifs"><span class="an-tag">Fondateurs</span><span class="an-t">99 € HT par mois, à vie, pour les 30 premiers clubs</span>{{i:arrow}}</a>
 
 <header class="nav" id="nav">
   <div class="w nav-in">
-    <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{logo:36}}<span>stabl</span></a>
+    <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{marque}}</a>
     <nav class="nav-l" id="navL" aria-label="Sections">
-      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#changer">Changer de logiciel</a><a href="#ai" class="nl-ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
+      <a href="#fonctions">Fonctionnalités</a><a href="#changer">Changer de logiciel</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a><a href="#contact">Contact</a>
     </nav>
     <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre">{{i:moon}}{{i:sun}}</button>
     <a class="btn pri sm nav-cta" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
     <button class="ibtn nav-b" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navL">{{i:menu}}{{i:x}}</button>
   </div>
-  <span class="prog" id="prog" aria-hidden="true"></span>
 </header>
 
 <main>
@@ -31,300 +31,142 @@
   <div class="hero-fond" aria-hidden="true"></div>
   <div class="w hero-g">
     <div class="hero-t">
-      <p class="sur"><span class="sur-dot"></span>Le logiciel des centres équestres et des écuries</p>
+      <p class="sur"><span class="sur-dot"></span>Pour les centres équestres, poney-clubs et écuries</p>
       <h1 id="h-hero">Tout votre centre équestre dans une seule app.</h1>
-      <p class="chapo">Planning, chevaux et soins, adhérents, facturation et comptabilité, équipe, caméras, concours. Et Stabl AI, qui répond avec vos chiffres. Un seul outil pour le gérant, l’équipe, les cavaliers et les coachs.</p>
+      <p class="chapo">Planning, chevaux, adhérents, facturation et équipe : Stabl réunit tout, pour le gérant, les salariés, les cavaliers et les coachs.</p>
+      <div class="prix-l">
+        <p><b>Dès 59 € HT</b> par mois</p>
+        <p class="pl-s">{{i:check}}30 jours d’essai gratuit, sans carte bancaire, sans engagement</p>
+      </div>
       <div class="hero-cta">
-        <a class="btn pri lg mag" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-        <a class="btn sec lg" href="#fonctions">Voir les fonctionnalités</a>
+        <a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+        <a class="btn sec lg" href="#contact">{{i:phone}}Être rappelé</a>
       </div>
-      <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
-      <ul class="confiance">
-        <li>{{i:check}}30 jours d’essai, sans carte</li><li>{{i:check}}Sans engagement</li><li>{{i:check}}Reprise de vos données incluse</li><li>{{i:check}}Hébergé en France</li>
-      </ul>
+      <p class="legende">La démo s’ouvre sur une écurie déjà remplie. Rien n’est enregistré.</p>
     </div>
-    <div class="hz3" id="hz3" aria-hidden="true"><div class="hz3-halo"></div><canvas></canvas><div class="hz3-fb"></div></div>
-  </div>
 
-  <div class="w">
-    <div class="rig" id="rig">
-      <div class="rig-in">
-        <figure class="mb">
-          <div class="mb-lid"><div class="mb-scr"><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900">
-            <img class="only-l" src="shots/g-cockpit.webp" width="2160" height="1350" alt="Tableau de bord du gérant sur ordinateur : résumé du matin, cavaliers en selle, remplissage, factures à encaisser" fetchpriority="high">
-            <img class="only-d" src="shots/g-cockpit-dark.webp" width="2160" height="1350" alt="" loading="lazy">
-          </div></div></div>
-          <div class="mb-base"></div>
-        </figure>
-        <div data-ip="p-adh-accueil" data-duo="1" data-vite="1" data-alt="Espace adhérent sur téléphone : le cours de Léa dans 25 minutes"></div>
-      </div>
+    <div class="scene" id="scene" aria-hidden="true">
+      <figure class="mb">
+        <div class="mb-lid"><div class="mb-scr"><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900">
+          <img class="only-l" src="shots/g-cockpit.webp" width="2160" height="1350" alt="" fetchpriority="high">
+          <img class="only-d" src="shots/g-cockpit-dark.webp" width="2160" height="1350" alt="" loading="lazy">
+        </div></div></div>
+        <div class="mb-base"></div>
+      </figure>
+      <div data-ip="p-adh-accueil" data-duo="1" data-vite="1" data-k="sc-ip"></div>
+      <div class="vif v1 d-mo"><span class="vf-i">{{i:send}}</span><div><b><span data-c="7">7</span> relances prêtes</b><small><span data-c="2073" data-u=" €">2 073 €</span> à encaisser</small></div></div>
+      <div class="vif v2 d-cr"><span class="vf-i pouls">{{i:drop}}</span><div><b>Xanthos, box B23</b><small>Boit 40 % de moins depuis hier</small></div></div>
     </div>
-    <div class="vifs" id="vifs">
-      <div class="flot d-mo" style="--i:0"><span class="fl-i">{{i:send}}</span><div><b>7 relances prêtes</b><small>2 073 € à encaisser</small></div></div>
-      <div class="flot d-cr" style="--i:1"><span class="fl-i">{{i:drop}}</span><div><b>Xanthos, box B23</b><small>Boit 40 % de moins depuis hier soir</small></div></div>
-      <div class="flot d-rd" style="--i:2"><span class="fl-ring" style="--v:86"><b>86</b></span><div><b>Planning de la semaine</b><small>Rempli à 86 %</small></div></div>
-    </div>
-    <p class="col-note">Écrans réels de Stabl, avec les données d’exemple de l’Écurie des Tilleuls.</p>
   </div>
 </section>
 
-<!-- ================= BANDE ================= -->
-<section class="sec bande" id="apercu" aria-labelledby="h-bande">
+<!-- ================= GAINS ================= -->
+<section class="gains" aria-label="Ce que vous gagnez">
   <div class="w">
-    <div class="tete c" data-r>
-      <h2 id="h-bande">Du box à la facture, <span class="hl">tout est au même endroit.</span></h2>
-      <p>Sept familles de fonctions, rangées par métier. Elles partagent les mêmes données : vous ne saisissez rien deux fois.</p>
+    <ul class="gn" id="gains">
+      <li data-r style="--i:0"><b>1 geste</b><span>pour préparer les 69 factures du mois, pensions et forfaits compris</span></li>
+      <li data-r style="--i:1"><b>1 clic</b><span>pour envoyer 7 relances, avec le lien de paiement dans le message</span></li>
+      <li data-r style="--i:2"><b>1 après‑midi</b><span>pour reprendre vos cavaliers, vos chevaux et vos factures</span></li>
+      <li data-r style="--i:3"><b>0 €</b><span>de frais d’entrée, de reprise ou de résiliation</span></li>
+    </ul>
+    <p class="gn-note">Exemples tirés de l’Écurie des Tilleuls, l’écurie de la démo : 44 chevaux, 148 adhérents.</p>
+  </div>
+</section>
+
+<!-- ================= FONCTIONNALITÉS ================= -->
+<section class="sec" id="fonctions" aria-labelledby="h-fonc">
+  <div class="w">
+    <div class="tete" data-r>
+      <p class="sur2">Fonctionnalités</p>
+      <h2 id="h-fonc">Du box à la facture, <span class="hl">tout est au même endroit.</span></h2>
+      <p>Chaque module partage les mêmes données : vous ne saisissez rien deux fois. Les écrans ci-dessous sont ceux de la démo.</p>
     </div>
-    <div class="bento" id="bento"></div>
+    <div class="ong" id="ong" data-r></div>
+    <ul class="aussi" data-r id="aussi"></ul>
   </div>
 </section>
 
 <!-- ================= QUATRE ESPACES ================= -->
-<section class="sec espaces" id="espaces" aria-labelledby="h-esp">
+<section class="sec sec-alt" id="espaces" aria-labelledby="h-esp">
   <div class="w">
-    <div class="tete c" data-r>
+    <div class="tete" data-r>
       <p class="sur2">Quatre espaces</p>
       <h2 id="h-esp">Chacun son espace, <span class="hl">les mêmes données.</span></h2>
-      <p>Le gérant pilote, l’équipe fait sa journée, les cavaliers réservent et paient, les coachs remplissent leur agenda. Chacun ouvre Stabl et n’y voit que ce qui le concerne.</p>
+      <p>Chacun ouvre Stabl sur son ordinateur ou son téléphone, et n’y voit que ce qui le concerne.</p>
     </div>
-  </div>
-  <div class="pin" id="pin">
-    <div class="pin-st">
-      <div class="w pin-in" id="esp"></div>
-    </div>
+    <div class="esp" id="esp"></div>
   </div>
 </section>
 
-<!-- ================= TOUR DES MODULES ================= -->
-<section class="sec tour" id="fonctions" aria-labelledby="h-tour">
+<!-- ================= STABL AI ================= -->
+<section class="sec" id="ai" aria-labelledby="h-ai">
   <div class="w">
-    <div class="tete c" data-r>
-      <p class="sur2">Fonctionnalités</p>
-      <h2 id="h-tour">Ce que fait Stabl, <span class="hl">métier par métier.</span></h2>
-      <p>Huit familles de fonctions qui se parlent. Chaque fenêtre est un écran réel de la démo : ouvrez-la pour y toucher.</p>
-    </div>
-  </div>
-  <nav class="ancres" id="ancres" aria-label="Familles de fonctions"><div class="w"><div class="anc-in" id="ancIn"></div></div></nav>
-  <div class="w mods" id="mods"></div>
-</section>
-
-<!-- ================= PIAFFE AI ================= -->
-<section class="ai" id="ai" aria-labelledby="h-ai">
-  <div class="ai-fond" aria-hidden="true"></div>
-  <div class="w ai-in">
-
-    <div class="ai-tete" data-r>
-      <div class="orb" aria-hidden="true"><i></i><i></i><i></i><span class="orb-c">{{logo:34}}</span></div>
-      <p class="ai-sur">{{i:spark}}Stabl AI</p>
-      <h2 id="h-ai">Posez la question. Stabl AI répond avec les chiffres de votre écurie.</h2>
-      <p>Il lit vos factures, votre planning, vos chevaux et votre équipe. Il répond avec les vrais chiffres, repère ce qui cloche et prépare l’action. Rien ne part sans votre validation.</p>
-    </div>
-
-    <div class="ai-demo" data-r>
-      <div class="ai-qs">
-        <p class="ai-qs-t">Essayez une question</p>
-        <div class="ai-qs-l" id="aiQs" role="group" aria-label="Exemples de questions"></div>
+    <div class="ai-c" data-r>
+      <div class="ai-t">
+        <p class="ai-sur">{{i:spark}}Stabl AI</p>
+        <h2 id="h-ai">Posez la question.<br>Il répond avec vos chiffres.</h2>
+        <p>Stabl AI lit vos factures, votre planning et vos chevaux, puis prépare l’action. Rien ne part sans votre accord.</p>
+        <div class="ai-qs" id="aiQs" role="group" aria-label="Exemples de questions"></div>
         <ul class="ai-pts">
-          <li>{{i:eye}}<span><b>Vos chiffres, en une question.</b> Pas un texte générique : vos factures, vos chevaux, vos reprises.</span></li>
-          <li>{{i:checkc}}<span><b>Il propose, vous validez.</b> Chaque action est montrée avant d’être faite, puis notée au journal.</span></li>
-          <li>{{i:plug}}<span><b>Aussi dans Claude et ChatGPT.</b> Votre écurie répond dans l’assistant que vous utilisez déjà.</span></li>
+          <li>{{i:eye}}<span><b>Lecture seule par défaut.</b> Écrire demande votre validation.</span></li>
+          <li>{{i:list}}<span><b>Tout est noté au journal</b> et s’annule en un geste.</span></li>
+          <li>{{i:plug}}<span><b>Aussi dans Claude et ChatGPT</b>, avec vos droits, pas plus.</span></li>
         </ul>
       </div>
       <div class="chat" id="chat">
-        <div class="chat-h"><span class="chat-logo">{{logo:22}}</span><div><b>Stabl AI</b><small>Il agit dans Les Tilleuls avec vos droits de gérante</small></div><span class="chat-tag">Démo interactive</span></div>
+        <div class="chat-h"><span class="chat-logo">{{logo:24}}</span><div><b>Stabl AI</b><small>Écurie des Tilleuls, droits de gérante</small></div><span class="chat-tag">Démo interactive</span></div>
         <div class="chat-fil" id="chatFil" aria-live="polite"></div>
-        <form class="chat-f" id="chatF" autocomplete="off"><input id="chatIn" type="text" aria-label="Votre question à Stabl AI" placeholder="Demandez n’importe quoi…"><button type="submit" aria-label="Envoyer">{{i:send}}</button></form>
+        <form class="chat-f" id="chatF" autocomplete="off"><input id="chatIn" type="text" aria-label="Votre question à Stabl AI" placeholder="Posez votre question…"><button type="submit" aria-label="Envoyer">{{i:send}}</button></form>
       </div>
     </div>
-
-    <figure class="ai-shot" data-r>
-      <div class="nav-frame">
-        <div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.stablapp.fr/les-tilleuls</span></div>
-        <div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900;--mx:960;--my:215;--mw:480;--mh:640">
-          <img class="only-l" src="shots/g-ai-relances.webp" width="2160" height="1350" loading="lazy" alt="Stabl AI ouvert sur le tableau de bord : la liste des impayés et le bouton Préparer les 7 relances">
-          <img class="only-d" src="shots/g-ai-dark.webp" width="2160" height="1350" loading="lazy" alt="">
-        </div>
-      </div>
-      <figcaption>Capture réelle de la démo : Stabl AI s’ouvre par-dessus n’importe quel écran, ici le tableau de bord.</figcaption>
-    </figure>
-
-    <div class="ai-caps">
-      <div class="ai-st" data-r><h3>Tout ce que Stabl AI fait pour vous</h3><p>Six usages, du plus simple au plus puissant.</p></div>
-      <div class="caps" id="caps"></div>
-    </div>
-
-    <div class="ai-bloc" data-r>
-      <div class="ab-t">
-        <p class="ai-num">05 · Le point chaque matin</p>
-        <h3>Votre journée, résumée avant le premier café.</h3>
-        <p>À l’ouverture, Stabl AI a déjà lu la nuit : les caméras, les abreuvoirs, la météo, les paiements. Il vous dit ce qui demande une décision aujourd’hui, et rien de plus.</p>
-        <a class="btn blanc" {{demo:cockpit}}>Voir le point du matin{{i:arrow}}</a>
-      </div>
-      <div class="matin" id="matin"></div>
-    </div>
-
-    <div class="ai-bloc inv" data-r>
-      <div class="ab-t">
-        <p class="ai-num">06 · Votre écurie dans votre IA</p>
-        <h3>Parlez à votre écurie, dans Claude et ChatGPT.</h3>
-        <p>Collez une adresse dans l’assistant de votre choix. Il interroge alors vos chevaux, vos reprises et vos factures avec vos droits, et vous demande votre accord avant d’écrire quoi que ce soit.</p>
-        <div class="mcp-adr"><code id="mcpUrl">https://mcp.stablapp.fr/mcp</code><button type="button" id="mcpCopy" class="btn blanc sm">{{i:copy}}<span>Copier</span></button></div>
-        <div class="ias" aria-label="Assistants compatibles"><span>Claude</span><span>ChatGPT</span><span>Le Chat</span><span>Tout assistant compatible MCP</span></div>
-      </div>
-      <div class="claude" aria-label="Exemple de conversation dans Claude">
-        <div class="cl-h"><span class="cl-n">Claude</span><span class="cl-ok"><i></i>Stabl relié</span></div>
-        <div class="cl-fil">
-          <div class="cl-moi">Qui n’a pas payé sa pension ou son forfait de novembre ?</div>
-          <div class="cl-outil">{{i:check}}<span>A lu <b>factures</b> et <b>adhérents</b></span><em>Stabl</em></div>
-          <div class="cl-ia">
-            <p><b>7 familles vous doivent 2 073 €</b>, sur 7 factures en retard. La plus ancienne a 57 jours.</p>
-            <table><tbody><tr><td>Chloé Roux</td><td>26 j</td><td>640 €</td></tr><tr><td>Léa Martin</td><td>2 j</td><td>520 €</td></tr><tr><td>Juliette Bertrand</td><td>27 j</td><td>390 €</td></tr><tr><td>4 autres familles</td><td></td><td>523 €</td></tr></tbody></table>
-            <p>Voulez-vous que je prépare les 7 relances ? Vous les validerez dans Stabl.</p>
-          </div>
-        </div>
-        <p class="cl-note">Exemple, avec les chiffres de la démo.</p>
-      </div>
-    </div>
-
-    <div class="garanties" data-r>
-      <h3>Vous gardez la main, toujours.</h3>
-      <ul>
-        <li><span>{{i:eye}}</span><b>Lecture seule par défaut</b><small>Il lit pour répondre. Écrire demande votre accord.</small></li>
-        <li><span>{{i:checkc}}</span><b>Aperçu avant toute action</b><small>Qui, quoi, combien : vous voyez tout avant d’envoyer.</small></li>
-        <li><span>{{i:shield}}</span><b>Vos droits, pas plus</b><small>Il agit au nom d’une personne et hérite de son rôle.</small></li>
-        <li><span>{{i:list}}</span><b>Journal et annulation</b><small>Chaque action est notée, et se défait en un geste.</small></li>
-        <li><span>{{i:lock}}</span><b>Coupure en un geste</b><small>Un assistant relié se débranche d’un bouton.</small></li>
-      </ul>
-      <a class="btn blanc lg mag" {{demo:assistant}}>Essayer Stabl AI dans la démo{{i:arrow}}</a>
-    </div>
-
-  </div>
-</section>
-
-<!-- ================= MULTI-APPAREILS ================= -->
-<section class="sec multi" id="appareils" aria-labelledby="h-multi">
-  <div class="w">
-    <div class="tete c" data-r>
-      <p class="sur2">Partout avec vous</p>
-      <h2 id="h-multi">Le téléphone à l’écurie, <span class="hl">l’ordinateur au bureau.</span></h2>
-      <p>Stabl s’adapte à l’écran et à la main qui le tient. De gros boutons pour la tournée, des tableaux complets pour la comptabilité.</p>
-    </div>
-    <div class="lineup" id="lineup">
-      <figure class="mb">
-        <div class="mb-lid"><div class="mb-scr"><div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:900"><img src="shots/g-planning-piste.webp" width="2160" height="1350" loading="lazy" alt="Planning par piste sur ordinateur"></div></div></div>
-        <div class="mb-base"></div>
-        <figcaption>Au bureau : le planning par piste</figcaption>
-      </figure>
-      <figure class="tab">
-        <div class="tab-c"><div class="crop" style="--iw:1180;--dx:0;--dy:0;--dw:1180;--dh:820"><img src="shots/e-tournee-tab.webp" width="1770" height="1230" loading="lazy" alt="Tournée des boxes sur tablette"></div></div>
-        <figcaption>À la sellerie : la tournée</figcaption>
-      </figure>
-      <div data-ip="p-emp-soins" data-alt="Soins du jour sur téléphone" data-cap="Au box : les soins"></div>
-    </div>
-    <ul class="pts" data-r>
-      <li><span class="pt-i d-tm">{{i:wifi}}</span><div><b>Sans réseau, ça continue</b><small>Tournée, soins, pointage et appel fonctionnent hors ligne, puis se synchronisent.</small></div></li>
-      <li><span class="pt-i d-hz">{{i:phone}}</span><div><b>Rien à installer, ou presque</b><small>Un lien suffit. L’application s’ajoute à l’écran d’accueil en un geste.</small></div></li>
-      <li><span class="pt-i d-rd">{{i:refresh}}</span><div><b>Une seule vérité</b><small>Ce qui est coché au box apparaît aussitôt au bureau et chez le propriétaire.</small></div></li>
-    </ul>
-  </div>
-</section>
-
-<!-- ================= DÉMO ================= -->
-<section class="sec demo" id="demo" aria-labelledby="h-demo">
-  <div class="w">
-    <div class="demo-c" data-r>
-      <div class="demo-t">
-        <p class="sur2">La démo</p>
-        <h2 id="h-demo">Essayez, <span class="hl">tout est déjà rempli.</span></h2>
-        <p>L’Écurie des Tilleuls vous attend : 44 chevaux, 148 adhérents, une semaine de planning et des factures en cours. Cliquez partout, rien n’est enregistré.</p>
-        <a class="btn pri lg mag" {{demo:cockpit}}>Ouvrir la démo{{i:arrow}}</a>
-      </div>
-      <div class="demo-l" id="demoL"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CONNECTEURS ================= -->
-<section class="sec conn" id="connecteurs" aria-labelledby="h-conn">
-  <div class="w">
-    <div class="tete c" data-r>
-      <p class="sur2">Connecteurs</p>
-      <h2 id="h-conn">Stabl parle <span class="hl">à vos outils.</span></h2>
-      <p>Banque, comptable, paiement, paie, FFE, SIRE, caméras : 72 connecteurs au catalogue, une API publique et des webhooks pour le reste.</p>
-    </div>
-    <div class="conn-g" id="connG"></div>
-    <p class="c mt" data-r><a class="lien" {{demo:connecteurs}}>Voir les 72 connecteurs dans la démo{{i:arrow}}</a></p>
   </div>
 </section>
 
 <!-- ================= CHANGER DE LOGICIEL ================= -->
-<section class="mig" id="changer" aria-labelledby="h-mig">
+<section class="sec sec-alt" id="changer" aria-labelledby="h-mig">
   <div class="w">
-    <div class="mig-tete" data-r>
-      <p class="sur2 mig-sur">{{i:robot}}Changer de logiciel</p>
-      <h2 id="h-mig">Vos données passent à Stabl <span>toutes seules.</span></h2>
-      <p>Nos robots récupèrent tout ce qu’il y a dans votre ancien logiciel : adhérents, familles, chevaux, forfaits, factures, planning, soins. Même s’il n’est pas dans notre liste : donnez son adresse, le robot s’y retrouve.</p>
-    </div>
-
-    <div class="mig-flux" data-r aria-hidden="true">
-      <div class="mf-src"><span>Kavalog</span><span>Equimondo</span><span>Excel</span><span>FFE Club SIF</span><span>HelloAsso</span><span>Votre logiciel</span></div>
-      <div class="mf-tuyau"><i></i><i></i><i></i><i></i><i></i><b>{{i:robot}}</b></div>
-      <div class="mf-dst"><div class="mf-logo">{{logo:34}}</div><ul><li>{{i:members}}<span>Cavaliers et familles</span></li><li>{{i:horse}}<span>Chevaux et soins</span></li><li>{{i:invoice}}<span>Forfaits et factures</span></li><li>{{i:planning}}<span>Planning des reprises</span></li></ul></div>
-    </div>
-
-    <div class="mig-voies">
-      <article class="mv" style="--i:0" data-r><span class="mv-n">1</span><span class="mv-tag">Le plus magique</span><h3>La connexion assistée</h3><p>Rien à installer. Votre ancien logiciel s’ouvre dans la page Stabl, vous vous connectez comme d’habitude, double authentification comprise. Le robot parcourt ensuite les pages et copie tout, en lecture seule.</p></article>
-      <article class="mv" style="--i:1" data-r><span class="mv-n">2</span><span class="mv-tag">Le plus simple · bientôt</span><h3>Confiez-nous l’accès</h3><p>Vous nous donnez vos identifiants : ils sont chiffrés dès votre navigateur, notre robot fait la migration, puis ils sont effacés.</p></article>
-      <article class="mv" style="--i:2" data-r><span class="mv-n">3</span><span class="mv-tag">Le plus sûr</span><h3>Un fichier suffit</h3><p>Un export CSV ou Excel, la liste des licenciés FFE, votre tableur maison : Stabl reconnaît les colonnes, fusionne les doublons et vous montre tout avant d’importer.</p></article>
-    </div>
-
-    <div class="mig-plus">
-      <div class="mp" data-r>{{i:spark}}<div><b>Les robots apprennent</b><small>Chaque migration réussie retient le chemin : la suivante, sur le même logiciel, va plus vite. Si un écran change, on est prévenus.</small></div></div>
-      <div class="mp" data-r>{{i:mail}}<div><b>Vos adhérents prévenus pour vous</b><small>Annonce, activation en un clic avec une fiche déjà remplie, confirmation, relances : vous suivez qui a activé.</small></div></div>
-      <div class="mp" data-r>{{i:doc}}<div><b>La résiliation offerte</b><small>Stabl prépare la lettre de résiliation de votre ancien abonnement et la demande d’export de vos données.</small></div></div>
-      <div class="mp" data-r>{{i:shield}}<div><b>Rien n’est écrasé</b><small>Trois chiffres à comparer avec votre ancien logiciel avant d’importer, et un import annulable.</small></div></div>
-    </div>
-
-    <p class="c mt" data-r><a class="btn pri" href="https://claude.ai/artifact/Jro7uLYBPbJUrSebQmUvn1" target="_blank" rel="noopener">Essayer la passerelle{{i:arrow}}</a></p>
-  </div>
-</section>
-
-<!-- ================= MISE EN ROUTE ================= -->
-<section class="sec route" id="demarrer" aria-labelledby="h-route">
-  <div class="w">
-    <div class="tete c" data-r>
-      <p class="sur2">Mise en route</p>
-      <h2 id="h-route">Prêt en une après‑midi, <span class="hl">en trois étapes.</span></h2>
-      <p>Pas de formation de trois jours ni de consultant. Nous reprenons vos données avec vous, et c’est inclus.</p>
-    </div>
-    <ol class="etapes" id="etapes"></ol>
-
-    <div class="reprise" data-r>
-      <div class="rp-t">
-        <h3>Vous venez d’un autre logiciel ?</h3>
-        <p>Adhérents, familles, chevaux, forfaits, soldes et factures ouvertes : tout se reprend. Stabl reconnaît les colonnes, repère les doublons, et rien n’est écrasé sans votre accord. L’import reste annulable pendant 30 jours.</p>
-        <div class="src" id="srcL"></div>
-        <a class="lien" href="#changer">Voir comment nos robots récupèrent tout{{i:arrow}}</a> <a class="lien" {{demo:import}}>Essayer l’import dans la démo{{i:arrow}}</a>
+    <div class="mig">
+      <div class="mig-t" data-r>
+        <p class="sur2">{{i:robot}}Changer de logiciel</p>
+        <h2 id="h-mig">Changez de logiciel <span class="hl">en 1 clic.</span></h2>
+        <p>Choisissez votre ancien outil, connectez-vous comme d’habitude : notre robot copie tout, en lecture seule. Cavaliers, familles, chevaux, forfaits, factures, planning et soins.</p>
+        <ol class="mig-e">
+          <li><span>1</span><div><b>Choisissez votre ancien logiciel</b><small>Kavalog, Equimondo, un tableur Excel, votre logiciel de compta, ou n’importe quel autre.</small></div></li>
+          <li><span>2</span><div><b>Le robot récupère tout</b><small>Il reconnaît les colonnes, fusionne les doublons et relie chevaux, cavaliers et factures.</small></div></li>
+          <li><span>3</span><div><b>Vérifiez les totaux, validez</b><small>Comparez avec votre ancien logiciel, puis importez. L’import s’annule si besoin.</small></div></li>
+        </ol>
+        <div class="mig-b">
+          <a class="btn pri" href="{{passerelle}}">Essayer la passerelle{{i:arrow}}</a>
+          <span class="mig-n">{{i:gift}}Reprise offerte, faite avec vous si vous préférez.</span>
+        </div>
       </div>
-      <figure class="rp-v">
-        <div class="nav-frame"><div class="nf-bar"><i></i><i></i><i></i><span>{{i:lock}}app.stablapp.fr/les-tilleuls</span></div><div class="crop fade" style="--dx:276;--dy:0;--dw:1164;--dh:900;--mx:296;--my:246;--mw:780;--mh:654"><img src="shots/g-import.webp" width="2160" height="1350" loading="lazy" alt="Écran de reprise des données : choix de la source, fichiers, colonnes, doublons, rapport"></div></div>
-      </figure>
-    </div>
-
-    <div class="remp" data-r>
-      <div class="remp-t"><b class="remp-n">12</b><div><h3>outils en moins</h3><p>Tout ce que Stabl remplace, et qui se parle enfin.</p></div></div>
-      <ul class="remp-l" id="rempL"></ul>
+      <div class="flux" id="flux" data-r aria-hidden="true">
+        <div class="fx-src">
+          <span class="fx-s on">Kavalog</span><span class="fx-s">Equimondo</span><span class="fx-s">Excel</span><span class="fx-s">Logiciel de compta</span><span class="fx-s">FFE Club SIF</span><span class="fx-s">Autre logiciel</span>
+        </div>
+        <div class="fx-tube"><i></i><i></i><i></i><b>{{i:robot}}</b></div>
+        <div class="fx-dst">
+          <div class="fx-h">{{logo:28}}<span>Prêt à importer</span></div>
+          <ul>
+            <li>{{i:members}}<span>Cavaliers</span><b data-c="148">148</b></li>
+            <li>{{i:horse}}<span>Chevaux</span><b data-c="44">44</b></li>
+            <li>{{i:family}}<span>Familles</span><b data-c="119">119</b></li>
+            <li>{{i:invoice}}<span>Factures</span><b data-c="76">76</b></li>
+          </ul>
+          <p class="fx-ok">{{i:checkc}}Les totaux correspondent à l’ancien logiciel</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ================= TARIFS ================= -->
-<section class="sec tarifs" id="tarifs" aria-labelledby="h-tarifs">
+<section class="sec" id="tarifs" aria-labelledby="h-tarifs">
   <div class="w">
-    <div class="tete c" data-r>
+    <div class="tete" data-r>
       <p class="sur2">Tarifs</p>
       <h2 id="h-tarifs">Trois formules. <span class="hl">C’est tout.</span></h2>
-      <p>Chevaux, utilisateurs et adhérents illimités dans chaque formule. 30 jours d’essai sans carte bancaire, aucun frais d’entrée ni de reprise.</p>
+      <p>Prix hors taxes, sans frais d’entrée. 30 jours d’essai gratuit, sans carte bancaire, résiliable en un clic.</p>
       <div class="bascule" id="bascule" role="group" aria-label="Rythme de facturation">
         <span class="bs-g"></span>
         <button type="button" data-p="m" aria-pressed="true">Mensuel</button>
@@ -332,50 +174,58 @@
       </div>
     </div>
     <div class="offres" id="offres"></div>
-    <ul class="inclus" data-r>
-      <li>{{i:check}}Chevaux illimités</li><li>{{i:check}}Utilisateurs illimités</li><li>{{i:check}}Reprise des données offerte</li><li>{{i:check}}Export complet à tout moment</li><li>{{i:check}}Hébergé en France, RGPD</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ================= COMPARATIF ================= -->
-<section class="sec cmp-s" id="comparatif" aria-labelledby="h-cmp">
-  <div class="w">
-    <div class="tete c" data-r>
-      <p class="sur2">Comparatif</p>
-      <h2 id="h-cmp">Ce que le marché <span class="hl">ne fait pas encore.</span></h2>
-      <p>Nous avons étudié 25 logiciels francophones de gestion équestre. Voici où Stabl va plus loin, et où le marché fait déjà bien.</p>
+    <div class="fond-o" data-r>
+      <span class="fo-i">{{i:star}}</span>
+      <div><b>Offre fondateurs : la formule Club à 99 € HT par mois, à vie.</b><small>Réservée aux 30 premiers clubs. Le prix ne bougera jamais tant que vous restez abonné.</small></div>
+      <a class="btn blanc sm" href="#contact">Réserver ma place{{i:arrow}}</a>
     </div>
-    <div class="cmp" id="cmp" data-r></div>
-    <p class="note c" data-r>Source : notre étude de 25 éditeurs francophones (sites des éditeurs, magasins d’applications, avis publics), novembre 2026. Les offres évoluent : vérifiez auprès de chaque éditeur.</p>
   </div>
 </section>
 
 <!-- ================= FAQ ================= -->
-<section class="sec faq" id="faq" aria-labelledby="h-faq">
+<section class="sec sec-alt" id="faq" aria-labelledby="h-faq">
   <div class="w faq-in">
     <div class="faq-t" data-r>
       <p class="sur2">Questions</p>
-      <h2 id="h-faq">Vos questions, <span class="hl">nos réponses.</span></h2>
-      <p>Une autre question ? Ouvrez la démo et demandez à Stabl AI : il connaît le logiciel par cœur.</p>
-      <a class="btn sec" {{demo:assistant}}>Demander à Stabl AI{{i:arrow}}</a>
+      <h2 id="h-faq">Questions <span class="hl">fréquentes.</span></h2>
+      <p>Une autre question ? Écrivez-nous ou demandez à être rappelé.</p>
+      <a class="btn sec" href="#contact">Nous contacter{{i:arrow}}</a>
     </div>
     <div class="faq-l" id="faqL"></div>
   </div>
 </section>
 
-<!-- ================= FINAL ================= -->
-<section class="fin" aria-labelledby="h-fin">
+<!-- ================= CONTACT ================= -->
+<section class="sec" id="contact" aria-labelledby="h-contact">
   <div class="w">
-    <div class="fin-c" data-r>
-      <div class="fin-illu" id="finIllu" aria-hidden="true"></div>
-      <h2 id="h-fin">En selle.</h2>
-      <p>Trente jours pour tout essayer, sans carte bancaire. Nous reprenons vos adhérents, vos chevaux et vos factures avec vous.</p>
-      <div class="hero-cta">
-        <a class="btn blanc lg mag" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-        <a class="btn fant lg" href="#tarifs">Voir les tarifs</a>
+    <div class="ct" data-r>
+      <div class="ct-t">
+        <h2 id="h-contact">Parlons de votre écurie.</h2>
+        <p>Laissez votre numéro : nous vous rappelons pour répondre à vos questions, vous montrer Stabl et préparer la reprise de vos données.</p>
+        <ul class="ct-l">
+          <li>{{i:mail}}<a href="mailto:contact@stablapp.fr">contact@stablapp.fr</a></li>
+          <li>{{i:play}}<a {{demo:cockpit}}>Essayer la démo tout de suite</a></li>
+        </ul>
+        <ul class="ct-g">
+          <li>{{i:check}}Sans engagement, résiliable en un clic</li>
+          <li>{{i:check}}Reprise de vos données offerte</li>
+          <li>{{i:check}}Offre fondateurs : 99 € HT par mois, à vie</li>
+        </ul>
       </div>
-      <p class="legende">Une écurie déjà remplie. Rien n’est enregistré.</p>
+      <form class="ct-f" id="ctF" novalidate>
+        <div class="ch2">
+          <label>Votre nom<input name="nom" autocomplete="name" required></label>
+          <label>Votre établissement<input name="club" autocomplete="organization"></label>
+        </div>
+        <div class="ch2">
+          <label>Téléphone<input name="tel" type="tel" autocomplete="tel" inputmode="tel" required></label>
+          <label>E-mail<input name="mail" type="email" autocomplete="email"></label>
+        </div>
+        <label>Quand vous rappeler ?<select name="quand"><option>Le matin</option><option>En début d’après-midi</option><option>En fin de journée</option><option>Peu importe</option></select></label>
+        <label><span>Votre message <em>(facultatif)</em></span><textarea name="msg" rows="3" placeholder="Nombre de chevaux, logiciel actuel, questions…"></textarea></label>
+        <button class="btn pri lg" type="submit">Demander à être rappelé{{i:arrow}}</button>
+        <p class="ct-n" id="ctN" role="status">Le bouton ouvre votre messagerie avec la demande prête à envoyer à contact@stablapp.fr.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -385,21 +235,30 @@
 <footer class="pied">
   <div class="w pied-in">
     <div class="pd-m">
-      <a class="marque" href="#top">{{logo:32}}<span>stabl</span></a>
-      <p>Le logiciel tout-en-un des centres équestres et des écuries.</p>
+      <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{marque}}</a>
+      <p>Le logiciel de gestion des centres équestres, poney-clubs et écuries.</p>
+      <a class="btn pri sm" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
     </div>
-    <nav aria-label="Produit"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#connecteurs">Connecteurs</a><a href="#tarifs">Tarifs</a></nav>
-    <nav aria-label="Démo"><b>Démo</b><a {{demo:cockpit}}>Espace gérant</a><a {{demo:emp-jour}}>Espace employé</a><a {{demo:adh-accueil}}>Espace adhérent</a><a {{demo:coach-agenda}}>Espace coach</a><a {{demo:assistant}}>Stabl AI</a></nav>
-    <nav aria-label="Aide"><b>Bien démarrer</b><a href="#demarrer">Mise en route</a><a href="#demarrer">Reprise des données</a><a href="#comparatif">Comparatif</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Produit"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Essayer"><b>Essayer</b><a {{demo:cockpit}}>La démo</a><a href="{{passerelle}}">La passerelle</a><a href="#contact">Être rappelé</a><a href="mailto:contact@stablapp.fr">contact@stablapp.fr</a></nav>
   </div>
-  <div class="w pied-b"><span>© 2026 Stabl</span><span>Démonstration : données fictives de l’Écurie des Tilleuls</span></div>
+  <div class="w">
+    <details class="ml" id="mentions">
+      <summary>Mentions légales</summary>
+      <div class="ml-g">
+        <p><b>Éditeur</b>Marceau Ruis, entrepreneur individuel (EI), nom commercial RUIS GLOBAL<br>SIRET 934 733 122 00014<br>36 rue Jacques-Louis Hénon, 69004 Lyon<br>contact@stablapp.fr</p>
+        <p><b>Publication</b>Directeur de la publication : Marceau Ruis<br>TVA non applicable, article 293 B du CGI</p>
+        <p><b>Hébergement</b>GitHub Pages, GitHub, Inc.<br>88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis</p>
+        <p><b>Données personnelles</b>Ce site ne dépose aucun cookie et ne mesure pas l’audience. Le formulaire de rappel ouvre votre messagerie : rien n’est envoyé sans vous. Les polices sont chargées depuis Google Fonts.</p>
+      </div>
+    </details>
+  </div>
+  <div class="w pied-b"><span>© 2026 Stabl · Marceau Ruis EI</span><a href="#mentions" id="mlLien">Mentions légales</a></div>
 </footer>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /*__ICONS__*/
-/*__HORSE__*/
 /*__JS__*/
 </script>
