@@ -104,6 +104,17 @@ Un gérant (ou un employé) relie son assistant à Stabl en ajoutant l'adresse *
 - **Pour l'écran Connecteurs** (session) : `GET /api/mcp/tools` (adresse du serveur et outils permis à ce rôle), `GET /api/mcp/grants` (assistants reliés ; un employé ne voit que les siens), `DELETE /api/mcp/grants/:id` (retire l'accès et coupe les jetons), `GET /api/mcp/calls?limit=` (journal des 90 derniers jours, gérant).
 - **Déploiement** : `wrangler.jsonc` fait passer `/mcp`, `/oauth/*` et `/.well-known/*` par le Worker avant les fichiers statiques ; `APP_URL` doit valoir `https://app.stablapp.fr` (il donne l'émetteur et l'adresse de la ressource).
 
+### Pages publiques du club · `src/public/`
+
+Pages servies par le Worker (HTML sans cadre, style Stabl, téléphone d'abord, CSP avec nonce, aucun compte demandé). `wrangler.jsonc` fait passer `/c/*` et `/s/*` par le Worker ; `sw.js` ne les met jamais en cache.
+
+- **Carte cadeau** `GET /c/:club/offrir` → `POST /api/public/gifts/:club`. Avec Stripe Connect actif : paiement Checkout sur le compte du club, la carte (`giftcards`) est créée et envoyée par e-mail (`gift_card`) au webhook `checkout.session.completed` (métadonnée `piaffe_gift_id`). Sans Stripe : la demande va dans `giftRequests` (lisible par les gérants), les gérants reçoivent un e-mail (`club_notice`), et l'écran Cadeaux affiche « Réglée : envoyer la carte » → `POST /api/growth/gift-requests/:id/issue` (idempotent).
+- **Avis** `GET /c/:club/avis[?t=]` → `POST /api/public/reviews/:club` : 4 ou 5 étoiles proposent le lien Google du club (`growthCfg/avis.url`), 1 à 3 étoiles deviennent un message privé (`gReviews`, gérants prévenus).
+- **Sondage** `GET /s/:token` → `POST /api/public/surveys/:token` : jeton signé HMAC (`tokens.ts`, clé `SESSION_SECRET`), par sondage et éventuellement par adhérent.
+- **Annonce de cheval** `GET /c/:club/cheval/:ad` : lit l'API publique existante des annonces en ligne ; demande d'essai → `horseLeads`.
+- **Pour le gérant** : `GET /api/growth/links[?member=&survey=]` donne toutes les adresses à partager ; `live/75-public.js` les affiche dans Cadeaux, Avis, Satisfaction et Annonce.
+- Anti-robots : champ piège `site`, délai minimal entre l'affichage et l'envoi, limites par adresse IP et par club.
+
 ## API d'import (pour l'outil de migration)
 
 Authentification : clé d'API du club avec le scope `import` (`Authorization: Bearer pk_live_…`), créée par le gérant dans Réglages, ou session gérant.

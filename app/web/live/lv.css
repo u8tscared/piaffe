@@ -307,3 +307,10 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 .lv-cn-tools{display:flex;flex-wrap:wrap;gap:8px}
 .lv-cn-when{white-space:nowrap}
 @media (max-width:640px){.lv-cn-g{flex-wrap:wrap}.lv-cn-g .grow{flex:1 1 calc(100% - 64px)}.lv-cn-g .btn{margin-left:52px}.lv-cn-url .btn{flex:1 1 100%}}
+/* pages publiques (75-public.js) */
+.lv-pub{margin-bottom:16px}
+.lv-pub-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line,rgba(0,0,0,.08))}
+.lv-pub-row:first-of-type{border-top:0}
+.lv-pub-url{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.lv-gr .hrow{flex-wrap:wrap}
+@media (max-width:640px){.lv-gr{flex-wrap:wrap;padding-left:0;padding-right:0}.lv-gr>.hrow{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;flex:1 1 100%;margin-left:44px}}

@@ -12,7 +12,7 @@ const VERSION = '__VERSION__';
 const SHELL = 'stabl-shell-' + VERSION;
 const RUNTIME = 'stabl-runtime-v1';
 const PRECACHE = __PRECACHE__;
-const NETWORK_ONLY = /^\/(api|auth|ics|webhooks|migration|mcp|oauth|\.well-known|admin)(\/|$)/;
+const NETWORK_ONLY = /^\/(api|auth|ics|webhooks|migration|mcp|oauth|\.well-known|admin|c|s)(\/|$)/;
 const OFFLINE_HTML = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Stabl · hors ligne</title>' +
   '<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a1636;color:#fff;font:16px/1.5 system-ui,-apple-system,sans-serif;text-align:center;padding:24px}' +
   'b{font-size:22px;display:block;margin-bottom:8px}button{margin-top:18px;font:600 16px system-ui;padding:12px 22px;border-radius:12px;border:0;background:#2f5bea;color:#fff}</style></head>' +

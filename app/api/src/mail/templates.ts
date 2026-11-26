@@ -543,6 +543,45 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     }),
   },
 
+  gift_card: {
+    name: "Carte cadeau",
+    description: "Envoyée à l'acheteur d'une carte cadeau du club, avec son code (paiement en ligne ou encaissé par le club).",
+    category: "essential",
+    fields: { first: "Prénom de l'acheteur (facultatif)", code: "Code de la carte", amount: "Montant en euros (ou amount_cents)", label: "Prestation offerte (facultatif)", to: "Pour qui (facultatif)", message: "Message de l'acheteur (facultatif)", valid_until: "Valable jusqu'au (facultatif)" },
+    sample: { first: "Sophie", code: "MOU-K7RD-42", amount: 35, label: "Balade d'une heure", to: "Jules", message: "Joyeux Noël !", valid_until: "2027-12-24" },
+    build: (d, ctx) => ({
+      subject: `Votre carte cadeau ${clubName(ctx)} : ${d.code}`,
+      preheader: "Le code est à donner au club au moment de réserver.",
+      blocks: [
+        { t: "h", text: "Votre carte cadeau est prête" },
+        { t: "p", text: `${hello(d)} merci pour votre achat. Voici la carte cadeau de ${clubName(ctx)}${d.to ? " pour " + String(d.to).trim() : ""}.` },
+        { t: "code", text: String(d.code || "") },
+        { t: "rows", rows: opt([["Montant", money(d)], ["Prestation", d.label], ["Pour", d.to], ["Message", d.message], ["Valable jusqu'au", d.valid_until ? dateLong(d.valid_until) : ""]]) },
+        { t: "p", text: "Pour l'utiliser, il suffit de donner ce code au club au moment de réserver. Vous pouvez imprimer cet e-mail ou le transférer." },
+        sign(ctx),
+      ],
+    }),
+  },
+
+  club_notice: {
+    name: "Message au gérant",
+    description: "Prévient le gérant d'une demande arrivée par une page publique du club (carte cadeau sans paiement en ligne, avis à lire…).",
+    category: "essential",
+    fields: { first: "Prénom du gérant (facultatif)", title: "Titre", intro: "Phrase d'explication", rows: "Lignes [libellé, valeur] (facultatif)", note: "Conseil ou étape suivante (facultatif)", action_label: "Texte du bouton (facultatif)", action_url: "Lien du bouton (facultatif)" },
+    sample: { first: "Claire", title: "Nouvelle demande de carte cadeau", intro: "Sophie Martin souhaite offrir une balade d'une heure (35 €).", rows: [["E-mail", "sophie@exemple.fr"], ["Pour", "Jules"]], note: "Le paiement en ligne n'est pas encore activé : contactez Sophie pour l'encaissement.", action_label: "Ouvrir Cadeaux", action_url: "https://app.stablapp.fr/#cadeaux" },
+    build: (d) => ({
+      subject: String(d.title || "Nouveau message de votre page publique"),
+      preheader: String(d.intro || "").slice(0, 120),
+      blocks: [
+        { t: "h", text: String(d.title || "Nouveau message") },
+        { t: "p", text: `${hello(d)} ${String(d.intro || "")}` },
+        ...(Array.isArray(d.rows) && d.rows.length ? [{ t: "rows" as const, rows: opt(d.rows.map((r: unknown[]) => [String(r[0]), r[1]] as [string, unknown])) }] : []),
+        ...(d.note ? [{ t: "note" as const, text: String(d.note), tone: "info" as const }] : []),
+        ...(d.action_url ? [{ t: "button" as const, label: String(d.action_label || "Ouvrir Stabl"), url: String(d.action_url) }] : []),
+      ],
+    }),
+  },
+
   migration_reminder: {
     name: "Migration : relance d'activation",
     description: "Relance des adhérents qui n'ont pas encore activé leur espace (niveau 1 à J+3, niveau 2 à J+7).",
