@@ -88,6 +88,12 @@ const THREE = PROBE && exists(path.join(DEMO, 'tools', 'three.min.js'))
   ? '<script>' + rd(path.join(DEMO, 'tools', 'three.min.js')) + '</script>'
   : '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>';
 
+/* écrans de démarrage iOS (app/web/static/splash, générés depuis le logo officiel) */
+let SPLASH = '';
+try {
+  const list = JSON.parse(rd(path.join(WEB, 'static', 'splash', 'splash.json')));
+  SPLASH = list.map((x) => `<link rel="apple-touch-startup-image" media="(device-width: ${x.w}px) and (device-height: ${x.h}px) and (-webkit-device-pixel-ratio: ${x.d}) and (orientation: ${x.land ? 'landscape' : 'portrait'})" href="/splash/${x.name}">`).join('\n');
+} catch (e) { SPLASH = ''; }
 const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -106,6 +112,7 @@ const html = `<!doctype html>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
+${SPLASH}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${css}</style>
@@ -131,11 +138,12 @@ fs.writeFileSync(path.join(DIST, 'index.html'), html);
 
 /* fichiers statiques : icônes, manifest, service worker */
 const STATIC = path.join(WEB, 'static');
-if (exists(STATIC)) for (const f of fs.readdirSync(STATIC)) fs.copyFileSync(path.join(STATIC, f), path.join(DIST, f));
+if (exists(STATIC)) fs.cpSync(STATIC, DIST, { recursive: true });
 const manifest = {
   name: 'Stabl', short_name: 'Stabl', lang: 'fr', dir: 'ltr',
   description: 'Le logiciel de gestion des centres équestres et des écuries.',
-  start_url: '/?source=pwa', scope: '/', display: 'standalone', orientation: 'any',
+  id: '/', start_url: '/?source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'], orientation: 'any',
+  prefer_related_applications: false,
   background_color: '#ffffff', theme_color: '#0a1636', categories: ['business', 'productivity', 'sports'],
   icons: [
     { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
@@ -150,7 +158,10 @@ const manifest = {
   ],
 };
 fs.writeFileSync(path.join(DIST, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
-fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION));
+/* précache du service worker : la page (tout le code), le manifeste et les icônes. Les écrans de démarrage
+   ne sont lus par iOS qu'à l'installation : inutile de les garder hors ligne. */
+const PRECACHE = ['/', '/manifest.webmanifest'].concat(fs.readdirSync(DIST).filter((f) => /^icon.*\.(png|svg)$/.test(f)).map((f) => '/' + f));
+fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION).replace('__PRECACHE__', JSON.stringify(PRECACHE)));
 /* passerelle de migration (fil migration) servie sur /migration/ */
 /* le robot à distance prend globalThis.PIAFFE_ROBOT comme base d'URL */
 const PASS = migRead('dist/passerelle.html');

@@ -66,8 +66,9 @@ PL.renderTodo=function(el){if(!PL.isManager()||!PL.tasks.length)return;var list=
 PL.doneTask=function(id){var t=PL.tasks.filter(function(x){return x.id===id})[0];if(t)t.done=true;PL.post('/api/onboarding/tasks/'+encodeURIComponent(id),{done:true}).catch(function(){})};
 
 /* ---------- En-tête : pastille d'état et bouton de compte ---------- */
-var STL={ok:'Enregistré',saving:'Enregistrement…',offline:'Hors ligne',error:'Non enregistré'};
-function pill(){var st=PL.sync?PL.sync.state:'ok',n=PL.sync?PL.sync.pending():0;var t=st==='offline'?'Hors ligne'+(n?' · '+n+' en attente':''):STL[st];
+var STL={ok:'Tout est à jour',saving:'Envoi en cours…',offline:'Hors ligne',error:'Non enregistré'};
+function chg(n){return n+' changement'+(n>1?'s':'')+' en attente'}
+function pill(){var st=PL.sync?PL.sync.state:'ok',n=PL.sync?PL.sync.pending():0;var t=st==='offline'?'Hors ligne'+(n?' · '+chg(n):''):st==='saving'&&n?'Envoi de '+n+' changement'+(n>1?'s':'')+'…':STL[st];
   return '<button class="lv-pill" data-lv-pill data-st="'+st+'" title="'+esc(st==='error'&&PL.sync.lastError?PL.sync.lastError:t)+'"><i></i><span class="lv-pt">'+t+'</span></button>'}
 PL.decorate=function(){var app=P.app();if(!app)return;var tools=app.querySelector('.top .tools');if(!tools||tools.querySelector('[data-lv-me]'))return;
   tools.insertAdjacentHTML('afterbegin',pill());
@@ -77,7 +78,7 @@ PL.decorate=function(){var app=P.app();if(!app)return;var tools=app.querySelecto
 function refreshPill(){var b=document.querySelector('[data-lv-pill]');if(b)b.outerHTML=pill()}
 document.addEventListener('click',function(e){
   if(e.target.closest('[data-lv-me]')){PL.account();return}
-  if(e.target.closest('[data-lv-pill]')){var st=PL.sync.state;P.toast(st==='ok'?'Toutes vos modifications sont enregistrées.':st==='offline'?'Hors ligne : vos modifications seront envoyées au retour du réseau.':st==='error'?(PL.sync.lastError||'Une modification n’a pas pu être enregistrée.'):'Enregistrement en cours.',{icon:st==='ok'?'checkc':st==='offline'?'wifi':'info'});if(st!=='ok')PL.sync.flush({force:true})}
+  if(e.target.closest('[data-lv-pill]')){var st=PL.sync.state,n=PL.sync.pending();P.toast(st==='ok'?'Tout est à jour : vos modifications sont enregistrées sur le serveur.':st==='offline'?(n?chg(n).charAt(0).toUpperCase()+chg(n).slice(1)+', enregistrés sur cet appareil. Ils partiront tout seuls au retour du réseau.':'Hors ligne : vous pouvez continuer à travailler, tout partira au retour du réseau.'):st==='error'?(PL.sync.lastError||'Une modification n’a pas pu être enregistrée.'):'Enregistrement en cours.',{icon:st==='ok'?'checkc':st==='offline'?'wifi':'info'});if(st!=='ok')PL.sync.flush({force:true})}
 });
 PL.onShell=function(){var rs0=P.renderShell;P.renderShell=function(){var r=rs0.apply(P,arguments);PL.decorate();return r};PL.sync.listeners.push(refreshPill)};
 
@@ -88,11 +89,11 @@ PL.account=function(){var u=PL.user||{},clubs=PL.clubs||[];
   P.sheet({title:'Mon compte',icon:'user',body:function(b){
     b.innerHTML='<div class="lv-acct stack" style="--g:22px"><div class="lv-acc-h">'+P.ui.av(PL.mePerson)+'<div><b>'+esc(((u.first||'')+' '+(u.last||'')).trim()||u.email)+'</b><span class="mut">'+esc(u.email||'')+'</span>'+(u.email_verified_at?'':'<div style="margin-top:6px">'+P.ui.chip('Adresse à confirmer','warn',true)+'</div>')+'</div></div>'+
       '<div class="stack" style="--g:10px"><div class="eyebrow">Mon profil</div><div class="lv-row2"><label class="lv-fl"><span>Prénom</span><input class="in" id="ac-first" value="'+esc(u.first||'')+'"></label><label class="lv-fl"><span>Nom</span><input class="in" id="ac-last" value="'+esc(u.last||'')+'"></label></div>'+
-      '<label class="lv-fl"><span>Téléphone</span><input class="in" id="ac-phone" value="'+esc(u.phone||'')+'" inputmode="tel"></label><button class="btn" data-ac-save>'+ICON('check','sm')+'Enregistrer mon profil</button></div>'+
-      '<div class="stack" style="--g:10px"><div class="eyebrow">'+(clubs.length>1?'Mes clubs':'Mon club')+'</div><div class="lv-clubs">'+clubs.map(function(c){return '<button class="lv-club" data-club="'+esc(c.id)+'" aria-current="'+(c.id===PL.clubId)+'"><span class="ico">'+ICON('stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc(ROLEFR[c.role]||c.role||'')+'</small></span>'+(c.id===PL.clubId?P.ui.chip('Ouvert','acc'):ICON('right','sm'))+'</button>'}).join('')+'</div>'+
-      (PL.isManager()||!clubs.length?'<button class="btn ghost" data-ac-newclub>'+ICON('plus','sm')+'Créer un autre club</button>':'')+'</div>'+
+      '<label class="lv-fl"><span>Téléphone</span><input class="in" id="ac-phone" value="'+esc(u.phone||'')+'" inputmode="tel"></label><button class="btn" data-ac-save data-net>'+ICON('check','sm')+'Enregistrer mon profil</button></div>'+
+      '<div class="stack" style="--g:10px"><div class="eyebrow">'+(clubs.length>1?'Mes clubs':'Mon club')+'</div><div class="lv-clubs">'+clubs.map(function(c){return '<button class="lv-club" data-net data-club="'+esc(c.id)+'" aria-current="'+(c.id===PL.clubId)+'"><span class="ico">'+ICON('stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc(ROLEFR[c.role]||c.role||'')+'</small></span>'+(c.id===PL.clubId?P.ui.chip('Ouvert','acc'):ICON('right','sm'))+'</button>'}).join('')+'</div>'+
+      (PL.isManager()||!clubs.length?'<button class="btn ghost" data-ac-newclub data-net>'+ICON('plus','sm')+'Créer un autre club</button>':'')+'</div>'+
       '<div class="stack" style="--g:10px"><div class="eyebrow">Apparence</div>'+P.ui.seg([['auto','Automatique'],['light','Clair'],['dark','Sombre']],dk==='auto'?'auto':dk,'data-ac-theme')+'</div>'+
-      '<div class="stack" style="--g:10px"><div class="eyebrow">Sécurité</div><button class="btn ghost" data-ac-pw>'+ICON('lock','sm')+'Changer mon mot de passe</button><button class="btn ghost" data-ac-np>'+ICON('bell','sm')+'E-mails et notifications</button></div>'+
+      '<div class="stack" style="--g:10px"><div class="eyebrow">Sécurité</div><button class="btn ghost" data-ac-pw data-net>'+ICON('lock','sm')+'Changer mon mot de passe</button><button class="btn ghost" data-ac-np>'+ICON('bell','sm')+'E-mails et notifications</button></div>'+
       '<button class="btn" data-ac-out style="color:var(--bad)">'+ICON('logout','sm')+'Se déconnecter</button><p class="lv-note">'+esc(PL.brandName())+' · version '+esc(PL.version||'')+'</p></div>';
     b.querySelector('[data-ac-save]').onclick=function(){var x=this;x.disabled=true;PL.patch('/api/me',{first:b.querySelector('#ac-first').value.trim(),last:b.querySelector('#ac-last').value.trim(),phone:b.querySelector('#ac-phone').value.trim()}).then(function(r){PL.user=r.user||PL.user;PL.setPeople({role:PL.role,person_ref:PL.personRef});P.toast('Profil enregistré');P.renderShell()},function(e){PL.fail(e,'Profil')}).then(function(){x.disabled=false})};
     b.querySelectorAll('[data-club]').forEach(function(x){x.onclick=function(){var id=x.getAttribute('data-club');if(id===PL.clubId)return;PL.switchClub(id)}});
@@ -105,11 +106,18 @@ PL.changePassword=function(){var sh=P.sheet({title:'Changer de mot de passe',ico
   sh.querySelector('[data-x2]').onclick=function(){sh.close()};
   sh.querySelector('[data-ok]').onclick=function(){var a=sh.querySelector('#pw0').value,n=sh.querySelector('#pw1').value;if(n.length<8){P.toast('Choisissez au moins 8 caractères.',{icon:'alert'});return}
     PL.patch('/api/me',{current_password:a,new_password:n}).then(function(){sh.close();P.toast('Mot de passe changé. Vos autres appareils ont été déconnectés.')},function(e){PL.fail(e,'Mot de passe')})}};
-PL.logout=function(){PL.sync&&PL.sync.flush({keepalive:true});PL.post('/auth/logout',{}).catch(function(){}).then(function(){PL.clearLocal();location.href='/connexion'})};
-PL.clearLocal=function(){try{Object.keys(localStorage).forEach(function(k){if(/^piaffe:(live|wx)/.test(k))localStorage.removeItem(k)})}catch(e){}};
+/* déconnexion : jamais de perte silencieuse des changements faits hors ligne */
+PL.logout=function(force){var n=PL.sync?PL.sync.pending():0;
+  if(n&&force!==true){var sh=P.sheet({title:'Changements pas encore envoyés',icon:'wifi',body:'<p>'+n+' changement'+(n>1?'s n’ont':' n’a')+' pas encore été envoyé'+(n>1?'s':'')+' au serveur (pas de réseau). Si vous vous déconnectez maintenant, '+(n>1?'ils seront perdus':'il sera perdu')+'.</p><p class="mut" style="margin-top:10px">Restez connecté : tout partira tout seul au retour du réseau.</p>',
+      foot:'<button class="btn ghost" data-q style="color:var(--bad)">Me déconnecter quand même</button><button class="btn pri" data-k>Rester connecté</button>'});
+    sh.querySelector('[data-k]').onclick=function(){sh.close();PL.sync.resume&&PL.sync.resume()};sh.querySelector('[data-q]').onclick=function(){sh.close();PL.logout(true)};return}
+  var f=PL.sync?PL.sync.flush({keepalive:true}).catch(function(){}):Promise.resolve();
+  f.then(function(){return PL.post('/auth/logout',{}).catch(function(){})}).then(function(){return PL.clearLocal()}).then(function(){location.href='/connexion'},function(){location.href='/connexion'})};
+PL.clearLocal=function(){try{Object.keys(localStorage).forEach(function(k){if(/^piaffe:(live|wx)/.test(k))localStorage.removeItem(k)})}catch(e){}return PL.store?PL.store.clear():Promise.resolve()};
 PL.switchClub=function(id){PL.sync.flush({keepalive:true});PL.post('/api/me/club',{club_id:id}).then(function(){location.href='/'},function(e){PL.fail(e,'Changement de club')})};
 PL.newClub=function(){try{localStorage.setItem('piaffe:live:newclub','1')}catch(e){}location.href='/'};
-PL.sessionLost=function(){if(PL._lost)return;PL._lost=true;P.toast('Votre session a expiré. Reconnectez-vous : vos modifications en attente seront envoyées ensuite.',{icon:'lock',ms:8000});setTimeout(function(){location.href='/connexion'},2500)};
+/* session expirée (plus de 30 jours sans connexion) : la file reste sur l'appareil et part après la reconnexion */
+PL.sessionLost=function(){if(PL._lost)return;PL._lost=true;try{PL.sync&&PL.sync.flush&&0}catch(e){}P.toast('Votre session a expiré. Reconnectez-vous : vos modifications en attente seront envoyées ensuite.',{icon:'lock',ms:8000});setTimeout(function(){location.href='/connexion'},2500)};
 
 /* ---------- Club d'exemple ---------- */
 PL.sandboxBanner=function(){var v=P.app()&&P.app().querySelector('.view');if(!v)return;if(document.querySelector('.lv-banner'))return;var b=document.createElement('div');b.className='lv-banner';
@@ -119,7 +127,7 @@ PL.sandboxBanner=function(){var v=P.app()&&P.app().querySelector('.view');if(!v)
     var sh=P.sheet({title:'Tout effacer',icon:'trash',body:'<p>Toutes les données d’exemple de ce club seront supprimées, puis vous pourrez le configurer comme votre vrai club.</p><label class="lv-fl" style="margin-top:14px"><span>Tapez EFFACER pour confirmer</span><input class="in" id="sb-c" autocomplete="off"></label>',foot:'<button class="btn ghost" data-x2>Annuler</button><button class="btn pri" data-ok style="background:var(--bad)">Tout effacer</button>'});
     sh.querySelector('[data-x2]').onclick=function(){sh.close()};
     sh.querySelector('[data-ok]').onclick=function(){if(sh.querySelector('#sb-c').value.trim().toUpperCase()!=='EFFACER'){P.toast('Tapez EFFACER pour confirmer.',{icon:'alert'});return}
-      PL.readonly=true;PL.post('/api/onboarding/reset',{confirm:'EFFACER'}).then(function(){try{localStorage.removeItem('piaffe:live:queue:'+PL.clubId)}catch(e){}location.href='/'},function(e){PL.readonly=false;PL.fail(e,'Effacement')})}}};
+      PL.readonly=true;PL.post('/api/onboarding/reset',{confirm:'EFFACER'}).then(function(){var k='sync:'+((PL.user||{}).id||'')+':'+PL.clubId;try{localStorage.removeItem('piaffe:live:queue:'+PL.clubId);localStorage.removeItem('stabl:bak:'+k)}catch(e){}PL.sync.queue.length=0;(PL.store?PL.store.del(k):Promise.resolve()).then(function(){location.href='/'})},function(e){PL.readonly=false;PL.fail(e,'Effacement')})}}};
 /* crée un club séparé et y charge le jeu de démonstration */
 PL.createSandbox=function(){var demo=PL.demoData;if(!demo)return Promise.reject(PL.err(0,'x','Le jeu d’exemple est indisponible.'));
   return PL.post('/api/clubs',{name:'Club d’exemple',kind:'centre'}).then(function(r){var c=r.club||r;PL.clubId=c.id;return PL.post('/api/me/club',{club_id:c.id}).catch(function(){})})

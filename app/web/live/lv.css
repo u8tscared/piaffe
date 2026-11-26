@@ -274,3 +274,23 @@ html.lv-noscroll,html.lv-noscroll body{overflow:hidden}
 
 /* fonctions pas encore branchées sur ce serveur (voir /api/me → features) */
 body.lv-nogoogle .lv-google,body.lv-nogoogle .lv-or{display:none!important}
+
+/* ---------- Hors connexion : ce qui exige le réseau est grisé (et expliqué au toucher, 10-api.js) ---------- */
+body.lv-offline [data-net],body.lv-offline .lv-inv-act button{opacity:.45;filter:grayscale(1);cursor:not-allowed}
+/* ---------- Nouvelle version disponible ---------- */
+.lv-update{position:fixed;z-index:60;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:10px;
+  width:min(560px,calc(100vw - 24px));padding:10px 10px 10px 14px;border-radius:16px;background:var(--surface);color:var(--ink);font-size:14.5px;line-height:1.4;
+  box-shadow:0 12px 40px rgba(10,22,54,.22),inset 0 0 0 1px var(--line);animation:lvIn .35s var(--e-out) both}
+.lv-update .grow{min-width:0}
+body:has(.app.mobile) .lv-update{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+/* ---------- Ajouter à l'écran d'accueil ---------- */
+.lv-a2hs{position:fixed;z-index:59;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(420px,calc(100vw - 24px));
+  padding:14px 14px 14px 16px;border-radius:18px;background:var(--surface);color:var(--ink);font-size:14.5px;line-height:1.45;
+  box-shadow:0 16px 48px rgba(10,22,54,.25),inset 0 0 0 1px var(--line);animation:lvIn .4s var(--e-out) both}
+body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.lv-a2hs b{font-size:15.5px}
+.lv-a2hs p{margin:4px 0 0;color:var(--mut)}
+.lv-a2hs ol{margin:10px 0 0;padding-left:20px;display:grid;gap:4px}
+.lv-a2hs ol .i{vertical-align:-3px;color:var(--acc)}
+.lv-a2hs-ico{flex:none;width:40px;height:40px;border-radius:11px;background:#0a1636;display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){.lv-update,.lv-a2hs{animation:none}}

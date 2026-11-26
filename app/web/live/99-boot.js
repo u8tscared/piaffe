@@ -30,9 +30,15 @@ function clean(path){try{history.replaceState(null,'',(path||'/')+location.hash)
 var CACHE='piaffe:live:boot:';
 /* « qui suis-je ? » sans 401 dans la console : un visiteur reçoit {user:null}, traité comme une session absente */
 PL.setFeatures=function(f){if(!f)return;PL.features=f;try{document.body.classList.toggle('lv-nogoogle',!f.google);document.body.classList.toggle('lv-nomail',!f.mail);document.body.classList.toggle('lv-nopay',!f.payments)}catch(e){}};
-PL.me=function(){return PL.get('/api/me?soft=1').then(function(me){if(me)PL.setFeatures(me.features);if(!me||!me.user)throw PL.err(401,'unauthorized','Connectez-vous pour continuer.');return me})};
-function cacheBoot(b){try{localStorage.setItem(CACHE+PL.clubId,JSON.stringify(b))}catch(e){}}
-function cachedBoot(id){try{return JSON.parse(localStorage.getItem(CACHE+id)||'null')}catch(e){return null}}
+PL.me=function(){return PL.get('/api/me?soft=1').then(function(me){if(me)PL.setFeatures(me.features);if(me&&me.user&&PL.store)PL.store.set('me',me).catch(function(){});if(!me||!me.user){if(PL.store)PL.store.del('me');throw PL.err(401,'unauthorized','Connectez-vous pour continuer.')}return me})};
+/* dernières données du club, gardées sur l'appareil (IndexedDB) pour ouvrir l'appli sans réseau */
+function cacheBoot(b){if(!PL.clubId||!PL.store)return;PL.store.set('boot:'+PL.clubId,b).catch(function(){});try{localStorage.removeItem(CACHE+PL.clubId)}catch(e){}}
+function cachedBoot(id){if(!id||!PL.store)return Promise.resolve(null);return PL.store.get('boot:'+id).then(function(b){if(b)return b;try{return JSON.parse(localStorage.getItem(CACHE+id)||'null')}catch(e){return null}},function(){return null})}
+/* après chaque synchro : on réenregistre l'état connu du serveur (instantané) pour la prochaine ouverture hors ligne */
+var bootT=0;
+PL.saveBootSoon=function(){clearTimeout(bootT);bootT=setTimeout(function(){try{var S=PL.sync,b=PL.boot;if(!b||!S||!S.snap||PL.sandboxLocal)return;var data={};Object.keys(PL.server||{}).forEach(function(k){data[k]=PL.server[k]});
+  Object.keys(S.snap).forEach(function(k){var m=S.snap[k];if(k==='club'&&!(PL.isManager&&PL.isManager()))return;if(S.isSingleton(k)){if(m._)data[k]=JSON.parse(m._);return}data[k]=Object.keys(m).map(function(id){return JSON.parse(m[id])})});
+  var nb={};for(var x in b)nb[x]=b[x];nb.data=data;nb.versions=PL.versions;nb.server_time=S.lastPull||PL.serverTime;nb.saved_at=new Date().toISOString();cacheBoot(nb)}catch(e){}},1500)};
 
 /* chemins à traiter avant tout : jetons, retours de migration, messages de connexion */
 function special(){if(routed)return null;routed=true;
@@ -57,9 +63,11 @@ PL.start=function(o){o=o||{};if(started){location.reload();return}
       if(v==='login'&&PATH!=='/connexion'&&PATH!=='/'&&!/^\/(inscription)/.test(PATH))PL.authNext=PATH+location.search;
       var opt={};if(PL.authMsg){opt[PL.authMsgKind==='info'?'info':'error']=PL.authMsg;PL.authMsg=null}if(o.info)opt.info=o.info;
       PL.auth(v,opt);return}
-    if(e.offline){var last=null;try{last=localStorage.getItem('piaffe:live:club')}catch(x){}var b=last&&cachedBoot(last);
-      if(b){PL.clubId=last;PL.offlineBoot=true;PL.user=(b.me&&b.me.user)||{};launch(b,b.me&&b.me.role||'member');return}
-      fatal('Pas de connexion','Impossible de joindre '+PL.brandName()+'. Vérifiez votre réseau, puis réessayez.',function(){started=false;routed=true;PL.start(o)});return}
+    /* sans réseau : la session reste valable, on ouvre la dernière version enregistrée sur l'appareil */
+    if(e.offline){var last=null;try{last=localStorage.getItem('piaffe:live:club')}catch(x){}
+      (PL.store?PL.store.get('me').catch(function(){return null}):Promise.resolve(null)).then(function(me){if(me&&!last)last=me.current_club_id;return cachedBoot(last).then(function(b){return {me:me,b:b}})}).then(function(x){var b=x.b;
+      if(b){PL.clubId=last;PL.offlineBoot=true;PL.user=(x.me&&x.me.user)||(b.me&&b.me.user)||{};PL.clubs=(x.me&&x.me.clubs)||[];if(x.me)PL.setFeatures(x.me.features);launch(b,b.me&&b.me.role||'member');return}
+      fatal('Pas de connexion','Impossible de joindre '+PL.brandName()+'. Vérifiez votre réseau, puis réessayez.',function(){started=false;routed=true;PL.start(o)})});return}
     fatal('Service momentanément indisponible',PL.msg(e))})};
 
 function afterMe(me,o){PL.user=me.user||{};PL.clubs=me.clubs||[];
@@ -80,8 +88,8 @@ function afterMe(me,o){PL.user=me.user||{};PL.clubs=me.clubs||[];
     if(PL.migReturn&&onb&&!onb.completed){PL.onboarding({answers:onb.answers||{},step:'recuperer'});return}
     return PL.get('/api/club/bootstrap').then(function(b){cacheBoot(b);launch(b,(b.me&&b.me.role)||role)},function(e){
       if(e.status===402){PL.planInactive=true}
-      var c=cachedBoot(PL.clubId);if(c&&(e.offline||e.status>=500)){PL.offlineBoot=!!e.offline;launch(c,role);return}
-      fatal('Impossible de charger votre club',PL.msg(e))})}).catch(function(e){console.error(e);fatal('Une erreur est survenue',PL.msg(e))})}
+      return cachedBoot(PL.clubId).then(function(c){if(c&&(e.offline||e.status>=500)){PL.offlineBoot=!!e.offline;launch(c,role);return}
+      fatal('Impossible de charger votre club',PL.msg(e))})})}).catch(function(e){console.error(e);fatal('Une erreur est survenue',PL.msg(e))})}
 function isMgr(r){return r==='owner'||r==='manager'}
 
 function chooseClub(){document.body.classList.add('lv-booting');var r=root();
@@ -127,7 +135,7 @@ function launch(b,role){if(b.features)PL.setFeatures(b.features);
     document.body.classList.remove('lv-booting');var rt=root();if(rt)rt.innerHTML='';
     PL.decorate();
     try{PL.sync.start()}catch(e){console.error('sync',e)}
-    try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('/sw.js').catch(function(){})}catch(e){}
+    PL.pwa&&PL.pwa.afterLaunch();
     if(PL.sandbox&&PL.sandboxBanner)PL.sandboxBanner();
     if(PL.planInactive&&PL.planBanner)PL.planBanner();
     if(PL.offlineBoot)try{P.toast('Hors ligne : vous consultez la dernière version enregistrée.',{icon:'wifi',ms:5200})}catch(e){}

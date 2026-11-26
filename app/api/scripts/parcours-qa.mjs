@@ -34,8 +34,10 @@ const mail = (who) => `${who}.${RUN}@exemple.fr`;
 const PASS = "Cheval-Bai-2026!";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/* refus attendus (vérifications de droits faites exprès par le robot) : le navigateur les affiche en console */
+let expected4xx = 0;
 function watch(page, label) {
-  page.on("console", (m) => { if (m.type() === "error") { const t = m.text(); if (!/net::ERR_INTERNET_DISCONNECTED|ERR_TUNNEL_CONNECTION_FAILED|Failed to load resource: net::ERR_FAILED|ERR_NAME_NOT_RESOLVED|fonts\.g|open-meteo|api-adresse|cdnjs/.test(t)) problems.push(`[${label}] console : ${t}`); } });
+  page.on("console", (m) => { if (m.type() === "error") { const t = m.text(); if (expected4xx > 0 && /status of 4\d\d/.test(t)) { expected4xx--; return; } if (!/net::ERR_INTERNET_DISCONNECTED|ERR_TUNNEL_CONNECTION_FAILED|Failed to load resource: net::ERR_FAILED|ERR_NAME_NOT_RESOLVED|fonts\.g|open-meteo|api-adresse|cdnjs/.test(t)) problems.push(`[${label}] console : ${t}`); } });
   page.on("pageerror", (e) => problems.push(`[${label}] exception : ${e.message}`));
   page.on("response", (r) => { if (r.status() >= 500 && r.url().startsWith(URL0)) problems.push(`[${label}] ${r.status()} ${r.request().method()} ${r.url()}`); });
 }
@@ -216,7 +218,7 @@ async function main() {
   await sleep(1500);
   const inv2 = q1("SELECT status FROM invoices WHERE id = ?", inv.id);
   ok(inv2.status === "paid", "facture passée à « payée » (" + inv2.status + ")");
-  const lp = await api(g, "POST", "/api/pay/link", { invoice_id: inv.id });
+  expected4xx++; const lp = await api(g, "POST", "/api/pay/link", { invoice_id: inv.id });
   ok(lp.status >= 400 && lp.status < 500, "sans Stripe : refus propre (" + lp.status + " " + (lp.json?.error?.message || "") + ")");
 
   say("Export comptable et calendrier ICS");
@@ -242,7 +244,7 @@ async function main() {
   const Co = await acceptInvite(browser, E.coach, "Inès", "coach");
   ok(await Co.page.evaluate(() => PL.view === "coach"), "le coach arrive dans son espace");
   await shot(Co.page, "08-coach");
-  const empSees = await api(Emp.page, "GET", "/api/invoices");
+  expected4xx++; const empSees = await api(Emp.page, "GET", "/api/invoices");
   ok(empSees.status === 403, "l'employé ne voit pas les factures (" + empSees.status + ")");
 
   say("Déconnexion, reconnexion");
@@ -297,7 +299,7 @@ async function offlineScenario(g, Emp, club) {
   }
   await g.evaluate(() => { const l = DATA.lessons[0]; l.cap = 7; P.rerender(); });
   await sleep(1200);
-  const ind = await pe.evaluate(() => (document.querySelector(".lv-sync") || {}).innerText || "");
+  const ind = await pe.evaluate(() => (document.querySelector("[data-lv-pill]") || {}).innerText || "");
   await shot(pe, "09-hors-ligne");
   ok(/hors ligne/i.test(ind) && /attente/i.test(ind), "indicateur « Hors ligne · changements en attente » (" + ind.replace(/\s+/g, " ") + ")");
   ok(rec(club.id, "care").length === before, "rien n'est parti tant que le réseau est coupé");
@@ -311,7 +313,7 @@ async function offlineScenario(g, Emp, club) {
   ok(care.length === before + 10, "10 actions arrivées en base, sans doublon (" + (care.length - before) + ")");
   ok(new Set(care.map((c) => c.id)).size === care.length, "aucun doublon");
   ok(rec(club.id, "lessons")[0].cap === 7, "modification de la reprise arrivée");
-  const ind2 = await pe.evaluate(() => (document.querySelector(".lv-sync") || {}).innerText || "");
+  const ind2 = await pe.evaluate(() => (document.querySelector("[data-lv-pill]") || {}).innerText || "");
   ok(/à jour/i.test(ind2), "indicateur « Tout est à jour » (" + ind2.replace(/\s+/g, " ") + ")");
 }
 
