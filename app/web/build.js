@@ -86,7 +86,7 @@ const migScript = bundleMig();
 
 const THREE = PROBE && exists(path.join(DEMO, 'tools', 'three.min.js'))
   ? '<script>' + rd(path.join(DEMO, 'tools', 'three.min.js')) + '</script>'
-  : '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>';
+  : '<script src="/vendor/three-r128.min.js" defer></script>'; /* servi par l'appli et gardé hors ligne (écuries sans wifi) */
 
 /* écrans de démarrage iOS (app/web/static/splash, générés depuis le logo officiel) */
 let SPLASH = '';
@@ -140,6 +140,8 @@ fs.writeFileSync(path.join(DIST, 'index.html'), html);
 /* fichiers statiques : icônes, manifest, service worker */
 const STATIC = path.join(WEB, 'static');
 if (exists(STATIC)) fs.cpSync(STATIC, DIST, { recursive: true });
+fs.mkdirSync(path.join(DIST, 'vendor'), { recursive: true });
+fs.copyFileSync(path.join(DEMO, 'tools', 'three.min.js'), path.join(DIST, 'vendor', 'three-r128.min.js'));
 const manifest = {
   name: 'Stabl', short_name: 'Stabl', lang: 'fr', dir: 'ltr',
   description: 'Le logiciel de gestion des centres équestres et des écuries.',
@@ -161,7 +163,7 @@ const manifest = {
 fs.writeFileSync(path.join(DIST, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
 /* précache du service worker : la page (tout le code), le manifeste et les icônes. Les écrans de démarrage
    ne sont lus par iOS qu'à l'installation : inutile de les garder hors ligne. */
-const PRECACHE = ['/', '/manifest.webmanifest'].concat(fs.readdirSync(DIST).filter((f) => /^icon.*\.(png|svg)$/.test(f)).map((f) => '/' + f));
+const PRECACHE = ['/', '/manifest.webmanifest', '/vendor/three-r128.min.js'].concat(fs.readdirSync(DIST).filter((f) => /^icon.*\.(png|svg)$/.test(f)).map((f) => '/' + f));
 fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION).replace('__PRECACHE__', JSON.stringify(PRECACHE)));
 /* passerelle de migration (fil migration) servie sur /migration/ */
 /* le robot à distance prend globalThis.PIAFFE_ROBOT comme base d'URL */
