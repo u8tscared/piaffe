@@ -154,6 +154,8 @@ svg.i.xl{width:32px;height:32px;stroke-width:1.7}
 .big{font:800 44px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .mono{font-family:var(--f-mono);font-size:13.5px}
 .ellip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* écrans du gérant revus : un texte de liste passe sur deux lignes au lieu d'être coupé */
+.page:is([data-m="cockpit"],[data-m="rapports"],[data-m="adherents"],[data-m="adherent"],[data-m="pensions"],[data-m="contrats"],[data-m="boutique"],[data-m="facturation"],[data-m="compta"],[data-m="equipe"]) :is(div,b,span.grow>span,span>b).ellip{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:break-word}
 .hr{height:1px;background:var(--line);border:0;margin:6px 0}
 
 /* ---------- En-tête de page ---------- */

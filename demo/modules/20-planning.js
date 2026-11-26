@@ -96,9 +96,9 @@ button.pl-stt:hover{box-shadow:0 10px 22px -12px var(--d)}
 button.pl-stt:active{transform:scale(.95)}
 .pl-stt.hot .si{background:var(--cr);color:#fff}
 .pl-tbx{display:flex;gap:4px;flex:none}
-.pl-fbar{display:flex;flex-wrap:wrap;gap:8px 6px;align-items:center;margin-bottom:16px;padding:2px}
+.pl-fbar{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;margin-bottom:16px;padding:2px 40px 2px 2px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
 .pl-chip{flex:none;gap:7px;padding:0 13px 0 11px;min-height:40px;font-size:15px}
-.pl-sepv.brk{flex-basis:100%;width:auto;height:0;margin:0;background:none}
+.pl-sepv.brk{flex:none}
 .pl-chip i{width:10px;height:10px;border-radius:50%;background:var(--d,var(--mut-2))}
 .pl-chip[aria-pressed="true"] i{background:currentColor}
 .pl-chip .av{width:26px;height:26px;font-size:13px;margin-left:-6px}
@@ -155,7 +155,7 @@ button.pl-stt:active{transform:scale(.95)}
 .pl-ev .hz{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;overflow:hidden;max-height:26px}
 .pl-ev .hz span{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px 0 5px;border-radius:999px;background:color-mix(in srgb,var(--surface) 72%,transparent);font:600 13px var(--f-text);white-space:nowrap}
 .pl-ev .hz svg{width:15px;height:15px}
-.pl-ev.wk .t b{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;hyphens:auto;-webkit-hyphens:auto;line-height:1.18}
+.pl-ev.wk .t b{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;hyphens:manual;overflow-wrap:normal;word-break:normal;line-height:1.18}
 .pl-ev.wk .m em{font-style:normal;font:700 13px var(--f-text);font-variant-numeric:tabular-nums;margin-left:auto;flex:none;opacity:.85}
 .pl-ev.wk .m .ellip{flex:1;min-width:0}
 .pl-ev.wk.short .t b{-webkit-line-clamp:1}
@@ -280,8 +280,9 @@ button.pl-stt:active{transform:scale(.95)}
  .pl-sepv.brk{flex-basis:auto;width:1px;height:28px;margin:0 4px;background:var(--line-2)}
  .pl-fbar{margin:0 -16px 14px;padding:2px 32px 2px 16px;flex-wrap:nowrap;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
  .pl-cal{border-radius:24px}
- .pl-calb{grid-template-columns:52px minmax(0,1fr)}
+ .pl-calb{grid-template-columns:58px minmax(0,1fr)}
  .pl-hrs span{font-size:13px;right:8px}
+ .pl-hrs .nowt{right:3px;padding:2px 5px;letter-spacing:-.02em}
  .pl-below{grid-template-columns:minmax(0,1fr)}
  .pl-row{grid-template-columns:52px 5px minmax(0,1fr) auto 16px;padding:10px 14px}
  .pl-card{padding:18px;margin-top:14px}
@@ -423,14 +424,16 @@ function lanes(list){var cur=null;list.sort(function(a,b){return a.s-b.s||b.dur-
 function fm(e){var f=ST.fd&&Object.keys(ST.fd).length;return (!ST.coach||e.coach===ST.coach||(ST.coach==='ext'&&/^c/.test(e.coach)))&&(!ST.arena||e.arena===ST.arena)&&(!ST.lvl||lv(e.l)===ST.lvl)&&(!f||ST.fd[dk(e)])}
 function isPast(e){return ST.off<0||(ST.off===0&&(e.d<TDI||(e.d===TDI&&e.s+e.dur<=NOW)))}
 function horsesOf(l){return (l.riders||[]).map(function(r){var h=l.horses&&l.horses[r]&&D.horse(l.horses[r]);return h?h.name.split(' ')[0]:null}).filter(Boolean)}
+/* titre court pour la grille de la semaine : le titre complet reste dans l'aperçu et la fiche */
+function stitle(l){return l.title.split(',')[0].replace(/^Cours particulier/,'Particulier').replace(/^Cours collectif/,'Collectif')}
 function evHTML(e,mode){var l=e.l,c=D.person(l.coach)||{first:'',last:''},n=(l.riders||[]).length,full=l.cap>0&&n>=l.cap,k=dk(e),ht=e.dur/60*HP,svc=k==='svc';
  var short=ht<HP*.62,wide=mode==='day'||mode==='mday',hs=horsesOf(l),f=l.cap>0?Math.round(n/l.cap*100):100,wk=mode==='week',nar=wk&&e.lanes>1&&!short,lng=wk&&l.title.length>14;
  var cls='pl-ev d-'+DK[k][1]+(short?' short':'')+(isPast(e)?' past':'')+(e.cx?' cx':'')+(e.conf?' conf':'')+(fm(e)?'':' dim')+(svc?' svc':'')+(ST.landed===l.id?' landed':'')+(wk?' wk':'')+(nar?' nar':'');
- var sub=e.cx?'Annulée, cavaliers prévenus':(e.k==='resa'?c.first+' '+c.last:c.first)+(mode==='week'&&e.lanes<2&&!(l.cap>1)||mode==='mday'?' · '+shortPlace(e):'');
- var inner='<span class="t"><b>'+l.title+'</b>'+(e.conf?ICON('alert'):'')+(ST.closed[l.id+'@'+ST.off]?ICON('checkc'):'')+(l.cap>1&&!short&&e.lanes<2&&!wk?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
+ var sub=e.cx?'Annulée, cavaliers prévenus':(e.k==='resa'?c.first+' '+c.last:c.first)+(mode==='mday'?' · '+shortPlace(e):'');
+ var inner='<span class="t"><b>'+(wk?stitle(l):l.title)+'</b>'+(e.conf?ICON('alert'):'')+(ST.closed[l.id+'@'+ST.off]?ICON('checkc'):'')+(l.cap>1&&!short&&e.lanes<2&&!wk?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
  if(nar)inner+='<span class="m">'+(c.first&&e.k!=='resa'?'<span class="mav">'+ini(c)+'</span>':'')+(l.cap>1?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
  else if(!short||wide)inner+='<span class="m">'+(c.first&&e.k!=='resa'?'<span class="mav">'+ini(c)+'</span>':'')+'<span class="ellip">'+sub+'</span>'+(wk&&l.cap>1&&!short?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
- if(!short&&ht>=HP*.9&&e.lanes<2&&hs.length&&!svc&&!(lng&&ht<HP*1.4)){var hzOk=wide&&ht>=HP*1.2,mx=hzOk?6:wide?4:2;inner+=hzOk?'<span class="hz">'+hs.slice(0,mx).map(function(x){return '<span>'+HORSE_GLYPH()+x+'</span>'}).join('')+(hs.length>mx?'<span>+'+(hs.length-mx)+'</span>':'')+'</span>':'<span class="h1">'+HORSE_GLYPH()+'<span>'+hs.slice(0,mx).join(', ')+'</span>'+(hs.length>mx?'<b>+'+(hs.length-mx)+'</b>':'')+'</span>'}
+ if(!short&&ht>=HP*.9&&e.lanes<2&&hs.length&&!svc&&!(lng&&ht<HP*1.4)){var hzOk=wide&&ht>=HP*1.2,mx=hzOk?6:wide?4:2;inner+=hzOk?'<span class="hz">'+hs.slice(0,mx).map(function(x){return '<span>'+HORSE_GLYPH()+x+'</span>'}).join('')+(hs.length>mx?'<span>+'+(hs.length-mx)+'</span>':'')+'</span>':'<span class="h1">'+HORSE_GLYPH()+'<span>'+(wk?hs[0]:hs.slice(0,mx).join(', '))+'</span>'+(wk?(hs.length>1?'<b>+'+(hs.length-1)+'</b>':''):(hs.length>mx?'<b>+'+(hs.length-mx)+'</b>':''))+'</span>'}
  return '<button class="'+cls+'" data-ev="'+l.id+'" data-d="'+e.d+'" data-flip="'+l.id+'@'+e.d+'" style="--f:'+f+'%;--l:'+(e.lane/e.lanes)+';--w:'+(1/e.lanes)+';top:'+((e.s-H0*60)/60*HP)+'px;height:'+ht+'px" aria-label="'+F.esc(l.title+', '+DNL[e.d]+' '+hm(e.s)+', '+place(e))+'"><span class="in">'+inner+'</span></button>'}
 function gridHTML(cols,mode){/* cols:[{head, cls, evs, off, now, key}] */
  var g='<div class="pl-cal" data-mode="'+mode+'">'+(mode!=='mday'?'<div class="pl-calh" style="--n:'+cols.length+'"><span></span>'+cols.map(function(c){return c.head}).join('')+'</div>':'')+
@@ -461,7 +464,7 @@ var redraw=function(){};
 P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning',n:10,phoneTitle:'Planning',short:'Planning',
  badge:function(){var n=conflicts(weekEvents(0)).length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){var first=true,pop=null,popT=null,selBox=null;
-  function draw(o){o=o||{};var mob=P.isMobile();HP=mob?76:84;closePop();
+  function draw(o){o=o||{};var mob=P.isMobile();HP=mob?76:92;closePop();
    var evs=weekEvents(ST.off),cf=conflicts(evs);cf.forEach(function(c){c.a.conf=c.b.conf=true});
    var teach=evs.filter(function(e){return e.l.cap>0&&!e.cx}),places=0,ins=0,wait=0;teach.forEach(function(e){places+=e.l.cap;ins+=e.l.riders.length;wait+=e.l.wait||0});
    var pct=places?Math.round(ins/places*100):0,dDate=dateOf(ST.day,ST.off),vacW=vacation(D.iso(dateOf(2,ST.off))),dc=dayCnt(evs),nf=(ST.coach?1:0)+(ST.arena?1:0)+(ST.lvl?1:0);
@@ -523,7 +526,7 @@ P.mod({id:'planning',role:'gerant',group:'Club',title:'Planning',icon:'planning'
   /* survol détaillé d'un bloc */
   function closePop(){clearTimeout(popT);if(pop)pop.classList.remove('on')}
   function showPop(b,evs){var e=evs.find(function(x){return x.l.id===b.getAttribute('data-ev')&&x.d===+b.getAttribute('data-d')});if(!e)return;var l=e.l,k=dk(e),c=D.person(l.coach),n=l.riders.length,ld=loads(e.d);
-   var root=P.app();if(!pop||!root.contains(pop)){pop=document.createElement('div');pop.className='pl-pop';root.appendChild(pop)}
+   var root=P.app();if(!pop||!root.contains(pop)){pop=document.createElement('div');pop.className='pl-pop';root.appendChild(pop)}pop.setAttribute('data-transient','');
    pop.className='pl-pop d-'+DK[k][1];
    pop.innerHTML='<div class="pk">'+DK[k][0]+(isPast(e)?' · terminée':'')+(e.cx?' · annulée':'')+'</div><h4>'+l.title+'</h4><div class="pm">'+cap1(DNL[e.d])+' · '+hm(e.s)+' à '+hm(e.s+e.dur)+' · '+place(e)+'</div>'+
     (c?'<div class="pc">'+U.av(c,'sm')+c.first+' '+c.last+'</div>':'')+
@@ -645,7 +648,7 @@ function openLesson(id,d){var e=weekEvents(ST.off).find(function(x){return x.l.i
   on(b,'[data-allp]',function(){l.riders.forEach(function(r){if(!att[r])att[r]='p'});paint()});
   on(b,'[data-hb]',function(x){var r=x.getAttribute('data-hb');picking=picking===r?null:r;paint();var pk=$('.pl-pick',body);if(pk)pk.scrollIntoView({block:'nearest',behavior:'smooth'})});
   on(b,'[data-pick]',function(x){var h=D.horse(x.getAttribute('data-pick'));l.horses[picking]=h.id;var m=D.member(picking);picking=null;paint();redraw();P.toast(h.name+' attribué à '+m.first+' '+m.last)});
-  on(b,'[data-print]',function(){P.toast('Feuille de monte envoyée à l’imprimante du bureau',{icon:'doc'})});
+  on(b,'[data-print]',function(){var c0=D.person(l.coach)||{first:'',last:''};P.download('feuille-de-monte-'+String(l.title).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-')+'.pdf',{title:'Feuille de monte',sub:l.title+' · '+cap1(DNL[e.d])+' '+hm(e.s)+' · '+place(e)+' · '+c0.first+' '+c0.last,org:D.club.name,blocks:[{table:{cols:['Cavalier','Galop','Cheval','Présent'],w:[3,1.2,3,1.2],rows:(l.riders||[]).map(function(r){var m=D.member(r)||D.person(r)||{first:'',last:''},h=l.horses&&l.horses[r]&&D.horse(l.horses[r]);return [m.first+' '+m.last,m.galop?'G'+m.galop:'',h?h.name:'à attribuer','']})}}]},null,{msg:'Feuille de monte téléchargée, prête à imprimer'})});
   on(b,'[data-kl]',function(){sh.close();P.sellerie({focus:'reprises',lesson:ST.off===0&&e.d===TDI?l.id:null})});
   on(b,'[data-prog]',function(){openProg(l,function(){ST.tab='seance';setTimeout(function(){openLesson(l.id,e.d)},P.RM?0:240)})});
   on(b,'[data-undo]',function(){l.horses=ST.auto[key].before;delete ST.auto[key];paint();redraw();P.toast('Attribution précédente rétablie',{icon:'refresh'})});
@@ -1268,7 +1271,7 @@ if(!D.comThreads){(function(){
   {id:'th2',title:'Groupe Concours Rambouillet',kind:'grp',ch:'wa',ids:kr,sub:kr.length+' cavaliers, Thomas Roux et Pauline Arnaud',when:'08:55',unread:4,msgs:[{f:'s04',t:'Bonjour à tous, les horaires de dimanche sont tombés. Reconnaissance du Club 2 à 8 h 30.',h:'08:31'},{f:kr[0],t:'Super, on part à quelle heure ?',h:'08:36'},{f:'s04',t:'Départ 6 h 45, soyez là à 6 h 30.',h:'08:47'},{f:kr[3],t:'Il reste une place en covoiturage depuis Rambouillet ?',h:'08:49'},{f:'c01',t:'Je serai au paddock dès 8 h pour la détente des Club Élite.',h:'08:52'},{f:kr[5],t:'Parfait, merci Thomas.',h:'08:55'}],sugg:'Bonjour à tous. Oui, il reste une place dans la voiture de la famille au départ de Rambouillet centre. Pensez à vos licences et au livret de votre cheval.'},
   {id:'th3',title:'Famille Laurent',kind:'adh',ch:'app',who:'m142',sub:'Parents de Chloé, Galop 1',when:'Hier',unread:0,todo:true,msgs:[{f:'m142',t:'Bonsoir, Chloé a été malade samedi dernier. Est-ce que Chloé peut rattraper samedi ?',h:'Hier, 19:42'}],sugg:'Bonjour, bien sûr. Il reste une place samedi à 9 h en Galop 1-2 avec Inès. Je l’ai réservée pour Chloé avec son crédit de rattrapage, la confirmation arrive dans l’application.'},
   {id:'th5',title:l1.title+' · lundi 17 h',kind:'grp',ch:'app',ids:l1.riders,sub:'Groupe de reprise, '+l1.riders.length+' cavaliers et leurs parents',when:'Hier',unread:0,msgs:[{f:'s02',t:'Bonsoir, pensez aux gilets lundi : on sort en extérieur si le temps le permet.',h:'Hier, 18:10'},{f:l1.riders[1],t:'Noté, merci Hugo.',h:'Hier, 18:24'},{f:l1.riders[3],t:'Élise sera absente lundi, elle a un contrôle. On peut rattraper ?',h:'Hier, 20:02'}],sugg:'Bonsoir, c’est noté. L’absence est excusée et un rattrapage est crédité, à réserver dans l’application.'},
-  {id:'th6',title:D.name(li.member),kind:'adh',ch:'sms',who:li.member,sub:'Relance de la facture '+li.id,when:'Lun.',unread:1,msgs:[{f:'me',t:'Bonjour, la facture '+li.id+' de '+F.eur(li.amount)+' est en attente depuis le '+F.date(li.due)+'. Vous pouvez la régler ici : piaffe.example/p/'+li.id.slice(-4),h:'Lun., 10:00',st:'Délivré'},{f:li.member,t:'Bonjour, je fais le virement demain. Désolé pour le retard.',h:'Lun., 12:17'}],sugg:'Merci beaucoup, c’est noté. Bonne journée.'},
+  {id:'th6',title:D.name(li.member),kind:'adh',ch:'sms',who:li.member,sub:'Relance de la facture '+li.id,when:'Lun.',unread:1,msgs:[{f:'me',t:'Bonjour, la facture '+li.id+' de '+F.eur(li.amount)+' est en attente depuis le '+F.date(li.due)+'. Vous pouvez la régler ici : stablapp.fr/p/'+li.id.slice(-4),h:'Lun., 10:00',st:'Délivré'},{f:li.member,t:'Bonjour, je fais le virement demain. Désolé pour le retard.',h:'Lun., 12:17'}],sugg:'Merci beaucoup, c’est noté. Bonne journée.'},
   {id:'th7',title:'Propriétaires',kind:'grp',ch:'wa',ids:D.members.filter(function(m){return m.forfait==='f5'}).map(function(m){return m.id}),sub:'12 propriétaires',when:'Lun.',unread:0,msgs:[{f:'me',t:'Bonjour, le maréchal passe jeudi à 9 h. Merci de laisser les licols aux boxes.',h:'Lun., 09:30',st:'Lu par 11'},{f:'m014',t:'Merci Claire. Il peut regarder le postérieur droit de ma jument ?',h:'Lun., 09:52'},{f:'me',t:'Oui, c’est ajouté à sa tournée.',h:'Lun., 10:04',st:'Lu par 12'}],sugg:'Rappel : le maréchal est là demain à 9 h.'},
   {id:'th4',title:'Antoine Leroy',kind:'team',ch:'app',who:'s05',sub:'Palefrenier soigneur',when:'08:05',unread:0,msgs:[{f:'s05',t:'Bonjour Claire, Xanthos a passé une nuit calme. Je le surveille toutes les deux heures.',h:'07:12'},{f:'me',t:'Merci Antoine. Préviens-moi s’il ne boit toujours pas à 10 h.',h:'07:20',st:'Lu'},{f:'s05',t:'Xanthos a recrotté, il mange un peu.',h:'08:05'}],sugg:'Bonne nouvelle, merci. On garde la surveillance jusqu’à ce soir et je préviens le Dr Leclerc.'},
   {id:'th8',title:'Manon Lemoine',kind:'team',ch:'app',who:'s09',sub:'Secrétariat et accueil',when:'08:40',unread:1,msgs:[{f:'s09',t:'Trois demandes d’essai sont arrivées par le site. Je les place mercredi à 14 h ?',h:'08:40'}],sugg:'Oui, mercredi 14 h avec Hugo, il reste trois places. Merci Manon.'}];
@@ -1333,7 +1336,7 @@ P.mod({id:'communication',role:'gerant',group:'Club',title:'Communication',icon:
   function pollHTML(p){var tot=sum(p.opts.map(function(o){return o.n})),mx=Math.max.apply(null,p.opts.map(function(o){return o.n}));
    return '<div class="cm-poll" data-poll="'+p.id+'"><div class="hrow sp" style="align-items:flex-start"><div style="min-width:0"><div class="b">'+p.q+'</div><div class="xs mut">'+p.aud+' · '+(p.open?'clôture '+p.closes:p.closes)+'</div></div>'+(p.open?U.chip(p.live?'Réponses en direct':'En cours',p.live?'warn':'acc',true):U.chip('Terminé','',true))+'</div>'+
     p.opts.map(function(o){return '<div class="cm-po'+(o.n===mx&&mx?' lead':'')+'"><i style="--v:'+(tot?o.n/p.total*100:0)+'%"></i><span class="grow b s">'+o.l+'</span>'+(o.ids&&o.ids.length&&o.n?U.avs(o.ids.slice(0,o.n),3):'')+'<b class="num">'+o.n+'</b></div>'}).join('')+
-    '<div class="hrow sp wrap"><span class="xs mut"><b class="num" style="color:var(--ink)">'+tot+'</b> réponses sur '+p.total+(p.total-tot?' · '+(p.total-tot)+' sans réponse':'')+'</span>'+(p.open?'<span class="hrow" style="--g:6px">'+(p.total-tot?'<button class="btn sm" data-nudge="'+p.id+'">Relancer les '+(p.total-tot)+'</button>':'')+'<button class="btn ghost sm" data-endp="'+p.id+'">Clôturer</button></span>':'<button class="btn ghost sm" data-expp>'+ICON('download','sm')+'Exporter la liste</button>')+'</div></div>'}
+    '<div class="hrow sp wrap"><span class="xs mut"><b class="num" style="color:var(--ink)">'+tot+'</b> réponses sur '+p.total+(p.total-tot?' · '+(p.total-tot)+' sans réponse':'')+'</span>'+(p.open?'<span class="hrow" style="--g:6px">'+(p.total-tot?'<button class="btn sm" data-nudge="'+p.id+'">Relancer les '+(p.total-tot)+'</button>':'')+'<button class="btn ghost sm" data-endp="'+p.id+'">Clôturer</button></span>':'<button class="btn ghost sm" data-expp="'+p.id+'">'+ICON('download','sm')+'Exporter la liste</button>')+'</div></div>'}
   function draw(){var mob=P.isMobile(),un=D.comThreads.filter(function(t){return t.unread}).length,sch=D.comCamps.filter(function(c){return c.status==='programmé'}).length;
    var todo=D.comThreads.filter(function(t){return t.todo}).length,pins=D.comPins.filter(function(p){return p.on}).length,polls=D.comPolls.filter(function(p){return p.open}).length;
    var h='<div class="px-ph"><div><div class="eb"><span class="dot"></span>Club · messagerie, envois et annonces</div><h1>Communication</h1><div class="sub"><b>'+plural(un,'conversation non lue','conversations non lues')+'</b>'+(todo?', '+plural(todo,'demande','demandes')+' à traiter':'')+', '+plural(sch,'envoi programmé','envois programmés')+' et 71'+NB+'% d’ouverture en moyenne.</div></div><div class="acts"><button class="btn" data-tpl>'+ICON('doc')+(mob?'Modèles':'Modèles et automatismes')+'</button><button class="btn pri" data-newc>'+ICON('send')+(mob?'Envoi groupé':'Nouvel envoi groupé')+'</button></div></div>';
@@ -1369,7 +1372,7 @@ P.mod({id:'communication',role:'gerant',group:'Club',title:'Communication',icon:
    on(el,'[data-newpin]',openPin);on(el,'[data-newpoll]',openPoll);
    on(el,'[data-nudge]',function(b){var p=D.comPolls.find(function(x){return x.id===b.getAttribute('data-nudge')}),k=p.total-sum(p.opts.map(function(o){return o.n}));b.outerHTML=U.chip('Relance envoyée','ok',true);P.toast('Relance envoyée à '+plural(k,'personne')+' sans réponse',{icon:'bell'})});
    on(el,'[data-endp]',function(b){var p=D.comPolls.find(function(x){return x.id===b.getAttribute('data-endp')});p.open=false;p.live=false;p.closes='clos aujourd’hui';draw();P.toast('Sondage clôturé, résultat partagé au groupe')});
-   on(el,'[data-expp]',function(){P.toast('Liste des réponses exportée en Excel',{icon:'download'})})}
+   on(el,'[data-expp]',function(b){var p=D.comPolls.find(function(x){return x.id===b.getAttribute('data-expp')})||D.comPolls[0],rows=[['Question','Réponse','Nombre','Personnes']];p.opts.forEach(function(o){rows.push([p.q,o.l,o.n,(o.ids||[]).map(function(i){return D.name(i)}).join(', ')])});P.download('sondage-'+p.id+'-reponses.csv',rows,null,{msg:'Réponses du sondage téléchargées pour Excel'})})}
   comRedraw=function(fresh){if(el.isConnected){first=!!fresh;draw()}};
   draw()}});
 
