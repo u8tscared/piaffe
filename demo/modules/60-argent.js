@@ -78,7 +78,7 @@ P.css(`
 .fa-ds{display:none}@media (max-width:560px){.fa-dl{display:none}.fa-ds{display:inline}.sf [data-a="draft"]{flex:0 0 auto!important;padding-inline:14px}}
 .ar-nil{display:inline-block;width:10px;height:1.5px;border-radius:1px;background:var(--line-2);vertical-align:middle}
 .ar-k4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.ar-c{opacity:.55;font-size:.86em}
+.ar-c{opacity:.55;font-size:max(13px,.86em)}
 .ar-tabs{margin:20px 0 16px}
 .ar-tb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;min-width:0}
 .ar-tb .search{flex:1 1 220px;max-width:340px}
@@ -130,6 +130,7 @@ P.css(`
 .ar-lk{color:var(--acc);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:4px}
 .ar-m{display:none}
 .tbl td.ar-wr{white-space:normal;min-width:120px;line-height:1.3}
+@container main (max-width:1320px){.ar-h0{display:none}}
 @container main (max-width:1080px){.ar-h1{display:none}.ar-cols{grid-template-columns:minmax(0,1fr)}}
 @container main (max-width:860px){.ar-k4{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
 .ar-ps{display:none}
@@ -530,7 +531,7 @@ function faFactures(){var all=allInv(),q=norm(SF.q),cnt={all:all.length};all.for
   h+='<div class="ar-t">'+tbl([
     {l:'Client',f:function(r){var m=D.member(r.member);return '<div class="ar-who">'+(r.payer?sq(r.payerIcon||'team','acc'):U.av(m))+'<div style="min-width:0"><b>'+(r.payer?E(r.payer):m.first+' '+m.last)+'</b><span class="s2">'+(r.payer?'Pour '+m.first+' '+m.last+' · ':'')+E(r.label)+'</span></div></div>'}},
     {l:'Numéro',f:function(r){return '<span class="mono">'+r.id+'</span>'}},
-    {l:'Émise',c:'ar-h1',f:function(r){return '<span class="mut">'+F.date(r.date)+'</span>'}},
+    {l:'Émise',c:'ar-h1 ar-h0',f:function(r){return '<span class="mut">'+F.date(r.date)+'</span>'}},
     {l:'Échéance',f:function(r){return r.status==='en retard'?'<span class="badc b">'+lateDays(r)+' j de retard</span>':r.status==='avoir'?'<span class="mut">'+r.ref+'</span>':F.date(r.due)}},
     {l:'Règlement',c:'ar-h1',f:function(r){return '<span class="hrow mut" style="--g:6px">'+ICON(METH[r.method]||'card','sm')+r.method+'</span>'}},
     {l:'Montant',n:1,f:function(r){return '<b>'+eu2(r.amount)+'</b>'+(partial(r)?'<span class="s2 badc">'+F.eur(rest(r))+' restants</span>':'')}},
@@ -1325,11 +1326,11 @@ P.css(`
 .ar-who{gap:14px}
 .ar-who .av{width:42px;height:42px}
 .ar-who b{font-size:15.5px;display:block}
-.ar-tbl td .s2{font-size:13.5px;margin-top:2px}
+.ar-tbl td .s2{font-size:13.5px;margin-top:2px;white-space:normal;max-width:340px}
 .ar-tbl .mono{font-size:13.5px}
 
 /* liste en cartes au téléphone */
-.ar-m.card{background:transparent;box-shadow:none;border:0;display:flex;flex-direction:column;gap:10px}
+@container main (max-width:620px){.ar-m.card{background:transparent;box-shadow:none;border:0;display:flex;flex-direction:column;gap:10px}}
 .ar-m .fa-mi{background:var(--surface);border-radius:20px;box-shadow:inset 0 0 0 1px var(--line);padding:16px;min-height:84px;transition:transform var(--t-1),box-shadow var(--t-2)}
 .ar-m .fa-mi:active{transform:scale(.985)}
 .ar-m .fa-mi::before{display:none}

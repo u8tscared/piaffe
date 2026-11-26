@@ -170,7 +170,7 @@ button.ck-pt:hover{background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .ck-td.on .ck-ck{background:var(--hz);box-shadow:none;color:#fff;transform:scale(1.08)}
 .ck-td.on .ck-ck svg{stroke-dashoffset:0}
 .ck-td .tx{display:block;font:600 15.5px/1.3 var(--f-text)}
-.ck-td .mt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font:400 14px/1.3 var(--f-text);color:var(--mut);margin-top:2px;overflow:hidden}
+.ck-td .mt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;font:400 14px/1.3 var(--f-text);color:var(--mut);margin-top:2px;overflow:hidden}
 .ck-td .mt .u{color:var(--cr);font-weight:700}
 .ck-td.on .tx{text-decoration:line-through;text-decoration-thickness:2px;opacity:.55}
 .ck-td.on .mt{opacity:.5}

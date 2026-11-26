@@ -58,7 +58,9 @@ P.ui={
     var h='<div class="tw'+(o.card===false?'':' card')+'"><table class="tbl"><thead><tr>'+cols.map(function(c){return '<th class="'+(c.n?'n ':'')+(c.hide?'hide-s':'')+'"'+(c.w?' style="width:'+c.w+'"':'')+'>'+c.l+'</th>'}).join('')+'</tr></thead><tbody>';
     rows.forEach(function(r){h+='<tr'+(o.click?' class="click" data-row="'+F.esc(r[o.key||'id'])+'"':'')+'>'+cols.map(function(c){var v=c.f?c.f(r):F.esc(r[c.k]);return '<td class="'+(c.n?'n ':'')+(c.hide?'hide-s':'')+'">'+v+'</td>'}).join('')+'</tr>'});
     return h+'</tbody></table></div>'},
-  weatherIcon:function(i){return ICON(i)}
+  weatherIcon:function(i){return ICON(i)},
+  /* squelette de chargement : P.ui.skel(['90%','70%','40%']) ou P.ui.skel(3) */
+  skel:function(l){l=typeof l==='number'?['92%','76%','58%','84%','40%'].slice(0,l):l||['90%','70%','45%'];return '<div class="skl" aria-busy="true" aria-label="Chargement">'+l.map(function(w){return '<i class="skel" style="width:'+w+'"></i>'}).join('')+'</div>'}
 };
 
 /* ---------- Graphiques SVG ----------
@@ -225,10 +227,10 @@ P.renderShell=function(){
 function renderView(anim,dir){
   var m=P.mods[S.route];if(!m||m.role!==S.role){S.route=P.roles[S.role].home;m=P.mods[S.route]}
   if(!m){view.innerHTML='<div class="page">'+P.ui.empty('info','Module en construction')+'</div>';return}
-  var page=document.createElement('div');page.className='page';page.setAttribute('data-m',m.id);view.innerHTML='';view.appendChild(page);view.scrollTop=0;
+  var page=document.createElement('div');page.className='page';page.setAttribute('data-screen',m.id);view.innerHTML='';view.appendChild(page);view.scrollTop=0;
   if(anim!==false){view.setAttribute('data-dir',dir||'tab');view.classList.remove('enter');void view.offsetWidth;view.classList.add('enter')}
   try{m.render(page,P.ctx())}catch(e){console.error(e);page.innerHTML=P.ui.empty('alert','Cet écran a rencontré une erreur',F.esc(e.message))}
-  P.animate(page);
+  P.animate(page);if(anim!==false)P.enter(page);
   if(window.requestAnimationFrame)requestAnimationFrame(function(){P.fitCharts(page)});
 }
 P.ctx=function(){return {role:S.role,params:S.params,mobile:P.isMobile(),me:D.person(P.roles[S.role].who),D:D,ui:P.ui,fmt:F,chart:P.chart,go:P.go,sheet:P.sheet,toast:P.toast,rerender:P.rerender}};
@@ -259,6 +261,16 @@ function R0(m){return P.roles[m.role].tabs.indexOf(m.id)>=0}
 P.back=function(){var s=S.stack.pop();if(s)P.go(s.route,s.params,{back:true})};
 
 /* ---------- Animations d'entrée et compteurs ---------- */
+/* entrée d'écran : les cartes visibles apparaissent en cascade, les grands chiffres montent jusqu'à leur valeur */
+var NUMRE=/^([−-]?)(\d{1,3}(?:[\s\u00a0\u202f]\d{3})+|\d+)(,\d+)?/;
+P.enter=function(root){if(RM||!root||!root.animate)return;var vh=(view&&view.clientHeight)||innerHeight,top0=root.getBoundingClientRect().top,k=0;
+  $$('.card',root).forEach(function(c){if(c.closest('.rise')||c.parentElement.closest('.card'))return;var r=c.getBoundingClientRect();if(r.top-top0>vh||!r.height)return;
+    c.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:440,delay:Math.min(k++,9)*45,easing:'cubic-bezier(.16,1,.3,1)',fill:'backwards'})});
+  $$('.kpi .val,.big,[data-countup]',root).forEach(function(el){if(el.querySelector('[data-count]')||el.hasAttribute('data-count'))return;var r=el.getBoundingClientRect();if(r.top-top0>vh)return;
+    var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),n;while((n=w.nextNode())&&!n.textContent.trim());if(!n)return;var t=n.textContent,lead=t.match(/^\s*/)[0],m=t.slice(lead.length).match(NUMRE);if(!m)return;
+    var to=parseFloat((m[1]?'-':'')+m[2].replace(/[\s\u00a0\u202f]/g,'')+(m[3]?'.'+m[3].slice(1):'')),dec=m[3]?m[3].length-1:0,rest=t.slice(lead.length+m[0].length);if(!isFinite(to)||Math.abs(to)<2)return;
+    var fmt=function(v){var s=Math.abs(v).toLocaleString('fr-FR',{minimumFractionDigits:dec,maximumFractionDigits:dec}).replace(/[\u202f\u2009]/g,'\u00a0');if(!/[\s\u00a0\u202f]/.test(m[2]))s=s.replace(/\u00a0/g,'');return lead+(v<0?m[1]:'')+s+rest};
+    var t0=performance.now(),d=850;n.textContent=fmt(0);(function st(now){if(!n.isConnected)return;var q=Math.min(1,(now-t0)/d),e=1-Math.pow(1-q,4);n.textContent=q<1?fmt(to*e):t;if(q<1)requestAnimationFrame(st)})(t0)})};
 P.animate=function(root){
   if(root!==view&&window.requestAnimationFrame)requestAnimationFrame(function(){P.fitCharts(root)});
   $$('.rise',root).forEach(function(g){Array.prototype.forEach.call(g.children,function(c,i){c.style.setProperty('--i',Math.min(i,10))})});

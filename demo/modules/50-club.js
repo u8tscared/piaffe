@@ -451,7 +451,7 @@ function signupRows(){var p=pending();if(!p.length)return U.empty('checkc','Tout
   return p.map(function(s){var miss=s.docs.filter(function(d){return d===0}).length;return '<div class="cla-in" data-in="'+s.id+'">'+ini(s.first,s.last,s.c)+'<div style="min-width:0"><div class="b s ellip">'+s.first+' '+s.last+' <span class="mut" style="font-weight:500">· '+s.age+' ans</span></div><div class="xs mut ellip">'+s.wish+' · '+(miss?'<span class="warnc">'+pl(miss,'pièce manquante','pièces manquantes')+'</span>':'dossier complet')+'</div></div><button class="btn sm" data-acc>Valider</button></div>'}).join('')}
 /* ---------- Ajouter un adhérent : cavalier, formule, vérification et mail de bienvenue ---------- */
 var LICP={j:25,a:36};
-function hhm(t){var p=t.split(':');return +p[0]+' h'+(p[1]&&p[1]!=='00'?' '+p[1]:'')}
+function hhm(t){var p=t.split(':');return +p[0]+'\u00a0h'+(p[1]&&p[1]!=='00'?'\u00a0'+p[1]:'')}
 function ageFrom(iso){if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||''))return null;var b=new Date(iso+'T12:00:00'),t=D.today instanceof Date?D.today:new Date(),a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
 function okMail(s){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(s||'').trim())}
 function okTel(s){var d=String(s||'').replace(/[\s.\-]/g,'').replace(/^\+33/,'0');return /^0[1-9]\d{8}$/.test(d)}
@@ -607,11 +607,11 @@ function sheetCampSuivi(){var c=AS.rc,L=rcList(c.tgt),f='attente',LAB={ok:['Réi
 
 /* ---------- Cavaliers de passage : fiche courte, décharge, licence vacances, paiement à la séance ---------- */
 D.walkins=D.walkins||[
- {id:'wk1',first:'Chloé',last:'Vasseur',age:12,c:'c5',level:'Galop 3',what:'Balade d’une heure',price:35,lic:true,method:'Carte',at:'9 h 05'},
- {id:'wk2',first:'Antoine',last:'Lemaire',age:41,c:'c4',level:'Débutant',what:'Séance découverte',price:32,lic:true,method:'Espèces',at:'8 h 50'}];
+ {id:'wk1',first:'Chloé',last:'Vasseur',age:12,c:'c5',level:'Galop 3',what:'Balade d’une heure',price:35,lic:true,method:'Carte',at:'9\u00a0h\u00a005'},
+ {id:'wk2',first:'Antoine',last:'Lemaire',age:41,c:'c4',level:'Débutant',what:'Séance découverte',price:32,lic:true,method:'Espèces',at:'8\u00a0h\u00a050'}];
 var WACT=[['Séance découverte',32],['Balade d’une heure',35],['Baptême poney',12],['Cours particulier',45]],LICV=10;
 function walkRows(){return D.walkins.map(function(w){return '<div class="cla-in" data-wk="'+w.id+'">'+ini(w.first,w.last,w.c)+'<div style="min-width:0"><div class="b s ellip">'+w.first+' '+w.last+' <span class="mut" style="font-weight:500">· '+w.age+' ans</span></div><div class="xs mut ellip">'+w.what+' · '+w.level+' · arrivé'+(MALE.test(w.first)?'':'e')+' à '+w.at+'</div></div><span class="hrow" style="--g:4px">'+U.chip('Décharge','ok',true)+'</span></div>'}).join('')}
-function walkCard(){return '<div class="card" style="display:flex;flex-direction:column"><div class="ch"><div><h3>Cavaliers de passage</h3><div class="xs mut">Aujourd’hui · décharge, licence vacances et paiement sur place</div></div><span class="chip">'+D.walkins.length+'</span></div><div style="padding:6px 0">'+walkRows()+'</div><div class="cf" style="margin-top:auto;justify-content:flex-end"><button class="btn sm pri" data-a="walk">'+ICON('plus','sm')+'Ajouter un cavalier de passage</button></div></div>'}
+function walkCard(){return '<div class="card" style="display:flex;flex-direction:column"><div class="ch"><div><h3>Cavaliers de passage</h3><div class="xs mut">Aujourd’hui, décharge et paiement sur place</div></div><span class="chip" style="flex:none">'+D.walkins.length+'</span></div><div style="padding:6px 0">'+walkRows()+'</div><div class="cf" style="margin-top:auto;justify-content:flex-end"><button class="btn sm pri" data-a="walk">'+ICON('plus','sm')+'Ajouter un cavalier de passage</button></div></div>'}
 function sheetWalkin(after){var w={first:'',last:'',age:'',level:'Débutant',act:0,lic:true,method:'Carte',signed:false,phone:''},step=1;
   var sh=P.sheet({title:'Cavalier de passage',icon:'user',body:function(){draw()},foot:'<span data-foot style="display:contents"></span>'});
   function tot(){return WACT[w.act][1]+(w.lic?LICV:0)}
@@ -737,7 +737,7 @@ P.mod({id:'adherents',role:'gerant',group:'Club',title:'Adhérents',icon:'member
     if(b=t.closest('[data-a]')){var a2=b.getAttribute('data-a');
       if(a2==='saveview'){sheetSaveView(function(){drawSegs();draw()});return}if(a2==='camp'){sheetCampaign(P.rerender);return}if(a2==='campsee'){sheetCampSuivi();return}if(a2==='walk'){sheetWalkin(P.rerender);return}
       if(a2==='camprel'){AS.rcRel=1;P.rerender();P.toast('Relance envoyée par e-mail : plusieurs familles ont déjà confirmé',{icon:'send'});return}
-      if(a2==='new')sheetNewMember();else if(a2==='lic')sheetLicences();else if(a2==='export')sheetExport(aList().length);else if(a2==='signups')sheetSignups();
+      if(a2==='new')sheetNewMember();else if(a2==='lic')sheetLicences();else if(a2==='export'){var al=aList();sheetExport(al.length,al.map(function(m){return m.id}))}else if(a2==='signups')sheetSignups();
       else if(a2==='askall'){b.innerHTML=ICON('check','sm')+'Relances envoyées';b.disabled=true;P.toast('Relances envoyées aux payeurs des dossiers incomplets',{icon:'send'})}else if(a2==='link')P.toast('Lien du formulaire d’inscription copié',{icon:'link'});else if(a2==='more'){AS.limit+=25;draw()}else if(a2==='reset'){AS.q='';AS.seg='all';$('#cla-q',el).value='';drawSegs();draw()}
       else if(a2==='bulkall'){var ids=aList().map(function(m){return m.id}),sg=(SEGS.filter(function(s){return s[0]===AS.seg})[0]||['','Segment'])[1];
         var sh=P.sheet({title:'Agir sur '+pl(ids.length,'adhérent'),icon:'bolt',body:'<p class="s mut" style="margin-bottom:12px">Segment « '+sg+' »'+(AS.q?' filtré sur « '+E(AS.q)+' »':'')+'.</p><div class="stack" style="--g:8px">'+[['msg','Envoyer un message','Notification, e-mail ou SMS','chat'],['inv','Créer des factures','Regroupées par famille','invoice'],['enr','Inscrire à une reprise','Avec liste d’attente si complet','planning'],['lic','Préparer les licences FFE','Fichier prêt à saisir sur FFE Club SIF','shield'],['exp','Exporter','Tableur, format FFE ou PDF','download']].map(function(o){return '<button class="cl-opt" data-manual data-bb="'+o[0]+'">'+sq('acc',o[3])+'<div class="grow"><b class="s">'+o[1]+'</b><div class="xs mut">'+o[2]+'</div></div>'+ICON('right','sm')+'</button>'}).join('')+'</div>'});
@@ -933,6 +933,7 @@ P.mod({id:'adherent',role:'gerant',group:'Club',title:'Fiche adhérent',icon:'us
    ===================================================================== */
 P.css(`
 .clp-plan{padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left;cursor:pointer;transition:box-shadow var(--t-2),transform var(--t-2) var(--e-out)}
+.clp-plan .chip{flex:none}.clp-plan .hrow.sp{align-items:flex-start;gap:8px}
 .clp-plan:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
 .clp-plan .pr{font:700 26px/1 var(--f-display);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .clp-plan .pr small{font:600 13px var(--f-text);color:var(--mut);letter-spacing:0;margin-left:3px}
@@ -1589,7 +1590,7 @@ button.cla-hk:hover .cla-hk-s svg.i{transform:translateX(3px)}
 .cla-hk-l{display:flex;flex-direction:column;gap:10px;min-width:0}
 .cla-hk-main .big{font-size:76px}
 .cla-hk-illu{position:absolute;right:14px;top:12px}
-.cla-gh{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;align-items:end;height:128px;min-width:0}
+.cla-gh{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(7,minmax(0,1fr));gap:6px;align-items:end;height:128px;min-width:0}
 .cla-gh button{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;min-width:0;border-radius:10px;color:inherit;padding:0}
 .cla-gh i{display:block;width:100%;max-width:30px;height:var(--h);min-height:6px;border-radius:8px 8px 4px 4px;background:var(--d);opacity:.85;transform-origin:bottom;animation:clagh var(--t-4) var(--e-spring) both;animation-delay:calc(var(--i)*45ms + 120ms);transition:opacity var(--t-1),transform var(--t-2) var(--e-out)}
 .cla-gh button:hover i{opacity:1;transform:scaleY(1.04)}

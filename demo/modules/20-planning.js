@@ -159,8 +159,8 @@ button.pl-stt:active{transform:scale(.95)}
 .pl-ev.wk .m em{font-style:normal;font:700 13px var(--f-text);font-variant-numeric:tabular-nums;margin-left:auto;flex:none;opacity:.85}
 .pl-ev.wk .m .ellip{flex:1;min-width:0}
 .pl-ev.wk.short .t b{-webkit-line-clamp:1}
-.pl-ev.nar .in{padding:6px 6px 6px 11px}
-.pl-ev.nar .t{font-size:13.5px}
+.pl-ev.nar .in{padding:6px 4px 6px 10px}
+.pl-ev.nar .t{font-size:13px;letter-spacing:-.015em}
 .pl-ev.nar .t b{-webkit-line-clamp:3}
 .pl-ev.nar .t svg.i{display:none}
 .pl-ev.nar .mav{width:24px;height:24px}
@@ -271,6 +271,7 @@ button.pl-stt:active{transform:scale(.95)}
 .pl-next .btn svg{width:20px;height:20px}
 .pl-fab{position:sticky;bottom:10px;float:right;height:54px;padding:0 22px 0 18px;border-radius:27px;z-index:7;margin-top:12px;box-shadow:0 12px 26px -10px var(--acc)}
 @container main (max-width:1120px){.pl-below{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pl-below>:first-child{grid-column:1/-1}.pl-dh .dm{display:none}.pl-ttl h1{font-size:40px}.pl-tbx .btn{padding:0 9px}}
+@container main (max-width:1000px){.pl-stats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.pl-ev.wk .m .ellip{display:none}.pl-ev.wk .m em{margin-left:auto}.pl-ev.wk .t{font-size:13.5px;letter-spacing:-.01em}.pl-ev.wk .in{padding:6px 6px 6px 11px}.pl-ev.wk .h1 b{display:none}}
 @container main (max-width:760px){
  .pl-ph{margin:0 0 12px;gap:10px}
  .pl-ttl{width:100%;flex-wrap:nowrap}.pl-lab{font-size:19px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
@@ -425,12 +426,12 @@ function fm(e){var f=ST.fd&&Object.keys(ST.fd).length;return (!ST.coach||e.coach
 function isPast(e){return ST.off<0||(ST.off===0&&(e.d<TDI||(e.d===TDI&&e.s+e.dur<=NOW)))}
 function horsesOf(l){return (l.riders||[]).map(function(r){var h=l.horses&&l.horses[r]&&D.horse(l.horses[r]);return h?h.name.split(' ')[0]:null}).filter(Boolean)}
 /* titre court pour la grille de la semaine : le titre complet reste dans l'aperçu et la fiche */
-function stitle(l){return l.title.split(',')[0].replace(/^Cours particulier/,'Particulier').replace(/^Cours collectif/,'Collectif')}
+function stitle(l,nar){var t=l.title.split(',')[0].replace(/^Cours particulier/,'Particulier').replace(/^Cours collectif/,'Collectif');return nar?(l.kind==='resa'?'Piste':t.replace(/^(Particulier|Collectif)\s+/,'Cours ')):t}
 function evHTML(e,mode){var l=e.l,c=D.person(l.coach)||{first:'',last:''},n=(l.riders||[]).length,full=l.cap>0&&n>=l.cap,k=dk(e),ht=e.dur/60*HP,svc=k==='svc';
  var short=ht<HP*.62,wide=mode==='day'||mode==='mday',hs=horsesOf(l),f=l.cap>0?Math.round(n/l.cap*100):100,wk=mode==='week',nar=wk&&e.lanes>1&&!short,lng=wk&&l.title.length>14;
  var cls='pl-ev d-'+DK[k][1]+(short?' short':'')+(isPast(e)?' past':'')+(e.cx?' cx':'')+(e.conf?' conf':'')+(fm(e)?'':' dim')+(svc?' svc':'')+(ST.landed===l.id?' landed':'')+(wk?' wk':'')+(nar?' nar':'');
  var sub=e.cx?'Annulée, cavaliers prévenus':(e.k==='resa'?c.first+' '+c.last:c.first)+(mode==='mday'?' · '+shortPlace(e):'');
- var inner='<span class="t"><b>'+(wk?stitle(l):l.title)+'</b>'+(e.conf?ICON('alert'):'')+(ST.closed[l.id+'@'+ST.off]?ICON('checkc'):'')+(l.cap>1&&!short&&e.lanes<2&&!wk?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
+ var inner='<span class="t"><b>'+(wk?stitle(l,nar):l.title)+'</b>'+(e.conf?ICON('alert'):'')+(ST.closed[l.id+'@'+ST.off]?ICON('checkc'):'')+(l.cap>1&&!short&&e.lanes<2&&!wk?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
  if(nar)inner+='<span class="m">'+(c.first&&e.k!=='resa'?'<span class="mav">'+ini(c)+'</span>':'')+(l.cap>1?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
  else if(!short||wide)inner+='<span class="m">'+(c.first&&e.k!=='resa'?'<span class="mav">'+ini(c)+'</span>':'')+'<span class="ellip">'+sub+'</span>'+(wk&&l.cap>1&&!short?'<em>'+n+'/'+l.cap+'</em>':'')+'</span>';
  if(!short&&ht>=HP*.9&&e.lanes<2&&hs.length&&!svc&&!(lng&&ht<HP*1.4)){var hzOk=wide&&ht>=HP*1.2,mx=hzOk?6:wide?4:2;inner+=hzOk?'<span class="hz">'+hs.slice(0,mx).map(function(x){return '<span>'+HORSE_GLYPH()+x+'</span>'}).join('')+(hs.length>mx?'<span>+'+(hs.length-mx)+'</span>':'')+'</span>':'<span class="h1">'+HORSE_GLYPH()+'<span>'+(wk?hs[0]:hs.slice(0,mx).join(', '))+'</span>'+(wk?(hs.length>1?'<b>+'+(hs.length-1)+'</b>':''):(hs.length>mx?'<b>+'+(hs.length-mx)+'</b>':''))+'</span>'}
@@ -945,7 +946,7 @@ function openProg(l,after){var pg=progOf(l),th=pg.th.slice(),d0=dateOf(di(l),0);
 /* ---------- Écran de la sellerie : plein écran, mise à jour toutes les 20 secondes ---------- */
 P.sellerieParts=P.sellerieParts||{};
 P.sellerie=function(o){o=o||{};var root=P.app();if(!root)return;var old=$('.sl-k',root);if(old)old.remove();
- var t=NOW,tick=0,el=document.createElement('div');el.className='sl-k';el.setAttribute('role','dialog');el.setAttribute('aria-label','Écran de la sellerie');root.appendChild(el);
+ var t=NOW,tick=0,el=document.createElement('div');el.className='sl-k';el.setAttribute('data-transient','');el.setAttribute('role','dialog');el.setAttribute('aria-label','Écran de la sellerie');root.appendChild(el);
  var NEWS=['Feuille de monte à jour, chevaux attribués automatiquement','Hersage de la carrière d’honneur confirmé à '+hm(mn(FX.hersage.at)),'Ferrure d’Ulysse confirmée jeudi à 9 h avec Benoît Gautier','Tornado reste au box : vétérinaire à 14 h','Distribution de midi : Lucie prend le relais','Pensez à curer les pieds au retour du paddock'];
  function lessons(){return weekEvents(0).filter(function(e){return e.d===TDI&&!e.cx&&e.l.cap>0}).sort(function(a,b){return a.s-b.s})}
  function paint(){var L=lessons(),nx=o.lesson?L.find(function(e){return e.l.id===o.lesson&&e.s+e.dur>t}):null;nx=nx||L.find(function(e){return e.s+e.dur>t});
@@ -1120,7 +1121,7 @@ P.mod({id:'rapports',role:'gerant',group:'Pilotage',title:'Rapports',icon:'repor
    function bLeave(){var mx=D.rapLeave[0][1],avg=(sum(D.members.map(function(m){return 2026-m.since}))/D.members.length).toFixed(1).replace('.',',');return '<div class="card"><div class="ch">'+pxHd('rd','members','Arrivées et départs','12 derniers mois')+'</div><div class="cb stack" style="--g:16px"><div class="rp-mini">'+[['Arrivées','22','hz'],['Départs','19','cr'],['Ancienneté',avg+NB+'ans','rd']].map(function(x){return '<div class="d-'+x[2]+'"><div class="l">'+x[0]+'</div><div class="v">'+x[1]+'</div></div>'}).join('')+'</div><div><div class="eyebrow" style="margin-bottom:8px">Motifs de départ</div>'+D.rapLeave.map(function(r){return '<div class="rp-rs"><span class="ellip">'+r[0]+'</span>'+U.bar(r[1]/mx*100,'var(--rd)')+'<b class="num" style="text-align:right">'+r[1]+'</b></div>'}).join('')+'</div></div></div>'}
    function bRisk(){var rk=D.members.filter(function(m){return m.licence!=='2027'&&m.forfait!=='f5'}).slice(0,4);return '<div class="card"><div class="ch">'+pxHd('cr','alert','Adhérents à risque','Licence non renouvelée et absences répétées')+'<button class="btn sm" data-go="communication">'+ICON('send','sm')+'Leur écrire</button></div><div style="padding:6px 16px 12px">'+rk.map(function(m,i){return '<div class="pl-p" data-go="adherent" data-id="'+m.id+'" style="cursor:pointer">'+U.av(m)+'<div class="grow"><div class="b s ellip">'+m.first+' '+m.last+'</div><div class="xs mut ellip">Galop '+m.galop+' · adhérent depuis '+m.since+' · '+(3+i%2)+' absences en 6 semaines</div></div>'+U.chip(i<2?'Risque élevé':'À suivre',i<2?'bad':'warn')+'</div>'}).join('')+'</div></div>'}
    function teamRows(){return ['s02','s03','s04','s08'].filter(function(id){return D.staffer(id)}).map(function(id){var p=D.staffer(id),ls=D.lessons.filter(function(l){return l.coach===id}),h=sum(ls.map(function(l){return l.dur}))/60,r=sum(ls.map(function(l){return slotEco(l).rev}));return {id:id,p:p,h:h,k:sum(ls.map(function(l){return l.riders.length})),rph:r/h,ot:[2.5,0,4,0][['s02','s03','s04','s08'].indexOf(id)]}})}
-   function bTeam(full){var rows=teamRows();if(!full)return '<div class="card"><div class="ch">'+pxHd('tm','coach','Heures des moniteurs','Cette semaine, face au contrat')+'<button class="btn ghost sm" data-tabgo="equipe">Détail'+ICON('arrow','sm')+'</button></div><div style="padding:6px 16px 12px">'+rows.map(function(t){var mx=Math.round(t.p.hours*.6);return '<div class="pl-p">'+U.av(t.p)+'<div class="grow stack" style="--g:5px"><div class="hrow sp"><span class="b s">'+t.p.first+' '+t.p.last+'</span><span class="xs num"><b>'+hm(Math.round(t.h*60))+'</b> <span class="mut">/ '+mx+' h</span></span></div>'+U.bar(t.h/mx*100,col(t.p.id))+'</div></div>'}).join('')+'</div></div>';
+   function bTeam(full){var rows=teamRows();if(!full)return '<div class="card"><div class="ch">'+pxHd('tm','coach','Heures des moniteurs','Cette semaine, face au contrat')+(RS.tab==='equipe'?'':'<button class="btn ghost sm" data-tabgo="equipe">Détail'+ICON('arrow','sm')+'</button>')+'</div><div style="padding:6px 16px 12px">'+rows.map(function(t){var mx=Math.round(t.p.hours*.6);return '<div class="pl-p">'+U.av(t.p)+'<div class="grow stack" style="--g:5px"><div class="hrow sp"><span class="b s">'+t.p.first+' '+t.p.last+'</span><span class="xs num"><b>'+hm(Math.round(t.h*60))+'</b> <span class="mut">/ '+mx+' h</span></span></div>'+U.bar(t.h/mx*100,col(t.p.id))+'</div></div>'}).join('')+'</div></div>';
      return U.table([{l:'Moniteur',f:function(t){return '<span class="hrow" style="--g:10px">'+U.av(t.p,'sm')+'<span><b>'+t.p.first+' '+t.p.last+'</b><div class="xs mut">'+t.p.contract+'</div></span></span>'}},{l:'Heures de cours',f:function(t){var mx=Math.round(t.p.hours*.6);return '<div class="hrow" style="--g:8px;min-width:130px"><div class="grow">'+U.bar(t.h/mx*100,col(t.p.id))+'</div><span class="num s"><b>'+hm(Math.round(t.h*60))+'</b> / '+mx+' h</span></div>'}},{l:'Cavaliers par semaine',n:true,hide:true,f:function(t){return t.k}},{l:'Recette par heure',n:true,f:function(t){return '<b>'+F.eur(Math.round(t.rph))+'</b>'}},{l:'Heures supplémentaires',n:true,hide:true,f:function(t){return t.ot?'<span class="warnc b">'+String(t.ot).replace('.',',')+' h</span>':'<span class="mut">0 h</span>'}}],rows)}
    /* ----- page ----- */
    var mob=P.isMobile(),lose=sl.filter(function(x){return x.m<0}).length,dCA=((CA/CA1-1)*100).toFixed(1).replace('.',',');
@@ -1137,7 +1138,7 @@ P.mod({id:'rapports',role:'gerant',group:'Pilotage',title:'Rapports',icon:'repor
    else if(RS.tab==='adherents')h+='<div class="g2">'+bCohort()+bLeave()+'</div>'+bRisk();
    else h+=bTeam(true)+'<div class="g2">'+bTeam(false)+'<div class="card"><div class="ch">'+pxHd('acc','bulb','Ce que disent les chiffres')+'</div><div class="cb stack" style="--g:10px"><div class="lx-ai">'+ICON('bulb','sm')+'<span>Thomas dépasse son contrat de 4 heures ce mois-ci à cause de l’équipe concours. Confier la reprise Galop 5-6 du lundi à Hugo ramène tout le monde sous son plafond.</span></div><button class="btn sm" style="align-self:flex-start" data-go="planning">Ajuster dans le planning</button></div></div></div>';
    h+='</div>';el.innerHTML='<div class="lx-ph">'+h+'</div>';bind();if(first&&!boot)P.animate(el);boot=first=false;if(RS.ans)showAns(RS.ans,true)}
-  function showAns(q,now){var box=$('[data-ans]',el);if(!box)return;RS.ans=q;box.innerHTML='<div class="rp-ans"><div class="q">'+F.esc(q)+'</div><div class="msg a typing" style="animation:none"><i></i><i></i><i></i></div></div>';
+  function showAns(q,now){var box=$('[data-ans]',el);if(!box)return;RS.ans=q;box.innerHTML='<div class="rp-ans"><div class="q">'+F.esc(q)+'</div>'+U.skel(['72%','90%','54%'])+'</div>';
    setTimeout(function(){if(!box.isConnected)return;var r=rapAnswer(q);box.innerHTML='<div class="rp-ans"><div class="q hrow" style="--g:8px">'+ICON('search','sm')+''+F.esc(q)+'</div><div class="a">'+r.text+'</div><div class="rows">'+r.rows.map(function(x){return '<div class="rp-ar"><span class="ellip">'+x[0]+'</span><span class="mut num">'+x[1]+'</span><b class="num" style="min-width:70px;text-align:right">'+x[2]+'</b></div>'}).join('')+'</div><div class="hrow wrap">'+r.actions.map(function(a,i){return '<button class="btn'+(i?'':' pri')+'" data-aa="'+i+'">'+a[0]+'</button>'}).join('')+'<button class="btn ghost" data-aclr>Effacer</button></div></div>';
     on(box,'[data-aa]',function(b){var go=r.actions[+b.getAttribute('data-aa')][1]();if(go){RS.ans=null;draw();P.app().querySelector('.view').scrollTop=0}else b.outerHTML=U.chip('Envoyé','ok',true)});on(box,'[data-aclr]',function(){RS.ans=null;box.innerHTML=''})},now||P.RM?0:650)}
   function bind(){
@@ -1181,7 +1182,7 @@ P.brain.push({role:'gerant',re:/rempl|créneau|creneau|perd de l|déficit/i,repl
    COMMUNICATION
    ===================================================================== */
 P.css(`
-.cm-box{display:grid;grid-template-columns:340px minmax(0,1fr);height:640px;overflow:hidden;border-radius:28px}
+.cm-box{display:grid;grid-template-columns:340px minmax(0,1fr);height:clamp(460px,calc(100vh - 384px),720px);overflow:hidden;border-radius:28px}
 .cm-l{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line)}
 .cm-lh{padding:16px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line)}
 .cm-lh .search .in{height:44px;border-radius:99px}
@@ -1258,7 +1259,7 @@ P.css(`
 .app.mobile .cm-cf .hide-s{display:none}
 .app.mobile .cm-comp{grid-template-columns:minmax(0,1fr)}
 .app.mobile .cm-pv{position:static}
-@container main (max-width:1080px){.cm-box{height:560px}}
+@container main (max-width:1080px){.cm-box{height:clamp(460px,calc(100vh - 384px),640px)}}
 @container main (max-width:900px){.cm-box{grid-template-columns:290px minmax(0,1fr)}.cm-rh,.cm-r{grid-template-columns:minmax(0,1.7fr) 104px 76px minmax(0,120px) 120px 20px}.cm-rh>:nth-child(5),.cm-r>:nth-child(5){display:none}}
 @container main (max-width:760px){.cm-box{grid-template-columns:minmax(0,1fr);height:auto;border-radius:24px}.cm-l{border-right:0}.cm-c{display:none}.cm-ts{overflow:visible}.cm-t{min-height:76px}
  .cm-rh{display:none}.cm-r{grid-template-columns:minmax(0,1fr) auto;padding:14px 16px}.cm-r>.hide-s{display:none}.cm-r>svg.i{display:none}.cm-r:first-of-type{border-top:0}.cm-pin{padding:14px 18px}.cm-poll{padding:16px 18px}}
