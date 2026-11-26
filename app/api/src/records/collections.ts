@@ -22,6 +22,8 @@ export const ARRAY_COLLS = [
   "mcpCalls", "mcpClients", "mcpTools", "pensionExtras", "pensionPlans", "pfRights", "pfTarifs", "pfTut", "pharmacy",
   "planExtras", "planHolidays", "planStages", "planVacations", "practitioners", "quotes", "receipts", "recurring",
   "register", "reviews", "sales", "schedules", "shopItems", "signups", "tours", "walkins", "webhookLog", "webhooks",
+  // constructeur du plan 3D du centre (demo/modules/40-ecurie.js) : un objet par élément posé
+  "sitePlan",
 ] as const;
 
 export const SINGLETON_COLLS = [
