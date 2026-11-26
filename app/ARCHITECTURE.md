@@ -9,7 +9,7 @@ La démo (`demo/`) reste la vitrine publique sur GitHub Pages. Le logiciel vendu
 
 | Besoin | Service | Coût |
 |---|---|---|
-| Serveur + appli web | Workers (+ assets statiques) | Gratuit jusqu'à 100 000 requêtes/jour. **Workers Paid 5 $/mois** conseillé dès le premier client (limite CPU 10 ms → 30 s, utile pour le hachage des mots de passe et les PDF). |
+| Serveur + appli web | Workers (+ assets statiques) | Gratuit jusqu'à 100 000 requêtes/jour. **Workers Paid 5 $/mois** conseillé dès le premier client (limite CPU 10 ms → 30 s, nécessaire pour les PDF Factur-X ; le hachage des mots de passe est réglé pour tenir dans le gratuit). |
 | Base de données | D1 (SQLite) | Inclus : 5 Go, des milliards de lectures. |
 | Fichiers (PDF, logos, pièces) | R2 | 10 Go gratuits, sortie gratuite. |
 | Tâches planifiées | Cron Triggers | Inclus. |
@@ -125,3 +125,39 @@ Back-office de l'équipe Stabl (pas celui d'un club), servi par le Worker sur **
 - **Garde globale** `adminGuard` (après `loadAuth` dans `index.ts`) : lecture seule de la vue, clés d'API des clubs suspendus, et journal des réponses 5xx dans `admin_errors` (30 jours) pour la santé du service.
 - **Support** : `POST /api/contact` (public, JSON ou formulaire, champ piège `site_web`, 5 messages par heure et par IP, CORS pour stablapp.fr) alimente la boîte Support ; connecté, le message est rattaché au compte et au club.
 - Après une modification de la page : `node app/web/admin/build.js` régénère `src/admin/page.gen.ts` (la page n'est jamais dans les fichiers statiques publics).
+## Hors connexion, sécurité, palier gratuit et mise en ligne (QA)
+
+### Mode hors connexion (appli installée sur iPad, iPhone, Android)
+- **Service worker** (`app/web/sw.js`, version injectée par `build.js`) : précache l'appli entière (`/`, manifeste, icônes) ; navigation servie depuis le cache, jamais de page blanche (page de secours intégrée). `/api`, `/auth`, `/ics`, `/webhooks`, `/migration`, `/mcp`, `/oauth` ne passent jamais par le cache. Nouvelle version : bandeau « Nouvelle version de Stabl. Rechargez quand vous voulez : rien ne sera perdu. » (`SKIP_WAITING` puis rechargement). iOS vide le stockage d'un site non ouvert depuis ~7 jours et n'a pas de synchro en arrière-plan : on demande un stockage persistant et on resynchronise au démarrage, au retour du réseau, au retour au premier plan et par minuterie.
+- **Données lisibles hors ligne** : `PL.store` (`live/15-store.js`) = IndexedDB `stabl` (repli localStorage puis mémoire, tout sous try/catch). On y garde le dernier bootstrap du club, `me`, les factures, la file d'écritures.
+- **File d'écritures des données du club** (`live/30-sync.js`) : chaque modification devient une opération `{op, coll, id, data, version, op_id, base, at}` gardée dans IndexedDB (et une copie de secours en localStorage), regroupée par objet, envoyée par lots (100 opérations, ~700 Ko au plus), dans l'ordre. Indicateur : « Hors ligne · 3 changements en attente », « Envoi de 3 changements… », « Tout est à jour ». Déconnexion avec des changements en attente : confirmation. Session : pas de déconnexion hors ligne (le cookie glissant est renouvelé au retour).
+- **Contrat serveur** (`POST /api/records/batch`) : `op_id` (unique) rend chaque opération idempotente (table `record_ops`, gardée 60 jours) : un renvoi répond `duplicate:true` sans rien réécrire ni renvoyer d'e-mail. `base` = l'objet tel que l'appareil l'avait avant la modification : si quelqu'un a écrit entre-temps, le serveur fusionne **champ par champ** (`src/records/merge.ts` : champs différents → les deux gardés ; listes d'ids → ajouts et retraits des deux côtés ; même champ → la modification la plus récente selon `at` gagne et le conflit est signalé `conflicts:[{field, kept}]`, l'appli l'explique en français). Sans `base` (ancien client), conflit classique.
+- **Actions qui exigent internet** (paiement en ligne, e-mail, migration, invitation, export) : grisées hors ligne (`[data-net]`) avec une explication au toucher.
+- **Écran d'accueil** : manifeste complet (standalone, orientation, couleurs, icônes Stabl, `id`), images de démarrage iOS (`static/splash/`), zones sûres ; invitation expliquée « Partager › Sur l'écran d'accueil › Ajouter » sur iPhone et iPad, bouton « Installer » ailleurs (refus mémorisé 30 jours).
+
+### File générique pour les autres équipes (médias, etc.) : `PL.queue`
+```js
+PL.queue.register('media', {send: function(item){ return PL.post('/api/media', item.data, {headers:{'Idempotency-Key': item.id}}) },
+                            label: function(item){ return 'Photo de ' + item.data.name }});
+PL.queue.add('media', {horse:'h01', blobKey:'…'}, {id: 'med_' + uuid});   // même id ajouté deux fois = un seul envoi
+PL.queue.count(); PL.queue.list('media'); PL.queue.remove(id); PL.queue.on(function(n){…}); PL.queue.run();
+```
+`send` résolu = envoyé (retiré de la file) ; rejeté avec `e.offline`, statut 0, 401, 429 ou ≥ 500 = on réessaiera (le type est mis en pause, l'ordre est gardé) ; autre 4xx = refus définitif (retiré, message, `PL.queue.failed`). Les éléments survivent au rechargement et à la fermeture de l'appli ; ils comptent dans l'indicateur « N changements en attente ». Transmettez toujours `item.id` au serveur pour qu'un renvoi ne crée pas de doublon. Les fichiers eux-mêmes se rangent dans `PL.store.set(clé, Blob)` (IndexedDB accepte les Blob).
+
+### Modules Terrain et Croissance côté serveur
+- Collections : `pastures, pastureMoves, pastureRules, horseCues, horseAds, horseLeads, horseTrials, lessonCalls, lessonCredits, aids, gReviews, referrals, surveys, growthCfg` (un objet par écran, id = nom de l'écran). Droits dans `policy.ts` : l'employé écrit les sorties au pré, l'appel et les crédits ; le moniteur l'appel et les crédits de **ses** reprises ; l'adhérent lit les sorties et consignes de ses chevaux, son appel (sans les notes des autres), ses aides, ses parrainages, ses avis, et remplit sa réponse de sondage une fois ; les demandes d'achat (`horseLeads`) et `growthCfg` restent au gérant.
+- **Séance recréditée** (`src/records/credits.ts`) : créer un `lessonCredits` pour un absent crédite vraiment, dans la même transaction : carte valide → `cards.left + 1` (jamais au-delà du total) ; sinon → `members.makeups + 1` (rattrapage). Une seule fois par cavalier, reprise et jour (même depuis deux appareils) ; supprimer le crédit (cavalier finalement présent) le reprend.
+- **Annonce publique** : `GET /api/public/horse-ads/:club/:ad` (annonce « en ligne » ou « sous option », champs publics seulement) et `POST …/leads` sans compte (champ piège `site`, horodatage `t` d'affichage du formulaire ≥ 3 s, 5 demandes par heure et par IP, 40 par jour et par annonce, CSRF par l'origine).
+- **Aides sur les factures** (`src/invoicing/aids.ts`) : à l'émission d'une facture d'adhérent, ses aides `deduit` non encore utilisées (et acceptées dans Réglages › Aides) sont enregistrées comme **règlements par des tiers** (Pass'Sport, ANCV, autre) avec la mention « Déjà réglé par des aides : … Reste à payer : … ». Ce ne sont pas des remises : la base de TVA ne change pas. La remise famille, elle, est une ligne négative de la facture.
+
+### Sécurité
+- CSRF sur toute l'API (`X-Requested-With: piaffe` ou `Origin` du site), sauf la désinscription en un clic (jeton signé). CSP stricte avec empreintes des scripts sur l'appli (`dist/_headers`, généré par `build.js`) et `default-src 'none'` sur les réponses de l'API ; HSTS, nosniff, anti-cadre. JSON limité à 1 Mo (413). Isolation stricte entre clubs (même en forçant `X-Piaffe-Club`), testée dans `test/qa-securite.test.ts`.
+- Mots de passe : PBKDF2-SHA256, coût `PASSWORD_ITERATIONS` (30 000 sur le palier gratuit, 100 000 conseillé sur Workers Paid, borné entre 10 000 et 100 000), mis à niveau à la connexion. Cookies `HttpOnly; Secure; SameSite=Lax`. Aucun secret dans le code : `SESSION_SECRET` obligatoire en production (503 explicite sinon), valeur de développement seulement sur `http://localhost`.
+- Sans Stripe ni e-mail : `features` dans `/api/me` et le bootstrap ; l'appli masque Google, répond « Le paiement en ligne n'est pas encore activé… » (409 `payments_not_enabled`) et affiche les liens d'invitation à copier.
+
+### Palier gratuit Cloudflare
+Tout tient dans le gratuit (Worker de 1,1 Mo compressé pour 3 Mo permis, D1, R2, Durable Objects SQLite, 2 tâches planifiées sur 5) **sauf** la génération du PDF Factur-X (40 à 85 ms de calcul mesurés, 10 ms permis) et le robot de migration au-delà de 10 minutes de navigateur par jour : Workers Paid (5 $ par mois) dès la première vraie facture. Voir `app/COMPTES-A-CREER.md`.
+
+### Mise en ligne et robot QA
+- `bash app/api/scripts/deployer.sh [--essai]` (variables `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `APP_URL`) : crée D1 et R2 en juridiction UE s'ils manquent, `SESSION_SECRET`, migrations, construction de l'appli, publication. Relançable.
+- `cd app/api && node scripts/parcours-qa.mjs --shots=DOSSIER` (avec `wrangler dev` lancé) : parcours réels de bout en bout dans un navigateur (inscription, onboarding, chevaux, adhérents, pension, reprise, réservation adhérent, facture et PDF, encaissement, export comptable, ICS, invitations employé et moniteur, connexion de chacun, mot de passe oublié, hors connexion avec 10 actions sur deux appareils et fusion, deux onglets), vérifiés en base ; échoue à la moindre erreur console ou réponse 500.

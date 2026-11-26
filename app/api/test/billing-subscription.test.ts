@@ -63,7 +63,7 @@ describe("billing · Checkout de l'abonnement", () => {
       expect((await call("/api/billing/checkout", { method: "POST", token: s.token, json: { plan: "club" } })).status).toBe(403);
       expect((await call("/api/billing/portal", { method: "POST", token: s.token })).status).toBe(403);
     }
-    expect((await call("/api/billing/checkout", { method: "POST", json: { plan: "club" } })).status).toBe(401);
+    expect((await call("/api/billing/checkout", { method: "POST", headers: { "x-requested-with": "piaffe" }, json: { plan: "club" } })).status).toBe(401);
     expect(fake.calls.length).toBe(0);
   });
 

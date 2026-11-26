@@ -42,7 +42,7 @@ export function stripeConfigured(env: Env) { return !!env.STRIPE_SECRET_KEY; }
 
 /** Appel brut. Lève StripeError (statut HTTP, type, code) en cas de refus. */
 export async function stripeRequest<T = any>(env: Env, method: "GET" | "POST" | "DELETE", path: string, params: Params = {}, opts: StripeOpts = {}): Promise<T> {
-  if (!env.STRIPE_SECRET_KEY) throw new ApiError(503, "stripe_not_configured", "Le paiement en ligne n'est pas encore configuré. Réessayez plus tard.");
+  if (!env.STRIPE_SECRET_KEY) throw new ApiError(409, "payments_not_enabled", "Le paiement en ligne n’est pas encore activé sur Stabl. Encaissez par chèque, espèces ou virement en attendant.");
   const headers: Record<string, string> = {
     authorization: "Bearer " + env.STRIPE_SECRET_KEY,
     "stripe-version": STRIPE_API_VERSION,

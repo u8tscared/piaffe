@@ -88,6 +88,12 @@ const THREE = PROBE && exists(path.join(DEMO, 'tools', 'three.min.js'))
   ? '<script>' + rd(path.join(DEMO, 'tools', 'three.min.js')) + '</script>'
   : '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>';
 
+/* écrans de démarrage iOS (app/web/static/splash, générés depuis le logo officiel) */
+let SPLASH = '';
+try {
+  const list = JSON.parse(rd(path.join(WEB, 'static', 'splash', 'splash.json')));
+  SPLASH = list.map((x) => `<link rel="apple-touch-startup-image" media="(device-width: ${x.w}px) and (device-height: ${x.h}px) and (-webkit-device-pixel-ratio: ${x.d}) and (orientation: ${x.land ? 'landscape' : 'portrait'})" href="/splash/${x.name}">`).join('\n');
+} catch (e) { SPLASH = ''; }
 const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -106,6 +112,7 @@ const html = `<!doctype html>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
+${SPLASH}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${css}</style>
@@ -132,11 +139,12 @@ fs.writeFileSync(path.join(DIST, 'index.html'), html);
 
 /* fichiers statiques : icônes, manifest, service worker */
 const STATIC = path.join(WEB, 'static');
-if (exists(STATIC)) for (const f of fs.readdirSync(STATIC)) fs.copyFileSync(path.join(STATIC, f), path.join(DIST, f));
+if (exists(STATIC)) fs.cpSync(STATIC, DIST, { recursive: true });
 const manifest = {
   name: 'Stabl', short_name: 'Stabl', lang: 'fr', dir: 'ltr',
   description: 'Le logiciel de gestion des centres équestres et des écuries.',
-  start_url: '/?source=pwa', scope: '/', display: 'standalone', orientation: 'any',
+  id: '/', start_url: '/?source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'], orientation: 'any',
+  prefer_related_applications: false,
   background_color: '#ffffff', theme_color: '#0a1636', categories: ['business', 'productivity', 'sports'],
   icons: [
     { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
@@ -151,7 +159,10 @@ const manifest = {
   ],
 };
 fs.writeFileSync(path.join(DIST, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2));
-fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION));
+/* précache du service worker : la page (tout le code), le manifeste et les icônes. Les écrans de démarrage
+   ne sont lus par iOS qu'à l'installation : inutile de les garder hors ligne. */
+const PRECACHE = ['/', '/manifest.webmanifest'].concat(fs.readdirSync(DIST).filter((f) => /^icon.*\.(png|svg)$/.test(f)).map((f) => '/' + f));
+fs.writeFileSync(path.join(DIST, 'sw.js'), rd(path.join(WEB, 'sw.js')).replace('__VERSION__', VERSION).replace('__PRECACHE__', JSON.stringify(PRECACHE)));
 /* passerelle de migration (fil migration) servie sur /migration/ */
 /* le robot à distance prend globalThis.PIAFFE_ROBOT comme base d'URL */
 const PASS = migRead('dist/passerelle.html');
@@ -162,4 +173,25 @@ if (PASS) {
   fs.mkdirSync(path.join(DIST, 'migration'), { recursive: true }); fs.writeFileSync(path.join(DIST, 'migration', 'index.html'), ph);
 }
 for (const f of fs.readdirSync(DIST)) if (/^\.|^404\.html$/.test(f)) fs.rmSync(path.join(DIST, f));
+
+/* En-têtes de sécurité des fichiers statiques (servis par Cloudflare sans passer par le Worker) : _headers.
+   CSP stricte pour l'appli : seuls les scripts intégrés à cette version (empreintes SHA-256) s'exécutent,
+   plus three.js sur cdnjs ; réseau limité au serveur Stabl et aux deux services publics utilisés
+   (géocodage api-adresse.data.gouv.fr, météo open-meteo.com). */
+const crypto = require('crypto');
+const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + crypto.createHash('sha256').update(m[1], 'utf8').digest('base64') + "'");
+const CSP_COMMON = "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; " +
+  "img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; " +
+  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com https://connect.stripe.com https://accounts.google.com; " +
+  "connect-src 'self' https://api-adresse.data.gouv.fr https://api.open-meteo.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com";
+const SEC = ['  Strict-Transport-Security: max-age=31536000; includeSubDomains', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
+  '  X-Frame-Options: DENY', '  Permissions-Policy: camera=(self), microphone=(), geolocation=(self), payment=(), usb=()', '  Cross-Origin-Opener-Policy: same-origin'];
+fs.writeFileSync(path.join(DIST, '_headers'), [
+  '/*', ...SEC, "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' https://cdnjs.cloudflare.com " + hashes.join(' '),
+  '/migration/*', '  ! Content-Security-Policy', "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
+  '/sw.js', '  Cache-Control: no-cache',
+  '/index.html', '  Cache-Control: no-cache',
+  '/', '  Cache-Control: no-cache',
+  '/splash/*', '  Cache-Control: public, max-age=604800',
+  ''].join('\n'));
 console.log('OK', 'app/web/dist/index.html', (html.length / 1024).toFixed(0) + ' Ko', coreFiles.length + ' fichiers du socle,', mods.length + ' modules,', liveAll.length + ' scripts live,', migScript ? 'catalogue migration intégré,' : 'sans catalogue migration,', PASS ? 'passerelle /migration/' : 'sans passerelle', PROBE ? '(sonde : three.js local)' : '');

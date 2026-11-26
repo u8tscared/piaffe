@@ -13,6 +13,7 @@ import { consumeToken, issueToken, TOKEN_TTL_MIN } from "./tokens";
 import { appUrl, mail, WEB } from "./mailer";
 import { clubsOf, getUser, getUserByEmail, normEmail, publicUser, type UserRow } from "./users";
 import { exchangeCode, safeNext, startGoogle, takeState } from "./google";
+import { features } from "../lib/features";
 
 const app = new Hono<AppEnv>();
 app.use("/auth/*", csrf);
@@ -257,12 +258,17 @@ app.post("/auth/magic/callback", async (c) => {
 });
 
 // ---------- Mon compte ----------
-app.get("/api/me", requireUser, slideSession, async (c) => {
-  const u = await getUser(c.env, c.get("user")!.id);
-  if (!u) throw unauthorized();
+app.get("/api/me", slideSession, async (c) => {
+  // ?soft=1 : l'appli web demande « qui suis-je ? » au démarrage ; un visiteur non connecté reçoit 200 {user:null}
+  // au lieu d'un 401 que le navigateur affiche comme une erreur dans la console.
+  const soft = c.req.query("soft") === "1";
+  const cu = c.get("user");
+  if (!cu) { if (soft) return c.json({ user: null, clubs: [], current_club_id: null, role: null, person_ref: null, features: features(c.env) }); throw unauthorized(); }
+  const u = await getUser(c.env, cu.id);
+  if (!u) { if (soft) return c.json({ user: null, clubs: [], current_club_id: null, role: null, person_ref: null, features: features(c.env) }); throw unauthorized(); }
   const m = c.get("membership");
   return c.json({ user: publicUser(u), clubs: await clubsOf(c.env, u.id), current_club_id: c.get("club")?.id ?? null,
-    role: m?.role ?? null, person_ref: m?.person_ref ?? null });
+    role: m?.role ?? null, person_ref: m?.person_ref ?? null, features: features(c.env) });
 });
 
 app.patch("/api/me", requireUser, async (c) => {

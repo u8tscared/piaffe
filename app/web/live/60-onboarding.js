@@ -36,16 +36,23 @@ var STEPS=[
    return '<div class="eyebrow">Identité</div><h1>'+lab+'</h1><p class="lv-sub">Recherchez votre structure par son nom ou son SIRET : nous préremplissons l’adresse et la forme juridique depuis le répertoire officiel des entreprises.</p>'+
    '<div class="lv-f" style="max-width:560px"><label class="lv-fl"><span>Nom affiché</span><input class="in" id="ob-name" value="'+esc(A.name||'')+'" placeholder="Écurie du Moulin" autocomplete="organization" maxlength="120"></label>'+
    '<label class="lv-fl"><span>SIRET <span class="lv-hint">facultatif, pour vos factures</span></span><div class="hrow"><input class="in" id="ob-siret" value="'+esc(A.siret||'')+'" inputmode="numeric" placeholder="14 chiffres, ou cherchez par nom" maxlength="20"><button class="btn" data-find type="button">'+ICON('search','sm')+'<span>Rechercher</span></button></div></label>'+
-   '<div class="lv-sirets"></div><div class="lv-picked">'+(A.address&&A.address.city?picked():'')+'</div></div>'},
+   '<div class="lv-sirets"></div><div class="lv-picked">'+(A.address&&A.address.city&&A.siren?picked():'')+'</div>'+
+   '<label class="lv-fl"><span>Adresse <span class="lv-hint">pour vos factures et la météo</span></span><input class="in" id="ob-line1" value="'+esc((A.address||{}).line1||'')+'" placeholder="12 chemin des Prés" autocomplete="address-line1" maxlength="160"></label>'+
+   '<div class="lv-row2"><label class="lv-fl"><span>Code postal</span><input class="in" id="ob-zip" value="'+esc((A.address||{}).zip||'')+'" inputmode="numeric" autocomplete="postal-code" maxlength="10"></label>'+
+   '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div></div>'},
    bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets');
      n.oninput=function(){A.name=n.value.trim();saveLocal();foot()};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
+     /* adresse saisie à la main (la recherche officielle peut être indisponible ou ne pas trouver la structure) */
+     var ad=function(k){return q.querySelector('#ob-'+k)};
+     ['line1','zip','city'].forEach(function(k){ad(k).oninput=function(){A.address=A.address&&typeof A.address==='object'?A.address:{country:'FR'};A.address[k]=ad(k).value.trim();saveLocal()}});
+     var fillAd=function(){var a=A.address||{};['line1','zip','city'].forEach(function(k){ad(k).value=a[k]||''})};
      function find(){var qq=(s.value.replace(/\s/g,'').length>=9?s.value:n.value).trim();if(qq.length<3){P.toast?void 0:0;box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Saisissez au moins trois lettres du nom, ou le SIRET.</span></div>';return}
        box.innerHTML='<div class="lv-dots" style="padding:12px"><i></i><i></i><i></i></div>';
        PL.get('/api/onboarding/siret?q='+encodeURIComponent(qq)).then(function(j){var r=j.results||[];
          if(!r.length){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Aucune entreprise trouvée. Vous pouvez continuer et compléter plus tard.</span></div>';return}
          box.innerHTML=r.map(function(c,i){return '<button class="lv-siret" data-i="'+i+'" aria-pressed="'+(A.siren===c.siren)+'"><span class="ico">'+ICON(c.is_association?'members':'stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc([c.address.zip,c.address.city].filter(Boolean).join(' '))+' · SIRET '+esc(String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4'))+(c.active?'':' · fermée')+'</small></span></button>'}).join('');
          box.querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){var c=r[+b.getAttribute('data-i')];A.name=A.name||c.name;if(!n.value)n.value=c.name;A.siret=c.siret;A.siren=c.siren;A.legal_form=c.legal_form;A.naf=c.naf;A.address=c.address;if(c.lat){A.lat=c.lat;A.lon=c.lon}
-           if(c.is_association&&!A.vat_regime)A.vat_regime='association_exoneree';s.value=String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4');saveLocal();
+           if(c.is_association&&!A.vat_regime)A.vat_regime='association_exoneree';s.value=String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4');saveLocal();fillAd();
            box.querySelectorAll('[data-i]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});q.querySelector('.lv-picked').innerHTML=picked();foot()}})},
        function(e){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>'+(e.unavailable?'La recherche n’est pas encore disponible : saisissez simplement le nom.':esc(PL.msg(e)))+'</span></div>'})}
      q.querySelector('[data-find]').onclick=find;s.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();find()}}},

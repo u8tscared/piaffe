@@ -1,14 +1,17 @@
 import { Hono, type Context } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, body, forbidden, unauthorized } from "../lib/http";
-import { one, run } from "../lib/db";
+import { one, rateLimit, run } from "../lib/db";
 import { nowIso } from "../lib/ids";
 import { csrf } from "../auth/csrf";
 import { slideSession, clientIp } from "../auth/session";
 import { publicUser, getUser } from "../auth/users";
 import { MAX_OPS, SINGLETON_COLLS, SINGLETON_ID } from "./collections";
 import { applyBatch, bootstrapData, changesSince, type Principal } from "./store";
+import { AD_PUBLIC_FIELDS, AD_PUBLISHED } from "./policy";
+import { isEmail, notFound } from "../lib/http";
 import { registerTriggers } from "./triggers";
+import { features } from "../lib/features";
 
 registerTriggers();
 
@@ -54,7 +57,7 @@ app.get("/api/club/bootstrap", slideSession, async (c) => {
   return c.json({
     club: clubOut,
     me: { user: u ? publicUser(u) : null, role: p.role, person_ref: p.personRef, person_ids: (p.personRef || "").split(",").filter(Boolean) },
-    data, versions, singletons: SINGLETON_COLLS, singleton_id: SINGLETON_ID, server_time: nowIso(),
+    data, versions, singletons: SINGLETON_COLLS, singleton_id: SINGLETON_ID, server_time: nowIso(), features: features(c.env),
   });
 });
 
@@ -85,10 +88,56 @@ function overlap(since: string) {
   return t > since ? t : since;
 }
 
+/* Annonces de vente (module Terrain) : lecture publique d'une annonce publiée, demande d'essai sans compte.
+   Anti-robot : champ piège « site » qui doit rester vide, délai minimal entre l'affichage et l'envoi, limite de débit
+   par adresse IP et par annonce. Les coordonnées vont seulement au club (collection horseLeads, lue par le gérant). */
+async function publishedAd(c: Context<AppEnv>) {
+  const clubId = c.req.param("club") || "", adId = c.req.param("ad") || "";
+  if (!/^[A-Za-z0-9_.:-]{1,64}$/.test(clubId) || !/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(adId)) throw notFound("Annonce introuvable.");
+  const r = await one<{ data: string }>(c.env.DB, "SELECT data FROM records WHERE club_id = ? AND coll = 'horseAds' AND id = ? AND deleted = 0", clubId, adId);
+  const ad = r ? (JSON.parse(r.data) as Record<string, any>) : null;
+  if (!ad || !AD_PUBLISHED.has(String(ad.status || ""))) throw notFound("Cette annonce n'est plus en ligne.");
+  return { clubId, adId, ad };
+}
+app.get("/api/public/horse-ads/:club/:ad", async (c) => {
+  const { clubId, ad } = await publishedAd(c);
+  const out: Record<string, unknown> = {};
+  for (const k of AD_PUBLIC_FIELDS) if (ad[k] !== undefined) out[k] = ad[k];
+  const h = ad.horse ? await one<{ data: string }>(c.env.DB, "SELECT data FROM records WHERE club_id = ? AND coll = 'horses' AND id = ? AND deleted = 0", clubId, String(ad.horse)) : null;
+  const horse = h ? JSON.parse(h.data) : null;
+  const club = await one<{ name: string }>(c.env.DB, "SELECT name FROM clubs WHERE id = ?", clubId);
+  const pick = (o: any, ks: string[]) => (o ? Object.fromEntries(ks.filter((k) => o[k] !== undefined).map((k) => [k, o[k]])) : null);
+  c.header("cache-control", "public, max-age=60");
+  return c.json({ ad: out, horse: pick(horse, ["id", "name", "breed", "pony", "sex", "age", "born", "coat", "height", "level", "photo"]), club: { name: club?.name || "" } });
+});
+app.post("/api/public/horse-ads/:club/:ad/leads", async (c) => {
+  const { clubId, adId } = await publishedAd(c);
+  const b = await body<any>(c);
+  // robot : champ piège rempli ou formulaire envoyé en moins de 3 secondes → réponse normale, rien d'enregistré
+  const shown = Number(b.t);
+  if ((typeof b.site === "string" && b.site.trim()) || !Number.isFinite(shown) || Date.now() - shown < 3000 || Date.now() - shown > 86400000)
+    return c.json({ ok: true });
+  const ip = clientIp(c);
+  if (!(await rateLimit(c.env.DB, "lead:ip:" + ip, 5, 3600)) || !(await rateLimit(c.env.DB, "lead:ad:" + clubId + ":" + adId, 40, 86400)))
+    throw new ApiError(429, "rate_limited", "Trop de demandes envoyées. Réessayez dans une heure ou appelez l'écurie.");
+  const s = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+  const name = s(b.name, 120), email = s(b.email, 200).toLowerCase(), phone = s(b.phone, 40);
+  if (name.length < 2) throw bad("invalid_field", "Indiquez votre nom.", { field: "name" });
+  if (!email && phone.replace(/\D/g, "").length < 8) throw bad("invalid_field", "Indiquez un e-mail ou un téléphone pour que l'écurie puisse vous répondre.", { field: "email" });
+  if (email && !isEmail(email)) throw bad("invalid_field", "Cette adresse e-mail n'est pas valide.", { field: "email" });
+  const id = "ld_" + crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+  const data = { ad: adId, name, email, phone, level: s(b.level, 40), budget: null, msg: s(b.msg, 2000), at: nowIso().slice(0, 16), status: "nouvelle", via: "public" };
+  const p: Principal = { role: "manager", personRef: null, userId: null, actor: "public:annonce", clubId };
+  const [r] = await applyBatch(c.env, c.executionCtx, p, [{ op: "upsert", coll: "horseLeads", id, data }], ip);
+  if (!r?.ok) throw new ApiError(503, "unavailable", "La demande n'a pas pu être enregistrée. Réessayez dans un instant.");
+  return c.json({ ok: true });
+});
+
 export default app;
 
 /** Purge des objets supprimés depuis plus de 90 jours (les appareils hors ligne plus longtemps refont un bootstrap). */
 export async function cron(env: AppEnv["Bindings"], cronExpr: string): Promise<void> {
   if (cronExpr !== "0 6 * * *") return;
   await run(env.DB, "DELETE FROM records WHERE deleted = 1 AND updated_at < ?", new Date(Date.now() - 90 * 864e5).toISOString());
+  await run(env.DB, "DELETE FROM record_ops WHERE at < ?", new Date(Date.now() - 60 * 864e5).toISOString());
 }

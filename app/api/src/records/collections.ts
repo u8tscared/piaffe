@@ -24,6 +24,10 @@ export const ARRAY_COLLS = [
   "register", "reviews", "sales", "schedules", "shopItems", "signups", "tours", "walkins", "webhookLog", "webhooks",
   // constructeur du plan 3D du centre (demo/modules/40-ecurie.js) : un objet par élément posé
   "sitePlan",
+  // module Terrain (45-terrain.js) : prés, vente de chevaux, cours en direct
+  "pastures", "pastureMoves", "pastureRules", "horseCues", "horseAds", "horseLeads", "horseTrials", "lessonCalls", "lessonCredits",
+  // module Croissance (55-croissance.js) : aides, avis, parrainage, sondages, réglages par écran (un objet par écran)
+  "aids", "gReviews", "referrals", "surveys", "growthCfg",
 ] as const;
 
 export const SINGLETON_COLLS = [

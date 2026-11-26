@@ -1,3 +1,4 @@
+import { isLocalDev } from "../lib/features";
 /*
  * File d'attente des e-mails. enqueue() rend, enregistre et tente l'envoi tout de suite ;
  * processQueue() (cron toutes les 10 minutes) reprend les envois échoués avec un délai croissant.
@@ -30,6 +31,10 @@ async function blockReason(env: Env, to: string, category: string, clubId: strin
     "SELECT enabled FROM notification_prefs WHERE email = ? AND category = ? AND club_id IN (?, '') ORDER BY enabled ASC LIMIT 1", to, category, clubId);
   return p && !p.enabled ? "skipped" : null;
 }
+
+/* En développement local sans fournisseur (journal), le contenu des e-mails sensibles est gardé pour pouvoir
+   ouvrir les liens d'invitation ou de mot de passe ; en production il est effacé dès l'envoi. */
+const keepLocal = (env: Env) => (env.MAIL_PROVIDER || "log").toLowerCase() === "log" && isLocalDev(env);
 
 export async function enqueue(env: Env, m: MailInput, o: EnqueueOpts = {}): Promise<string> {
   const id = newId("eml");
@@ -124,7 +129,7 @@ export async function attempt(env: Env, id: string): Promise<string> {
   const attempts = row.attempts + 1;
   if (res.ok) {
     await run(db, `UPDATE email_outbox SET status='sent', attempts=?, sent_at=?, provider=?, provider_id=?, lease_until=NULL, last_error=NULL
-      ${row.sensitive ? ", html=NULL, text=NULL" : ""} WHERE id=?`, attempts, nowIso(), (env.MAIL_PROVIDER || "log").toLowerCase(), res.providerId, id);
+      ${row.sensitive && !keepLocal(env) ? ", html=NULL, text=NULL" : ""} WHERE id=?`, attempts, nowIso(), (env.MAIL_PROVIDER || "log").toLowerCase(), res.providerId, id);
     return "sent";
   }
   if (res.retry && attempts < MAX_ATTEMPTS) {

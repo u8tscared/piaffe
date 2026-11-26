@@ -2,12 +2,28 @@
 
 Rien n'a été créé à ton nom. Voici, dans l'ordre, les comptes à ouvrir et les réglages à faire. Chaque secret s'enregistre avec `cd app/api && npx wrangler secret put NOM` (jamais dans le code).
 
+## En bref, dans l'ordre
+1. Cloudflare : compte, jeton d'API, puis `bash app/api/scripts/deployer.sh` (section 1). L'appli est en ligne, sans paiement ni e-mail : elle le dit clairement aux utilisateurs.
+2. Domaine `app.stablapp.fr` branché sur le Worker (section 1, point 5).
+3. E-mails (section 4) : sans eux, les invitations et liens de mot de passe ne partent pas (l'appli affiche alors le lien à copier).
+4. Stripe (section 3), puis Google (section 2), puis facture électronique (section 5).
+5. Passer à Workers Paid (5 $ par mois) avant d'émettre la première vraie facture (section 1, point 2).
+
 ## 1. Cloudflare (hébergement)
-1. Créer un compte sur dash.cloudflare.com (gratuit), puis passer à **Workers Paid (5 $ par mois)** dès le premier club : le hachage des mots de passe et la génération des PDF dépassent les 10 ms de calcul du palier gratuit.
-2. `npx wrangler login`, puis `npx wrangler d1 create piaffe` et recopier l'id dans `app/api/wrangler.jsonc` (`database_id`).
-3. `npx wrangler r2 bucket create piaffe-files`.
-4. Acheter le domaine (ex. stablapp.fr) chez Cloudflare Registrar (prix coûtant, environ 10 € par an), puis brancher `app.stablapp.fr` sur le Worker et mettre `APP_URL` à `https://app.stablapp.fr`.
-5. `npm run db:migrate:remote`, `node ../web/build.js`, `npm run deploy`.
+1. Créer un compte sur dash.cloudflare.com (gratuit). Mon profil › Jetons d'API › « Créer un jeton » : modèle « Modifier Cloudflare Workers », en ajoutant les droits D1 (modifier) et R2 (modifier). Noter le jeton et l'identifiant du compte (colonne de droite du tableau de bord).
+2. **Palier gratuit ou Workers Paid (5 $ par mois)** : tout fonctionne sur le palier gratuit (100 000 requêtes par jour, D1 5 Go, R2 10 Go, Durable Objects SQLite, tâches planifiées) **sauf deux choses qui dépassent les 10 ms de calcul par requête** :
+   - la génération du PDF Factur-X d'une facture (mesuré : 40 à 85 ms, plus de 200 ms au premier appel) ; sur le palier gratuit la facture est bien émise et numérotée, mais le PDF risque d'être refusé par Cloudflare (erreur 1102) ;
+   - le robot de migration (Browser Rendering : 10 minutes de navigateur par jour en gratuit, soit une ou deux migrations).
+   Donc : essais et démonstrations en gratuit, **Workers Paid dès la première vraie facture**. Le hachage des mots de passe est réglé pour tenir dans le gratuit (`PASSWORD_ITERATIONS` = 30000 dans wrangler.jsonc ; le monter à 100000 une fois en Workers Paid, les comptes existants sont mis à niveau à leur connexion suivante).
+3. Mise en ligne (crée tout ce qui manque, puis publie ; relançable sans risque) :
+   ```
+   export CLOUDFLARE_API_TOKEN=…  CLOUDFLARE_ACCOUNT_ID=…  APP_URL=https://app.stablapp.fr
+   bash app/api/scripts/deployer.sh --essai   # vérifie tout sans rien publier
+   bash app/api/scripts/deployer.sh
+   ```
+   Le script crée la base D1 et le stockage R2 en juridiction UE (données hébergées dans l'Union européenne), écrit l'identifiant de la base dans `app/api/wrangler.jsonc` (à commiter), crée le secret `SESSION_SECRET` (signature des liens de désinscription, d'activation et de calendrier ; ne jamais le changer ensuite), applique les migrations, construit l'appli web et publie. Sans `SESSION_SECRET`, l'API répond « Le service est en cours de configuration » au lieu de tourner avec un secret faible.
+4. Vérifier `https://…/api/health`, puis créer son compte.
+5. Acheter le domaine (ex. stablapp.fr) chez Cloudflare Registrar (prix coûtant, environ 10 € par an), puis Workers › piaffe › Paramètres › Domaines : ajouter `app.stablapp.fr`. Mettre `APP_URL` à `https://app.stablapp.fr` dans wrangler.jsonc (ou le passer au script comme ci-dessus).
 
 ## 2. Google (connexion « Continuer avec Google »)
 1. console.cloud.google.com : créer un projet.
@@ -48,4 +64,4 @@ Coût : compte gratuit jusqu'à 1 000 factures par mois ; par l'API 0,01 € HT 
 6. Décision : la facture légale de l'abonnement est la facture Factur-X émise par Stabl (série PIA-) ; celle de Stripe sert de reçu. Sinon il y aurait deux numérotations.
 
 ## 6. Robot de migration (rien à installer chez le client)
-Il tourne sur Cloudflare Browser Rendering, inclus dans Workers Paid : 10 h de navigateur par mois, puis 0,09 $ par heure, soit environ 20 à 40 migrations par mois sans frais en plus. Rien d'autre à activer : le binding suffit et `wrangler deploy` crée le Durable Object. Réglages (sessions par club et par heure, délai d'inactivité) dans `app/api/src/robot/reglages.ts`.
+Il tourne sur Cloudflare Browser Rendering. Palier gratuit : 10 minutes de navigateur par jour (une ou deux migrations). Workers Paid : 10 h de navigateur par mois, puis 0,09 $ par heure, soit environ 20 à 40 migrations par mois sans frais en plus. Rien d'autre à activer : le binding suffit et `wrangler deploy` crée le Durable Object. Réglages (sessions par club et par heure, délai d'inactivité) dans `app/api/src/robot/reglages.ts`.

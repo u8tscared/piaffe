@@ -20,6 +20,8 @@ export interface Env {
   PLATFORM_VAT_REGIME: string;
   PLATFORM_LEGAL_NOTE: string;
   SESSION_SECRET: string;
+  /** Coût du hachage des mots de passe (PBKDF2) : 30000 sur le palier gratuit, 100000 sur Workers Paid. */
+  PASSWORD_ITERATIONS?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
   STRIPE_SECRET_KEY?: string;
