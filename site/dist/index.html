@@ -1369,7 +1369,7 @@ var FAQ=[['Combien de temps faut-il pour démarrer ?','Une après‑midi. La cr�
 put($('#faqL'),FAQ.map(function(f,i){return '<div class="qr'+(i===0?' ouvert':'')+'"><button type="button" aria-expanded="'+(i===0)+'" aria-controls="rep'+i+'" id="q'+i+'"><span>'+f[0]+'</span><span class="pm">'+I('plus')+'</span></button><div class="rep" id="rep'+i+'" role="region" aria-labelledby="q'+i+'"><div><p>'+f[1]+'</p></div></div></div>'}).join(''));
 $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q=b.parentNode,o=!q.classList.contains('ouvert');q.classList.toggle('ouvert',o);b.setAttribute('aria-expanded',o)})});
 
-/* ---------- Formulaire de rappel (messagerie en attendant un vrai envoi) ---------- */
+/* ---------- Formulaire de rappel : envoi à Stabl, la messagerie en secours ---------- */
 (function(){var f=$('#ctF'),n=$('#ctN');
   D.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-offre]');if(!a)return;var m=f.elements.msg;if(!m.value.trim())m.value='Je souhaite démarrer l’essai gratuit de la formule '+a.dataset.offre+'.'});
   f.addEventListener('submit',function(e){e.preventDefault();var el=f.elements,ko=[];
@@ -1377,8 +1377,16 @@ $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q
     if(ko.length){n.className='ct-n ko';n.textContent='Indiquez au moins votre nom et votre numéro de téléphone.';ko[0].focus();return}
     var club=el.club.value.trim(),corps=['Bonjour,','','Je souhaite être rappelé au sujet de Stabl.','','Nom : '+el.nom.value.trim(),'Établissement : '+(club||'non précisé'),'Téléphone : '+el.tel.value.trim(),'E-mail : '+(el.mail.value.trim()||'non précisé'),'Moment préféré : '+el.quand.value];
     if(el.msg.value.trim())corps.push('','Message :',el.msg.value.trim());
-    location.href='mailto:'+MAIL+'?subject='+encodeURIComponent('Demande de rappel'+(club?' : '+club:''))+'&body='+encodeURIComponent(corps.join('\n'));
-    n.className='ct-n ok';n.textContent='Votre messagerie s’ouvre : il ne reste qu’à envoyer. Sinon, écrivez-nous à '+MAIL+'.'})})();
+    var sujet='Demande de rappel'+(club?' : '+club:''),mail=el.mail.value.trim(),bt=f.querySelector('[type=submit]');
+    function messagerie(){location.href='mailto:'+MAIL+'?subject='+encodeURIComponent(sujet)+'&body='+encodeURIComponent(corps.join('\n'));
+      n.className='ct-n ok';n.textContent='Votre messagerie s’ouvre : il ne reste qu’à envoyer. Sinon, écrivez-nous à '+MAIL+'.'}
+    /* envoi direct à Stabl ; sans e-mail valide ou si l'envoi échoue, on repasse par la messagerie */
+    if(!window.fetch||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){messagerie();return}
+    if(bt)bt.disabled=true;n.className='ct-n';n.textContent='Envoi en cours…';
+    fetch('https://app.stablapp.fr/api/contact',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({name:el.nom.value.trim(),email:mail,phone:el.tel.value.trim(),subject:sujet,message:corps.join('\n'),source:'site',site_web:''})})
+      .then(function(r){if(!r.ok)throw r;n.className='ct-n ok';n.textContent='Merci, votre demande est bien arrivée. Nous vous rappelons très vite.';f.reset()})
+      .catch(messagerie).then(function(){if(bt)bt.disabled=false})})})();
 
 /* ---------- Mentions légales : ouvertes par le lien ---------- */
 (function(){var d=$('#mentions');function ouvre(){if(location.hash==='#mentions')d.open=true}
