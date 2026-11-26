@@ -79,6 +79,18 @@ function lesson(id){return D.lessons.find(function(l){return l.id===id})}
 function due(){return D.adhInvoices.filter(function(i){return i.status!=='payée'}).reduce(function(a,i){return a+i.amount},0)}
 function toSign(){return CONTRACTS().filter(function(c){return c.status==='à signer'&&!A.signed[c.id]})}
 
+
+/* ---------- Vrais fichiers (PDF, CSV, ICS) : P.xpdf / P.xcsv / P.xics viennent du module 70 ---------- */
+function XF(kind,name,o,msg){var f=P['x'+kind];if(f){f(name,o);P.toast(msg||(name+' téléchargé'),{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}
+function invPdf(inv){var ht=inv.amount/(1+(inv.vat||0)/100);XF('pdf',inv.id+'.pdf',{titre:(inv.amount<0?'Avoir ':'Facture ')+inv.id,sous:D.club.name+' · '+(ME?ME.first+' '+ME.last:''),lignes:[['Objet',inv.label],['Date',F.dateY?F.dateY(inv.date):inv.date],['Montant HT',F.eur(Math.round(ht*100)/100)],['TVA '+(inv.vat||0)+' %',F.eur(Math.round((inv.amount-ht)*100)/100)],['Total TTC',F.eur(inv.amount)],['Règlement',inv.method||''],['État',inv.status]],texte:[inv.status==='payée'?'Facture acquittée. Merci.':'À régler en ligne sur app.stablapp.fr ou par prélèvement SEPA.']},inv.id+'.pdf téléchargé')}
+function docPdf(title,sub,texte,lignes){XF('pdf',P.xname?P.xname(title)+'.pdf':'document.pdf',{titre:title,sous:sub,lignes:lignes||[],texte:texte||[]},title+' téléchargé')}
+function lessonIcs(t,off,start,dur,lieu,desc){XF('ics',P.xname?P.xname(t)+'.ics':'seance.ics',[{t:t,d:D.iso(D.day(off)),s:start,dur:dur||60,lieu:(lieu?lieu+', ':'')+D.club.name,desc:desc||''}],'Fichier agenda prêt : ouvrez-le pour ajouter la séance')}
+/* Photo du cheval : P.horsePhoto (30-chevaux) si présent, sinon sélecteur de fichier natif avec aperçu */
+  function takePhoto(cb){
+    if(typeof P.horsePhoto==='function'){try{P.horsePhoto('h01',{done:function(ph){var u=ph&&(ph.url||ph.thumb||ph.blob);if(u&&typeof u!=='string'&&u instanceof Blob)u=URL.createObjectURL(u);cb(typeof u==='string'?u:'',ph,true)}});return}catch(e){}}
+    var i=document.createElement('input');i.type='file';i.accept='image/*';i.setAttribute('capture','environment');i.style.cssText='position:fixed;left:-9999px;opacity:0';
+    i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return;cb(URL.createObjectURL(f),f)};document.body.appendChild(i);i.click()}
+  function addJournalPhoto(u){A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:'Photo du jour',kind:'travail',mood:4,photo:u,isNew:true})}
 /* ---------- Styles communs ---------- */
 P.css(`
 /* Pastille « 410 € » de l’onglet Paiements : elle reste dans son onglet au lieu de toucher le bouton « Tous les écrans » */
@@ -144,7 +156,7 @@ P.css(`
 .ad-cam .o{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
 .ad-cam .c1{top:10px;left:10px}.ad-cam .c2{top:10px;right:10px;background:rgba(0,0,0,.45);padding:3px 8px;border-radius:5px;backdrop-filter:blur(6px)}
 .ad-cam .c3{bottom:10px;left:10px;font:500 13px var(--f-mono);background:rgba(0,0,0,.45);padding:3px 7px;border-radius:5px}
-.ad-cam .c4{bottom:8px;right:8px}
+.ad-cam .c4{bottom:8px;right:8px;gap:12px}
 .ad-cam .c4 button{width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;backdrop-filter:blur(6px)}
 .ad-cam .fb{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.5)}
 .ad-cam .fb svg{width:64px;height:64px}
@@ -250,7 +262,7 @@ P.css(`
 .ad-q:active{transform:scale(.96)}
 .ad-q .ico{width:46px;height:46px;border-radius:15px;position:relative}
 .ad-q .ico em{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--bad);color:var(--on-acc);font:700 13px/22px var(--f-text);text-align:center;box-shadow:0 0 0 2.5px var(--surface)}
-.ad-q b{display:block;font-size:15px}.ad-q small{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-q b{display:block;font-size:15px}.ad-q small{display:block;font-size:13px;color:var(--mut);line-height:1.3}
 @container main (max-width:620px){.ad-quick{gap:4px}.ad-q{flex-direction:column;gap:8px;padding:2px 0;min-height:0;background:none;box-shadow:none;text-align:center}.ad-q:hover{transform:none;box-shadow:none}.ad-q .ico{width:62px;height:62px;border-radius:20px}.ad-q .ico svg.i{width:26px;height:26px}.ad-q small{display:none}.ad-q b{font-size:13px;font-weight:600}}
 /* tuile « prochaine séance » (héros) */
 .ad-next{padding:24px;overflow:hidden;display:flex;flex-direction:column;gap:16px}
@@ -332,7 +344,7 @@ function lessonSheet(r){var l=lesson(r.les),p=D.adhFamily.find(function(f){retur
     '<div><div class="ad-lbl">Avec vous dans la reprise</div><div class="hrow" style="--g:10px">'+U.avs(l.riders,6)+'<span class="s mut">'+count(l)+' cavaliers sur '+l.cap+'</span></div></div>'+
     '<div class="note">'+ICON(w.i,'sm')+'<span>'+w.t+' °C prévus, '+(w.r>50?'pluie probable : la séance passe au Grand manège.':'terrain souple. Pensez aux guêtres.')+'</span></div></div>',
     foot:'<button class="btn ad-full" data-abs>Signaler une absence</button><button class="btn pri ad-full" data-cal>'+ICON('calendar_add','sm')+'Ajouter à mon agenda</button>'});
-  $('[data-abs]',sh).onclick=function(){absenceSheet(r)};$('[data-cal]',sh).onclick=function(){sh.close();P.toast('Séance ajoutée à votre agenda')}}
+  $('[data-abs]',sh).onclick=function(){absenceSheet(r)};$('[data-cal]',sh).onclick=function(){sh.close();lessonIcs(l.title,r.off,l.start,l.dur,arena(l),'Avec '+D.name(l.coach))}}
 
 function editHome(){var list=blocks();
   var sh=P.sheet({title:'Personnaliser l’accueil',icon:'sliders',body:function(b){
@@ -406,8 +418,10 @@ P.mod({id:'adh-accueil',role:'adherent',group:'Moi',title:'Accueil',icon:'today'
   B.news='<div class="card ad-t w2" data-b="news" style="padding:20px 0 8px"><div class="ad-tt" style="padding:0 20px">'+ico('bell','acc')+'<h3>Annonces du club</h3><span class="s mut">'+D.club.short+'</span></div><div>'+D.adhNews.map(function(n){return '<div class="ad-news" data-news="'+n.id+'"><span class="ico">'+ICON(n.icon)+'</span><div class="grow"><div class="t">'+n.title+'</div><div class="s mut" style="margin-top:4px">'+n.tag+' · '+n.when+'</div></div>'+ICON('right','sm')+'</div>'}).join('')+'</div></div>';
 
   var list=blocks().filter(function(s){return s.on&&B[s.id]});
-  el.innerHTML='<div class="ad-ph">'+U.ph('Bonjour Léa',kid?'Vous suivez '+p.first+', 9 ans, Galop 2. Sa prochaine reprise est demain à 14 h.':'Mardi 17 novembre · Ulysse va bien, votre cours avec Pauline est aujourd’hui à '+hm(COURS.start)+'.',profPill()+'<button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button>')+'</div>'+orgBanner()+(ctx.mobile&&!kid?lockHTML():'')+
-   '<div class="ad-home rise">'+list.map(function(s){return B[s.id]}).join('')+'</div>'+
+  /* téléphone, ordre par défaut : l'essentiel d'abord (prochaine séance, puis ce qu'il reste à payer) */
+  if(ctx.mobile&&!P.prefs.get('adh:blocks',null)){var mi=list.findIndex(function(s){return s.id==='money'}),ni=list.findIndex(function(s){return s.id==='next'});if(mi>ni+1&&ni>=0){var mv=list.splice(mi,1)[0];list.splice(ni+1,0,mv)}}
+  el.innerHTML='<div class="ad-ph">'+U.ph('Bonjour Léa',kid?'Vous suivez '+p.first+', 9 ans, Galop 2. Sa prochaine reprise est demain à 14 h.':'Mardi 17 novembre · Ulysse va bien, votre cours avec Pauline est aujourd’hui à '+hm(COURS.start)+'.',profPill()+'<button class="btn" data-edit>'+ICON('sliders','sm')+'Personnaliser</button>')+'</div>'+orgBanner()+
+   '<div class="ad-home rise">'+list.map(function(s){return B[s.id]}).join('')+'</div>'+(ctx.mobile&&!kid?'<div style="margin-top:16px">'+lockHTML()+'</div>':'')+
    (list.length<BLOCKS.length-(kid?2:0)?'<div class="hrow" style="justify-content:center;margin-top:18px"><button class="btn ghost sm" data-edit>'+ICON('plus','sm')+'Ajouter des blocs à mon accueil</button></div>':'');
   bindProf(el);bindOrg(el);$$('[data-edit]',el).forEach(function(b){b.onclick=editHome});
   var lv=$('#ad-live',el);if(lv)lv.addEventListener('click',function(){setTimeout(function(){var on=lv.getAttribute('aria-checked')==='true';P.prefs.set('adh:live',on);P.toast(on?'Activité en direct activée : le compte à rebours s’affichera sur votre écran verrouillé':'Activité en direct désactivée',{icon:'phone'})},0)});
@@ -496,7 +510,7 @@ function bookSheet(l,off,mode,after){var p=prof(),kid=p.minor,pr=price(l,p),emma
     var r={les:l.id,off:off,who:p.id,horse:hs,pay:v==='credit'?'Crédit de rattrapage':v==='carte'?'Carte de séances':(v==='apple'||v==='gpay'?payName(v):'Carte Visa')+', '+F.eur(pr)};A.res.push(r);A.extra[l.id]=(A.extra[l.id]||0)+1;
     success(sh,{title:kid?p.first+' est inscrit':'C’est réservé, Léa',text:'Votre place est confirmée. '+D.staffer(l.coach).first+' est prévenu'+(D.staffer(l.coach).first==='Inès'?'e':'')+' et un rappel vous sera envoyé la veille à 18 h.',
       head:'<div class="ad-date"><b>'+D.day(off).getDate()+'</b><span>'+DW[dowOff(off)]+'</span></div><div class="grow"><div class="b" style="font-size:15.5px">'+l.title+'</div><div class="s mut">'+cap(F.dateL(D.day(off)))+'</div></div>'+U.av(l.coach),
-      rows:[['Horaire',l.start+' – '+endT(l)],['Lieu',arena(l)],['Monture',hs?'Ulysse de la Roche':'Attribuée la veille'],['Règlement',r.pay]],more:['Ajouter à mon agenda',function(s2){s2.close();P.toast('Séance ajoutée à votre agenda')}]});
+      rows:[['Horaire',l.start+' – '+endT(l)],['Lieu',arena(l)],['Monture',hs?'Ulysse de la Roche':'Attribuée la veille'],['Règlement',r.pay]],more:['Ajouter à mon agenda',function(s2){s2.close();lessonIcs(l.title,off,l.start,l.dur,arena(l),'Avec '+D.name(l.coach))}]});
     if(after)after()})}}
 function waitSheet(l,off,after){var k=l.id+'@'+off,n=waitN(l)+1;
   var sh=P.sheet({title:'Liste d’attente',icon:'waitlist',body:'<div class="card soft" style="padding:14px 16px"><div class="b">'+l.title+'</div><div class="s mut">'+dayL(off)+' · '+l.start+' – '+endT(l)+' · '+D.name(l.coach)+'</div></div>'+
@@ -715,7 +729,8 @@ P.css(`
 .ad-3d{height:100%;min-height:360px;border-radius:var(--r-lg);overflow:hidden;background:radial-gradient(120% 90% at 50% 100%,var(--acc-pale),var(--surface) 70%);position:relative}
 .ad-3d .gl{position:absolute!important;inset:0}
 .ad-3d .tp{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap;z-index:3;pointer-events:none}
-.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:3;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none}
+.ad-3d .hint{position:absolute;right:14px;bottom:76px;z-index:2;font-size:13px;color:var(--mut);display:flex;align-items:center;gap:5px;pointer-events:none;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--surface) 80%,transparent);transition:opacity .4s}
+.ad-3d.used .hint{opacity:0}
 .ad-3d .st{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:3}
 .ad-3d .st div{padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px var(--line)}
 .ad-3d .st b{display:block;font:800 15px/1.2 var(--f-display);letter-spacing:-.02em}
@@ -742,6 +757,8 @@ P.css(`
 .ad-j p{color:var(--ink-2);margin-top:6px;line-height:1.5}
 .ad-photo{margin-top:10px;height:150px;border-radius:var(--r-md);background:linear-gradient(160deg,color-mix(in srgb,var(--c4) 45%,var(--surface)),color-mix(in srgb,var(--acc) 35%,var(--surface)));display:grid;place-items:center;color:color-mix(in srgb,var(--ink) 55%,transparent);position:relative;overflow:hidden}
 .ad-photo svg{width:72px;height:72px}
+.ad-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ad-photo .ad-phx{position:absolute!important;right:8px;top:8px;background:color-mix(in srgb,var(--surface) 88%,transparent)}
 .ad-photo span{position:absolute;left:10px;bottom:8px;font-size:13px;font-weight:600;background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 7px;border-radius:5px;color:var(--ink)}
 .ad-mood{display:inline-flex;gap:2px}
 .ad-mood button,.ad-mood span{width:30px;height:30px;display:grid;place-items:center;color:var(--line-2);transition:transform var(--t-2) var(--e-spring),color var(--t-2)}
@@ -795,7 +812,7 @@ function camSheet(){var act=[2,1,0,0,0,1,0,0,3,1,0,0,0,0,2,0,0,1,4,6,5,3,2,4];
     '<div class="card list" style="margin-top:14px">'+[['23:10','Se couche','Couché 3 h 20 au total, deux cycles de sommeil','moon'],['03:40','Se relève et boit','Abreuvoir : 4 litres','drop'],['07:10','Repas du matin','A tout mangé en 35 minutes','hay'],['08:30','Sortie au paddock','Prairie du bas, retour à 10 h 30','paddock']].map(function(e){return '<div class="li click" data-clip><span class="mono" style="width:44px">'+e[0]+'</span>'+sq(e[3])+'<div class="grow"><div class="t">'+e[1]+'</div><div class="s">'+e[2]+'</div></div>'+ICON('play','sm')+'</div>'}).join('')+'</div>';
     boxCam($('[data-bigcam]',b),{tools:false});$$('[data-clip]',b).forEach(function(c){c.onclick=function(){P.toast('Lecture de l’extrait de '+$('.mono',c).textContent,{icon:'play'})}})},
    foot:'<button class="btn ad-full" data-al>'+ICON('bell','sm')+'Régler mes alertes</button><button class="btn pri ad-full" data-sn>'+ICON('image','sm')+'Prendre une photo</button>'});
-  $('[data-sn]',sh).onclick=function(){P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
+  $('[data-sn]',sh).onclick=function(){takePhoto(function(u,f,core){if(!u)return;addJournalPhoto(u);sh.close();if(!core)P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};$('[data-al]',sh).onclick=function(){sh.close();P.go('adh-profil',{tab:'notifs'})}}
 
 P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'horse',n:10,short:'Ulysse',phoneTitle:'Ulysse',
  render:function(el,ctx){
@@ -814,10 +831,11 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
     [['07:10','A tout mangé, crottins normaux',0],['08:30','Paddock, Prairie du bas, 2 heures',0],[COURS.start,'Cours avec Pauline, '+arena(COURS).toLowerCase(),1],['17:00','Pansage et marcheur avec '+DPR.first,1]].map(function(e){return '<div class="'+(e[2]?'nx':'')+'"><span class="h">'+e[0]+'</span><span class="d"></span><span class="ellip'+(e[2]?' mut':'')+'">'+e[1]+'</span></div>'}).join('')+'</div></div></div>'+
    '<div class="ad-ps">'+SERVICES.slice(0,4).map(function(s){return '<button class="ad-pb" data-ps="'+s[0]+'">'+sq(s[1])+'<span class="grow" style="min-width:0"><b class="ellip">'+s[2].replace(' par un moniteur','').replace('Sortie au p','P')+'</b><small class="num">'+F.eur(s[4])+'</small></span></button>'}).join('')+'</div>'+
    U.tabs([['journal','Journal'],['soins','Soins'],['ration','Ration et travail'],['presta','Prestations'],['partage','Partage']],CH.tab,'data-ct')+'<div data-body style="margin-top:16px"></div>';
+  var a3=$('.ad-3d',el);if(a3)a3.addEventListener('pointerdown',function(){a3.classList.add('used')},{once:true});
   var g=P.gl.horse($('.ad-3d .gl',el),{points:pts,walk:false,rot:-.9,onPick:function(id){if(id==='pied')careSheet(0);else{CH.tab='soins';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='soins')});body();P.toast(pts.find(function(x){return x.id===id}).label,{icon:'care'})}}});
   var h0=$('.h3d',el);if(h0)h0.classList.add('show');
   boxCam($('[data-cam]',el),{tools:true});
-  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'})};
+  $('[data-full]',el).onclick=camSheet;$('[data-snap]',el).onclick=function(){takePhoto(function(u,f,core){if(!u)return;addJournalPhoto(u);if(!core)P.toast('Photo enregistrée dans le journal d’Ulysse',{icon:'image'});if(P.state.route==='adh-cheval')P.go('adh-cheval')})};
   $$('[data-hv]',el).forEach(function(b){b.addEventListener('click',function(){CH.view=b.getAttribute('data-hv');$('.ad-hv',el).setAttribute('data-v',CH.view)})});
   $$('[data-ps]',el).forEach(function(b){b.onclick=function(){prestaSheet(b.getAttribute('data-ps'),function(){if(CH.tab==='presta')body()})}});
   $('[data-allp]',el).onclick=function(){CH.tab='presta';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='presta')});body();$('[data-body]',el).scrollIntoView({behavior:'smooth',block:'start'})};
@@ -840,7 +858,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
       '<div data-jph></div><div class="hrow wrap" style="--g:6px;margin-top:10px">'+['Travail','Balade','Soin','Consigne'].map(function(t,i){return '<button class="tag" data-manual data-jk="'+t.toLowerCase()+'" aria-pressed="'+(i===0)+'">'+t+'</button>'}).join('')+'</div>'+
       '<div class="hrow sp wrap" style="margin-top:12px;--g:10px"><div class="hrow" style="--g:8px"><span class="s mut">Ressenti</span><span class="ad-mood" data-mood>'+[1,2,3,4,5].map(function(i){return '<button class="'+(i<=4?'on':'')+'" data-m="'+i+'" title="'+i+' sur 5">'+ICON('heart')+'</button>'}).join('')+'</span></div><div class="hrow" style="--g:8px"><button class="btn" data-jp title="Ajouter une photo">'+ICON('image','sm')+'Photo</button><button class="btn pri" data-jpub>'+ICON('send','sm')+'Publier</button></div></div>'+
       '<div class="xs mut" style="margin-top:10px">'+ICON('eye','sm')+' Visible par vous, '+DPR.first+' et l’équipe du club</div></div></div></div>'+
-     '<div class="card" data-jl>'+all.map(function(j,i){var who=D.person(j.who);return '<div class="ad-j'+(j.isNew?' new':'')+'">'+U.av(j.who)+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b class="s">'+who.first+' '+who.last+'</b>'+U.chip(j.role,j.who==='m001'?'acc':'line')+'<span class="xs mut" style="margin-left:auto">'+j.when+'</span></div><p>'+F.esc(j.text)+'</p>'+(j.photo?'<div class="ad-photo">'+HORSE_GLYPH()+'<span>Photo ajoutée à 9 h 41</span></div>':'')+
+     '<div class="card" data-jl>'+all.map(function(j,i){var who=D.person(j.who);return '<div class="ad-j'+(j.isNew?' new':'')+'">'+U.av(j.who)+'<div class="grow"><div class="hrow wrap" style="--g:6px"><b class="s">'+who.first+' '+who.last+'</b>'+U.chip(j.role,j.who==='m001'?'acc':'line')+'<span class="xs mut" style="margin-left:auto">'+j.when+'</span></div><p>'+F.esc(j.text)+'</p>'+(j.photo?(typeof j.photo==='string'?'<div class="ad-photo"><img src="'+F.esc(j.photo)+'" alt="Photo d’Ulysse"></div>':'<div class="ad-photo">'+HORSE_GLYPH()+'<span>Photo ajoutée à 9 h 41</span></div>'):'')+
        '<div class="hrow" style="--g:12px;margin-top:8px">'+moodRO(j.mood)+'<span class="chip">'+cap(j.kind)+'</span><button class="ad-like" data-manual data-like="'+i+'" aria-pressed="'+(!!j.liked)+'" style="margin-left:auto">'+ICON('heart','sm')+'<span>'+(j.liked?'Merci envoyé':'Dire merci')+'</span></button></div></div></div>'}).join('')+'</div></div>'+
      '<div class="stack" style="--g:14px"><div class="card ad-b"><div class="ch"><h3>Cette semaine</h3><span class="xs mut">4 séances</span></div><div class="cb"><div class="hrow" style="--g:14px">'+U.ring(Math.round(UL.work/UL.workMax*100),UL.work+' h','var(--acc)',64)+'<div class="grow"><div class="b">Charge de travail équilibrée</div><div class="s mut">'+UL.work+' heures sur '+UL.workMax+' recommandées au maximum</div></div></div><div class="note">'+ICON('sensor','sm')+'<span>Capteur de selle hier : 52 minutes, dont 38 % au galop.</span></div></div></div>'+
       '<div class="card ad-b"><div class="ch"><h3>Prochain soin</h3><button class="btn ghost sm" data-tosoins>Tous'+ICON('arrow','sm')+'</button></div><div class="cb"><div class="ad-row">'+sq('hoof','warn')+'<div class="grow"><div class="t">Maréchal, jeudi à 9 h</div><div class="s">Benoît Gautier · ferrure complète</div></div></div></div></div></div></div>'}
@@ -867,7 +885,7 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
       (toSign().length?'<div class="note warn">'+ICON('sign','sm')+'<span>L’avenant de renouvellement de la demi-pension attend votre signature. <a href="#adh-contrats" data-go="adh-contrats" data-id="ct2" class="b">Signer maintenant</a></span></div>':'')+'</div></div>'}
    b.innerHTML=h;P.animate(b);swIn(b);$$('[data-share]',b).forEach(function(x){x.onclick=share});
    $$('[data-care]',b).forEach(function(x){x.onclick=function(){careSheet(+x.getAttribute('data-care'))}});
-   $$('[data-dl]',b).forEach(function(x){x.onclick=function(){P.toast(x.getAttribute('data-dl')+' téléchargé',{icon:'download'})}});
+   $$('[data-dl]',b).forEach(function(x){x.onclick=function(){var t=x.getAttribute('data-dl');docPdf(t,UL.name+' · box B01 · '+D.club.name,[],D.care.filter(function(c){return c.horse==='h01'}).map(function(c){return [F.dateY(c.date),c.kind+' · '+c.who+(c.note?' · '+c.note:'')]}))}});
    $$('[data-ps2]',b).forEach(function(x){x.onclick=function(){prestaSheet(x.getAttribute('data-ps2'),body)}});
    var ts=$('[data-tosoins]',b);if(ts)ts.onclick=function(){CH.tab='soins';$$('[data-ct]',el).forEach(function(x){x.setAttribute('aria-selected',x.getAttribute('data-ct')==='soins')});body()};
    var rd=$('[data-rdv]',b);if(rd)rd.onclick=function(){var sh=P.sheet({title:'Demander un rendez-vous',icon:'care',body:'<div class="ad-lbl">Pour quel soin ?</div><div class="hrow wrap" style="--g:6px">'+['Vétérinaire','Maréchal','Ostéopathe','Dentiste','Vaccin','Autre'].map(function(t,i){return '<button class="tag" aria-pressed="'+(i===0)+'">'+t+'</button>'}).join('')+'</div><div class="ad-lbl">Praticien</div><select class="in"><option>Dr Leclerc, vétérinaire du club</option><option>Mon propre praticien</option></select><div class="ad-lbl">Ce que vous avez remarqué</div><textarea class="in" placeholder="Par exemple : raide à main gauche depuis trois jours"></textarea><div class="ad-lbl">Urgence</div>'+U.seg([['n','Cette semaine'],['u','Sous 48 heures'],['uu','Aujourd’hui']],'n'),foot:'<button class="btn pri ad-full" data-ok>Envoyer la demande au club</button>'});$('[data-ok]',sh).onclick=function(){sh.close();P.toast('Demande envoyée, Claire vous propose un créneau sous 24 heures')}};
@@ -880,7 +898,8 @@ P.mod({id:'adh-cheval',role:'adherent',group:'Cheval',title:'Mon cheval',icon:'h
    var pub=$('[data-jpub]',b);if(pub){var mood=4,photo=false;
     $$('[data-m]',b).forEach(function(m){m.onclick=function(){mood=+m.getAttribute('data-m');$$('[data-m]',b).forEach(function(y){y.classList.toggle('on',+y.getAttribute('data-m')<=mood)})}});
     $$('[data-jk]',b).forEach(function(t){t.onclick=function(){$$('[data-jk]',b).forEach(function(y){y.setAttribute('aria-pressed',y===t)})}});
-    $('[data-jp]',b).onclick=function(){photo=!photo;$('[data-jph]',b).innerHTML=photo?'<div class="ad-photo pop" style="height:110px">'+HORSE_GLYPH()+'<span>IMG_2026-11-17.jpg</span></div>':'';P.toast(photo?'Photo ajoutée':'Photo retirée',{icon:'image'})};
+    var jph=$('[data-jph]',b),jpb=$('[data-jp]',b);function showPh(){jph.innerHTML=photo?'<div class="ad-photo pop" style="height:130px"><img src="'+F.esc(photo)+'" alt="Aperçu de la photo"><button class="btn sm ad-phx" data-jpx title="Retirer la photo">'+ICON('trash','sm')+'Retirer</button></div>':'';if(photo)$('[data-jpx]',jph).onclick=function(){photo=false;showPh();P.toast('Photo retirée',{icon:'image'})}}
+    jpb.onclick=function(){takePhoto(function(u,f,core){if(!u)return;photo=u;showPh();if(!core)P.toast('Photo ajoutée',{icon:'image'})})};
     pub.onclick=function(){var ta=$('#ad-jt',b),tx=ta.value.trim();if(!tx){ta.focus();ta.value='';ta.placeholder='Écrivez quelques mots avant de publier.';return}
       A.journal.unshift({horse:'h01',who:'m001',role:'Propriétaire',when:'À l’instant',text:tx,kind:$('[data-jk][aria-pressed="true"]',b).getAttribute('data-jk'),mood:mood,photo:photo,isNew:true});body();A.journal[0].isNew=false;P.toast('Publié dans le journal, '+DPR.first+' et l’équipe sont prévenus')};
     $$('[data-like]',b).forEach(function(x){x.onclick=function(){var j=all[+x.getAttribute('data-like')];j.liked=!j.liked;x.setAttribute('aria-pressed',j.liked);$('span',x).textContent=j.liked?'Merci envoyé':'Dire merci'}})}
@@ -1179,9 +1198,9 @@ P.mod({id:'adh-progression',role:'adherent',group:'Équitation',title:'Progressi
      (s[6]?'<div class="ad-lbl">Note de '+D.person(s[3]).first+'</div><p class="s" style="color:var(--ink-2);line-height:1.55">'+s[6]+'</p>':'')+
      (kid?'':'<div class="ad-lbl">Capteur de selle</div><div class="g3" style="--g:8px;grid-template-columns:repeat(3,minmax(0,1fr))">'+[['34 %','Au pas'],['31 %','Au trot'],['35 %','Au galop']].map(function(v){return '<div class="card soft" style="padding:10px 12px"><div class="disp bb num" style="font-size:18px">'+v[0]+'</div><div class="xs mut">'+v[1]+'</div></div>'}).join('')+'</div>')})}});
   $('[data-prog]',el).onclick=function(){P.sheet({title:'Programme du '+G.next,icon:'list',body:'<p class="s mut" style="margin-bottom:14px">Le programme officiel de la FFE, coché au fil des séances par vos moniteurs.</p><div class="card list">'+(kid?[['Trotter enlevé en changeant de diagonal',1],['Galoper en équilibre sur ses étriers',1],['Partir au galop sur le bon pied',0],['Sauter un petit obstacle isolé au trot',0],['Connaître les robes et les marques',1],['Entretenir son matériel',1]]:[['Enchaîner un parcours de 1 m',1],['Présenter une reprise de niveau Amateur 3',1],['Longer un cheval aux trois allures',0],['Théorie : règlement de compétition',0],['Soins : reconnaître une boiterie',1]]).map(function(t){return '<div class="li">'+(t[1]?sq('check','ok'):'<span class="av sq" style="--c:var(--bg-2);color:var(--mut)">'+ICON('hourglass')+'</span>')+'<div class="grow t">'+t[0]+'</div>'+U.chip(t[1]?'Validé':'À travailler',t[1]?'ok':'')+'</div>'}).join('')+'</div>'})};
-  $('[data-dip]',el).onclick=function(){P.toast('Diplômes de Galop 1 à '+G.g+' téléchargés depuis la FFE',{icon:'download'})};
+  $('[data-dip]',el).onclick=function(){docPdf('Diplômes de '+p.first,'Galops fédéraux obtenus · '+D.club.name,['Relevé des diplômes enregistrés au club. Le diplôme officiel reste consultable sur votre espace FFE.'],Array.apply(null,Array(G.g)).map(function(_,i){return ['Galop '+(i+1),'Obtenu']}))};
   $('[data-quiz]',el).onclick=function(){quizSheet(P.rerender)};
-  $('[data-exp]',el).onclick=function(){P.toast('Historique des séances exporté',{icon:'download'})};
+  $('[data-exp]',el).onclick=function(){XF('csv','seances-'+P.xname(p.first)+'.csv',[['Date','Séance','Cheval','Durée (min)','Avec','Ressenti (sur 5)','Note du moniteur']].concat(G.ses.map(function(s){return [s[0],s[1],D.horse(s[2]).name,s[4],s[3]?D.name(s[3]):'En autonomie',s[5],s[6]]})),'Historique des séances téléchargé')};
  }});
 
 /* =====================================================================
@@ -1227,7 +1246,7 @@ function invSheet(inv,after){var open=inv.status!=='payée'&&inv.amount>0,ht=inv
     '<div class="ad-row" style="margin-top:14px">'+sq(inv.method==='Carte bancaire'?'card':'bank')+'<div class="grow"><div class="t">'+inv.method+'</div><div class="s">'+(inv.status==='payée'?'Réglée le '+F.dateY(inv.due):inv.status==='en retard'?'Prélèvement du 15 novembre rejeté par votre banque':inv.status==='déduit'?'Déduit automatiquement de votre pension':'À régler avant le '+F.date(inv.due))+'</div></div></div>'+
     '<p class="xs mut" style="margin-top:14px">'+D.club.name+' · SIRET '+D.club.siret+' · facture électronique conforme Factur-X</p>',
     foot:'<button class="btn ad-full" data-dl>'+ICON('download','sm')+'Télécharger le PDF</button>'+(open?'<button class="btn pri ad-full" data-pay>Payer '+F.eur(inv.amount)+'</button>':'')});
-  $('[data-dl]',sh).onclick=function(){P.toast(inv.id+'.pdf téléchargé',{icon:'download'})};var pb=$('[data-pay]',sh);if(pb)pb.onclick=function(){paySheet(after,[inv.id])}}
+  $('[data-dl]',sh).onclick=function(){invPdf(inv)};var pb=$('[data-pay]',sh);if(pb)pb.onclick=function(){paySheet(after,[inv.id])}}
 function paySheet(after,only){var av=D.adhInvoices.find(function(i){return i.status==='déduit'}),open=D.adhInvoices.filter(function(i){return i.status!=='payée'&&i.amount>0});
   if(!open.length){P.toast('Tout est déjà réglé');return}
   var net=function(i){return i.amount+(av&&i.id==='F-2026-1173'?av.amount:0)};
@@ -1244,7 +1263,7 @@ function paySheet(after,only){var av=D.adhInvoices.find(function(i){return i.sta
   ok.onclick=function(){var t=tot(),ss=sel(),m=optVal(sh,'pay');spin(ok,function(){ss.forEach(function(i){i.status='payée';i.due=D.iso(D.day(0));i.method=m==='sepa'?'Prélèvement SEPA':'Carte bancaire';if(i.id==='F-2026-1173'&&av)av.status='payée'});
     success(sh,{title:'Paiement reçu, merci Léa',text:'Votre reçu est envoyé à '+ME.email+'. '+(due()?'Il reste '+F.eur(due())+' à régler.':'Votre compte est à jour.'),
      head:sq('checkc','ok')+'<div class="grow"><div class="b" style="font-size:15.5px">'+F.eur(m==='x3'?t/3:t,m==='x3')+' réglés</div><div class="s mut">'+D.club.name+'</div></div>',
-     rows:[['Date','17 nov. 2026, 9 h 41'],['Moyen',m==='apple'||m==='gpay'?payName(m):m==='sepa'?'Prélèvement SEPA':m==='x3'?'Carte Visa, 3 fois':m==='ancv'?'ANCV et carte Visa':'Carte Visa •••• 4242'],['Factures',ss.length+' réglée'+(ss.length>1?'s':'')],['Reçu','R-2026-0931']],more:['Télécharger le reçu',function(){P.toast('Reçu R-2026-0931 téléchargé',{icon:'download'})}]});
+     rows:[['Date','17 nov. 2026, 9 h 41'],['Moyen',m==='apple'||m==='gpay'?payName(m):m==='sepa'?'Prélèvement SEPA':m==='x3'?'Carte Visa, 3 fois':m==='ancv'?'ANCV et carte Visa':'Carte Visa •••• 4242'],['Factures',ss.length+' réglée'+(ss.length>1?'s':'')],['Reçu','R-2026-0931']],more:['Télécharger le reçu',function(){docPdf('Reçu R-2026-0931',D.club.name+' · 17 novembre 2026',['Paiement reçu. Merci.'],ss.map(function(i){return [i.id,i.label+' · '+F.eur(i.amount)]}))}]});
     if(after)after(t)})}}
 
 P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:'wallet',n:10,short:'Paiements',
@@ -1263,7 +1282,7 @@ P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:
      '<div class="card"><div class="ch"><h3>Prochaines échéances</h3><span class="xs mut hide-s">Prélevées automatiquement</span></div><div class="list" style="padding:6px 0">'+[['1','déc.','Pension de décembre, Ulysse','520 € moins 180 € de demi-pension · SEPA',340],['5','déc.','Forfait annuel de Jules, 2 sur 3','Carte Visa •••• 4242',260],['5','janv.','Forfait annuel de Jules, 3 sur 3','Carte Visa •••• 4242',260]].map(function(e){return '<div class="li"><div class="ad-date g" style="width:44px;height:46px"><b style="font-size:17px">'+e[0]+'</b><span>'+e[1]+'</span></div><div class="grow"><div class="t ellip">'+e[2]+'</div><div class="s ellip">'+e[3]+'</div></div><b class="num s">'+F.eur(e[4])+'</b></div>'}).join('')+'</div></div></div></div>';
    if(prev&&!P.RM){var a=$('[data-amt]',t),t0=performance.now();(function st(now){var k=Math.min(1,(now-t0)/900),e=1-Math.pow(1-k,4);a.textContent=F.eur(Math.round(prev+(d-prev)*e));if(k<1)requestAnimationFrame(st)})(t0)}
    var pa=$('[data-payall]',t);if(pa){pa.onclick=function(){var d0=due();paySheet(function(){refresh(d0)})};$('[data-pay3]',t).onclick=function(){var d0=due();paySheet(function(){refresh(d0)});var o=$('.ad-opt[data-v="x3"]',P.app());if(o)o.click()}}
-   var rc=$('[data-rc]',t);if(rc)rc.onclick=function(){P.toast('Reçu R-2026-0931 téléchargé',{icon:'download'})};
+   var rc=$('[data-rc]',t);if(rc)rc.onclick=function(){docPdf('Reçu R-2026-0931',D.club.name+' · 17 novembre 2026',['Paiement reçu. Merci.'],D.adhInvoices.filter(function(i){return i.status==='payée'}).slice(0,3).map(function(i){return [i.id,i.label+' · '+F.eur(i.amount)]}))};
    $('[data-buy]',t).onclick=function(){var sh=P.sheet({title:'Recharger ma carte',icon:'wallet',body:opts([['10','Carte 10 séances','290 €, soit 29 € la séance',sq('ticket')],['20','Carte 20 séances','540 €, soit 27 € la séance',sq('ticket')],['5','Carte 5 séances','155 €, soit 31 € la séance',sq('ticket')]],'10','card')+'<div class="ad-lbl">Pour qui ?</div>'+opts(D.adhFamily.map(function(f){return [f.id,f.first+' '+f.last,'Galop '+f.galop,U.av(f)]}),'lea','who')+'<p class="xs mut" style="margin-top:14px">Valable 12 mois, utilisable par toute la famille. Les séances non utilisées sont reportées sur la carte suivante.</p>',foot:'<button class="btn pri lg ad-full" data-ok>'+ICON('lock','sm')+'Payer 290 €</button>'});
      var ok=$('[data-ok]',sh);bindOpts(sh,function(){ok.innerHTML=ICON('lock','sm')+'Payer '+F.eur({5:155,10:290,20:540}[optVal(sh,'card')])});
      ok.onclick=function(){var n=+optVal(sh,'card');spin(ok,function(){A.card.left+=n;A.card.total=Math.max(10,Math.ceil(A.card.left/10)*10);success(sh,{title:'Carte rechargée',text:n+' séances ajoutées. Vous pouvez réserver tout de suite.'});top()})}}}
@@ -1275,13 +1294,13 @@ P.mod({id:'adh-paiements',role:'adherent',group:'Compte',title:'Paiements',icon:
    else{h='<div class="g2" style="--g:14px">'+[['doc','Attestation de paiement pour votre CSE','Forfait de Jules et licences, saison 2026-2027, tamponnée par le club','CSE'],['family','Attestation d’inscription de Jules','Pour la CAF, la mairie ou le Pass’Sport','Inscription'],['report','Récapitulatif annuel 2026','Toutes vos dépenses par mois et par catégorie, pour votre déclaration ou votre comptable','Annuel'],['invoice','Factures acquittées','Un PDF par facture, avec la mention « acquittée »','Acquittées'],['medal','Attestation de licence FFE 2027','Léa et Jules, avec numéro de licence et assurance','Licence'],['shield','Attestation d’assurance du cheval','Responsabilité civile d’Ulysse, exigée en concours','Assurance']].map(function(a){return '<div class="card" style="padding:16px"><div class="hrow" style="--g:12px;align-items:flex-start">'+sq(a[0])+'<div class="grow"><div class="b">'+a[1]+'</div><div class="s mut" style="margin-top:2px">'+a[2]+'</div><div class="hrow" style="--g:8px;margin-top:12px"><button class="btn sm" data-att="'+a[3]+'">'+ICON('download','sm')+'Télécharger</button><button class="btn ghost sm" data-attm="'+a[3]+'">'+ICON('mail','sm')+'Recevoir par e-mail</button></div></div></div></div>'}).join('')+'</div>'}
    b.innerHTML=h;P.animate(b);swIn(b);
    $$('[data-pf]',b).forEach(function(x){x.addEventListener('click',function(){PS.filt=x.getAttribute('data-pf');body()})});
-   $$('[data-inv]',b).forEach(function(x){x.onclick=function(e){if(e.target.closest('[data-dl]')){P.toast(x.getAttribute('data-inv')+'.pdf téléchargé',{icon:'download'});return}var d0=due();invSheet(D.adhInvoices.find(function(i){return i.id===x.getAttribute('data-inv')}),function(){refresh(d0)})}});
-   var ex=$('[data-exp]',b);if(ex)ex.onclick=function(){P.toast(D.adhInvoices.length+' factures de 2026 téléchargées dans une archive',{icon:'download'})};
+   $$('[data-inv]',b).forEach(function(x){x.onclick=function(e){if(e.target.closest('[data-dl]')){invPdf(D.adhInvoices.find(function(i){return i.id===x.getAttribute('data-inv')}));return}var d0=due();invSheet(D.adhInvoices.find(function(i){return i.id===x.getAttribute('data-inv')}),function(){refresh(d0)})}});
+   var ex=$('[data-exp]',b);if(ex)ex.onclick=function(){XF('csv','factures-2026.csv',[['Numéro','Date','Objet','Montant TTC (€)','TVA (%)','Règlement','État']].concat(D.adhInvoices.map(function(i){return [i.id,i.date,i.label,String(i.amount).replace('.',','),i.vat,i.method,i.status]})),D.adhInvoices.length+' factures de 2026 téléchargées')};
    $$('[data-def]',b).forEach(function(x){x.onclick=function(){PS.def=x.getAttribute('data-def');body();P.toast('Moyen de paiement par défaut modifié')}});
    $$('[data-rm]',b).forEach(function(x){x.onclick=function(){var id=x.getAttribute('data-rm');if(id===PS.def){P.toast('Choisissez d’abord un autre moyen par défaut',{icon:'alert'});return}var i=PS.methods.findIndex(function(m){return m[0]===id}),m=PS.methods.splice(i,1)[0];body();P.toast(m[2]+' retiré',{undo:function(){PS.methods.splice(i,0,m);body()}})}});
    var am=$('[data-addm]',b);if(am)am.onclick=function(){var sh=P.sheet({title:'Ajouter un moyen de paiement',icon:'card',body:U.seg([['c','Carte bancaire'],['s','Compte bancaire']],'c')+'<div class="stack" style="--g:12px;margin-top:16px"><label class="field"><span>Numéro de carte</span><input class="in num" inputmode="numeric" placeholder="1234 5678 9012 3456"></label><div class="g2" style="--g:12px;grid-template-columns:repeat(2,minmax(0,1fr))"><label class="field"><span>Expiration</span><input class="in num" placeholder="MM / AA"></label><label class="field"><span>Cryptogramme</span><input class="in num" placeholder="123"></label></div><label class="field"><span>Nom sur la carte</span><input class="in" value="Léa Martin"></label></div><p class="xs mut hrow" style="--g:6px;margin-top:14px">'+ICON('lock','sm')+'Vos données sont chiffrées et conservées par Stripe.</p>',foot:'<button class="btn pri ad-full" data-ok>Enregistrer la carte</button>'});
      $('[data-ok]',sh).onclick=function(){PS.methods.push(['cb2','MC','Carte Mastercard se terminant par 8830','Ajoutée aujourd’hui']);sh.close();body();P.toast('Carte enregistrée')}};
-   $$('[data-att]',b).forEach(function(x){x.onclick=function(){P.toast('Attestation « '+x.getAttribute('data-att')+' » générée et téléchargée',{icon:'download'})}});
+   $$('[data-att]',b).forEach(function(x){x.onclick=function(){var cd=x.closest('.card'),t=cd.querySelector('.b').textContent;docPdf(t,D.club.name+' · '+D.club.ffe,['Le club certifie l’exactitude des informations ci-dessus.','Fait à Saint-Arnoult-en-Yvelines, le 17 novembre 2026.'],[['Bénéficiaire',ME.first+' '+ME.last],['Saison','2026-2027'],['Objet',cd.querySelector('.s').textContent]])}});
    $$('[data-attm]',b).forEach(function(x){x.onclick=function(){x.innerHTML=ICON('check','sm')+'Envoyée';P.toast('Attestation envoyée à '+ME.email,{icon:'mail'})}})}
   top();body();
   if(ctx.params.pay&&PS.last!==ctx.params){PS.last=ctx.params;var d0=due();if(d0)setTimeout(function(){paySheet(function(){refresh(d0)})},350)}
@@ -1381,7 +1400,7 @@ function signSheet(c,after){var done=!!A.signed[c.id]||c.status==='signé';
   function signers(){$('[data-sg]',sh).innerHTML=c.signers.map(function(s){var y=c.signed.indexOf(s)>=0||(s==='m001'&&A.signed[c.id]);return '<div class="li">'+U.av(s)+'<div class="grow"><div class="t">'+(s==='m001'?'Vous, Léa Martin':D.name(s))+'</div><div class="s">'+(s==='s01'?'Gérante du club':s==='m001'?(c.id==='ct10'?'Représentante légale':'Propriétaire'):(DPR.minor?'Demi-pensionnaire, signature de son représentant légal':'Demi-pensionnaire'))+'</div></div>'+(y?U.chip('Signé','ok',true):U.chip('En attente',''))+'</div>'}).join('')}
   signers();
   function stamp(){pad.classList.add('done');pad.insertAdjacentHTML('beforeend','<span class="ad-stamp"><span class="strass"></span>Signé le 17 nov. 2026 à 9 h 41</span>')}
-  if(done){var api0=signPad(pad,function(){});setTimeout(function(){api0.auto();stamp()},350);$('[data-dl]',sh).onclick=function(){P.toast(c.title+' téléchargé',{icon:'download'})};return}
+  if(done){var api0=signPad(pad,function(){});setTimeout(function(){api0.auto();stamp()},350);$('[data-dl]',sh).onclick=function(){docPdf(c.title,c.sub||D.club.name,['Document signé électroniquement le 17 novembre 2026 à 9 h 41.'])};return}
   var api=signPad(pad,function(v){inked=v;chk()});
   function chk(){setTimeout(function(){ok.disabled=!(inked&&$('.chk[data-id="read"]',sh).getAttribute('aria-checked')==='true')},0)}
   $('.chk[data-id="read"]',sh).addEventListener('click',chk);$('.chk[data-id="read"]',sh).parentNode.addEventListener('click',chk);
@@ -1389,7 +1408,7 @@ function signSheet(c,after){var done=!!A.signed[c.id]||c.status==='signé';
   ok.onclick=function(){A.signed[c.id]=true;stamp();signers();var f=$('.sf',sh),wait=c.signers.length-c.signed.length-1;
    f.innerHTML='<button class="btn ad-full" data-dl>'+ICON('download','sm')+'Télécharger le PDF</button><button class="btn pri ad-full" data-done>Terminé</button>';
    $$('[data-auto],[data-clr]',sh).forEach(function(x){x.remove()});
-   $('[data-dl]',f).onclick=function(){P.toast(c.title+' téléchargé',{icon:'download'})};$('[data-done]',f).onclick=function(){sh.close()};
+   $('[data-dl]',f).onclick=function(){docPdf(c.title,c.sub||D.club.name,['Document signé électroniquement le 17 novembre 2026 à 9 h 41.'])};$('[data-done]',f).onclick=function(){sh.close()};
    P.toast(wait>0?'Document signé. '+DPR.first+' est relancée pour sa signature.':'Document signé par toutes les parties, copie envoyée par e-mail',{icon:'sign'});if(after)after()}}
 
 P.mod({id:'adh-contrats',role:'adherent',group:'Compte',title:'Contrats',icon:'contract',n:20,
@@ -1414,7 +1433,7 @@ P.mod({id:'adh-contrats',role:'adherent',group:'Compte',title:'Contrats',icon:'c
      '<div class="card ad-b"><div class="ch"><h3>Mes pièces</h3></div><div class="list" style="padding:6px 0"><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Certificat médical</div><div class="s">Valable jusqu’en septembre 2027</div></div></div><div class="li">'+sq('checkc','ok')+'<div class="grow"><div class="t">Assurance d’Ulysse</div><div class="s">Responsabilité civile, échéance en mars</div></div></div></div><div class="cf"><button class="btn grow" data-up>'+ICON('upload','sm')+'Déposer un document</button></div></div></div></div>';
    $$('[data-sign]',el).forEach(function(x){x.onclick=function(){signSheet(CONTRACTS().find(function(c){return c.id===x.getAttribute('data-sign')}),body)}});
    $$('[data-later]',el).forEach(function(x){x.onclick=function(){x.innerHTML=ICON('check','sm')+'Rappel demain à 9 h';x.disabled=true;P.toast('Rappel programmé demain à 9 h',{icon:'bell'})}});
-   $$('[data-doc]',el).forEach(function(x){x.onclick=function(){P.toast(x.getAttribute('data-doc')+' téléchargé',{icon:'download'})}});
+   $$('[data-doc]',el).forEach(function(x){x.onclick=function(){docPdf(x.getAttribute('data-doc'),D.club.name,['Copie du document signé, conservée par le club.'])}});
    $('[data-up]',el).onclick=function(){P.toast('Document déposé, l’accueil le vérifie sous 24 heures',{icon:'upload'})}}
   body();
   if(ctx.params.id&&el._p!==ctx.params){var c=CONTRACTS().find(function(x){return x.id===ctx.params.id});if(c&&PS.lastC!==ctx.params){PS.lastC=ctx.params;setTimeout(function(){signSheet(c,body)},350)}}
@@ -1656,7 +1675,7 @@ P.mod({id:'adh-profil',role:'adherent',group:'Compte',title:'Profil',icon:'user'
    on('[data-addf]',function(){var sh=P.sheet({title:'Ajouter un membre',icon:'family',body:'<div class="stack" style="--g:12px"><label class="field"><span>Prénom</span><input class="in" id="ad-fn" placeholder="Prénom"></label><label class="field"><span>Date de naissance</span><input class="in" placeholder="JJ / MM / AAAA"></label><div><div class="ad-lbl" style="margin-top:0">Lien avec vous</div><div class="hrow wrap" style="--g:6px">'+['Enfant','Conjoint','Autre'].map(function(t,i){return '<button class="tag" aria-pressed="'+(i===0)+'">'+t+'</button>'}).join('')+'</div></div><div class="note">'+ICON('family','sm')+'<span>Il utilisera votre compte et vos moyens de paiement. Vous gardez la main sur ses réservations.</span></div></div>',foot:'<button class="btn pri ad-full" data-ok>Ajouter à la famille</button>'});
      $('[data-ok]',sh).onclick=function(){var v=$('#ad-fn',sh).value.trim();if(!v){$('#ad-fn',sh).focus();return}PF.extra.push(v);sh.close();body();P.toast(F.esc(v)+' ajouté à la famille Martin',{icon:'family'})}});
    on('[data-tiers]',function(){P.toast('Invitation de tiers payeur envoyée par e-mail',{icon:'mail'})});
-   on('[data-wallet]',function(){P.toast('Licence ajoutée à l’application Cartes',{icon:'wallet'})});on('[data-lpdf]',function(){P.toast('Licence 2027 téléchargée',{icon:'download'})});on('[data-dip]',function(){P.toast('Diplômes téléchargés depuis la FFE',{icon:'download'})});
+   on('[data-wallet]',function(){P.toast('Licence ajoutée à l’application Cartes',{icon:'wallet'})});on('[data-lpdf]',function(){docPdf('Licence FFE 2027',p.first+' '+p.last,['Attestation de licence de pratiquant, avec assurance responsabilité civile.'],[['Numéro',p.lic],['Niveau','Galop '+p.galop],['Club',D.club.ffe]])});on('[data-dip]',function(){docPdf('Diplômes de '+p.first,'Galops fédéraux · '+D.club.name,[],Array.apply(null,Array(p.galop)).map(function(_,i){return ['Galop '+(i+1),'Obtenu']}))});
    $$('[data-doc2]',b).forEach(function(x){x.onclick=function(){P.toast(x.getAttribute('data-doc2')+' : document ouvert',{icon:'doc'})}});
    $$('[data-n]',b).forEach(function(x){x.addEventListener('click',function(){setTimeout(function(){var v=NOTIFS.map(function(_,i){return [0,1,2].map(function(k){return $('[data-n="'+i+'-'+k+'"]',b).getAttribute('aria-checked')==='true'?1:0})});P.prefs.set('adh:notifs',v)},0)})});
    on('[data-ness]',function(){P.prefs.set('adh:notifs',NOTIFS.map(function(n,i){return [[0,2,4,6].indexOf(i)>=0?1:0,0,0]}));body();P.toast('Seules les notifications essentielles sont actives',{icon:'bell'})});
@@ -1666,7 +1685,7 @@ P.mod({id:'adh-profil',role:'adherent',group:'Compte',title:'Profil',icon:'user'
    $$('[data-thm]',b).forEach(function(x){x.onclick=function(){var v=x.getAttribute('data-thm');if(v==='sys')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',v);P.store.set('theme',v==='sys'?null:v);$$('[data-thm]',b).forEach(function(y){y.setAttribute('aria-pressed',y===x)});P.toast('Apparence : '+x.textContent.toLowerCase(),{icon:'palette'})}});
    if(PF.tab==='perso')bindOpts(b,function(n,v){P.prefs.set('adh:profile',v);P.toast('Stabl s’ouvrira sur l’espace de '+prof().first)});
    $$('[data-cs]',b).forEach(function(x){x.addEventListener('click',function(){setTimeout(function(){P.prefs.set('adh:consent',$$('[data-cs]',b).map(function(y){return y.getAttribute('aria-checked')==='true'?1:0}));P.toast('Consentement enregistré')},0)})});
-   on('[data-exp]',function(){P.toast('Export en préparation, vous le recevrez par e-mail dans quelques minutes',{icon:'download'})});
+   on('[data-exp]',function(){var j={export:'Stabl',date:'2026-11-17',personne:{prenom:ME.first,nom:ME.last},chevaux:[{nom:UL.name,box:'B01'}],factures:D.adhInvoices,reservations:A.res.map(function(r){var l=lesson(r.les);return {seance:l&&l.title,jour:D.iso(D.day(r.off)),heure:l&&l.start}})};XF('file','mes-donnees-stabl.json',JSON.stringify(j,null,2),'Vos données sont téléchargées (format JSON)')});
    on('[data-acc]',function(){P.sheet({title:'Accès à mon compte',icon:'eye',body:'<div class="card list">'+[['m001','Vous','Accès complet'],['s01','Claire Dumont, gérante','Fiche, factures, contrats'],['s04','Thomas Roux, moniteur','Planning et progression'],['c01','Pauline Arnaud, coach','Progression et notes de séance'],['m019',DPR.first+' '+DPR.last,'Journal et planning d’Ulysse seulement']].map(function(x){return '<div class="li">'+U.av(x[0])+'<div class="grow"><div class="t">'+x[1]+'</div><div class="s">'+x[2]+'</div></div></div>'}).join('')+'</div>'})});
    on('[data-del]',function(){var sh=P.sheet({title:'Supprimer mon compte',icon:'alert',body:'<p style="color:var(--ink-2);line-height:1.55">Votre compte et celui de Jules seront fermés à la fin du mois. Les factures sont conservées dix ans, comme la loi l’exige. Le contrat de pension d’Ulysse doit être résilié auprès du club.</p>',foot:'<button class="btn ad-full" data-no>Garder mon compte</button><button class="btn danger ad-full" data-yes>Demander la suppression</button>'});$('[data-no]',sh).onclick=function(){sh.close()};$('[data-yes]',sh).onclick=function(){sh.close();P.toast('Dans la démo, votre compte est conservé',{icon:'info'})}})}
   body();
@@ -2225,7 +2244,7 @@ function coursSheet(){var sh=P.sheet({title:COURS.title,icon:'coach',body:'<div 
   '<div class="ad-lbl">Ce que Pauline a prévu</div><p class="s" style="color:var(--ink-2);line-height:1.55">Détente sur le plat, puis abords et contrat de foulées en ligne courbe. Fin de séance sur le triple de Rambouillet monté à 1,10 m.</p>'+
   '<div class="note">'+ICON('arena','sm')+'<span>La carrière d’honneur est réservée pour vous jusqu’à '+hm(endT(COURS))+'. Pauline enchaîne avec son collectif de CSO.</span></div>',
   foot:'<button class="btn ad-full" data-go="adh-messages" data-id="t-coach">'+ICON('chat','sm')+'Écrire à Pauline</button><button class="btn pri ad-full" data-cal>'+ICON('calendar_add','sm')+'Ajouter à mon agenda</button>'});
- $('[data-cal]',sh).onclick=function(){sh.close();P.toast('Cours ajouté à votre agenda')}}
+ $('[data-cal]',sh).onclick=function(){sh.close();lessonIcs(COURS.title,0,COURS.start,COURS.dur,arena(COURS),'Avec Pauline Arnaud')}}
 
 /* ---------- Dictée (messages et assistant) ---------- */
 function dictate(btn,inp,text,done){if(btn.classList.contains('on'))return;btn.classList.add('on');btn.title='J’écoute…';inp.value='';inp.placeholder='J’écoute…';var k=0,words=text.split(' ');

@@ -1,5 +1,58 @@
 /* Lot F · Coachs et compétitions (vue gérant) + toute la vue Coach
    Écrans : coachs, competitions, coach-agenda, coach-eleves, coach-dispo, coach-revenus, coach-concours, coach-profil */
+/* Fichiers réels (partagés par les modules 70, 80, 90 et 95) : P.xfile(nom, contenu, type), P.xcsv(nom, lignes),
+   P.xics(nom, [{t, d:'2026-11-17', s:'11:15', dur:60, lieu, desc}]), P.xpdf(nom, {titre, sous, lignes:[[clé,valeur]], texte:[…], tableau:{cols,rows}}) */
+(function(){if(P.xfile)return;
+function save(name,blob){try{var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(u)},2000);return true}catch(e){console.warn(e);return false}}
+P.xfile=function(name,data,mime){return save(name,data instanceof Blob?data:new Blob([data],{type:mime||'text/plain;charset=utf-8'}))};
+P.xcsv=function(name,rows){var s=rows.map(function(r){return r.map(function(c){c=c==null?'':String(c).replace(/<[^>]+>/g,'');return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(';')}).join('\r\n');return P.xfile(name,'\ufeff'+s,'text/csv;charset=utf-8')};
+function p2(n){return String(n).padStart(2,'0')}
+P.xics=function(name,evs){var now=new Date(),st=now.getUTCFullYear()+p2(now.getUTCMonth()+1)+p2(now.getUTCDate())+'T'+p2(now.getUTCHours())+p2(now.getUTCMinutes())+'00Z';
+  function x(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n')}
+  function dt(d,t,add){var q=d.split('-'),h=t.split(':'),m=+h[0]*60+ +h[1]+(add||0),x=new Date(+q[0],+q[1]-1,+q[2],0,m);return x.getFullYear()+p2(x.getMonth()+1)+p2(x.getDate())+'T'+p2(x.getHours())+p2(x.getMinutes())+'00'}
+  var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Stabl//stablapp.fr//FR','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  evs.forEach(function(e,i){L.push('BEGIN:VEVENT','UID:'+(e.uid||('stabl-'+e.d+'-'+String(e.s).replace(':','')+'-'+i))+'@stablapp.fr','DTSTAMP:'+st,'DTSTART;TZID=Europe/Paris:'+dt(e.d,e.s),'DTEND;TZID=Europe/Paris:'+dt(e.d,e.s,e.dur||60),'SUMMARY:'+x(e.t));if(e.lieu)L.push('LOCATION:'+x(e.lieu));if(e.desc)L.push('DESCRIPTION:'+x(e.desc));L.push('BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:'+x(e.t),'END:VALARM','END:VEVENT')});
+  L.push('END:VCALENDAR');return P.xfile(name,L.join('\r\n')+'\r\n','text/calendar;charset=utf-8')};
+/* PDF minimal (Helvetica, encodage WinAnsi), plusieurs pages si besoin */
+var WA={'\u20ac':128,'\u201a':130,'\u2026':133,'\u2018':145,'\u2019':146,'\u201c':147,'\u201d':148,'\u2022':149,'\u2013':150,'\u2014':151,'\u0153':156,'\u0152':140,'\u2122':153};
+function wa(s){s=String(s==null?'':s).replace(/<[^>]+>/g,'');var o='';for(var i=0;i<s.length;i++){var ch=s[i],c=s.charCodeAt(i);if(WA[ch])o+=String.fromCharCode(WA[ch]);else if(c===0x202f||c===0xa0||c===0x2009)o+=' ';else if(c<256)o+=ch;else if(c===0x2192)o+='->';else o+='?'}return o}
+function pe(s){return wa(s).replace(/[\\()]/g,'\\$&')}
+function wrap(s,max){var w=wa(s).split(' '),out=[],cur='';w.forEach(function(x){if((cur+' '+x).trim().length>max){if(cur)out.push(cur);cur=x}else cur=(cur+' '+x).trim()});if(cur)out.push(cur);return out.length?out:['']}
+P.xpdf=function(name,o){var club=(P.D.club&&P.D.club.name)||'Stabl',pages=[],ops=[],y=0;
+  function page(){ops=[];pages.push(ops);y=800;
+    ops.push('0.09 0.16 0.36 rg 40 806 m 52 806 l 52 818 l 40 818 l f','BT /F2 13 Tf 58 807 Td ('+pe('stabl')+') Tj ET','0.42 0.46 0.55 rg BT /F1 9 Tf 300 808 Td ('+pe(club)+') Tj ET','0.85 0.87 0.91 RG 0.6 w 40 796 m 555 796 l S');y=764}
+  function txt(t,x,sz,bold,col){if(y<70){foot();page()}ops.push((col||'0.06 0.09 0.2')+' rg BT /F'+(bold?2:1)+' '+sz+' Tf '+x+' '+y+' Td ('+t.replace(/[\\()]/g,'\\$&')+') Tj ET')}
+  function foot(){ops.push('0.55 0.58 0.65 rg BT /F1 8 Tf 40 40 Td ('+pe('Document généré par Stabl · stablapp.fr · '+(o.date||'17 novembre 2026'))+') Tj ET')}
+  page();
+  wrap(o.titre||name,48).forEach(function(l){txt(l,40,20,true);y-=26});
+  if(o.sous){wrap(o.sous,92).forEach(function(l){txt(l,40,10,false,'0.36 0.4 0.5');y-=14});}
+  y-=12;
+  (o.lignes||[]).forEach(function(r){var v=wrap(r[1],60);txt(wa(r[0]),40,10,false,'0.36 0.4 0.5');v.forEach(function(l,i){txt(l,210,10,true);y-=15});y-=3});
+  if(o.tableau){y-=8;var cols=o.tableau.cols,n=cols.length,wx=515/n;
+    function row(cells,b){cells.forEach(function(c,i){var t=wa(c);var max=Math.floor(wx/5.2);if(t.length>max)t=t.slice(0,max-1)+'.';txt(t,40+i*wx,9,b)});y-=15}
+    row(cols,true);ops.push('0.85 0.87 0.91 RG 0.5 w 40 '+(y+10)+' m 555 '+(y+10)+' l S');o.tableau.rows.forEach(function(r){row(r,false)})}
+  if(o.texte){y-=8;o.texte.forEach(function(p){wrap(p,98).forEach(function(l){txt(l,40,10);y-=14});y-=6})}
+  foot();
+  var objs=[],kids=[];objs[1]='<< /Type /Catalog /Pages 2 0 R >>';objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+  pages.forEach(function(op,i){var pn=5+i*2,cn=pn+1,s=op.join('\n');kids.push(pn+' 0 R');objs[pn]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+cn+' 0 R >>';objs[cn]='<< /Length '+s.length+' >>\nstream\n'+s+'\nendstream'});
+  objs[2]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+pages.length+' >>';
+  var out='%PDF-1.4\n%\xe2\xe3\xcf\xd3\n',off=[];for(var k=1;k<objs.length;k++){off[k]=out.length;out+=k+' 0 obj\n'+objs[k]+'\nendobj\n'}
+  var xr=out.length;out+='xref\n0 '+objs.length+'\n0000000000 65535 f \n';for(k=1;k<objs.length;k++)out+=String(off[k]).padStart(10,'0')+' 00000 n \n';
+  out+='trailer\n<< /Size '+objs.length+' /Root 1 0 R /Info << /Producer (Stabl) /Title ('+pe(o.titre||name)+') >> >>\nstartxref\n'+xr+'\n%%EOF';
+  var u=new Uint8Array(out.length);for(k=0;k<out.length;k++)u[k]=out.charCodeAt(k)&255;return P.xfile(name,new Blob([u],{type:'application/pdf'}))};
+/* Téléphone : cibles tactiles d'au moins 44 px dans les espaces adhérent, employé, coach et les écrans plateforme,
+   sans changer le dessin (zone invisible autour des petits boutons). Les écrans plateforme portent un repère .pf-mk. */
+(function(){var S=['.app.mobile[data-role="adherent"] .view','.app.mobile[data-role="employe"] .view','.app.mobile[data-role="coach"] .view','.app.mobile .view:has(.pf-mk)','.app.mobile[data-role="adherent"] .sheet','.app.mobile[data-role="employe"] .sheet','.app.mobile[data-role="coach"] .sheet'];
+  function all(sel){return S.map(function(s){return sel.split(',').map(function(x){return s+' '+x}).join(',')}).join(',')}
+  P.css(all('.btn,.tag,.ad-pill,.ad-like,.ad-fav,.ad-stars button,.ad-mood button,.ad-cam .c4 button,.em-hb,.em-pick button,.em-3 button,.em-ck,.ad-wsd,.fx-step button,.lk,[data-snap],.ad-pfc,.em-gt,button[data-who],[data-sc],button.hrow.s,.pfa-fu>button,.ew-steps>button,.qq-leave button,.cd-c')+'{position:relative}'+
+   all('.ad-mood:not(.ro),.ad-stars')+'{gap:14px}'+all('.cd-c')+'{min-height:44px}'+
+   all('.btn::before,.tag::before,.seg>button::before,.ad-pill::before,.ad-like::before,.em-hb::before,.em-pick button::before,.em-3 button::before,.lk::before,.em-gt::before,button[data-who]::before,button.hrow.s::before,.pfa-fu>button::before,.ew-steps>button::before')+'{content:"";position:absolute;left:0;right:0;top:50%;height:max(44px,100%);transform:translateY(-50%)}'+
+   all('.btn.icon::before,.ad-fav::before,.ad-stars button::before,.ad-mood button::before,.ad-cam .c4 button::before,.em-ck::before,.ad-wsd::before,.fx-step button::before,[data-snap]::before,.ad-pfc::before,[data-sc]::before,.qq-leave button::before')+'{content:"";position:absolute;left:50%;top:50%;width:max(44px,100%);height:max(44px,100%);transform:translate(-50%,-50%)}'+
+   all('.tog::before')+'{content:"";position:absolute;inset:-6px -4px}'+all('.chk')+'{position:relative}'+all('.chk::before')+'{content:"";position:absolute;inset:-9px}'+
+   /* rien de tronqué : partout, les textes à points de suspension passent à la ligne (sauf aperçus de messages) */
+   ['.app[data-role="adherent"] .view','.app[data-role="employe"] .view','.app[data-role="coach"] .view','.app .view:has(.pf-mk)','.app .view:has(.cg-pg)'].map(function(s){return s+' .ellip:not(.ad-tl *):not(.em-msgs *):not(.ad-tls *):not(.pf-mono):not(.chip):not(.chip *)'}).join(',')+'{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;-webkit-line-clamp:none}')})();
+P.xname=function(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'«»]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()};
+})();
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc,I=function(n,k){return ICON(n,k)};
 /* Club réel : la personne connectée n'est pas la coach de démo (c01) → écrans coach branchés sur ses propres données. */
@@ -49,6 +102,8 @@ D.coachReviews=D.coachReviews||[
  {id:'r6',coach:'c01',by:'m066',stars:5,when:'il y a 2 sem.',text:'Préparation de concours au cordeau : reconnaissance, détente, tout est prévu.',pub:true}];
 D.coachRules=D.coachRules||{cancel:'24',deposit:30,manual:true,commission:15,passage:12,piste:90,docs:true,extArenas:['a2','a3','a4'],from:'9 h',to:'17 h'};
 var DEAL=D.coachDeals,BOOK=D.coachBookings,RULES=D.coachRules;
+function XF(k,n,o,m){var f=P['x'+k];if(f){f(n,o);P.toast(m||(n+' téléchargé'),{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}
+
 
 /* =====================================================================
    Outils communs
@@ -91,7 +146,7 @@ P.css(`
 .app.mobile[data-role="coach"] .view .btn{position:relative}.app.mobile[data-role="coach"] .view .btn::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
 .app.mobile[data-role="coach"] .view .btn.sm{height:36px;padding:0 12px;font-size:13px}.app.mobile[data-role="coach"] .view .btn.sm.icon{width:36px;padding:0}
 .app.mobile[data-role="coach"] .view .seg button{height:38px;padding:0 13px}.app.mobile[data-role="coach"] .view .tabs button{padding-top:12px;padding-bottom:12px}
-.app.mobile[data-role="coach"] .view .tog::before{content:"";position:absolute;inset:-11px -4px}.app.mobile[data-role="coach"] .view .chk{position:relative}.app.mobile[data-role="coach"] .view .chk::before{content:"";position:absolute;inset:-12px}
+.app.mobile[data-role="coach"] .view .tog::before{content:"";position:absolute;inset:-11px -4px}.app.mobile[data-role="coach"] .view .chk{position:relative}.app.mobile[data-role="coach"] .view .chk::before{content:"";position:absolute;inset:-9px}
 .app.mobile[data-role="coach"] .view .fx-step button{width:36px;height:36px}
 .app.mobile[data-role="coach"] .view .qq-leave button,.app.mobile .cg-pg .qq-leave button{width:36px;height:36px}
 .app.mobile[data-role="coach"] .view .cd-c{height:40px}
@@ -266,7 +321,7 @@ function payoutSheet(id){var c=D.coach(id),d=dealOf(id),cut=clubCut(c);
   '<div class="hrow" style="--g:12px;margin-bottom:14px">'+U.av(c,'lg')+'<div><b>'+c.first+' '+c.last+'</b><div class="s mut">'+dealTxt(c)+'</div></div></div>'+
   '<div class="card flat" style="padding:4px 14px">'+row(d.n+' cours encaissés en ligne','<span class="num">'+F.eur(d.ca)+'</span>')+row(d.mode==='interne'?'Part conservée par le club':'Part du club','<span class="num">−'+F.eur(cut,cut%1?1:0)+'</span>')+row(d.mode==='interne'?'Prime versée sur la paie':'Reversement par virement SEPA','<b class="num">'+F.eur(d.ca-cut,(d.ca-cut)%1?1:0)+'</b>')+'</div>'+
   sec('Derniers cours')+'<div class="card flat list">'+BOOK.filter(function(b){return b.coach===id&&b.status!=='annulée'}).slice(0,5).map(function(b){return '<div class="li"><div class="grow"><div class="t">'+b.type+'</div><div class="s">'+dlab(b.d)+' nov. · '+bookWho(b)+'</div></div><b class="s num">'+F.eur(b.price)+'</b></div>'}).join('')+'</div>',
-  foot:'<button class="btn" data-pdf>'+I('download','sm')+'Télécharger le relevé</button>'}).querySelector('[data-pdf]').onclick=function(){P.toast('Relevé de '+c.first+' téléchargé en PDF')}}
+  foot:'<button class="btn" data-pdf>'+I('download','sm')+'Télécharger le relevé</button>'}).querySelector('[data-pdf]').onclick=function(){XF('pdf','releve-novembre-'+P.xname(c.first+' '+c.last)+'.pdf',{titre:'Relevé de novembre · '+c.first+' '+c.last,sous:dealTxt(c),lignes:[[d.n+' cours encaissés en ligne',F.eur(d.ca)],['Part du club',F.eur(cut)]],tableau:{cols:['Jour','Cours','Élève','Montant'],rows:BOOK.filter(function(b){return b.coach===id&&b.status!=='annulée'}).map(function(b){return [dlab(b.d)+' nov.',b.type,bookWho(b),F.eur(b.price||0)]})}},'Relevé de '+c.first+' téléchargé')}}
 
 function coTabs(){return [['annuaire','Annuaire'],['pistes','Agenda des pistes'],['resa','Réservations'+(pendB().length?' <span class="chip acc" style="margin-left:4px">'+pendB().length+'</span>':'')],['paie','Reversements'],['avis','Avis']]}
 
@@ -328,7 +383,7 @@ P.mod({id:'coachs',role:'gerant',group:'Club',title:'Coachs',icon:'coach',n:40,
    bok:function(b,e){e.stopPropagation();var x=BOOK.find(function(k){return k.id===b.getAttribute('data-id')});x.status='confirmée';draw();retab();P.toast('Réservation confirmée, '+fst(x.coach)+' et '+bookWho(x)+' sont prévenus',{undo:function(){x.status='à confirmer';draw();retab()}})},
    bno:function(b,e){e.stopPropagation();var x=BOOK.find(function(k){return k.id===b.getAttribute('data-id')});x.status='annulée';draw();retab();P.toast('Demande refusée, acompte remboursé',{icon:'xc',undo:function(){x.status='à confirmer';draw();retab()}})},
    pay:function(){coPaid=true;draw();P.toast('4 virements SEPA programmés pour le 30 novembre',{undo:function(){coPaid=false;draw()}})},
-   exp:function(){P.toast('Reversements de novembre exportés pour la comptabilité',{icon:'download'})},
+   exp:function(){XF('csv','reversements-coachs-novembre-2026.csv',[['Coach','Statut','Cours','Encaissé (€)','Part du club (€)']].concat(D.coaches.filter(function(c){return DEAL[c.id]}).map(function(c){var d=dealOf(c.id);return [c.first+' '+c.last,dealTxt(c),d.n,d.ca,clubCut(c)]})),'Reversements de novembre téléchargés')},
    pub:function(b){var r=D.coachReviews.find(function(x){return x.id===b.getAttribute('data-id')});r.pub=!r.pub;P.toast(r.pub?'Avis publié sur la page du club':'Avis retiré de la page du club')},
    reply:function(b){var r=D.coachReviews.find(function(x){return x.id===b.getAttribute('data-id')});var sh=P.sheet({title:'Répondre à '+fst(r.by),icon:'chat',body:'<div class="card soft pad s" style="margin-bottom:12px">'+r.text+'</div><label class="field"><span>Votre réponse, visible sous l’avis</span><textarea class="in" rows="4">Merci pour votre retour. Nous avons rappelé aux coachs de prévoir dix minutes entre deux cours pour démarrer à l’heure.</textarea></label>',foot:'<button class="btn pri" data-send>Publier la réponse</button>'});sh.querySelector('[data-send]').onclick=function(){r.replied=true;sh.close();draw();P.toast('Réponse publiée sous l’avis')}}});
  }});
@@ -360,6 +415,7 @@ var COACHFEE={c01:30,c02:28,c04:25,c06:20};
 P.css(`
 .cp-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(212px,1fr);gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px;margin:-2px;scroll-snap-type:x proximity}
 .cp-k{display:flex;gap:14px;align-items:flex-start;padding:16px;text-align:left;border-radius:var(--r-lg);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);transition:box-shadow var(--t-2),background var(--t-2),transform var(--t-2) var(--e-out);scroll-snap-align:start;min-width:0}
+.cp-k .chip{white-space:normal;height:auto;min-height:28px;padding-top:4px;padding-bottom:4px;line-height:1.25;max-width:100%}
 .cp-k:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
 .cp-k[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--acc),0 16px 30px -18px var(--acc)}
 .cp-k[aria-selected="true"] .fx-date{background:var(--acc);box-shadow:none}
@@ -542,7 +598,7 @@ function ffeSheet(k){var es=ents(k),st=ENT[k.id]=ENT[k.id]||{done:{}},mode='sais
    copy:function(x){x.style.background='var(--ok-pale)';P.toast('Numéro '+x.getAttribute('data-v')+' copié',{icon:'copy',ms:1600})},
    open:function(){P.toast('FFE Compet s’ouvre dans un nouvel onglet',{icon:'ext'})},
    all:function(){es.forEach(function(e){st.done[e.rider]=true});draw();fin()},
-   dl:function(){P.toast('engagements-'+k.place.split(',')[0].toLowerCase()+'.csv téléchargé',{icon:'download'})}});
+   dl:function(){XF('csv','engagements-'+P.xname(k.place.split(',')[0])+'.csv',[['epreuve','licence','sire','cavalier','cheval','montant']].concat(es.map(function(e){var m=D.member(e.rider),h=D.horse(e.horse);return [e.class.split(' · ')[0],m.lic,h.sire,m.last.toUpperCase()+' '+m.first,h.name.toUpperCase(),e.fee]})))}});
   function fin(){if(es.every(function(e){return st.done[e.rider]})){st.sent=true;P.rerender();P.toast('Les '+es.length+' engagements sont saisis par le club, cavaliers prévenus')}else if(st.sent){st.sent=false;P.rerender()}}
  },foot:' '})}
 
@@ -688,7 +744,7 @@ function liveTab(root){var tm=null;
   bar:function(){LIVE.pts+=4;var p=root.querySelector('[data-pts]');p.textContent=LIVE.pts;pulse(p)},ref:function(){LIVE.pts+=4;var p=root.querySelector('[data-pts]');p.textContent=LIVE.pts;pulse(p)},
   pub:function(){LIVE.pub=!LIVE.pub;P.toast(LIVE.pub?'Résultats visibles en direct sur le portail':'Diffusion en direct coupée')},
   screen:function(){P.toast('Classement affiché sur l’écran du club-house',{icon:'expand'})},
-  exportres:function(){P.toast('Fichier des résultats prêt pour la saisie FFE',{icon:'download'})}});
+  exportres:function(){var rows=[['Rang','Cavalier','Cheval','Points','Temps (s)']].concat(LIVE.rank.slice().sort(function(a,b){return a.pts-b.pts||a.t-b.t}).map(function(x,i){return [i+1,nm(x.r),D.horse(x.h).name,x.pts,x.t.toFixed(2).replace('.',',')]}));if(P.xcsv){P.xcsv('resultats-epreuve.csv',rows);P.toast('Fichier des résultats prêt pour la saisie FFE',{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}});
 }
 
 function startList(c){var rs=D.members.filter(function(m){return m.galop>=2&&m.forfait!=='f5'}).slice(c.n*3,c.n*4);
@@ -1367,7 +1423,7 @@ P.css(`
 .cd-slots button small{display:block;font-weight:500;color:var(--mut);font-size:13px}
 .cd-slots button[aria-pressed="true"]{background:var(--acc-pale);box-shadow:inset 0 0 0 1.5px var(--acc)}
 .cd-url{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:var(--r-sm);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);font:500 13px var(--f-mono);min-width:0}
-.cd-url span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-url span{flex:1;min-width:0;overflow-wrap:anywhere}
 .cd-map text{font:600 13px var(--f-text);fill:var(--mut)}
 @container main (min-width:861px){.cd-tabs [data-t="page"]{display:none}}
 @container main (max-width:860px){.cd{grid-template-columns:minmax(0,1fr)}.cd-aside{display:none}}
@@ -1386,7 +1442,7 @@ function publicCard(){var c=D.coach('c01'),g=cdGrid(),sl=[];for(var d=1;d<7&&sl.
   '<div><div class="hrow sp" style="margin-bottom:8px"><b class="s">Prochains créneaux</b><span class="s mut">dès <b class="num" style="color:var(--ink)" data-p0>'+CD.prices[0][2]+' €</b></span></div><div class="cd-slots">'+sl.map(function(x,i){return '<button data-a="slot" aria-pressed="'+(i===0)+'">'+DWS[day(x[0]-1).getDay()]+' '+day(x[0]-1).getDate()+'<small>'+x[1]+' h</small></button>'}).join('')+'</div></div>'+
   '<button class="btn pri block lg" data-a="try">Réserver ce créneau</button>'+
   '<p class="xs mut" style="text-align:center">Annulation gratuite jusqu’à <span data-cn>'+CD.cancel+'</span> h avant · acompte de <span data-dp>'+CD.deposit+'</span> %</p></div></div>'+
-  '<div class="cd-url" style="margin-top:10px"><span>piaffe.app/coach/pauline-arnaud</span><button class="btn sm" data-a="copy">'+I('copy','sm')+'Copier</button></div>'}
+  '<div class="cd-url" style="margin-top:10px"><span>stablapp.fr/coach/pauline-arnaud</span><button class="btn sm" data-a="copy">'+I('copy','sm')+'Copier</button></div>'}
 
 P.mod({id:'coach-dispo',role:'coach',group:'Coaching',title:'Disponibilités',icon:'calendar_add',n:30,short:'Dispos',phoneTitle:'Disponibilités',
  render:function(el){var g=cdGrid();
@@ -1471,7 +1527,7 @@ function invoiceSheet(v){var sh=P.sheet({title:v?'Facture '+v.id:'Créer une fac
    '<div style="margin-top:12px">Client : <b style="color:var(--ink)">'+(v?v.who:'Victor Hamel')+'</b></div><table><tr><td>'+(v?v.what:'4 cours particuliers de CSO, novembre')+'</td><td>'+F.eur(v?v.amt:220,v&&v.amt%1?1:0)+'</td></tr><tr><td><b style="color:var(--ink)">Total à payer</b></td><td><b style="color:var(--ink)">'+F.eur(v?v.amt:220,v&&v.amt%1?1:0)+'</b></td></tr></table>'+
    '<div class="xs mut">TVA non applicable, article 293 B du Code général des impôts. Paiement à 30 jours par virement ou carte. Numérotation continue et mentions obligatoires gérées par Stabl.</div></div>',
    foot:v?'<button class="btn" data-dl>'+I('download','sm')+'Télécharger en PDF</button>'+(v.st==='payée'?'':'<button class="btn pri" data-ok>Envoyer au client</button>'):'<button class="btn pri" data-ok>Envoyer la facture</button>'});
- var d=sh.querySelector('[data-dl]');if(d)d.onclick=function(){P.toast('Facture '+v.id+' téléchargée en PDF',{icon:'download'})};
+ var d=sh.querySelector('[data-dl]');if(d)d.onclick=function(){XF('pdf','facture-'+v.id+'.pdf',{titre:'Facture '+v.id,sous:'Pauline Arnaud · coach CSO · micro-entreprise',lignes:[['Client',v.who],['Objet',v.what],['Montant',F.eur(v.amt)],['État',v.st]],texte:['TVA non applicable, article 293 B du Code général des impôts.']},'Facture '+v.id+' téléchargée')};
  var o=sh.querySelector('[data-ok]');if(o)o.onclick=function(){sh.close();if(v)v.st='envoyée';else CR.inv.unshift({id:'2026-048',who:'Victor Hamel',what:'4 cours particuliers de CSO, novembre',amt:220,st:'envoyée'});P.rerender();P.toast('Facture envoyée avec le lien de paiement en ligne')}}
 
 P.mod({id:'coach-revenus',role:'coach',group:'Compte',title:'Revenus',icon:'wallet',n:10,short:'Revenus',
@@ -1497,10 +1553,10 @@ P.mod({id:'coach-revenus',role:'coach',group:'Compte',title:'Revenus',icon:'wall
   draw();
   el.querySelectorAll('[data-t]').forEach(function(t){t.addEventListener('click',function(){crTab=t.getAttribute('data-t');draw()})});
   body.addEventListener('click',function(e){var b=e.target.closest('.fx-step button');if(!b)return;var sp=b.parentNode.querySelector('[data-v]');CR.rate=Math.max(0,Math.round((parseFloat(sp.textContent.replace(',','.'))+(+b.getAttribute('data-d'))*.1)*10)/10);sp.textContent=String(CR.rate).replace('.',',');var c=body.querySelector('[data-cot]');c.textContent=F.eur(Math.round(1390*CR.rate)/100,1);pulse(c)});
-  act(el,{exp:function(){P.toast('Recettes de novembre exportées au format tableur',{icon:'download'})},newinv:function(){invoiceSheet(null)},
+  act(el,{exp:function(){XF('csv','recettes-novembre-2026.csv',[['Date','Élève','Règlement','Brut (€)','Frais (€)','Net (€)']].concat(CR.pay.map(function(x){return [x.d,x.who,x.how,x.g,x.c,x.g-x.c]})),'Recettes de novembre téléchargées')},newinv:function(){invoiceSheet(null)},
    inv:function(b){invoiceSheet(CR.inv.find(function(v){return v.id===b.getAttribute('data-id')}))},
    cp:function(b){b.innerHTML=I('check','sm')+'Montant copié';P.toast('1 390 € copiés, à reporter sur le site de l’Urssaf',{icon:'copy'})},
-   livre:function(){P.toast('Livre des recettes 2026 téléchargé',{icon:'download'})}});
+   livre:function(){XF('pdf','livre-des-recettes-2026.pdf',{titre:'Livre des recettes 2026',sous:'Pauline Arnaud · micro-entreprise',tableau:{cols:['Date','Client','Mode','Montant'],rows:CR.pay.map(function(x){return [x.d+' 2026',x.who,x.how,F.eur(x.g)]})}},'Livre des recettes 2026 téléchargé')}});
  }});
 
 /* =====================================================================
@@ -1577,7 +1633,7 @@ P.mod({id:'coach-concours',role:'coach',group:'Coaching',title:'Concours',icon:'
    send:function(){var x=CC[ccSel];x.sent=true;draw();P.toast('Horaires de détente et de passage envoyés aux '+x.riders.length+' cavaliers',{icon:'send'})},
    cal:function(b){b.innerHTML=I('check','sm')+'Journée ajoutée à l’agenda';P.toast('Journée de concours ajoutée, vos créneaux du dimanche sont fermés')},
    bilan:function(b){b.innerHTML=I('check','sm')+'Bilan envoyé';P.toast('Bilan du concours envoyé à Léa, Louise et Emma')},
-   imp:function(){P.toast('Déposez le fichier exporté de FFE Compet : Stabl y retrouve vos cavaliers',{icon:'upload'})}});
+   imp:function(){var i=document.createElement('input');i.type='file';i.accept='.csv,.txt,.xlsx,.pdf,text/csv';i.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.appendChild(i);i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return;var done=function(n){P.toast(f.name+' importé'+(n?' : '+n+' ligne'+(n>1?'s':'')+' lue'+(n>1?'s':'')+', '+rx.length+' de vos cavaliers retrouvés':', '+rx.length+' de vos cavaliers retrouvés'),{icon:'upload'})};if(/\.(csv|txt)$/i.test(f.name)&&f.text)f.text().then(function(t){done(t.split(/\r?\n/).filter(function(l){return l.trim()}).length)},function(){done(0)});else done(0)};i.click()}});
  }});
 
 /* =====================================================================
@@ -1658,7 +1714,7 @@ function onbSheet(){var o=PF.onb;o.step=0;o.final=false;
   function draw(){var f=sheet.querySelector('.sf'),k=o.step,n=Object.keys(o.done).length,s='';
    s+='<div class="hrow" style="--g:12px;margin-bottom:12px"><div class="grow">'+U.bar(n/ONB.length*100,n===ONB.length?'var(--ok)':null)+'</div><span class="s b num">'+n+' / '+ONB.length+'</span></div>';
    s+='<div class="pf-st">'+ONB.map(function(x,i){return '<button class="'+(o.done[i]?'ok':'')+'" data-a="go" data-i="'+i+'" aria-selected="'+(i===k&&!o.final)+'"><b>'+(o.done[i]?I('check','sm'):i+1)+'</b>'+x[1]+'</button>'}).join('')+'</div>';
-   if(o.final){s+='<div class="pf-done"><span class="strass" style="width:24px;height:24px"></span><h3 style="font-size:22px">Votre profil est complet</h3><p class="s mut" style="max-width:420px">Les adhérents de vos écuries partenaires vous trouvent et réservent en ligne. Les paiements arrivent sur votre compte sous 2 jours ouvrés.</p><div class="cd-url" style="width:100%;max-width:360px"><span>piaffe.app/coach/pauline-arnaud</span></div></div>';f.innerHTML='<button class="btn pri" data-a="close">Terminé</button>';b.innerHTML=s;P.animate(b);swIn(b);return}
+   if(o.final){s+='<div class="pf-done"><span class="strass" style="width:24px;height:24px"></span><h3 style="font-size:22px">Votre profil est complet</h3><p class="s mut" style="max-width:420px">Les adhérents de vos écuries partenaires vous trouvent et réservent en ligne. Les paiements arrivent sur votre compte sous 2 jours ouvrés.</p><div class="cd-url" style="width:100%;max-width:360px"><span>stablapp.fr/coach/pauline-arnaud</span></div></div>';f.innerHTML='<button class="btn pri" data-a="close">Terminé</button>';b.innerHTML=s;P.animate(b);swIn(b);return}
    s+='<h3 style="font-size:18px;margin-bottom:4px">'+(k+1)+'. '+ONB[k][1]+'</h3>';
    if(k===0)s+='<p class="s mut" style="margin-bottom:12px">Stabl contrôle vos pièces auprès des organismes, une seule fois. Les écuries qui vous accueillent les voient sans vous les redemander.</p><div class="card flat list">'+PF.docs.slice(0,3).map(function(d){return '<div class="li">'+sq(d[0],o.done[0]?'ok':'acc')+'<div class="grow"><div class="t ellip">'+d[1]+'</div><div class="s ellip">'+d[2]+'</div></div>'+(o.done[0]?U.chip(d[4],'ok',true):U.chip('Reçu','',true))+'</div>'}).join('')+'</div>';
    if(k===1)s+='<p class="s mut" style="margin-bottom:12px">Touchez les demi-journées où vous enseignez. Stabl en tire vos créneaux réservables, sans chevaucher vos cours.</p><div class="pf-wk"><span></span><b class="xs mut" style="text-align:center">Matin</b><b class="xs mut" style="text-align:center">Après-midi</b><b class="xs mut" style="text-align:center">Soir</b>'+Object.keys(o.wk).map(function(d){return '<b class="s">'+d+'</b>'+o.wk[d].map(function(on,j){return '<button class="tag" data-a="wk" data-d="'+d+'" data-j="'+j+'" aria-pressed="'+on+'">'+(on?'Ouvert':'Fermé')+'</button>'}).join('')}).join('')+'</div>';
