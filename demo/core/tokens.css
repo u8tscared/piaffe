@@ -154,6 +154,8 @@ svg.i.xl{width:32px;height:32px;stroke-width:1.7}
 .big{font:800 44px/1 var(--f-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .mono{font-family:var(--f-mono);font-size:13.5px}
 .ellip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* écrans du gérant revus : un texte de liste passe sur deux lignes au lieu d'être coupé */
+.page:is([data-screen="cockpit"],[data-screen="planning"],[data-screen="rapports"],[data-screen="adherents"],[data-screen="adherent"],[data-screen="pensions"],[data-screen="contrats"],[data-screen="boutique"],[data-screen="facturation"],[data-screen="compta"],[data-screen="equipe"]) :is(div,b,span.grow>span,span>b,div>span).ellip{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:break-word}
 .hr{height:1px;background:var(--line);border:0;margin:6px 0}
 
 /* ---------- En-tête de page ---------- */
@@ -244,6 +246,10 @@ svg.i.xl{width:32px;height:32px;stroke-width:1.7}
 .li{display:flex;align-items:center;gap:14px;padding:12px 22px;min-height:60px;min-width:0;transition:background var(--t-1);position:relative}
 .li+.li::before{content:"";position:absolute;left:22px;right:22px;top:0;height:1px;background:var(--line)}
 .li.click{cursor:pointer}.li.click:hover{background:var(--surface-2)}
+/* retour de clic : la ligne ou la carte cliquable s'enfonce légèrement */
+.li.click:active,.tbl tbody tr.click:active{background:var(--surface-3);transition-duration:60ms}
+button.card,a.card,.card[data-go]{transition:transform .35s var(--e-spring),box-shadow var(--t-2),background var(--t-2)}
+button.card:active,a.card:active,.card[data-go]:active{transform:scale(.985);transition-duration:.1s}
 .li .t{font-weight:600;font-size:15px}.li .s{font-size:14px;color:var(--mut)}
 .li .r{margin-left:auto;text-align:right;flex:none;display:flex;align-items:center;gap:10px}
 @container main (max-width:520px){.li{padding:12px 18px}.li+.li::before{left:18px;right:18px}}
@@ -329,6 +335,7 @@ select.in{appearance:none;background-image:linear-gradient(45deg,transparent 50%
 @keyframes scint{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.7) rotate(45deg)}}
 .skel{background:linear-gradient(90deg,var(--bg-2),var(--surface-2),var(--bg-2));background-size:200% 100%;animation:skel 1.2s linear infinite;border-radius:8px}
 @keyframes skel{to{background-position:-200% 0}}
+.skl{display:flex;flex-direction:column;gap:10px;padding:4px 0}.skl i{display:block;height:14px;max-width:100%}.skl i:first-child{height:18px}
 .live{display:inline-flex;align-items:center;gap:6px;font:700 13px/1 var(--f-text);letter-spacing:.05em;color:#fff;background:#d6402a;padding:5px 9px;border-radius:8px}
 .live::before{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite}
 @keyframes pulse{50%{opacity:.25}}

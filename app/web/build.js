@@ -122,6 +122,7 @@ ${pre}
 ${migScript}
 ${modScripts}
 ${liveScripts}
+<script src="/admin/bandeau.js" defer></script>
 </body>
 </html>
 `;

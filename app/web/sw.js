@@ -11,7 +11,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
-  if (/^\/(api|auth|ics|webhooks|migration)(\/|$)/.test(url.pathname)) return;
+  if (/^\/(api|auth|ics|webhooks|migration|admin)(\/|$)/.test(url.pathname)) return;
   /* navigation : réseau d'abord (version à jour), coque en cache si hors ligne */
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then((r) => { if (r.ok) { const cp = r.clone(); caches.open(SHELL).then((c) => c.put('/', cp)); } return r; })

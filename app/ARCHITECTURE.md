@@ -31,6 +31,7 @@ Chaque lot possède ses dossiers et n'écrit **jamais** dans ceux des autres. Le
 | C · factures et comptable | `src/invoicing/`, `test/invoicing*.test.ts`, `assets/fonts/` | `0004_invoicing.sql` |
 | D · e-mails, ICS, import | `src/mail/`, `src/ics/`, `src/import/`, `test/mail*`, `test/ics*`, `test/import*` | `0005_mail_ics_import.sql` |
 | E · appli web et onboarding | `app/web/`, `src/onboarding/`, `test/onboarding*` | `0006_onboarding.sql` |
+| MCP · connecteur Claude et ChatGPT | `src/mcp/`, `test/mcp*` | `0020_mcp.sql` |
 
 Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la racine (les chemins complets sont écrits dans le lot, ex. `app.post("/auth/login", …)`) et une fonction `cron(env, expr)` appelée par les Cron Triggers (`*/10 * * * *` et `0 6 * * *`).
 
@@ -90,6 +91,19 @@ Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la 
 - `GET /api/onboarding` / `PUT /api/onboarding` `{answers}` / `POST /api/onboarding/complete` : questionnaire adaptatif (type de structure, nombre de chevaux, de boxes, d'adhérents, de salariés, disciplines, logiciel actuel, comptable, encaissement en ligne) ; à la fin, le serveur prépare le club : modules actifs, forfaits types, installations, modèles de contrats, rappels, et propose l'import.
 - Appli web : écrans de connexion, inscription, Google, mot de passe oublié, invitation, onboarding, puis la démo branchée sur les vraies données.
 
+### Connecteur MCP (Claude, ChatGPT…) · `src/mcp/`
+
+Un gérant (ou un employé) relie son assistant à Stabl en ajoutant l'adresse **`https://app.stablapp.fr/mcp`** comme connecteur. Guide pour le gérant : `app/MCP.md`. Modèle : le connecteur de Growth Gusto, en lecture des données en direct plutôt que d'un instantané.
+
+- **Protocole** : MCP en HTTP « streamable », JSON-RPC 2.0, réponses JSON sans flux (`POST /mcp` ; `GET`/`DELETE` → 405 ; notifications → 202 ; lots acceptés). Versions 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05. Sans état côté serveur (pas de `Mcp-Session-Id`). CORS ouvert (l'accès repose sur le jeton).
+- **OAuth 2.1** (le Worker est son propre serveur d'autorisation) : `GET /.well-known/oauth-protected-resource[/mcp]`, `GET /.well-known/oauth-authorization-server[/mcp]` (et `openid-configuration`), `POST /oauth/register` (enregistrement dynamique RFC 7591, clients publics seulement), `GET /oauth/authorize` (PKCE S256 obligatoire, `resource` RFC 8707 vérifié, `iss` dans la réponse RFC 9207) → page d'accord servie par le Worker (même origine, la session `piaffe_s` est reprise ; sinon connexion e-mail/mot de passe ou Google sur place), `POST /oauth/authorize` (jeton de formulaire HMAC lié à la session + contrôle d'Origin), `POST /oauth/token` (code + `code_verifier`, renouvellement), `POST /oauth/revoke`. Les clients décrits par un document de métadonnées (`client_id` = URL https) sont acceptés. Sans jeton, `/mcp` répond 401 avec `WWW-Authenticate: Bearer resource_metadata=…`.
+- **Jetons** : accès `stm_at_…` 1 h, renouvellement `stm_rt_…` 90 jours remplacé à chaque usage, code 5 min à usage unique, demande 10 min ; tout est stocké haché (`mcp_codes`, `mcp_tokens`). Un **accord** (`mcp_grants`) lie un assistant, une personne et UN club, avec les droits `lecture` (toujours) et `ecriture` (case « Permettre aussi les ajouts », décochée par défaut).
+- **À chaque appel** : jeton valide, accord non retiré, personne toujours membre active du club avec un rôle `owner`, `manager` ou `staff` (adhérents, coachs et comptables n'ont pas le connecteur). Les données passent par `records/policy.ts` avec le rôle de la personne : un employé ne voit que ce qu'il voit dans l'appli (ni factures, ni chiffre d'affaires, ni pensions, annuaire réduit des adhérents, pas de coût des chevaux). 60 appels d'outils par minute et par accord.
+- **Repli : clé d'API du club** (`Authorization: Bearer pk_live_…`, créée dans Réglages) : droit `read` obligatoire (outils de lecture, vue gérant), `write` pour les ajouts.
+- **Outils** (`src/mcp/tools.ts`, noms et réponses en français, chaque réponse porte `donnees_du` et `derniere_saisie`) : lecture `club` (à appeler en premier), `chevaux`, `soins_a_venir`, `pensions`*, `adherents`, `planning`, `reservations`, `facturation_impayes`*, `chiffre_affaires`*, `presences`, `stocks`, `equipe`, `competitions`, `contrats`*, `taches` (* gérant seulement) ; écriture `ajouter_soin`, `reserver_place`, `cocher_tache` (droit `ecriture`, paramètre `confirme: true` exigé, que l'assistant ne pose qu'après le « oui » de la personne ; passent par `applyBatch` : politique d'accès, versions, audit `mcp:<assistant>`, déclencheurs comme l'e-mail de réservation ; bloqués si l'abonnement ne permet plus d'écrire).
+- **Pour l'écran Connecteurs** (session) : `GET /api/mcp/tools` (adresse du serveur et outils permis à ce rôle), `GET /api/mcp/grants` (assistants reliés ; un employé ne voit que les siens), `DELETE /api/mcp/grants/:id` (retire l'accès et coupe les jetons), `GET /api/mcp/calls?limit=` (journal des 90 derniers jours, gérant).
+- **Déploiement** : `wrangler.jsonc` fait passer `/mcp`, `/oauth/*` et `/.well-known/*` par le Worker avant les fichiers statiques ; `APP_URL` doit valoir `https://app.stablapp.fr` (il donne l'émetteur et l'adresse de la ressource).
+
 ## API d'import (pour l'outil de migration)
 
 Authentification : clé d'API du club avec le scope `import` (`Authorization: Bearer pk_live_…`), créée par le gérant dans Réglages, ou session gérant.
@@ -99,3 +113,15 @@ Authentification : clé d'API du club avec le scope `import` (`Authorization: Be
 - `POST /api/v1/import/jobs/:id/commit` → applique (ou simule si `dry_run`) : création ou mise à jour idempotente grâce à la table de correspondance `(club, source, coll, external_id) → id Stabl`. Réponse : compte par collection, avertissements (doublons, champs manquants), erreurs par objet.
 - `GET /api/v1/import/jobs/:id` → état et rapport. `POST /api/v1/import/jobs/:id/rollback` → supprime ce que ce job a créé.
 - `POST /api/v1/import/csv` (multipart) : import de fichiers CSV/Excel exportés d'un autre logiciel, avec détection des colonnes.
+
+## Admin (équipe Stabl)
+
+Back-office de l'équipe Stabl (pas celui d'un club), servi par le Worker sur **`/admin`** : `src/admin/` (API), `app/web/admin/` (page autonome : `index.html`, `admin.css`, `admin.js`), migration `0007_admin.sql`, tests `test/admin.test.ts`.
+
+- **Accès** : compte Stabl ordinaire connecté par session, e-mail vérifié et présent dans le secret **`ADMIN_EMAILS`** (adresses séparées par des virgules : `wrangler secret put ADMIN_EMAILS`). Tout le reste (visiteur, gérant, clé d'API) reçoit un 404. Chaque action est écrite dans `audit_log` (`admin.*`) et visible dans l'onglet Journal ; toute action qui change quelque chose passe par une fenêtre de confirmation et exige `{confirm: true}` côté serveur.
+- **Écrans** : tableau de bord (clubs, essais, payants, revenu mensuel et annuel, essais qui finissent, impayés, migrations, robots en échec, quota d'e-mails, santé du service), clubs (recherche, filtres, fiche, actions : prolonger l'essai, offre fondateurs, vue « en tant que », lien de réinitialisation, suspendre ou réactiver), migrations (jobs, sessions du robot, incidents et captures, recettes par logiciel, « relancer » = recalcul de la simulation), support, prospection (import CSV, statuts, notes ; aucun e-mail ne part d'ici), réglages (prix, codes, variables, intégrations : configuré ou non, jamais de secret).
+- **Vue « en tant que »** : session ordinaire du gérant, d'une heure, en **lecture seule** (toute écriture renvoie 403 `admin_view_readonly`), avec un bandeau dans l'appli (`/admin/bandeau.js`, chargé par `app/web/build.js`) et retour à la session admin par `POST /admin/vue/fin`.
+- **Suspension** : les accès actifs du club passent à `suspended` (liste gardée dans `admin_club_flags` pour les rétablir), ses clés d'API sont refusées.
+- **Garde globale** `adminGuard` (après `loadAuth` dans `index.ts`) : lecture seule de la vue, clés d'API des clubs suspendus, et journal des réponses 5xx dans `admin_errors` (30 jours) pour la santé du service.
+- **Support** : `POST /api/contact` (public, JSON ou formulaire, champ piège `site_web`, 5 messages par heure et par IP, CORS pour stablapp.fr) alimente la boîte Support ; connecté, le message est rattaché au compte et au club.
+- Après une modification de la page : `node app/web/admin/build.js` régénère `src/admin/page.gen.ts` (la page n'est jamais dans les fichiers statiques publics).
