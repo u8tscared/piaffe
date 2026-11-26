@@ -113,3 +113,15 @@ Authentification : clé d'API du club avec le scope `import` (`Authorization: Be
 - `POST /api/v1/import/jobs/:id/commit` → applique (ou simule si `dry_run`) : création ou mise à jour idempotente grâce à la table de correspondance `(club, source, coll, external_id) → id Stabl`. Réponse : compte par collection, avertissements (doublons, champs manquants), erreurs par objet.
 - `GET /api/v1/import/jobs/:id` → état et rapport. `POST /api/v1/import/jobs/:id/rollback` → supprime ce que ce job a créé.
 - `POST /api/v1/import/csv` (multipart) : import de fichiers CSV/Excel exportés d'un autre logiciel, avec détection des colonnes.
+
+## Admin (équipe Stabl)
+
+Back-office de l'équipe Stabl (pas celui d'un club), servi par le Worker sur **`/admin`** : `src/admin/` (API), `app/web/admin/` (page autonome : `index.html`, `admin.css`, `admin.js`), migration `0007_admin.sql`, tests `test/admin.test.ts`.
+
+- **Accès** : compte Stabl ordinaire connecté par session, e-mail vérifié et présent dans le secret **`ADMIN_EMAILS`** (adresses séparées par des virgules : `wrangler secret put ADMIN_EMAILS`). Tout le reste (visiteur, gérant, clé d'API) reçoit un 404. Chaque action est écrite dans `audit_log` (`admin.*`) et visible dans l'onglet Journal ; toute action qui change quelque chose passe par une fenêtre de confirmation et exige `{confirm: true}` côté serveur.
+- **Écrans** : tableau de bord (clubs, essais, payants, revenu mensuel et annuel, essais qui finissent, impayés, migrations, robots en échec, quota d'e-mails, santé du service), clubs (recherche, filtres, fiche, actions : prolonger l'essai, offre fondateurs, vue « en tant que », lien de réinitialisation, suspendre ou réactiver), migrations (jobs, sessions du robot, incidents et captures, recettes par logiciel, « relancer » = recalcul de la simulation), support, prospection (import CSV, statuts, notes ; aucun e-mail ne part d'ici), réglages (prix, codes, variables, intégrations : configuré ou non, jamais de secret).
+- **Vue « en tant que »** : session ordinaire du gérant, d'une heure, en **lecture seule** (toute écriture renvoie 403 `admin_view_readonly`), avec un bandeau dans l'appli (`/admin/bandeau.js`, chargé par `app/web/build.js`) et retour à la session admin par `POST /admin/vue/fin`.
+- **Suspension** : les accès actifs du club passent à `suspended` (liste gardée dans `admin_club_flags` pour les rétablir), ses clés d'API sont refusées.
+- **Garde globale** `adminGuard` (après `loadAuth` dans `index.ts`) : lecture seule de la vue, clés d'API des clubs suspendus, et journal des réponses 5xx dans `admin_errors` (30 jours) pour la santé du service.
+- **Support** : `POST /api/contact` (public, JSON ou formulaire, champ piège `site_web`, 5 messages par heure et par IP, CORS pour stablapp.fr) alimente la boîte Support ; connecté, le message est rattaché au compte et au club.
+- Après une modification de la page : `node app/web/admin/build.js` régénère `src/admin/page.gen.ts` (la page n'est jamais dans les fichiers statiques publics).

@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*", "/mcp", "/mcp/*", "/oauth/*", "/.well-known/*"] },
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/api/*", "/ics/*", "/auth/*", "/webhooks/*", "/mcp", "/mcp/*", "/oauth/*", "/.well-known/*", "/admin", "/admin/*"] },
   "d1_databases": [{ "binding": "DB", "database_name": "piaffe", "database_id": "REMPLACER_PAR_L_ID_D1", "migrations_dir": "migrations" }],
   "r2_buckets": [{ "binding": "FILES", "bucket_name": "piaffe-files" }],
   // Robot de migration (lot F) : navigateur Browser Rendering et un Durable Object par session.
@@ -26,5 +26,6 @@
     "PLATFORM_LEGAL_NOTE": "Entrepreneur individuel, micro-entreprise, dispensé d’immatriculation au RCS. APE 70.22Z"
   }
   // Secrets (wrangler secret put …) : SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
-  // STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, MAIL_API_KEY, MAIL_WEBHOOK_SECRET, EINVOICE_API_KEY, BILLING_ADMIN_SECRET
+  // STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, MAIL_API_KEY, MAIL_WEBHOOK_SECRET, EINVOICE_API_KEY, BILLING_ADMIN_SECRET,
+  // ADMIN_EMAILS (adresses des admins de l'espace /admin, séparées par des virgules)
 }
