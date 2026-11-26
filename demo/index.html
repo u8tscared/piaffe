@@ -16880,8 +16880,8 @@ I('export','Argent','accounting',/export|comptable|fec|pennylane/i,'Envoie les �
 
 I('mcp','Plateforme','mcp',/mcp|claude|chatgpt|connect|api|webhook/i,'Comment connecter Claude ou ChatGPT à mon écurie ?',function(){
   return {text:'Stabl expose un <b>serveur MCP</b> : vous collez une adresse dans Claude, ChatGPT ou un autre assistant, vous vous identifiez, et il peut interroger l’écurie avec vos droits. Il lit par défaut, et toute écriture vous est montrée avant d’être faite.',src:['Connecteurs'],tool:'ecurie_apercu',
-   card:'<div class="pf-code"><pre>https://mcp.stabl.fr/mcp</pre></div>',
-   actions:[{label:'Ouvrir les connecteurs',icon:'plug',run:function(){P.go('connecteurs');return 'Ouvert'}},{label:'Copier l’adresse du serveur',icon:'copy',run:function(){clip('https://mcp.stabl.fr/mcp','Adresse du serveur MCP copiée');return 'Adresse copiée'}}]}});
+   card:'<div class="pf-code"><pre>https://mcp.stablapp.fr/mcp</pre></div>',
+   actions:[{label:'Ouvrir les connecteurs',icon:'plug',run:function(){P.go('connecteurs');return 'Ouvert'}},{label:'Copier l’adresse du serveur',icon:'copy',run:function(){clip('https://mcp.stablapp.fr/mcp','Adresse du serveur MCP copiée');return 'Adresse copiée'}}]}});
 
 function answer(t){for(var i=0;i<INT.length;i++){if(INT[i].re.test(t)){var r=INT[i].fn(t);if(r)return r}}
   var r2=P.think(t);return r2}
@@ -17053,7 +17053,7 @@ P.pf.AS=AS;
    ===================================================================== */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,$=P.$,$$=P.$$,esc=F.esc,X=P.pf,on=X.on,lg=X.lg,clip=X.clip,pre=X.pre,sheet=X.sheet,sum=X.sum,norm=X.norm;
-var MCP_URL='https://mcp.stabl.fr/mcp',API_URL='https://api.stabl.fr/v1';
+var MCP_URL='https://mcp.stablapp.fr/mcp',API_URL='https://api.stablapp.fr/v1';
 
 /* ---------- Catalogue (issu de l’audit des intégrations) ---------- */
 var CATS=['Paiement','Banque','Comptabilité','Facture électronique','Signature','RH et paie','Communication','Calendrier','Caméras et capteurs','Fédéral et public','Reprise de données','IA et plateforme'];
@@ -18041,7 +18041,7 @@ function secClub(){
      '<div class="g2" style="--g:12px"><label class="field"><span>Nom du club</span><input class="in" value="'+esc(D.club.name)+'"></label><label class="field"><span>Nom court</span><input class="in" value="'+esc(D.club.short)+'"></label><label class="field span2"><span>Adresse</span><input class="in" value="'+esc(D.club.address)+'"></label><label class="field"><span>SIRET</span><input class="in num" value="'+D.club.siret+'"></label><label class="field"><span>Affiliation FFE</span><input class="in" value="'+esc(D.club.ffe)+'"></label><label class="field"><span>Téléphone</span><input class="in num" value="'+D.club.phone+'"></label><label class="field"><span>E-mail de contact</span><input class="in" value="'+D.club.email+'"></label></div></div>'+
     '<div class="card pad stack" style="--g:14px"><div><div class="b">Couleur du portail adhérent</div><div class="s mut">Six teintes vérifiées pour rester lisibles, en clair comme en sombre.</div></div><div class="hrow wrap" style="--g:12px">'+T.map(function(t){return '<button class="pfr-sw" style="--c:'+t[0]+'" data-tint="'+t[0]+'" aria-pressed="'+(RG.tint===t[0])+'" title="'+t[1]+'">'+ICON('check')+'</button>'}).join('')+'</div>'+
      '<label class="field"><span>Message d’accueil du portail</span><input class="in" data-wel value="Bienvenue aux Tilleuls"></label>'+
-     '<div class="card flat">'+row('Inscription en ligne ouverte','Les nouvelles familles s’inscrivent et paient depuis votre site',U.tog(true))+row('Adresse de votre portail','<span class="pf-mono">tilleuls.stabl.fr</span>','<button class="btn sm" data-cpp>'+ICON('copy','sm')+'Copier</button>')+'</div></div></div>'+
+     '<div class="card flat">'+row('Inscription en ligne ouverte','Les nouvelles familles s’inscrivent et paient depuis votre site',U.tog(true))+row('Adresse de votre portail','<span class="pf-mono">tilleuls.stablapp.fr</span>','<button class="btn sm" data-cpp>'+ICON('copy','sm')+'Copier</button>')+'</div></div></div>'+
     '<div class="card pfr-prev keep"><div class="eyebrow" style="margin-bottom:10px">Aperçu chez l’adhérent</div><div class="pfr-ph" data-ph style="--pc:'+RG.tint+'"><div class="hd"><div class="hrow" style="--g:8px">'+LOGO(18,'currentColor','currentColor')+'<small>'+D.club.name+'</small></div><div class="disp" style="font-size:19px;font-weight:700;margin-top:10px" data-welp>Bienvenue aux Tilleuls</div><small>Bonjour Léa, reprise ce soir à 18 h</small></div><div class="bd"><div class="card" style="padding:10px 12px"><div class="xs mut">Prochaine reprise</div><div class="b s">Galop 6-7 CSO · Thomas</div></div><div class="cta">Réserver une séance</div></div><div class="tb"><span>'+ICON('today')+'</span><span>'+ICON('planning')+'</span><span>'+ICON('horse')+'</span><span>'+ICON('card')+'</span></div></div></div></div>'}
 
 function secTarifs(){
@@ -18209,7 +18209,7 @@ function renderSet(el,ctx){
     on(el,'[data-tint]',function(b){RG.tint=b.getAttribute('data-tint');P.prefs.set('club:tint',RG.tint);$$('[data-tint]',el).forEach(function(x){x.setAttribute('aria-pressed',x===b)});q('[data-ph]').style.setProperty('--pc',RG.tint);P.toast('Teinte « '+b.title+' » appliquée au portail adhérent')});
     q('[data-wel]').oninput=function(){q('[data-welp]').textContent=this.value||'Bienvenue'};
     q('[data-logo]').onclick=function(){P.toast('Logo mis à jour sur le portail et les documents',{icon:'image'})};
-    q('[data-cpp]').onclick=function(){X.clip('https://tilleuls.stabl.fr','Adresse du portail copiée')};
+    q('[data-cpp]').onclick=function(){X.clip('https://tilleuls.stablapp.fr','Adresse du portail copiée')};
   }
   if(S==='tarifs'){
     function tsheet(t){var nw=!t;t=t||{n:'',k:'Séance',p:30,u:'la séance',tva:5.5,web:true};P.sheet({title:nw?'Ajouter un tarif':t.n,icon:'tag',body:'<div class="stack" style="--g:14px"><label class="field"><span>Nom de la prestation</span><input class="in" data-n value="'+esc(nw?'Séance découverte':t.n)+'"></label><div class="g2" style="--g:12px"><label class="field"><span>Prix TTC en euros</span><input class="in num" data-p inputmode="decimal" value="'+t.p+'"></label><label class="field"><span>Taux de TVA</span>'+sel(['5,5 %','20 %','Non applicable'],t.tva===20?'20 %':t.tva?'5,5 %':'Non applicable','data-v')+'</label></div><label class="field"><span>Famille</span>'+sel(['Forfait','Carte','Séance','Stage','Pension','Concours','Licence'],t.k,'data-k')+'</label><div class="card flat">'+row('Vendu en ligne','Visible sur le portail adhérent',U.tog(t.web,'t-web'))+row('Paiement en plusieurs fois','Prélèvement mensuel sans frais',U.tog(t.p>300))+'</div><dl class="pf-kv"><dt>Hors taxes</dt><dd class="num" data-ht></dd><dt>Compte comptable</dt><dd class="pf-mono">706100</dd></dl></div>',foot:(nw?'':'<button class="btn danger" data-del>Supprimer</button>')+'<button class="btn pri" data-ok>'+(nw?'Ajouter le tarif':'Enregistrer')+'</button>'});
@@ -18279,7 +18279,7 @@ P.mod({id:'reglages',role:'gerant',group:'Plateforme',title:'Réglages',icon:'se
  ['Créer une automatisation','repeat',function(){P.go('assistant',{tab:'auto',do:'newauto'})}],
  ['Voir le journal des actions de Stabl AI','shield',function(){P.go('assistant',{tab:'journal'})}],
  ['Connecter Claude ou ChatGPT à l’écurie','mcp',function(){P.go('connecteurs',{tab:'mcp',do:'connect'})}],
- ['Copier l’adresse du serveur MCP','copy',function(){X.clip('https://mcp.stabl.fr/mcp','Adresse du serveur MCP copiée')}],
+ ['Copier l’adresse du serveur MCP','copy',function(){X.clip('https://mcp.stablapp.fr/mcp','Adresse du serveur MCP copiée')}],
  ['Chercher un connecteur','plug',function(){P.go('connecteurs',{tab:'cat'})}],
  ['Créer une clé API','key',function(){P.go('connecteurs',{tab:'api',do:'key'})}],
  ['Ajouter un webhook','webhook',function(){P.go('connecteurs',{tab:'api',do:'hook'})}],
