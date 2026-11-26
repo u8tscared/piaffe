@@ -23,13 +23,18 @@ P.go=function(route,params,opts){var m=P.mods[route];if(!m)return;
     P.toast('Cet écran n’est pas disponible avec votre accès.',{icon:'lock'});return}
   return go0.call(P,route,params,opts)};
 /* équivalents d'un écran d'un autre rôle (lien croisé d'un module) */
-PL.ALIAS={adherent:{cheval:'adh-cheval',planning:'adh-reserver',facturation:'adh-paiements',contrats:'adh-contrats'},employe:{cheval:'emp-cheval',planning:'emp-planning',soins:'emp-soins',chevaux:'emp-chevaux'},coach:{planning:'coach-agenda'}};
+PL.ALIAS={adherent:{cheval:'adh-cheval',planning:'adh-reserver',facturation:'adh-paiements',contrats:'adh-contrats'},employe:{cheval:'emp-cheval',planning:'emp-planning',soins:'emp-soins',chevaux:'emp-chevaux',connecteurs:'lv-connecteurs-emp'},coach:{planning:'coach-agenda'}};
 
 /* ---------- Écrans masqués : partagés par le club ---------- */
 var setOff0=P.prefs.setOff;
 P.prefs.setOff=function(role,list){setOff0.call(P.prefs,role,list);
   if(PL.isManager()&&!PL.sandboxLocal){var o={};o[role]=list;PL.put('/api/onboarding/modules',{modulesOff:o}).catch(function(e){if(!e.offline)PL.fail(e,'Écrans masqués')})}};
-PL.applyModulesOff=function(off){off=off||{};Object.keys(P.roles).forEach(function(r){if(Array.isArray(off[r]))P.store.set('off:'+r,off[r])})};
+PL.applyModulesOff=function(off){off=off||{};
+  /* « Connecteurs » était masqué d'office tant que l'écran n'était qu'une simulation : il est désormais branché (MCP), on le remontre une fois par club */
+  var g=off.gerant,mk='piaffe:live:cn-on:'+(PL.clubId||''),seen=true;try{seen=!!localStorage.getItem(mk)}catch(e){}
+  if(!seen&&Array.isArray(g)&&g.indexOf('connecteurs')>=0){off.gerant=g.filter(function(x){return x!=='connecteurs'});if(PL.isManager()&&!PL.sandboxLocal)PL.put('/api/onboarding/modules',{modulesOff:{gerant:off.gerant}}).catch(function(){})}
+  try{localStorage.setItem(mk,'1')}catch(e){}
+  Object.keys(P.roles).forEach(function(r){if(Array.isArray(off[r]))P.store.set('off:'+r,off[r])})};
 PL.isManager=function(){return PL.role==='owner'||PL.role==='manager'};
 
 /* ---------- Écrans de la démo remplacés ou retouchés après chargement ---------- */

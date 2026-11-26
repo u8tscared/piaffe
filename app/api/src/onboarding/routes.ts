@@ -145,7 +145,7 @@ app.post("/api/onboarding/sandbox", requireRole("owner"), async (c) => {
   const n = await c.env.DB.prepare("SELECT COUNT(*) AS n FROM records WHERE club_id = ? AND deleted = 0").bind(club.id).first<{ n: number }>();
   if (n && n.n > 0 && !cur.settings.sandbox) throw new ApiError(409, "club_not_empty", "Ce club contient déjà des données : les exemples sont chargés dans un club séparé.");
   cur.settings.sandbox = true;
-  cur.settings.modulesOff = cur.settings.modulesOff || { gerant: ["connecteurs"] };
+  cur.settings.modulesOff = cur.settings.modulesOff || { gerant: [] };
   await saveSettings(c.env.DB, club.id, cur.settings);
   await saveOnboarding(c.env.DB, club.id, { ...cur.onb, answers: cur.onb.answers || {}, completed_at: cur.onb.completed_at || nowIso(), step: "sandbox", sandbox: true });
   await audit(c.env.DB, { club_id: club.id, user_id: c.get("user")!.id, action: "onboarding.sandbox", target: club.id });

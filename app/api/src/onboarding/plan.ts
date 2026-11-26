@@ -202,8 +202,6 @@ export function buildPlan(a: Answers): Plan {
   if ((a.staff ?? 1) === 0) { g.add("equipe"); }
   if ((a.boxes ?? 1) === 0 && (a.horses ?? 1) === 0) { g.add("ecurie3d"); g.add("alimentation"); }
   if (coach) { ["ecurie3d", "alimentation", "entretien", "pensions", "equipe"].forEach((x) => g.add(x)); em.add("emp-tournee"); }
-  /* écrans de démonstration remplacés par les écrans branchés */
-  g.add("connecteurs");
 
   const indoor = a.arenas_indoor ?? (kind === "coach_independant" ? 0 : 1);
   const outdoor = a.arenas_outdoor ?? (kind === "coach_independant" ? 0 : 1);
