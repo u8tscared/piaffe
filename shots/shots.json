@@ -5,7 +5,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 145
+  "kb": 153
  },
  "g-cockpit-dark": {
   "route": "cockpit",
@@ -13,7 +13,7 @@
   "dark": true,
   "w": 1440,
   "h": 900,
-  "kb": 134
+  "kb": 140
  },
  "g-planning": {
   "route": "planning",
@@ -21,7 +21,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 122
+  "kb": 130
  },
  "g-planning-dark": {
   "route": "planning",
@@ -29,7 +29,7 @@
   "dark": true,
   "w": 1440,
   "h": 900,
-  "kb": 111
+  "kb": 119
  },
  "g-planning-piste": {
   "route": "planning",
@@ -37,7 +37,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 106
+  "kb": 117
  },
  "g-chevaux": {
   "route": "chevaux",
@@ -53,7 +53,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 110
+  "kb": 113
  },
  "g-alimentation": {
   "route": "alimentation",
@@ -61,7 +61,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 114
+  "kb": 117
  },
  "g-3d": {
   "route": "ecurie3d",
@@ -69,7 +69,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 96
+  "kb": 99
  },
  "g-cameras": {
   "route": "cameras",
@@ -77,7 +77,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 171
+  "kb": 175
  },
  "g-adherents": {
   "route": "adherents",
@@ -85,7 +85,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 135
+  "kb": 137
  },
  "g-pensions": {
   "route": "pensions",
@@ -93,7 +93,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 120
+  "kb": 147
  },
  "g-competitions": {
   "route": "competitions",
@@ -101,7 +101,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 127
+  "kb": 128
  },
  "g-communication": {
   "route": "communication",
@@ -109,7 +109,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 129
+  "kb": 130
  },
  "g-facturation": {
   "route": "facturation",
@@ -117,7 +117,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 119
+  "kb": 120
  },
  "g-compta": {
   "route": "compta",
@@ -133,7 +133,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 124
+  "kb": 131
  },
  "g-equipe": {
   "route": "equipe",
@@ -157,7 +157,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 121
+  "kb": 120
  },
  "g-connecteurs": {
   "route": "connecteurs",
@@ -165,7 +165,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 119
+  "kb": 121
  },
  "g-import": {
   "route": "import",
@@ -181,7 +181,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 138
+  "kb": 143
  },
  "g-ai-planning": {
   "route": "planning",
@@ -189,7 +189,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 123
+  "kb": 131
  },
  "g-ai-dark": {
   "route": "cockpit",
@@ -197,7 +197,7 @@
   "dark": true,
   "w": 1440,
   "h": 900,
-  "kb": 126
+  "kb": 132
  },
  "c-agenda": {
   "route": "coach-agenda",
@@ -205,7 +205,7 @@
   "dark": false,
   "w": 1440,
   "h": 900,
-  "kb": 112
+  "kb": 129
  },
  "c-eleves": {
   "route": "coach-eleves",
@@ -221,7 +221,7 @@
   "dark": false,
   "w": 1180,
   "h": 820,
-  "kb": 109
+  "kb": 108
  },
  "e-tournee-tab": {
   "route": "emp-tournee",
@@ -229,7 +229,7 @@
   "dark": false,
   "w": 1180,
   "h": 820,
-  "kb": 96
+  "kb": 98
  },
  "p-adh-accueil": {
   "route": "adh-accueil",
@@ -245,7 +245,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 58
+  "kb": 57
  },
  "p-adh-cheval": {
   "route": "adh-cheval",
@@ -253,7 +253,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 52
+  "kb": 51
  },
  "p-adh-paiements": {
   "route": "adh-paiements",
@@ -261,7 +261,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 55
+  "kb": 59
  },
  "p-adh-progression": {
   "route": "adh-progression",
@@ -285,7 +285,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 63
+  "kb": 62
  },
  "p-emp-tournee": {
   "route": "emp-tournee",
@@ -325,7 +325,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 57
+  "kb": 56
  },
  "p-g-cockpit": {
   "route": "cockpit",
@@ -333,7 +333,7 @@
   "dark": false,
   "w": 393,
   "h": 852,
-  "kb": 78
+  "kb": 70
  },
  "p-adh-accueil-dark": {
   "route": "adh-accueil",
