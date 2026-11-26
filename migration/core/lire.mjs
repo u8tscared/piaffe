@@ -4,23 +4,28 @@ import { lireCSV } from './csv.mjs';
 import { lireXLSX } from './xlsx.mjs';
 import { estCapture, tablesDeCapture } from './capture.mjs';
 import { estICS, tableDeICS } from './ics.mjs';
+import { estFEC, analyserFEC } from './fec.mjs';
+import { tablesHelloAsso } from './helloasso.mjs';
 
 export async function lireFichier(nom, octets, { inflate } = {}) {
   const ext = (nom.match(/\.([a-z0-9]+)$/i) || [])[1]?.toLowerCase();
   const b = octets instanceof Uint8Array ? octets : new Uint8Array(octets);
   if (ext === 'xlsx' || ext === 'xlsm' || (b[0] === 0x50 && b[1] === 0x4b)) {
     const feuilles = await lireXLSX(b, inflate);
-    return feuilles.map(f => ({ fichier: nom, feuille: feuilles.length > 1 ? f.nom : null, lignes: f.lignes }));
+    return feuilles.flatMap(f => tablesHelloAsso(f.lignes, nom)?.tables || [{ fichier: nom, feuille: feuilles.length > 1 ? f.nom : null, lignes: f.lignes }]);
   }
   if (ext === 'xls' && b[0] === 0xd0 && b[1] === 0xcf) {
     return [{ fichier: nom, lignes: [], erreur: 'Ancien format Excel (.xls) : ouvrez-le dans Excel ou LibreOffice et enregistrez-le en .xlsx ou .csv.' }];
   }
   const { texte, encodage } = decoder(b);
   if (estCapture(texte)) return tablesDeCapture(JSON.parse(texte), nom);
+  if (estFEC(texte)) return analyserFEC(texte, nom).tables;
   if (estICS(texte)) return [{ fichier: nom, lignes: tableDeICS(texte), encodage, type: 'reprises' }];
   if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Stabl : ignoré.' }];
   if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
   const { lignes, separateur } = lireCSV(texte);
+  const ha = tablesHelloAsso(lignes, nom);
+  if (ha) return ha.tables.map(t => ({ ...t, encodage, separateur }));
   return [{ fichier: nom, lignes, encodage, separateur }];
 }
 

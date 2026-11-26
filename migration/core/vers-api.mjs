@@ -61,8 +61,10 @@ export function versLots(paquet, aujourdhui = new Date().toISOString().slice(0, 
     paid: f.paye, rest: f.reste, method: MOYEN[f.moyen] || null, imported: true }) }));
   const payments = paquet.reglements.map(r => ({ external_id: 'reglement:' + [r.date, r.montant, r.reference || r.ref].join(':'), data: clean({
     date: r.date, member: ext(P, r.client), amount: r.montant, method: MOYEN[r.moyen] || null, invoice: r.facture ? 'ext:facture:' + r.facture : null, ref: r.reference, deposit: r.remise }) }));
+  const stock = (paquet.stocks || []).map(s => ({ external_id: 'stock:' + cle(s.libelle).replace(/ /g, '-'), data: clean({
+    name: s.libelle, unit: s.unite, qty: s.quantite, min: s.seuil, daily: s.conso_jour, price: s.prix, supplier: s.fournisseur, category: s.categorie }) }));
   // Ordre d'envoi : ce qui est référencé avant ce qui référence.
-  return [['staff', staff], ['forfaits', forfaits], ['members', members], ['horses', horses], ['lessons', lessons], ['care', care], ['invoices', invoices], ['payments', payments]]
+  return [['staff', staff], ['forfaits', forfaits], ['members', members], ['horses', horses], ['lessons', lessons], ['care', care], ['invoices', invoices], ['payments', payments], ['stock', stock]]
     .filter(([, items]) => items.length).map(([coll, items]) => ({ coll, items }));
 }
 

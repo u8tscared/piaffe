@@ -21,9 +21,11 @@ export function construirePaquet(tables, options = {}) {
     lues.push(r);
   }
   // Ordre utile : les personnes d'abord, puis ce qui s'y rattache.
-  const ordre = ['adherents', 'equipe', 'prestations', 'chevaux', 'factures', 'reglements', 'reprises', 'soins'];
+  const ordre = ['adherents', 'equipe', 'prestations', 'chevaux', 'factures', 'reglements', 'reprises', 'soins', 'fournisseurs', 'stocks'];
   lues.sort((a, b) => ordre.indexOf(a.source.type) - ordre.indexOf(b.source.type));
   for (const r of lues) P['ajouter_' + r.source.type](r);
+  // Comptabilité (FEC) : le résumé est joint ; les clients et les factures arrivent par les tables ci-dessus.
+  for (const t of tables) if (t.comptabilite) P.comptabilite = t.comptabilite;
   P.finaliser();
   return P.json();
 }
@@ -69,6 +71,7 @@ class Paquet {
     this.sources = []; this.avertissements = [];
     this.personnes = []; this.chevaux = []; this.prestations = []; this.abonnements = [];
     this.factures = []; this.reglements = []; this.reprises = []; this.equipe = []; this.soins = [];
+    this.stocks = []; this.fournisseurs = []; this.comptabilite = null;
     this.idx = { licence: new Map(), email: new Map(), nomNaiss: new Map(), nom: new Map(), idSource: new Map(), famille: new Map() };
     this.fusions = 0;
   }
@@ -335,6 +338,25 @@ class Paquet {
     }
   }
 
+  // ---------- Stocks et fournisseurs ----------
+  ajouter_fournisseurs(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const nom = V.texte(e.nom); if (!nom || this.fournisseurs.some(f => cle(f.nom) === cle(nom))) continue;
+      this.fournisseurs.push({ ref: 'fo' + String(this.fournisseurs.length + 1).padStart(3, '0'), nom, categorie: V.texte(e.categorie), contact: V.texte(e.contact),
+        email: V.email(e.email), telephone: V.telephone(e.telephone), siret: (V.texte(e.siret) || '').replace(/\s+/g, '') || null, compte: V.texte(e.compte), ville: V.texte(e.ville),
+        origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
+  ajouter_stocks(r) {
+    for (const { l, n } of r.corps) {
+      const e = enregistrement(r, l);
+      const libelle = V.texte(e.libelle); if (!libelle) continue;
+      this.stocks.push({ ref: 'st' + String(this.stocks.length + 1).padStart(3, '0'), libelle, categorie: V.texte(e.categorie), quantite: V.montant(e.quantite),
+        unite: V.texte(e.unite), seuil: V.montant(e.seuil), conso_jour: V.montant(e.conso), prix: V.montant(e.prix), fournisseur: V.texte(e.fournisseur),
+        origine: [{ fichier: r.fichier, ligne: n }] });
+    }
+  }
   // ---------- Fin ----------
   finaliser() {
     // Familles : code famille commun, sinon même e-mail ou même responsable.
@@ -374,6 +396,7 @@ class Paquet {
       sources: this.sources,
       personnes: this.personnes, chevaux: this.chevaux, prestations: this.prestations, abonnements: this.abonnements,
       factures: this.factures, reglements: this.reglements, reprises: this.reprises, equipe: this.equipe, soins: this.soins,
+      stocks: this.stocks, fournisseurs: this.fournisseurs, ...(this.comptabilite ? { comptabilite: this.comptabilite } : {}),
       controle: {
         personnes: this.personnes.length, cavaliers: this.personnes.filter(p => p.roles.includes('cavalier')).length,
         responsables: this.personnes.filter(p => p.roles.includes('responsable')).length,
@@ -384,7 +407,7 @@ class Paquet {
         chiffre_factures_ttc: Math.round(this.factures.reduce((a, f) => a + f.total_ttc, 0) * 100) / 100,
         impayes_factures_ttc: Math.round(impayes * 100) / 100, soldes_negatifs_fiches: Math.round(soldes * 100) / 100,
         reglements: this.reglements.length, encaisse_ttc: Math.round(this.reglements.reduce((a, r) => a + r.montant, 0) * 100) / 100,
-        reprises: this.reprises.length, soins: this.soins.length,
+        reprises: this.reprises.length, soins: this.soins.length, stocks: this.stocks.length, fournisseurs: this.fournisseurs.length,
         sans_email: this.personnes.filter(p => p.roles.includes('cavalier') && !p.email && !p.responsables.length).length,
       },
       avertissements: this.avertissements,

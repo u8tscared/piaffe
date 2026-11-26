@@ -1,0 +1,12 @@
+JournalCode	JournalLib	EcritureNum	EcritureDate	CompteNum	CompteLib	CompAuxNum	CompAuxLib	PieceRef	PieceDate	EcritureLib	Debit	Credit	EcritureLet	DateLet	ValidDate	Montantdevise	Idevise
+VT	Ventes	VT0001	20260905	411000	Clients	C0012	MARTIN Léa	FA2026-0101	20260905	Forfait annuel Galop 3	780,00		A	20260915	20260930
+VT	Ventes	VT0001	20260905	706100	Enseignement équitation			FA2026-0101	20260905	Forfait annuel Galop 3		650,00			20260930
+VT	Ventes	VT0001	20260905	445710	TVA collectée 20 %			FA2026-0101	20260905	Forfait annuel Galop 3		130,00			20260930
+VT	Ventes	VT0002	20261001	411000	Clients	C0027	GIRARD Hugo	FA2026-0144	20261001	Pension octobre Saphir	420,00				20261031
+VT	Ventes	VT0002	20261001	706300	Pensions			FA2026-0144	20261001	Pension octobre Saphir		382,19			20261031
+VT	Ventes	VT0002	20261001	445711	TVA collectée 10 %			FA2026-0144	20261001	Pension octobre Saphir		37,81			20261031
+BQ	Banque	BQ0007	20260915	512000	Banque Crédit Agricole			VIR-0915	20260915	Virement MARTIN Léa	780,00				20260930
+BQ	Banque	BQ0007	20260915	411000	Clients	C0012	MARTIN Léa	VIR-0915	20260915	Virement MARTIN Léa		780,00	A	20260915	20260930
+AC	Achats	AC0003	20261010	606100	Fourrage			FF-8812	20261010	Foin octobre	500,00				20261031
+AC	Achats	AC0003	20261010	445660	TVA déductible			FF-8812	20261010	Foin octobre	27,50				20261031
+AC	Achats	AC0003	20261010	401000	Fournisseurs	F0004	Fourrages du Hurepoix	FF-8812	20261010	Foin octobre		527,50			20261031

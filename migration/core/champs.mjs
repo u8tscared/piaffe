@@ -9,18 +9,18 @@ export const TYPES = {
     champs: {
       id_source: ['id', 'numero', 'code', 'code client', 'code cavalier', 'numero client', 'numero adherent', 'ref', 'reference', 'identifiant', 'id client'],
       nom_complet: ['cavalier', 'nom prenom', 'nom et prenom', 'adherent', 'client', 'eleve', 'nom complet'],
-      nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage'],
-      prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent'],
-      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'ne e le', 'ne e', 'nee', 'date naissance', 'ddn', 'birth', 'date de naiss'],
+      nom: ['nom', 'nom cavalier', 'nom de famille', 'nom adherent', 'last name', 'nom usage', 'lastname', 'surname', 'family name', 'nom du cavalier', 'nom membre'],
+      prenom: ['prenom', 'prenom cavalier', 'first name', 'prenom adherent', 'firstname', 'given name', 'prenom membre', 'prenom du cavalier'],
+      naissance: ['date de naissance', 'naissance', 'ne le', 'nee le', 'ne e le', 'ne e', 'nee', 'date naissance', 'ddn', 'birth', 'date de naiss', 'birth date', 'birthdate', 'date of birth', 'dob', 'birthday'],
       sexe: ['sexe', 'civilite', 'genre'],
-      email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier'],
-      telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1'],
+      email: ['email', 'e mail', 'mail', 'courriel', 'adresse mail', 'adresse email', 'email cavalier', 'email address', 'adresse e mail'],
+      telephone: ['telephone', 'tel', 'portable', 'mobile', 'tel portable', 'gsm', 'tel mobile', 'telephone portable', 'telephone 1', 'phone', 'phone number', 'mobile phone', 'cell phone', 'numero de telephone'],
       telephone2: ['telephone 2', 'tel fixe', 'fixe', 'tel domicile', 'telephone fixe', 'autre telephone'],
       adresse: ['adresse', 'adresse 1', 'rue', 'adresse postale', 'voie'],
       adresse2: ['adresse 2', 'complement adresse', 'complement'],
-      code_postal: ['code postal', 'cp', 'cp ville'],
-      ville: ['ville', 'commune', 'localite'],
-      licence: ['licence', 'numero licence', 'numero de licence', 'licence ffe', 'n licence', 'num licence', 'numero ffe'],
+      code_postal: ['code postal', 'cp', 'cp ville', 'zip', 'zip code', 'postal code', 'postcode'],
+      ville: ['ville', 'commune', 'localite', 'city', 'town'],
+      licence: ['licence', 'numero licence', 'numero de licence', 'licence ffe', 'n licence', 'num licence', 'numero ffe', 'license', 'license number', 'licence number', 'ffe number', 'ffe licence'],
       licence_annee: ['millesime', 'annee licence', 'saison licence', 'licence valide', 'validite licence', 'licence 2027', 'licence 2026'],
       licence_type: ['type licence', 'categorie licence', 'type de licence'],
       galop: ['galop', 'niveau', 'niveau galop', 'galop obtenu', 'degre'],
@@ -41,17 +41,17 @@ export const TYPES = {
     indices: ['cheval', 'equide', 'poney', 'sire', 'robe', 'race', 'box'],
     champs: {
       id_source: ['id', 'code', 'code cheval', 'ref', 'reference', 'identifiant', 'numero cheval'],
-      nom: ['nom', 'nom cheval', 'nom du cheval', 'cheval', 'equide', 'nom equide', 'poney', 'nom poney', 'monture'],
-      sire: ['sire', 'numero sire', 'n sire', 'numero sire ifce', 'immatriculation'],
-      ueln: ['ueln', 'numero ueln'],
-      puce: ['puce', 'transpondeur', 'numero transpondeur', 'puce electronique', 'microchip'],
+      nom: ['nom', 'nom cheval', 'nom du cheval', 'cheval', 'equide', 'nom equide', 'poney', 'nom poney', 'monture', 'horse name', 'horse', 'pony name', 'name'],
+      sire: ['sire', 'numero sire', 'n sire', 'numero sire ifce', 'immatriculation', 'sire number', 'sire id', 'num sire'],
+      ueln: ['ueln', 'numero ueln', 'ueln number'],
+      puce: ['puce', 'transpondeur', 'numero transpondeur', 'puce electronique', 'microchip', 'chip', 'chip number', 'microchip number', 'transponder', 'numero de puce'],
       naissance: ['date de naissance', 'naissance', 'annee', 'annee de naissance', 'ne en', 'age'],
       sexe: ['sexe'],
-      race: ['race', 'stud book', 'studbook', 'origine'],
-      robe: ['robe', 'couleur'],
-      taille: ['taille', 'toise', 'hauteur', 'taille cm'],
+      race: ['race', 'stud book', 'studbook', 'origine', 'breed'],
+      robe: ['robe', 'couleur', 'coat', 'color', 'colour', 'coat color'],
+      taille: ['taille', 'toise', 'hauteur', 'taille cm', 'height'],
       type: ['type', 'statut', 'categorie', 'utilisation', 'type de cheval', 'appartenance'],
-      proprietaire: ['proprietaire', 'nom proprietaire', 'owner', 'propriétaire'],
+      proprietaire: ['proprietaire', 'nom proprietaire', 'owner', 'propriétaire', 'owner name'],
       box: ['box', 'numero box', 'boxe', 'stalle', 'logement', 'pre'],
       arrivee: ['date arrivee', 'arrive le', 'entree', 'date entree'],
       pension: ['pension', 'formule pension', 'type pension', 'tarif pension'],
@@ -156,6 +156,34 @@ export const TYPES = {
       cout: ['cout', 'montant', 'prix', 'tarif'],
     },
   },
+  stocks: {
+    libelle: 'Stocks, fourrage et pharmacie',
+    indices: ['stock', 'fourrage', 'foin', 'paille', 'granule', 'litiere', 'inventaire', 'pharmacie'],
+    champs: {
+      libelle: ['article', 'produit', 'designation', 'libelle', 'nom', 'item', 'name', 'fourrage', 'aliment'],
+      categorie: ['categorie', 'famille', 'type', 'rayon', 'category'],
+      quantite: ['quantite', 'qte', 'stock', 'en stock', 'stock actuel', 'quantity', 'qty', 'reste'],
+      unite: ['unite', 'conditionnement', 'unit', 'format'],
+      seuil: ['seuil', 'stock mini', 'stock minimum', 'minimum', 'seuil alerte', 'min', 'reorder level'],
+      conso: ['consommation', 'conso jour', 'consommation jour', 'par jour', 'daily'],
+      prix: ['prix', 'prix unitaire', 'pu', 'cout', 'price', 'unit price', 'prix achat'],
+      fournisseur: ['fournisseur', 'supplier', 'vendor'],
+    },
+  },
+  fournisseurs: {
+    libelle: 'Fournisseurs et intervenants',
+    indices: ['fournisseur', 'supplier', 'vendor', 'intervenant', 'praticien'],
+    champs: {
+      nom: ['fournisseur', 'nom', 'raison sociale', 'societe', 'entreprise', 'supplier', 'vendor', 'company', 'nom fournisseur'],
+      categorie: ['categorie', 'activite', 'metier', 'type', 'specialite', 'category'],
+      contact: ['contact', 'interlocuteur', 'nom contact'],
+      email: ['email', 'mail', 'courriel', 'e mail'],
+      telephone: ['telephone', 'tel', 'portable', 'phone', 'mobile'],
+      siret: ['siret', 'siren', 'numero siret'],
+      compte: ['compte', 'compte fournisseur', 'compte auxiliaire', 'code fournisseur'],
+      ville: ['ville', 'city', 'commune'],
+    },
+  },
 };
 
 // Index des synonymes, comparés sous leur forme `cle()`.
@@ -199,7 +227,7 @@ export function devinerType(entetes, nomFichier = '') {
     for (const i of def.indices) { if (nf.includes(i)) sc += 2; if (entetes.some(e => cle(e).includes(i))) sc += 0.5; }
     // champs qui signent un type
     const signes = { adherents: ['licence', 'galop', 'prenom'], chevaux: ['sire', 'robe', 'race', 'puce'], factures: ['numero', 'total_ttc'],
-      reglements: ['moyen', 'montant'], prestations: ['prix_ttc', 'tva'], reprises: ['jour', 'debut', 'moniteur'], equipe: ['poste', 'contrat'], soins: ['cheval', 'type'] }[t];
+      reglements: ['moyen', 'montant'], prestations: ['prix_ttc', 'tva'], reprises: ['jour', 'debut', 'moniteur'], equipe: ['poste', 'contrat'], soins: ['cheval', 'type'], stocks: ['quantite', 'seuil', 'unite'], fournisseurs: ['siret', 'categorie', 'compte'] }[t];
     sc += signes.filter(c => champs.has(c)).length * 1.5;
     return { type: t, score: sc, colonnes };
   }).sort((a, b) => b.score - a.score);

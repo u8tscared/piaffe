@@ -1,0 +1,4 @@
+Numéro;Formule;Montant tarif;Code Promo;Date;Statut;Moyen de paiement;Nom;Prénom;Nom payeur;Prénom payeur;Email payeur;Date de naissance;Email;Téléphone;Code Postal;Ville
+70012;Adhésion annuelle enfant;95,00;;03/09/2026 10:12;Validé;Carte bancaire;Rousseau;Zoé;Rousseau;Claire;claire.rousseau@exemple.fr;14/05/2015;;06 11 22 33 44;78730;Saint-Arnoult
+70013;Adhésion annuelle adulte;140,00;;03/09/2026 18:40;Validé;Carte bancaire;Faure;Paul;Faure;Paul;paul.faure@exemple.fr;02/02/1988;paul.faure@exemple.fr;06 55 44 33 22;78120;Rambouillet
+70014;Adhésion annuelle enfant;95,00;;05/09/2026 09:02;Refusé;Carte bancaire;Lambert;Inès;Lambert;Marc;marc.lambert@exemple.fr;21/11/2016;;;78730;Saint-Arnoult
