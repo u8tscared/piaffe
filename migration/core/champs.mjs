@@ -1,4 +1,4 @@
-// Dictionnaire des colonnes : pour chaque type de fichier, les champs Piaffe et les intitulés qu'on rencontre
+// Dictionnaire des colonnes : pour chaque type de fichier, les champs Stabl et les intitulés qu'on rencontre
 // dans les exports (Kavalog, Equimondo, Cavasoft, FFE, tableurs maison). Les intitulés sont comparés après `cle()`.
 import { cle } from './texte.mjs';
 

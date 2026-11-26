@@ -130,7 +130,7 @@ app.get("/ics/:file", async (c) => {
   const d = await loadClubData(c.env, f.club_id);
   const events = buildEvents(d, f.scope, f.target);
   c.executionCtx.waitUntil(run(c.env.DB, "UPDATE calendar_feeds SET last_used_at = ? WHERE id = ?", nowIso(), f.id).then(() => {}));
-  return new Response(calendar(f.name, events, { alarmMin: f.alarm_minutes, description: `${d.clubName}, calendrier Piaffe` }), {
+  return new Response(calendar(f.name, events, { alarmMin: f.alarm_minutes, description: `${d.clubName}, calendrier Stabl` }), {
     headers: { "content-type": "text/calendar; charset=utf-8", "cache-control": "private, max-age=300", "content-disposition": `inline; filename="piaffe.ics"`, "x-robots-tag": "noindex" },
   });
 });

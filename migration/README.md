@@ -1,10 +1,10 @@
-# Passerelle Piaffe : changer de logiciel sans rien ressaisir
+# Passerelle Stabl : changer de logiciel sans rien ressaisir
 
-La passerelle récupère les données d'un club (cavaliers, familles, chevaux, forfaits, factures, règlements, reprises, soins, équipe) depuis son ancien logiciel et les prépare pour Piaffe. Elle tourne **sur l'ordinateur du club** : rien n'est envoyé tant que le gérant ne clique pas sur « Envoyer », et les fichiers d'origine ne sont jamais modifiés.
+La passerelle récupère les données d'un club (cavaliers, familles, chevaux, forfaits, factures, règlements, reprises, soins, équipe) depuis son ancien logiciel et les prépare pour Stabl. Elle tourne **sur l'ordinateur du club** : rien n'est envoyé tant que le gérant ne clique pas sur « Envoyer », et les fichiers d'origine ne sont jamais modifiés.
 
 Quatre façons de récupérer les données, un seul moteur (`core/`, JavaScript sans dépendance), présentées sur l'écran « Changer de logiciel » (56 logiciels réels rangés par famille, avec leurs logos, et un champ « collez l'adresse de votre logiciel » pour ceux qu'on ne connaît pas) :
 
-1. **Connexion assistée** (`robot/`, `web/robot-distant.mjs`), rien à installer : un navigateur Piaffe côté serveur ouvre l'ancien logiciel, le gérant voit son écran dans la page et s'y connecte (double authentification comprise). Dès qu'il est connecté, le robot parcourt les pages en lecture seule et copie tout, même sur un logiciel inconnu. Il retient le chemin (recette) ; s'il casse, un incident est signalé. Les identifiants tapés ne sont ni stockés ni journalisés ; la session est fermée à la fin de la copie. Essai : `node migration/essais/robot-serveur.cjs`.
+1. **Connexion assistée** (`robot/`, `web/robot-distant.mjs`), rien à installer : un navigateur Stabl côté serveur ouvre l'ancien logiciel, le gérant voit son écran dans la page et s'y connecte (double authentification comprise). Dès qu'il est connecté, le robot parcourt les pages en lecture seule et copie tout, même sur un logiciel inconnu. Il retient le chemin (recette) ; s'il casse, un incident est signalé. Les identifiants tapés ne sont ni stockés ni journalisés ; la session est fermée à la fin de la copie. Essai : `node migration/essais/robot-serveur.cjs`.
 2. **Robot pour ordinateur** (`cli/`) pour les logiciels installés.
 3. **Confiez-nous l'accès** : identifiants chiffrés dans le navigateur, migration faite par notre robot (partie serveur à venir, voir `docs/CODES.md`).
 4. **Fichier** : CSV, Excel, liste FFE, agenda .ics.
@@ -23,7 +23,7 @@ Bonus : lettre de résiliation de l'ancien abonnement, e-mails de bascule pour l
 3. **Remet au propre** : dates (y compris les dates Excel), téléphones au format international, montants « 1 390,00 € », noms en majuscules, numéros de licence FFE et SIRE, moyens de paiement, jours et heures.
 4. **Fusionne** : un même cavalier présent dans l'export Kavalog et dans la liste FFE ne fait qu'une fiche (par licence, puis nom + naissance, puis e-mail). Les familles sont reconstituées (code famille, responsable légal, e-mail commun). Les chevaux sont reliés à leur propriétaire, les factures au payeur, les reprises à leurs cavaliers et à leurs chevaux.
 5. **Contrôle** : liste ce qu'il faut vérifier (mineur sans contact, e-mail illisible, cheval sans SIRE, forfait sans tarif, soin d'un cheval inconnu…) et donne trois chiffres à comparer avec l'ancien logiciel : nombre de cavaliers, de chevaux, reste dû.
-6. **Livre** un `paquet-piaffe.json` (format documenté dans `docs/FORMAT.md`) et un rapport HTML, ou envoie directement au serveur Piaffe par l'API d'import (essai d'abord, puis pour de vrai ; relancer met à jour sans créer de doublons).
+6. **Livre** un `paquet-piaffe.json` (format documenté dans `docs/FORMAT.md`) et un rapport HTML, ou envoie directement au serveur Stabl par l'API d'import (essai d'abord, puis pour de vrai ; relancer met à jour sans créer de doublons).
 
 ## Essayer
 
@@ -37,7 +37,7 @@ node migration/cli/passerelle.mjs convertir migration/fixtures --sortie /tmp/sor
 
 # voir ce qui partirait vers l'API, puis envoyer (essai par défaut)
 node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --apercu
-node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --url https://app.piaffe.fr --cle pk_live_…
+node migration/cli/passerelle.mjs envoyer /tmp/sortie/paquet-piaffe.json --url https://app.stabl.fr --cle pk_live_…
 
 # contrôles
 node migration/test/tests.mjs

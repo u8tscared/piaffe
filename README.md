@@ -1,4 +1,4 @@
-# Piaffe
+# Stabl
 
 La plateforme tout-en-un des centres équestres et des écuries : club, chevaux, pensions, adhérents, planning, facturation, comptabilité, RH, compétitions, coachs, entretien, caméras, assistant IA, API et serveur MCP.
 
@@ -6,7 +6,7 @@ La plateforme tout-en-un des centres équestres et des écuries : club, chevaux,
 
 - `research/` : audit des concurrents (France et international), intégrations et reprise des données, références de design et de mouvement.
 - `demo/` : démo cliquable des quatre vues (gérant, employé, adhérent, coach) sur ordinateur, tablette et téléphone.
-  - `core/` : design system, icônes dessinées pour Piaffe, données de démonstration, moteur.
+  - `core/` : design system, icônes dessinées pour Stabl, données de démonstration, moteur.
   - `modules/` : un fichier par groupe d'écrans.
   - `MODULES.md` : le contrat que suit chaque écran.
   - `tools/build.js` assemble la démo en un seul fichier `demo/dist/piaffe.html`.

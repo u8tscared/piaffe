@@ -1,6 +1,6 @@
 # Consignes communes aux lots
 
-Contexte : Piaffe est un logiciel de gestion pour centres équestres et écuries, vendu par Marceau Ruis (entreprise individuelle, SIREN 934 733 122). Jusqu'ici tout était une démo front simulée (`demo/`). On construit maintenant le vrai logiciel dans `app/`, pour commencer à le vendre à des écuries. Objectifs de Marceau : que **tout fonctionne vraiment**, zéro bug, coût de fonctionnement quasi nul, très bien pensé et optimisé.
+Contexte : Stabl est un logiciel de gestion pour centres équestres et écuries, vendu par Marceau Ruis (entreprise individuelle, SIREN 934 733 122). Jusqu'ici tout était une démo front simulée (`demo/`). On construit maintenant le vrai logiciel dans `app/`, pour commencer à le vendre à des écuries. Objectifs de Marceau : que **tout fonctionne vraiment**, zéro bug, coût de fonctionnement quasi nul, très bien pensé et optimisé.
 
 1. Lis d'abord `app/ARCHITECTURE.md` en entier, puis le socle : `app/api/src/index.ts`, `src/env.ts`, `src/lib/*.ts`, `migrations/0001_init.sql`, `test/helpers.ts`, `test/smoke.test.ts`, `vitest.config.ts`.
 2. Tu n'écris QUE dans les fichiers de ton lot (tableau « Découpage et propriété »). D'autres agents travaillent en même temps dans le même dépôt sur les autres lots. Ne touche jamais au socle ni aux fichiers d'un autre lot ; si tu en as besoin, contourne dans ton lot et note-le dans ton compte rendu.

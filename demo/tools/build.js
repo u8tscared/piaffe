@@ -9,7 +9,7 @@ const use=only?mods.filter(f=>only.split(',').some(o=>f.includes(o))||f.startsWi
 /* un <script> par module : une erreur de syntaxe dans un module n'arrête pas les autres */
 const js=['core/horse.inc.js','core/brand.js','core/icons.js','core/data.js','core/engine.js'].map(rd).join('\n;\n')+'\n</script>\n'+
   use.map(f=>'<script>/* ===== modules/'+f+' ===== */\ntry{\n'+rd('modules/'+f)+'\n}catch(e){console.error("Module '+f+'",e)}\n</script>').join('\n')+'\n<script>P.start();';
-const head=`<title>Piaffe</title>
+const head=`<title>Stabl</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">

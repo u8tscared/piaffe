@@ -7,7 +7,7 @@ import { installBillingHooks } from "./hooks";
 
 /*
  * Lot B · Stripe
- *  - abonnement des clubs à Piaffe (vendeur : Marceau Ruis EI) : /api/billing/*, /admin/billing/*
+ *  - abonnement des clubs à Stabl (vendeur : Marceau Ruis EI) : /api/billing/*, /admin/billing/*
  *  - paiements des adhérents vers leur club (Stripe Connect, direct charges) : /api/connect/*, /api/pay/*
  *  - webhooks : /webhooks/stripe (plateforme), /webhooks/stripe-connect (comptes connectés)
  * Pour les autres lots : requireActivePlan et planAccess dans ./access.

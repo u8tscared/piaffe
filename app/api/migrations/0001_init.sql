@@ -1,4 +1,4 @@
--- Piaffe · schéma initial (D1 / SQLite)
+-- Stabl · schéma initial (D1 / SQLite)
 -- Règles : identifiants texte (préfixe + aléatoire), dates en ISO 8601 UTC (TEXT),
 -- montants en centimes (INTEGER), JSON en TEXT. Chaque table métier porte club_id.
 -- Les autres lots ajoutent leurs tables dans leurs propres migrations (0002_auth, 0003_billing,
@@ -41,7 +41,7 @@ CREATE TABLE users (
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 
--- Rôles : owner (gérant titulaire, facturation Piaffe), manager (gérant), staff (employé),
+-- Rôles : owner (gérant titulaire, facturation Stabl), manager (gérant), staff (employé),
 -- coach, member (adhérent, parent, propriétaire), accountant (comptable, lecture + exports).
 CREATE TABLE memberships (
   user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

@@ -1,4 +1,4 @@
-/* Piaffe · landing v4. Rendu des sections répétitives, onglets, chat Piaffe AI, apparitions. */
+/* Stabl · landing v4. Rendu des sections répétitives, onglets, chat Stabl AI, apparitions. */
 (function(){
 'use strict';
 var D=document,R=D.documentElement,$=function(s,c){return (c||D).querySelector(s)},$$=function(s,c){return [].slice.call((c||D).querySelectorAll(s))};
@@ -29,7 +29,7 @@ R.classList.add('js');
 /* c : [x,y,l,h] en pixels de l’écran d’origine ; m : recadrage téléphone */
 function cropStyle(c,m,iw){var s='--dx:'+c[0]+';--dy:'+c[1]+';--dw:'+c[2]+';--dh:'+c[3];if(m)s+=';--mx:'+m[0]+';--my:'+m[1]+';--mw:'+m[2]+';--mh:'+m[3];if(iw)s+=';--iw:'+iw;return s}
 function img(n,alt,tab){return '<img src="'+SH+n+'.webp" width="'+(tab?1770:2160)+'" height="'+(tab?1230:1350)+'" loading="lazy" alt="'+(alt||'')+'">'}
-function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.piaffe.fr/les-tilleuls</span></div>'}
+function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.stabl.fr/les-tilleuls</span></div>'}
 /* iPhone : n = une capture ou une liste de captures empilées ; o.duo = capture sombre disponible */
 var IOS='<svg viewBox="0 0 78 13" aria-hidden="true"><rect x="0" y="8" width="3.2" height="4.6" rx=".9"/><rect x="4.9" y="5.6" width="3.2" height="7" rx=".9"/><rect x="9.8" y="3" width="3.2" height="9.6" rx=".9"/><rect x="14.7" y=".4" width="3.2" height="12.2" rx=".9"/><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M24.4 4.7a11.2 11.2 0 0 1 15.6 0"/><path d="M27.4 7.7a7 7 0 0 1 9.6 0"/></g><circle cx="32.2" cy="10.8" r="1.6"/><rect x="48.5" y=".9" width="24.5" height="11.6" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="50.2" y="2.6" width="21.1" height="8.2" rx="2.2"/><path d="M74.6 4.8v3.8c.8-.3 1.4-1 1.4-1.9s-.6-1.6-1.4-1.9z" opacity=".45"/></svg>';
 function tel(n,alt,o){o=o||{};var L=[].concat(n),ims=L.map(function(x,i){var lz=o.vite?'':' loading="lazy"';
@@ -48,14 +48,14 @@ var BW={
  pt:'<div class="bw bw-pt">'+['MD','HL','IG','KB'].map(function(a,k){return '<span class="av">'+a+'<i style="--k:'+(k+1)+'"></i></span>'}).join('')+'<small>6 sur 9 ont pointé ce matin</small></div>',
  sp:'<div class="bw bw-sp"><span><b data-n="86">86</b> % de remplissage</span><span class="ecg lent">'+SPK+'<i></i></span></div>',
  ia:'<div class="bw"><span class="mini-orb"></span><span>« Qui n’a pas payé ce mois-ci ? »</span><span class="pts-ia"><i></i><i></i><i></i></span></div>',
- pf:'<div class="bw bw-pf"><span class="nd">Banque</span><span class="fil"><i></i></span><span class="nd c">Piaffe</span><span class="fil"><i></i></span><span class="nd">Comptable</span></div>'};
+ pf:'<div class="bw bw-pf"><span class="nd">Banque</span><span class="fil"><i></i></span><span class="nd c">Stabl</span><span class="fil"><i></i></span><span class="nd">Comptable</span></div>'};
 var BENTO=[
  ['rd','members','Club','Reprises, cavaliers, familles, concours','#m-planning',7,[['planning','Planning'],['saddle','Montoir'],['members','Adhérents et familles'],['stable','Pensions'],['coach','Coachs'],['trophy','Compétitions'],['shop','Boutique et stages'],['chat','Communication']],'rep'],
  ['hz','horse','Écurie','Chaque cheval suivi, chaque box visible','#m-chevaux',5,[['horse','Chevaux'],['care','Soins'],['feed','Alimentation'],['cube','Plan 3D'],['camera','Caméras et capteurs'],['upkeep','Entretien et stocks']],'ecg'],
  ['mo','euro','Argent','De la facture à la TVA','#m-facturation',5,[['invoice','Facturation'],['doc','Devis'],['accounting','Comptabilité'],['percent','TVA'],['bank','Banque'],['sign','Contrats signés']],'fac'],
  ['tm','team','Équipe','Une vraie RH d’écurie','#m-equipe',3,[['team','Planning'],['clockin','Pointage'],['holiday','Congés'],['wallet','Paie']],'pt'],
  ['acc','today','Pilotage','Tout voir en un coup d’œil','#espaces',4,[['today','Tableau de bord du matin'],['report','Rapports'],['search','Recherche partout']],'sp'],
- ['ia','spark','Piaffe AI','Posez la question, il lit vos chiffres','#ai',7,[['chat','Questions en français'],['checkc','Actions validées par vous'],['sun','Point du matin'],['repeat','Automatisations'],['plug','Dans Claude et ChatGPT']],'ia'],
+ ['ia','spark','Stabl AI','Posez la question, il lit vos chiffres','#ai',7,[['chat','Questions en français'],['checkc','Actions validées par vous'],['sun','Point du matin'],['repeat','Automatisations'],['plug','Dans Claude et ChatGPT']],'ia'],
  ['pf','plug','Plateforme','Ouverte et sous contrôle','#connecteurs',5,[['plug','72 connecteurs'],['import','Reprise des données'],['api','API publique'],['wifi','Hors ligne'],['settings','Réglages']],'pf']
 ];
 put($('#bento'),BENTO.map(function(b,i){return '<a class="bt '+(b[0]==='ia'?'ia':'d-'+b[0])+'" href="'+b[4]+'" style="--s:'+b[5]+';--i:'+(i%3)+'" data-r><div class="bt-h"><span class="bt-i">'+I(b[1])+'</span><div><h3>'+b[2]+'</h3><small>'+b[3]+'</small></div><span class="bt-go">'+I('arrow')+'</span></div><div class="pil">'+b[6].map(function(p){return '<span>'+I(p[0])+p[1]+'</span>'}).join('')+'</div>'+BW[b[7]]+'</a>'}).join(''));
@@ -64,7 +64,7 @@ put($('#bento'),BENTO.map(function(b,i){return '<a class="bt '+(b[0]==='ia'?'ia'
 function vue(n,alt,c,iw){return '<div class="vue"><div class="crop" style="'+cropStyle(c,null,iw)+'">'+img(n,alt,iw)+'</div></div>'}
 var ESP=[
  {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',qui:'Claire Dumont, gérante',t:'Toute l’écurie sous les yeux, chaque matin.',p:'Le tableau de bord dit ce qui demande une décision aujourd’hui. Les rapports répondent au reste : chiffre d’affaires, remplissage, rentabilité.',c:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',
-  l:['Résumé du matin et actions en un geste','Planning, chevaux, adhérents, facturation, équipe','Rapports clairs sur 12 mois','Piaffe AI sur chaque écran'],r:'cockpit',cta:'Ouvrir l’espace gérant',tel:'p-g-cockpit',
+  l:['Résumé du matin et actions en un geste','Planning, chevaux, adhérents, facturation, équipe','Rapports clairs sur 12 mois','Stabl AI sur chaque écran'],r:'cockpit',cta:'Ouvrir l’espace gérant',tel:'p-g-cockpit',
   lab:['today','Le même tableau de bord, sur ordinateur'],v:vue('g-cockpit','Indicateurs du tableau de bord du gérant',[854,196,566,393])},
  {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',qui:'Antoine Leroy, palefrenier soigneur',t:'Sa journée, box après box.',p:'Palefreniers et moniteurs voient quoi faire maintenant, cochent les boxes d’un geste et signalent un souci avec une photo. Même sans réseau.',c:'Quoi faire maintenant, box après box. Même sans réseau.',
   l:['Tournée des boxes, soins et rations du jour','Consignes de la gérante, lues et confirmées','Pointage par appui maintenu','Fonctionne hors ligne, synchronise ensuite'],r:'emp-jour',cta:'Ouvrir l’espace employé',tel:'p-emp-tournee',
@@ -80,7 +80,7 @@ function coches(l,k){return '<ul class="coches'+(k?' '+k:'')+'">'+l.map(function
 put($('#esp'),'<div class="esp-tabs" role="tablist" aria-label="Les quatre espaces"><span class="esp-g"></span>'+ESP.map(function(e,i){return '<button type="button" role="tab" id="et-'+e.id+'" aria-controls="ep-'+e.id+'" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'" class="d-'+e.d+'"><span class="et-i">'+I(e.ic)+'</span><span><b>'+e.n+'</b><small>'+e.ap+'</small></span></button>'}).join('')+'<span class="esp-pr"><i></i></span></div>'+
  '<div class="pin-p"><div class="pin-bg" aria-hidden="true">'+ESP.map(function(e,i){return '<i class="d-'+e.d+(i?'':' on')+'"></i>'}).join('')+'</div><div class="pin-g">'+
  '<div class="pin-tx">'+ESP.map(function(e,i){return '<div class="pin-t d-'+e.d+(i?'':' on')+'" role="tabpanel" id="ep-'+e.id+'" aria-labelledby="et-'+e.id+'"><span class="esp-qui">'+I(e.ic)+e.qui+'</span><h3>'+e.t+'</h3><p>'+e.p+'</p><p class="court">'+e.c+'</p>'+coches(e.l,'coches-m')+'<a class="btn pri" '+demo(e.r)+'>'+e.cta+I('arrow')+'</a></div>'}).join('')+'</div>'+
- '<div class="pin-ph">'+tel(ESP.map(function(e){return e.tel}),'Les quatre espaces de Piaffe sur téléphone')+'</div>'+
+ '<div class="pin-ph">'+tel(ESP.map(function(e){return e.tel}),'Les quatre espaces de Stabl sur téléphone')+'</div>'+
  '<div class="pin-dx">'+ESP.map(function(e,i){return '<div class="pin-d d-'+e.d+(i?'':' on')+'"'+(i?' aria-hidden="true"':'')+'><p class="pin-lab">'+I(e.lab[0])+e.lab[1]+'</p>'+e.v+coches(e.l)+'</div>'}).join('')+'</div></div></div>');
 (function(){var pin=$('#pin'),st=$('.pin-st'),tabs=$$('.esp-tabs button'),g=$('.esp-g'),pr=$('.esp-pr i'),L=[$$('.pin-t'),$$('.pin-d'),$$('.pin-ph .ip-s img'),$$('.pin-bg i')],cur=0,tick=false;
   function set(i){if(i===cur)return;var dir=i>cur?1:-1;
@@ -102,17 +102,17 @@ put($('#esp'),'<div class="esp-tabs" role="tablist" aria-label="Les quatre espac
    an : [x, y, l, h, libellé] d’un élément de l’écran, entouré ; ch : chiffres clés [valeur, unité, libellé] */
 var MODS=[
  {id:'planning',d:'rd',ic:'planning',n:'Planning et reprises',h:['Le planning se remplit,','et il ménage vos chevaux.'],
-  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes. Piaffe attribue les chevaux selon le niveau et la charge de chacun, et gère absences, rattrapages et liste d’attente.',
+  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes. Stabl attribue les chevaux selon le niveau et la charge de chacun, et gère absences, rattrapages et liste d’attente.',
   u:[['Le montoir se compose tout seul','Chaque cavalier reçoit un cheval à son niveau, sans dépasser la charge de la semaine.'],['Rattrapages et liste d’attente','Une place se libère, le premier de la liste est prévenu et réserve en un geste.'],['L’appel sur le téléphone','Le moniteur pointe les présents en carrière, les séances se décomptent seules.']],
   r:'planning',shot:'g-planning',alt:'Planning de la semaine du 16 au 22 novembre',c:[276,0,1164,900],f:1,m:[300,340,518,560],
   an:[[660,218,187,46,'Remplissage suivi en direct'],[521,646,147,84,'Léa et Ulysse, cours avec Pauline']],ch:[[23,'','reprises cette semaine'],[200,'','cavaliers en selle'],[85,' %','de remplissage']]},
  {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',h:['Chaque cheval suivi,','rien n’est oublié.'],
   p:'Une fiche par cheval : identité SIRE, soins, ferrure, vermifuges, travail de la semaine, ration, coûts et journal partagé avec le propriétaire.',
-  u:[['Rappels de soins automatiques','Vaccins, vermifuges, maréchal, dentiste : les échéances se regroupent en tournées.'],['Charge de travail surveillée','Piaffe signale les chevaux au-dessus de leur seuil, avant la blessure.'],['Le propriétaire voit tout','Journal, soins et factures de son cheval, depuis son téléphone.']],
+  u:[['Rappels de soins automatiques','Vaccins, vermifuges, maréchal, dentiste : les échéances se regroupent en tournées.'],['Charge de travail surveillée','Stabl signale les chevaux au-dessus de leur seuil, avant la blessure.'],['Le propriétaire voit tout','Journal, soins et factures de son cheval, depuis son téléphone.']],
   r:'chevaux',shot:'g-chevaux',alt:'Chevaux : 44 chevaux et poneys, 8 à surveiller',c:[276,0,1164,734],m:[854,178,566,559],
   an:[[866,190,263,279,'Tornado et Xanthos, à surveiller'],[1145,190,263,279,'Charge de travail par cheval']],ch:[[44,'','chevaux et poneys suivis'],[8,'','à surveiller cette semaine'],[415,' €','de coût moyen par mois']]},
  {id:'ecurie',d:'tm',ic:'camera',n:'Écurie connectée',h:['L’écurie en direct,','même la nuit.'],
-  p:'Caméras de box, abreuvoirs, sondes et silo sont reliés. Piaffe croise les signaux et vous prévient quand quelque chose sort de l’habitude. Le plan 3D montre qui occupe chaque box.',
+  p:'Caméras de box, abreuvoirs, sondes et silo sont reliés. Stabl croise les signaux et vous prévient quand quelque chose sort de l’habitude. Le plan 3D montre qui occupe chaque box.',
   u:[['Alerte avant la colique','Xanthos se couche souvent et boit 40 % de moins : l’équipe est prévenue aussitôt.'],['Rations et stocks reliés','44 rations individuelles, 16 jours de foin d’avance, la commande au bon moment.'],['Plan de l’écurie en 3D','Boxes occupés, paddocks, places libres : tout se lit d’un coup d’œil.']],
   r:'cameras',shot:'g-cameras',alt:'Caméras et capteurs : alerte sur Xanthos, box B23',c:[276,0,1164,892],m:[296,430,528,465],
   an:[[308,255,1100,113,'Caméra et abreuvoir, le même signal'],[567,442,245,138,'Box B23 en direct']],ch:[[8,'','caméras en ligne'],[6,'','capteurs reliés'],[16,' jours','de foin d’avance']]},
@@ -123,12 +123,12 @@ var MODS=[
   an:[[308,411,614,404,'Inscriptions validées en un geste'],[936,411,472,404,'138 licences prêtes en un lot']],ch:[[148,'','adhérents'],[119,'','familles'],[25,'','chevaux en pension']]},
  {id:'facturation',d:'mo',ic:'invoice',n:'Facturation et comptabilité',h:['Les factures du mois,','en un seul geste.'],
   p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, prélèvement SEPA, chèques-vacances, espèces : chaque paiement retrouve sa facture, puis sa ligne de banque.',
-  u:[['Facturation préparée par Piaffe','69 factures prêtes pour décembre : vous vérifiez, vous envoyez.'],['Relances automatiques','7 factures en retard, 7 relances prêtes. Le lien de paiement est dans le message.'],['Comptabilité sans double saisie','Banque rapprochée, TVA préparée, export FEC, accès pour votre expert-comptable.']],
+  u:[['Facturation préparée par Stabl','69 factures prêtes pour décembre : vous vérifiez, vous envoyez.'],['Relances automatiques','7 factures en retard, 7 relances prêtes. Le lien de paiement est dans le message.'],['Comptabilité sans double saisie','Banque rapprochée, TVA préparée, export FEC, accès pour votre expert-comptable.']],
   r:'facturation',shot:'g-facturation',alt:'Facturation : 69 factures prêtes pour 18 292 €',c:[276,0,1164,662],m:[638,415,526,248],
   an:[[308,213,1100,200,'69 factures, un seul envoi'],[908,427,243,224,'Relances déjà parties']],ch:[[69,'','factures prêtes pour décembre'],[31846,' €','encaissés en novembre'],[93,' %','payés à l’échéance']]},
  {id:'equipe',d:'tm',ic:'team',n:'Équipe et pointage',h:['Plannings, pointage et paie,','enfin réunis.'],
   p:'Chacun pointe en maintenant le doigt sur son téléphone. Heures supplémentaires, congés, diplômes et convention collective des centres équestres sont suivis. La paie part vers votre logiciel.',
-  u:[['Pointage au téléphone','Un appui long, la position est vérifiée. Fini les feuilles à recopier.'],['Échéances suivies','Carte professionnelle, PSC1, fin de CDD : Piaffe prévient et prépare la suite.'],['Export vers la paie','Les heures du mois partent vers PayFit ou Silae, sans ressaisie.']],
+  u:[['Pointage au téléphone','Un appui long, la position est vérifiée. Fini les feuilles à recopier.'],['Échéances suivies','Carte professionnelle, PSC1, fin de CDD : Stabl prévient et prépare la suite.'],['Export vers la paie','Les heures du mois partent vers PayFit ou Silae, sans ressaisie.']],
   r:'equipe',shot:'g-equipe',alt:'Équipe : 6 salariés sur 9 en poste ce matin, échéances à traiter',c:[276,0,1164,885],m:[296,201,609,251],
   an:[[308,213,328,227,'6 sur 9 en poste, pointés au téléphone'],[1181,608,205,38,'Renouvellement préparé']],ch:[[9,'','personnes dans l’équipe'],[262,' h 30','planifiées cette semaine'],[7,'','points à traiter']]},
  {id:'concours',d:'mo',ic:'trophy',n:'Compétitions et coachs',h:['Qui emmène qui ?','Réglé en glissant.'],
@@ -152,7 +152,7 @@ put($('#mods'),MODS.map(function(m,i){var n=('0'+(i+1)).slice(-2),
    '<div class="mod-f"><a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a></div></div>'+
    '<div class="mod-v"><div class="stage"><figure class="nav-frame">'+barre()+'<div class="shot" style="'+cropStyle(m.c,m.m)+'"><div class="crop'+(m.f?' fade':'')+'">'+img(m.shot,m.alt)+'</div>'+ans+'</div></figure>'+(m.mt?tel(m.mt[0],m.mt[1],{k:'mod-ip'}):'')+'</div><ul class="legendes">'+leg+'</ul></div></article>'}).join(''));
 
-/* ---------- Piaffe AI : questions et réponses, chiffres de la démo ---------- */
+/* ---------- Stabl AI : questions et réponses, chiffres de la démo ---------- */
 function tb(h,rows,plus){return '<div class="b-carte"><table><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(x){return '<td>'+x+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+(plus?'<div class="plus">'+plus+'</div>':'')+'</div>'}
 function bar(v,max){return '<span class="bar'+(v>max*.85?' h':'')+'"><i style="width:'+Math.min(100,Math.round(v/max*100))+'%"></i></span>'}
 var QA=[
@@ -185,11 +185,11 @@ put($('#aiQs'),QA.map(function(x,i){return '<button type="button" data-q="'+i+'"
   function carte(a){var c=add('<div class="b-act"><h4>'+I('checkc')+a.t+'</h4><dl>'+a.r.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('')+'</dl><div class="bts"><button type="button" class="btn pri sm" data-v>Valider</button><button type="button" class="btn sec sm" data-m>Modifier</button></div></div>');
     function attente(){$('[data-v]',c).addEventListener('click',function(){c.classList.add('fait');$('.bts',c).outerHTML=nb('<div class="b-fait"><span>'+a.ok+'. Noté au journal.</span><button type="button" data-u>Annuler</button></div>');var n=$('.note',c);if(n)n.remove();
         $('[data-u]',c).addEventListener('click',function(){c.classList.remove('fait');$('.b-fait',c).outerHTML='<div class="bts"><button type="button" class="btn pri sm" data-v>Valider</button><button type="button" class="btn sec sm" data-m>Modifier</button></div>';attente()});bas()});
-      $('[data-m]',c).addEventListener('click',function(){if($('.note',c))return;c.insertAdjacentHTML('beforeend',nb('<p class="note">Dans Piaffe, vous modifiez le message, les destinataires ou le canal avant de valider. Rien ne part sans vous.</p>'));bas()})}
+      $('[data-m]',c).addEventListener('click',function(){if($('.note',c))return;c.insertAdjacentHTML('beforeend',nb('<p class="note">Dans Stabl, vous modifiez le message, les destinataires ou le canal avant de valider. Rien ne part sans vous.</p>'));bas()})}
     attente()}
   function poser(i,texte){var x=QA[i],t=++tok;btns.forEach(function(b,k){b.setAttribute('aria-pressed',k===i)});fil.innerHTML='';
     (async function(){add('<div class="b-moi">'+(texte||x.q)+'</div>');await w(450,t);
-      var o=add('<div class="b-outil"><span class="rond"></span><span>Piaffe AI lit vos données…</span></div>');await w(900,t);
+      var o=add('<div class="b-outil"><span class="rond"></span><span>Stabl AI lit vos données…</span></div>');await w(900,t);
       o.innerHTML=nb(I('check')+'<span>A lu <b>'+x.lu+'</b></span>');await w(250,t);
       var p=add('<div class="b-ia"></div>'),ms=mots(p,x.t);for(var k=0;k<ms.length;k++){ms[k].classList.add('v');if(!RM&&k%2)await w(34,t)}
       await w(250,t);add(x.c);await w(500,t);carte(x.a)})().catch(function(){})}
@@ -202,15 +202,15 @@ put($('#aiQs'),QA.map(function(x,i){return '<button type="button" data-q="'+i+'"
   /* première question jouée quand le chat entre à l’écran */
   if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();if(!joue)poser(0)}},{threshold:.35}).observe($('#chat'))}else poser(0)})();
 
-/* ---------- Piaffe AI : capacités 01 à 04, point du matin ---------- */
+/* ---------- Stabl AI : capacités 01 à 04, point du matin ---------- */
 var CAPS=[
  ['mo','01 · Vos questions, vos chiffres','Demandez en français, il lit vos données.','Pas de menu à trouver ni de rapport à construire. Vous posez la question comme à un collègue.',
   [['chat','Combien me coûte Ulysse ?'],['chat','Où en sont les stocks de foin ?'],['chat','Quels adhérents n’ont pas leur licence 2027 ?']]],
- ['hz','02 · Il propose, vous décidez','Chaque action attend votre accord.','Piaffe AI prépare, vous montre l’aperçu, puis agit. Tout est noté au journal, avec le nom de qui a validé.',
+ ['hz','02 · Il propose, vous décidez','Chaque action attend votre accord.','Stabl AI prépare, vous montre l’aperçu, puis agit. Tout est noté au journal, avec le nom de qui a validé.',
   [['checkc','7 relances envoyées','9 h 32 · Claire'],['checkc','Montoir rééquilibré sur 4 reprises','Lundi · Claire'],['shield','Droits : gérante, rien de plus','']]],
- ['rd','03 · « Optimise ma semaine »','Les actions classées par gain.','En une demande, Piaffe AI cherche l’argent qui dort dans vos données et vous le présente du plus gros au plus petit.',
+ ['rd','03 · « Optimise ma semaine »','Les actions classées par gain.','En une demande, Stabl AI cherche l’argent qui dort dans vos données et vous le présente du plus gros au plus petit.',
   [[1,'Refacturer 41 soins aux propriétaires','2 552 €'],[2,'Relancer 7 factures en retard','2 073 €'],[3,'Louer le box B45 qui est libre','520 € par mois'],[4,'Remplir 9 places de samedi','261 €']]],
- ['tm','04 · L’IA dans vos écrans','Elle travaille là où vous êtes.','Pas besoin d’ouvrir une conversation : Piaffe AI lit, écoute et prépare directement dans vos écrans.',
+ ['tm','04 · L’IA dans vos écrans','Elle travaille là où vous êtes.','Pas besoin d’ouvrir une conversation : Stabl AI lit, écoute et prépare directement dans vos écrans.',
   [['scan','Factures et ordonnances lues en photo',''],['mic','Soins dictés à la voix, gants aux mains',''],['repeat','Le point sur les impayés, chaque lundi à 8 h','']]]
 ];
 put($('#caps'),CAPS.map(function(c,i){return '<article class="cap d-'+c[0]+'" style="--i:'+(i%2)+'" data-r><div><p class="cap-n">'+c[1]+'</p><h4>'+c[2]+'</h4><p>'+c[3]+'</p></div><div class="mm">'+c[4].map(function(r){return '<div>'+(typeof r[0]==='number'?'<span class="rg">'+r[0]+'</span>':I(r[0]))+'<span>'+(i===0?'« '+r[1]+' »':r[1])+'</span>'+(r[2]?(i===2?'<em>+ '+r[2]+'</em>':'<small>'+r[2]+'</small>'):'')+'</div>'}).join('')+'</div></article>'}).join(''));
@@ -226,17 +226,17 @@ var DEMO=[['acc','today','Gérant',[['cockpit','Tableau de bord'],['planning','P
  ['mo','coach','Coach',[['coach-agenda','Agenda'],['coach-eleves','Élèves'],['coach-revenus','Revenus']]]];
 put($('#demoL'),DEMO.map(function(d){return '<div class="dm d-'+d[0]+'"><div class="dm-q"><span>'+I(d[1])+'</span>'+d[2]+'</div><div class="dm-r">'+d[3].map(function(r){return '<a '+demo(r[0])+'>'+r[1]+I('arrow')+'</a>'}).join('')+'</div></div>'}).join(''));
 var CONN=[['hz','En direct','Branché une fois, à jour tout seul',[['Paiement','Stripe, GoCardless, SumUp'],['Banque','Qonto, relevés bancaires'],['Comptabilité','Pennylane, export FEC'],['Signature','Yousign'],['Paie','PayFit, export de paie'],['Messages','Brevo, WhatsApp Business'],['Agenda','Google Agenda, Apple Calendrier'],['Écurie','Caméras ONVIF, capteurs, abreuvoirs'],['IA','Claude, ChatGPT, serveur MCP']]],
- ['mo','Par import ou export assisté','Piaffe prépare le fichier, vous validez',[['FFE','Club SIF, FFE Compet, déclaration de concours'],['Aides','Pass’Sport'],['Reprise','Kavalog, Equimondo, Equionline'],['Autres logiciels','GCE, Horse-Manager, AssoConnect, HelloAsso'],['Fichiers','Excel, CSV, photos et PDF'],['Public','SIRE, IFCE, registre d’élevage']]],
+ ['mo','Par import ou export assisté','Stabl prépare le fichier, vous validez',[['FFE','Club SIF, FFE Compet, déclaration de concours'],['Aides','Pass’Sport'],['Reprise','Kavalog, Equimondo, Equionline'],['Autres logiciels','GCE, Horse-Manager, AssoConnect, HelloAsso'],['Fichiers','Excel, CSV, photos et PDF'],['Public','SIRE, IFCE, registre d’élevage']]],
  ['pf','Au catalogue, à connecter','Prêts à être activés selon vos outils',[['Paiement','Mollie, Zettle, Alma'],['Banque','Bridge, Powens'],['Comptabilité','Tiime, Cegid, Sage, EBP, Isagri'],['Paie','Silae, Lucca, Combo, Skello'],['Capteurs','Seaver, Equisense, Arioneo'],['Facture publique','Chorus Pro'],['Automatisation','Zapier, Make, n8n']]]];
 put($('#connG'),CONN.map(function(c,i){return '<div class="cn d-'+c[0]+'" style="--i:'+i+'" data-r><div class="cn-h"><i></i><h3>'+c[1]+'</h3></div><p style="color:var(--mut);font-size:14.5px;margin:10px 0 4px">'+c[2]+'</p><dl>'+c[3].map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('')+'</dl></div>'}).join(''));
-var ETAPES=[['acc','10 minutes','Créez votre écurie','Pistes, boxes, forfaits, tarifs : huit étapes guidées, et vos modules s’activent un par un.'],['hz','Une après‑midi','Reprenez vos données','Déposez vos exports tels quels. Piaffe relie les colonnes et repère les doublons, nous vérifions avec vous.'],['rd','Un lien','Invitez l’équipe et les cavaliers','Chacun reçoit son lien et son espace. Gérant, employé, adhérent, coach : tous sont guidés à la première ouverture.']];
+var ETAPES=[['acc','10 minutes','Créez votre écurie','Pistes, boxes, forfaits, tarifs : huit étapes guidées, et vos modules s’activent un par un.'],['hz','Une après‑midi','Reprenez vos données','Déposez vos exports tels quels. Stabl relie les colonnes et repère les doublons, nous vérifions avec vous.'],['rd','Un lien','Invitez l’équipe et les cavaliers','Chacun reçoit son lien et son espace. Gérant, employé, adhérent, coach : tous sont guidés à la première ouverture.']];
 put($('#etapes'),ETAPES.map(function(e,i){return '<li class="d-'+e[0]+'" style="--i:'+i+'" data-r><div class="et-n"><span class="et-d">'+I('clock')+e[1]+'</span></div><h3>'+e[2]+'</h3><p>'+e[3]+'</p></li>'}).join(''));
 put($('#srcL'),['Kavalog','Equimondo','Equionline','GCE et Horse-Manager','AssoConnect et HelloAsso','FFE Club SIF','Excel ou CSV','Photo ou PDF'].map(function(s){return '<span>'+s+'</span>'}).join(''));
 put($('#rempL'),[['doc','Cahier de monte'],['grid','Tableur des adhérents'],['chat','Groupes de discussion'],['folder','Classeur des contrats'],['invoice','Logiciel de facturation'],['calendar_add','Agenda papier'],['list','Tableau blanc'],['clockin','Feuilles de pointage'],['care','Carnet de soins'],['camera','Application caméra'],['flag','Sondage des concours'],['bank','Relevés à pointer']].map(function(o){return '<li>'+I(o[0])+o[1]+'</li>'}).join(''));
 
 /* ---------- Tarifs ---------- */
 var OFFRES=[['Essentiel','Pour démarrer : poney-club, petite écurie',59,49,['Planning, montoir et réservations','Adhérents, familles et licences FFE','Facturation, devis et paiements','Contrats signés au doigt','Espaces adhérent et employé'],0],
- ['Écurie','Pour le centre équestre complet',149,124,['Tout Essentiel, plus :','Chevaux, soins, plan 3D, entretien','Comptabilité, TVA, équipe et pointage','Compétitions, coachs et boutique','Piaffe AI et serveur MCP','8 caméras et capteurs inclus'],1],
+ ['Écurie','Pour le centre équestre complet',149,124,['Tout Essentiel, plus :','Chevaux, soins, plan 3D, entretien','Comptabilité, TVA, équipe et pointage','Compétitions, coachs et boutique','Stabl AI et serveur MCP','8 caméras et capteurs inclus'],1],
  ['Réseau','Pour plusieurs sites ou un grand domaine',289,241,['Tout Écurie, plus :','Plusieurs sites, un seul compte','API sans limite d’appels','Accompagnement dédié','Caméras sans limite'],0]];
 function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o[5]?' vedette':'')+'">'+(o[5]?'<span class="of-tag">La plus choisie</span>':'')+'<h3>'+o[0]+'</h3><p class="of-p">'+o[1]+'</p><div class="of-prix"><b>'+(an?o[3]:o[2])+'</b><span class="of-u">€ HT<br>par mois</span></div><p class="of-an">'+(an?'Soit '+(o[2]*10).toLocaleString('fr-FR')+' € HT par an, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p><a class="btn '+(o[5]?'blanc':'sec')+'" '+demo('cockpit')+'>Essayer la démo'+I('arrow')+'</a><ul>'+o[4].map(function(l,k){return k===0&&i?'<li class="t">'+l+'</li>':'<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul></article>'}).join(''))}
 offres(false);
@@ -244,19 +244,19 @@ offres(false);
 
 /* ---------- Comparatif ---------- */
 var CMP=[['Prix public, sans engagement ni frais d’entrée','','Engagement de 24 mois et frais de mise à disposition chez certains acteurs installés',0],['Chevaux et utilisateurs illimités','','Tarifs par paliers de cavaliers, de chevaux ou de boxes',0],['Un espace pour chacun des quatre profils','Gérant, employé, adhérent, coach','Applications rares ; les plus diffusées sont notées 3,6 sur 5',0],['Fonctionne hors ligne','Tournée, soins, pointage','Non annoncé par les éditeurs étudiés',0],['Une vraie gestion de l’équipe','Pointage, congés, export de paie','Au mieux un planning du personnel',0],['Comptabilité au-delà de l’export','Banque, TVA, FEC, expert-comptable','Le plus souvent un simple export comptable',0],['Entretien des installations','Tâches, signalements, contrôles','Aucun éditeur ne le traite',0],['Concours organisés au club, qui emmène qui','','Rare : un seul éditeur va jusqu’aux résultats en direct',0],['Caméras et capteurs intégrés','','Annoncés par quelques nouveaux venus seulement',0],['Une IA qui agit, reliée à Claude et ChatGPT','','Assistants génériques ou analyse de photo',0],['API publique et export complet','','Aucune API publique trouvée',0],['Facturation électronique (Factur-X)','','Répandue : la plupart des éditeurs la proposent',1],['Planning, réservation en ligne, fiche cheval','','Proposés partout, c’est la base',1]];
-put($('#cmp'),'<div class="cmp-l cmp-h"><div class="q"></div><div class="p">'+window.LOGO(22,'currentColor','var(--acc)')+'Piaffe</div><div class="m">Logiciels du marché</div></div>'+CMP.map(function(c){return '<div class="cmp-l"><div class="q">'+c[0]+(c[1]?'<small>'+c[1]+'</small>':'')+'</div><div class="p">'+I('check')+'<span>Inclus</span></div><div class="m'+(c[3]?' oui':'')+'">'+I(c[3]?'check':'minus')+'<span>'+c[2]+'</span></div></div>'}).join(''));
+put($('#cmp'),'<div class="cmp-l cmp-h"><div class="q"></div><div class="p">'+window.LOGO(22,'currentColor','var(--acc)')+'Stabl</div><div class="m">Logiciels du marché</div></div>'+CMP.map(function(c){return '<div class="cmp-l"><div class="q">'+c[0]+(c[1]?'<small>'+c[1]+'</small>':'')+'</div><div class="p">'+I('check')+'<span>Inclus</span></div><div class="m'+(c[3]?' oui':'')+'">'+I(c[3]?'check':'minus')+'<span>'+c[2]+'</span></div></div>'}).join(''));
 
 /* ---------- FAQ ---------- */
 var FAQ=[['Combien de temps faut-il pour démarrer ?','Une après‑midi. La mise en route de l’écurie tient en 8 étapes, environ 10 minutes, et la reprise de vos données se fait en 5 étapes. Nous la faisons avec vous, gratuitement, depuis Kavalog, Equimondo, Excel, FFE Club SIF ou même une photo de votre cahier.'],
  ['Suis-je engagé ?','Non. L’abonnement se résilie en un clic. Vos données vous appartiennent : l’export complet est disponible à tout moment, dans des formats ouverts.'],
- ['Combien coûte vraiment Piaffe ?','Le prix affiché, rien de plus : 59, 149 ou 289 € HT par mois selon la formule, avec chevaux et utilisateurs illimités. Pas de frais d’entrée, pas de frais de reprise, 30 jours d’essai sans carte bancaire.'],
+ ['Combien coûte vraiment Stabl ?','Le prix affiché, rien de plus : 59, 149 ou 289 € HT par mois selon la formule, avec chevaux et utilisateurs illimités. Pas de frais d’entrée, pas de frais de reprise, 30 jours d’essai sans carte bancaire.'],
  ['La démo enregistre-t-elle quelque chose ?','Non. La démo ouvre une écurie d’exemple, l’Écurie des Tilleuls, déjà remplie. Vous pouvez cliquer partout, valider, envoyer : rien n’est enregistré et personne n’est contacté.'],
- ['Piaffe AI peut-il agir sans moi ?','Non. Il lit vos données pour répondre, et chaque action vous est montrée avant d’être faite. Il agit avec vos droits, pas plus, et tout est noté dans un journal. La plupart des actions s’annulent en un geste.'],
- ['Comment relier Piaffe à Claude ou ChatGPT ?','Vous collez une adresse dans votre assistant, c’est tout. Il interroge alors votre écurie en lecture seule, avec vos droits. Chaque écriture demande votre accord, et l’accès se coupe d’un bouton.'],
+ ['Stabl AI peut-il agir sans moi ?','Non. Il lit vos données pour répondre, et chaque action vous est montrée avant d’être faite. Il agit avec vos droits, pas plus, et tout est noté dans un journal. La plupart des actions s’annulent en un geste.'],
+ ['Comment relier Stabl à Claude ou ChatGPT ?','Vous collez une adresse dans votre assistant, c’est tout. Il interroge alors votre écurie en lecture seule, avec vos droits. Chaque écriture demande votre accord, et l’accès se coupe d’un bouton.'],
  ['Les cavaliers doivent-ils installer une application ?','Ils peuvent installer l’application sur leur téléphone ou simplement ouvrir un lien. Les enfants sans adresse e-mail ont leur espace dans le compte de la famille, et un seul parent paie pour tous.'],
  ['Et sans réseau au fond de l’écurie ?','La tournée des boxes, les soins, le pointage et l’appel fonctionnent hors ligne. Tout se synchronise dès que le téléphone retrouve le réseau.'],
- ['Comment Piaffe travaille-t-il avec la FFE ?','Les licences se prennent en lot, les fichiers de FFE Club SIF s’importent, les galops se suivent dans Piaffe. Les engagements en concours sont préparés dans Piaffe, puis validés sur FFE Compet.'],
- ['Mes données sont-elles en sécurité ?','Elles sont hébergées en France, sauvegardées chaque jour et chiffrées. Chaque rôle ne voit que ce qui le concerne, et Piaffe respecte le RGPD, avec l’export et l’effacement par adhérent.'],
+ ['Comment Stabl travaille-t-il avec la FFE ?','Les licences se prennent en lot, les fichiers de FFE Club SIF s’importent, les galops se suivent dans Stabl. Les engagements en concours sont préparés dans Stabl, puis validés sur FFE Compet.'],
+ ['Mes données sont-elles en sécurité ?','Elles sont hébergées en France, sauvegardées chaque jour et chiffrées. Chaque rôle ne voit que ce qui le concerne, et Stabl respecte le RGPD, avec l’export et l’effacement par adhérent.'],
  ['Êtes-vous prêts pour la facture électronique ?','Oui. Les factures partent au format Factur-X par une plateforme agréée, et les clients publics, comme une mairie ou une école, les reçoivent sur Chorus Pro. La TVA à taux multiples est gérée ligne par ligne.']];
 put($('#faqL'),FAQ.map(function(f,i){return '<div class="qr'+(i===0?' ouvert':'')+'"><button type="button" aria-expanded="'+(i===0)+'" aria-controls="rep'+i+'" id="q'+i+'"><span>'+f[0]+'</span><span class="pm">'+I('plus')+'</span></button><div class="rep" id="rep'+i+'" role="region" aria-labelledby="q'+i+'"><div><p>'+f[1]+'</p></div></div></div>'}).join(''));
 $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q=b.parentNode,o=!q.classList.contains('ouvert');q.classList.toggle('ouvert',o);b.setAttribute('aria-expanded',o)})});

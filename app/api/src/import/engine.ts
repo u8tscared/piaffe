@@ -1,7 +1,7 @@
 /*
  * Moteur d'import : applique (ou simule) un job en trois temps.
  *  1. identité : normalisation, validation, correspondance (import_map), doublons, attribution des ids ;
- *  2. références : traduction des « ext:… » vers les ids Piaffe, rapprochement des noms en clair ;
+ *  2. références : traduction des « ext:… » vers les ids Stabl, rapprochement des noms en clair ;
  *  3. écriture dans records (sauf simulation), journal des changements pour l'annulation.
  * La simulation suit exactement le même chemin et produit le même rapport, sans rien écrire.
  */
@@ -114,7 +114,7 @@ export async function runCommit(env: Env, job: { id: string; club_id: string; so
     if (mapped && it.coll === "payments") { w.action = "update"; w.id = mapped; }
     else if (mapped && ex && !ex.deleted) { w.action = "update"; w.id = mapped; w.existing = ex; }
     else {
-      if (mapped) warn(w, { code: "recreated", message: "Cet objet avait été importé puis supprimé dans Piaffe : il est recréé." });
+      if (mapped) warn(w, { code: "recreated", message: "Cet objet avait été importé puis supprimé dans Stabl : il est recréé." });
       const idx = dupIndex.get(it.coll)!;
       const hit = dedupeKeys(it.coll, n.data).map((k) => idx.get(k)).find(Boolean);
       if (hit?.work) {
@@ -122,7 +122,7 @@ export async function runCommit(env: Env, job: { id: string; club_id: string; so
         warn(w, { code: "duplicate_in_job", message: `Doublon de « ${hit.work.ext} » dans ce même import : les informations sont fusionnées.` });
       } else if (hit) {
         w.action = "merge"; w.id = hit.id; w.existing = existing.get(it.coll)!.get(hit.id);
-        warn(w, { code: "duplicate_merged", message: `Déjà présent dans Piaffe (${hit.id}) : rattaché à la fiche existante, seuls les champs vides sont complétés.` });
+        warn(w, { code: "duplicate_merged", message: `Déjà présent dans Stabl (${hit.id}) : rattaché à la fiche existante, seuls les champs vides sont complétés.` });
       } else { w.action = "create"; w.id = allocate(it.coll); }
       w.newMap = true;
     }
@@ -303,7 +303,7 @@ export async function runRollback(env: Env, job: { id: string; club_id: string }
       deleted++;
     } else {
       const cur = await one<{ version: number }>(db, "SELECT version FROM records WHERE club_id = ? AND coll = ? AND id = ?", job.club_id, c.coll, c.piaffe_id);
-      if (!cur || cur.version !== c.version_after) { kept.push({ coll: c.coll, id: c.piaffe_id, message: "Modifié dans Piaffe depuis l'import : laissé tel quel." }); continue; }
+      if (!cur || cur.version !== c.version_after) { kept.push({ coll: c.coll, id: c.piaffe_id, message: "Modifié dans Stabl depuis l'import : laissé tel quel." }); continue; }
       stmts.push(db.prepare("UPDATE records SET data = ?, version = version + 1, updated_at = ?, updated_by = ? WHERE club_id = ? AND coll = ? AND id = ?")
         .bind(c.previous, now, by, job.club_id, c.coll, c.piaffe_id));
       restored++;

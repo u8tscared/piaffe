@@ -93,13 +93,13 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Piaffe</title>
-<meta name="description" content="Piaffe, le logiciel de gestion des centres équestres et des écuries.">
+<title>Stabl</title>
+<meta name="description" content="Stabl, le logiciel de gestion des centres équestres et des écuries.">
 <meta name="theme-color" content="#0a1636" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Piaffe">
+<meta name="apple-mobile-web-app-title" content="Stabl">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
 <meta name="piaffe-version" content="${VERSION}">
@@ -113,7 +113,7 @@ ${THREE}
 </head>
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
-<noscript><p style="padding:24px;font:16px system-ui">Piaffe a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
+<noscript><p style="padding:24px;font:16px system-ui">Stabl a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
 <script>window.PIAFFE_LIVE={version:${JSON.stringify(VERSION)},probe:${PROBE}};
 ${core}
 ;
@@ -133,7 +133,7 @@ fs.writeFileSync(path.join(DIST, 'index.html'), html);
 const STATIC = path.join(WEB, 'static');
 if (exists(STATIC)) for (const f of fs.readdirSync(STATIC)) fs.copyFileSync(path.join(STATIC, f), path.join(DIST, f));
 const manifest = {
-  name: 'Piaffe', short_name: 'Piaffe', lang: 'fr', dir: 'ltr',
+  name: 'Stabl', short_name: 'Stabl', lang: 'fr', dir: 'ltr',
   description: 'Le logiciel de gestion des centres équestres et des écuries.',
   start_url: '/?source=pwa', scope: '/', display: 'standalone', orientation: 'any',
   background_color: '#ffffff', theme_color: '#0a1636', categories: ['business', 'productivity', 'sports'],

@@ -1,6 +1,6 @@
 # Manche 2 : construire les manques (consignes communes)
 
-Projet : Piaffe, logiciel tout-en-un pour centres équestres. Démo mono-fichier construite par `node tools/build.js` depuis `core/` et `modules/`. Lis d'abord `MODULES.md` (contrat des modules, API `P.*`), puis `../research/05-couverture.md` sections 3 et 4 (manques P0/P1/P2 et incohérences, numérotés).
+Projet : Stabl, logiciel tout-en-un pour centres équestres. Démo mono-fichier construite par `node tools/build.js` depuis `core/` et `modules/`. Lis d'abord `MODULES.md` (contrat des modules, API `P.*`), puis `../research/05-couverture.md` sections 3 et 4 (manques P0/P1/P2 et incohérences, numérotés).
 
 ## Règles
 - Tu ne modifies QUE les fichiers de ton lot. Jamais `core/`. Si tu as besoin du moteur ou des données, contourne localement et note-le dans ton rapport.

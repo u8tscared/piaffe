@@ -1,5 +1,5 @@
 {
-  // Piaffe : API + application web servies par un seul Worker (même origine, cookies simples).
+  // Stabl : API + application web servies par un seul Worker (même origine, cookies simples).
   "name": "piaffe",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
@@ -14,7 +14,7 @@
   "triggers": { "crons": ["*/10 * * * *", "0 6 * * *"] },
   "vars": {
     "APP_URL": "http://localhost:8787",
-    "MAIL_FROM": "Piaffe <bonjour@piaffe.fr>",
+    "MAIL_FROM": "Stabl <bonjour@stabl.fr>",
     "MAIL_PROVIDER": "log",
     "EINVOICE_PROVIDER": "sandbox",
     "PLATFORM_LEGAL_NAME": "Marceau Ruis EI",

@@ -18,7 +18,7 @@ export async function lireFichier(nom, octets, { inflate } = {}) {
   const { texte, encodage } = decoder(b);
   if (estCapture(texte)) return tablesDeCapture(JSON.parse(texte), nom);
   if (estICS(texte)) return [{ fichier: nom, lignes: tableDeICS(texte), encodage, type: 'reprises' }];
-  if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Piaffe : ignoré.' }];
+  if (ext === 'json') return [{ fichier: nom, lignes: [], erreur: 'Fichier JSON qui ne vient pas du robot Stabl : ignoré.' }];
   if (/^\s*<(\?xml|html|table)/i.test(texte) && /<table/i.test(texte)) return [{ fichier: nom, lignes: tableauHTML(texte), encodage }];
   const { lignes, separateur } = lireCSV(texte);
   return [{ fichier: nom, lignes, encodage, separateur }];

@@ -1,11 +1,11 @@
--- Piaffe · lot E (onboarding)
+-- Stabl · lot E (onboarding)
 -- Les réponses et l'avancement de l'onboarding vivent dans clubs.onboarding (JSON, socle) ;
 -- les préférences d'affichage (écrans masqués, fiche du club) dans clubs.settings (JSON, socle).
 
 -- Cache de la recherche d'entreprises (recherche-entreprises.api.gouv.fr), 7 jours.
 CREATE TABLE siret_cache (
   q TEXT PRIMARY KEY,                   -- requête normalisée (nom en minuscules, ou SIREN / SIRET)
-  data TEXT NOT NULL,                   -- JSON : liste de résultats déjà mis au format Piaffe
+  data TEXT NOT NULL,                   -- JSON : liste de résultats déjà mis au format Stabl
   at TEXT NOT NULL
 );
 

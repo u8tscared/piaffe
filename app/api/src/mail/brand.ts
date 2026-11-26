@@ -1,14 +1,14 @@
 /**
  * Charte des e-mails : UN SEUL endroit à modifier quand le nom ou le logo changent.
- * - BRAND.name : nom de marque affiché (expéditeur « <club> via Piaffe », signature, pied de page).
+ * - BRAND.name : nom de marque affiché (expéditeur « <club> via Stabl », signature, pied de page).
  * - BRAND.logoUrl : URL absolue d'une image PNG (hauteur affichée 28 px, prévoir 2x : 56 px de haut).
  *   Vide = mot-symbole texte, qui s'affiche partout sans image distante.
  * - Les e-mails d'un club affichent le logo du club s'il en a un (clubs.logo_key dans R2), sinon celui de la marque.
  */
 export const BRAND = {
-  name: "Piaffe",
+  name: "Stabl",
   tagline: "Le logiciel des écuries et centres équestres",
-  logoUrl: "",            // ex. "https://app.piaffe.fr/brand/logo-mail@2x.png"
+  logoUrl: "",            // ex. "https://app.stabl.fr/brand/logo-mail@2x.png"
   logoWidth: 112,
   logoHeight: 28,
   colors: {
@@ -32,16 +32,16 @@ export const BRAND = {
   },
   font: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
   legal: "Marceau Ruis (EI), SIREN 934 733 122",
-  supportEmail: "bonjour@piaffe.fr",
+  supportEmail: "bonjour@stabl.fr",
 };
 
-/** Nom d'expéditeur : « Écurie des Tilleuls via Piaffe », ou « Piaffe » pour les e-mails de la plateforme. */
+/** Nom d'expéditeur : « Écurie des Tilleuls via Stabl », ou « Stabl » pour les e-mails de la plateforme. */
 export function senderName(clubName?: string | null): string {
   const clean = (s: string) => s.replace(/[\r\n"<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 70);
   return clubName ? `${clean(clubName)} via ${BRAND.name}` : BRAND.name;
 }
 
-/** Adresse d'envoi extraite de MAIL_FROM (« Piaffe <bonjour@piaffe.fr> » ou « bonjour@piaffe.fr »). */
+/** Adresse d'envoi extraite de MAIL_FROM (« Stabl <bonjour@stabl.fr> » ou « bonjour@stabl.fr »). */
 export function senderAddress(mailFrom: string | undefined): string {
   const m = /<([^>]+)>/.exec(mailFrom || "");
   return (m ? m[1] : (mailFrom || "")).trim() || BRAND.supportEmail;

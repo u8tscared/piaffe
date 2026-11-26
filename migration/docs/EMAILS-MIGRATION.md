@@ -1,6 +1,6 @@
 # E-mails du changement de logiciel (adhérents)
 
-Quand un club passe à Piaffe, tous ses adhérents changent d'outil le même jour. Ces e-mails les accompagnent pour que ce soit simple et rassurant. Variables : `{{prenom}}`, `{{club}}`, `{{ancien_logiciel}}`, `{{date_bascule}}`, `{{lien_activation}}` (lien magique, valable 14 jours), `{{forfait}}`, `{{solde}}`, `{{prochaine_reprise}}`, `{{cheval}}`, `{{contact_club}}`, `{{gerant}}`. Les mineurs ne reçoivent rien : c'est le responsable légal qui reçoit l'e-mail, avec un compte famille qui regroupe ses enfants (`{{enfants}}`).
+Quand un club passe à Stabl, tous ses adhérents changent d'outil le même jour. Ces e-mails les accompagnent pour que ce soit simple et rassurant. Variables : `{{prenom}}`, `{{club}}`, `{{ancien_logiciel}}`, `{{date_bascule}}`, `{{lien_activation}}` (lien magique, valable 14 jours), `{{forfait}}`, `{{solde}}`, `{{prochaine_reprise}}`, `{{cheval}}`, `{{contact_club}}`, `{{gerant}}`. Les mineurs ne reçoivent rien : c'est le responsable légal qui reçoit l'e-mail, avec un compte famille qui regroupe ses enfants (`{{enfants}}`).
 
 Côté gérant : écran « Prévenir mes adhérents » après l'import. Aperçu de chaque e-mail, choix de la date d'envoi (par défaut le lendemain à 18 h), envoi test à soi-même, puis suivi en direct : envoyés, ouverts, comptes activés, rebonds (adresse fausse, à corriger dans la fiche), et bouton « relancer ceux qui n'ont pas activé ».
 
@@ -12,7 +12,7 @@ Côté gérant : écran « Prévenir mes adhérents » après l'import. Aperçu 
 
 Bonjour {{prenom}},
 
-À partir du {{date_bascule}}, {{club}} passe de {{ancien_logiciel}} à Piaffe pour les inscriptions, le planning et les paiements.
+À partir du {{date_bascule}}, {{club}} passe de {{ancien_logiciel}} à Stabl pour les inscriptions, le planning et les paiements.
 
 Bonne nouvelle : tout a déjà été transféré. Votre fiche, votre forfait, votre historique et {{enfants_ou_vous}} sont prêts. Vous n'avez rien à ressaisir.
 
@@ -20,7 +20,7 @@ Il vous reste une seule chose à faire, en 30 secondes :
 
 [Activer mon espace]({{lien_activation}})
 
-Avec votre espace Piaffe, vous pourrez réserver ou annuler une reprise, payer en ligne, retrouver vos factures et suivre votre progression, depuis votre téléphone.
+Avec votre espace Stabl, vous pourrez réserver ou annuler une reprise, payer en ligne, retrouver vos factures et suivre votre progression, depuis votre téléphone.
 
 À très vite au club,
 {{gerant}}, {{club}}
@@ -87,7 +87,7 @@ Message reçu par le gérant : « {{prenom}} {{nom}} signale une erreur sur sa f
 
 ## 7. Récapitulatif au gérant (J+1, J+3, J+7)
 
-**Objet** : Bascule vers Piaffe : {{actives}} adhérents sur {{total}} ont activé leur espace
+**Objet** : Bascule vers Stabl : {{actives}} adhérents sur {{total}} ont activé leur espace
 
 Bonjour {{gerant}},
 

@@ -7,7 +7,7 @@
  * confirme ensuite comme avec la passerelle (POST /api/v1/import/jobs/:id/commit {"dry_run": false}).
  *
  * Ce qui n'est JAMAIS conservé : les frappes du gérant (identifiants, mots de passe, codes) vont directement
- * au navigateur distant, sans journal ni stockage. Le jeton de session Piaffe du gérant (pour les appels à
+ * au navigateur distant, sans journal ni stockage. Le jeton de session Stabl du gérant (pour les appels à
  * l'API d'import) et la capture restent en mémoire seulement, et disparaissent à la fermeture.
  * Le stockage du Durable Object ne contient que : club, utilisateur, dates, identifiant du navigateur.
  */
@@ -36,7 +36,7 @@ const MSG = {
   phase: "Le robot a déjà pris la main : la saisie n'est possible que pendant la connexion.",
   pasFini: "La copie n'est pas encore terminée.",
   entree: "Action inconnue : utilisez clic, texte, touche ou defiler.",
-  navigateur: "Le navigateur Piaffe n'a pas pu démarrer. Réessayez dans une minute ou déposez un export de votre logiciel.",
+  navigateur: "Le navigateur Stabl n'a pas pu démarrer. Réessayez dans une minute ou déposez un export de votre logiciel.",
   copie: "La copie s'est interrompue.",
 } as const;
 
@@ -248,7 +248,7 @@ export class RobotSession extends DurableObject<Env> {
         if (r.ok) objets += items.length; else refus.push({ coll, message: await messageDe(r) });
       };
       for (const l of lots) for (let i = 0; i < l.items.length; i += 500) await envoyer({ coll: l.coll, items: l.items.slice(i, i + 500) });
-      this.diffuser(s, "etat", { phase: "copie", progression: "Vérification des données par Piaffe…" });
+      this.diffuser(s, "etat", { phase: "copie", progression: "Vérification des données par Stabl…" });
       const c = objets ? await this.appelApp("POST", `/api/v1/import/jobs/${job_id}/commit`, s, { dry_run: true }) : null;
       const rapport = c?.ok ? ((await c.json()) as any) : null;
       return {
@@ -257,7 +257,7 @@ export class RobotSession extends DurableObject<Env> {
         confirmer: { methode: "POST", chemin: `/api/v1/import/jobs/${job_id}/commit`, corps: { dry_run: false } },
       };
     } catch {
-      return { job_id: s.job_id, import: { erreur: "L'envoi vers Piaffe a échoué. La capture reste disponible pour la passerelle." } };
+      return { job_id: s.job_id, import: { erreur: "L'envoi vers Stabl a échoué. La capture reste disponible pour la passerelle." } };
     }
   }
 

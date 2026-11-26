@@ -8,7 +8,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 export function resumeTexte(p) {
   const c = p.controle;
   const l = [
-    `Paquet Piaffe prêt (${p.sources.length} tableaux lus).`,
+    `Paquet Stabl prêt (${p.sources.length} tableaux lus).`,
     `  ${c.cavaliers} cavaliers, ${c.responsables} responsables, ${c.foyers} familles (${c.fiches_fusionnees} fiches fusionnées entre fichiers)`,
     `  ${c.chevaux} chevaux dont ${c.chevaux_proprietaires} de propriétaires, ${c.soins} soins`,
     `  ${c.prestations} forfaits et tarifs, ${c.reprises} reprises au planning`,
@@ -66,7 +66,7 @@ ul.av.attention li{border-left:4px solid #a85d00}
 details summary{cursor:pointer;font-weight:600;margin:8px 0}
 </style></head><body><main>
 <h1>Rapport de migration</h1>
-<p class="sub">Préparé par la passerelle Piaffe le ${new Date(p.genere_le).toLocaleString('fr-FR')}. Tout a été lu sur votre ordinateur ; vos fichiers d’origine n’ont pas été modifiés.</p>
+<p class="sub">Préparé par la passerelle Stabl le ${new Date(p.genere_le).toLocaleString('fr-FR')}. Tout a été lu sur votre ordinateur ; vos fichiers d’origine n’ont pas été modifiés.</p>
 <div class="tuiles">${tuiles.map(([t, v, s, k]) => `<div class="t ${k}"><div>${t}</div><div class="big">${v}</div><small>${s}</small></div>`).join('')}</div>
 <h2>Les trois chiffres à comparer avec votre ancien logiciel</h2>
 <div class="ctrl">Ouvrez votre ancien logiciel à côté et vérifiez : <b>${c.cavaliers}</b> cavaliers actifs, <b>${c.chevaux}</b> chevaux, <b>${eur(c.impayes_factures_ttc)}</b> restant dû sur les factures${c.soldes_negatifs_fiches ? ` (les fiches adhérents indiquent ${eur(-c.soldes_negatifs_fiches)} de soldes débiteurs)` : ''}. S’ils sont identiques, la reprise est complète.</div>

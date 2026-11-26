@@ -1,4 +1,4 @@
-// Connexion assistée : le navigateur Piaffe (côté serveur) ouvre l'ancien logiciel, le gérant voit son écran
+// Connexion assistée : le navigateur Stabl (côté serveur) ouvre l'ancien logiciel, le gérant voit son écran
 // dans la page et s'y connecte lui-même (double authentification comprise). Rien à installer.
 // Contrat HTTP : robot/serveur-local.mjs (mêmes routes en production sous /api/v1/migration/robot).
 // Les touches tapées partent directement au navigateur distant : elles ne sont ni stockées ni journalisées.
@@ -65,8 +65,8 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
   const titre = el('span', { class: 'rd-titre' }, 'Ouverture de ' + nom + '…');
   const btnFini = el('button', { class: 'rd-btn principal', type: 'button' }, 'Je suis connecté');
   const btnStop = el('button', { class: 'rd-btn', type: 'button' }, 'Annuler');
-  const img = el('img', { alt: 'Écran de ' + nom + ' ouvert par Piaffe' });
-  const attente = el('div', { class: 'rd-attente' }, 'Le navigateur Piaffe ouvre ' + adresse + '…');
+  const img = el('img', { alt: 'Écran de ' + nom + ' ouvert par Stabl' });
+  const attente = el('div', { class: 'rd-attente' }, 'Le navigateur Stabl ouvre ' + adresse + '…');
   const voileTitre = el('b', {}, 'Copie en cours');
   const voileTexte = el('span', {}, 'Le robot parcourt ' + nom + ' en lecture seule. Vous pouvez fermer cet onglet, il continue.');
   const jauge = el('i');
@@ -76,7 +76,7 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
   const boite = el('div', { class: 'rd', 'data-phase': 'connexion' },
     el('div', { class: 'rd-barre' }, el('span', { class: 'rd-point' }), titre, btnFini, btnStop),
     ecran,
-    el('div', { class: 'rd-aide' }, 'Connectez-vous comme d’habitude, directement dans cet écran. Piaffe ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.'));
+    el('div', { class: 'rd-aide' }, 'Connectez-vous comme d’habitude, directement dans cet écran. Stabl ne garde ni votre identifiant ni votre mot de passe : dès que vous êtes connecté, la copie démarre toute seule et la session est fermée à la fin.'));
   zone.append(boite);
 
   let session;
@@ -118,7 +118,7 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
     }
     if (e.phase === 'termine') {
       flux.close(); jauge.style.width = '100%'; titre.textContent = 'Copie terminée'; btnStop.hidden = true;
-      voileTitre.textContent = 'Tout est copié'; voileTexte.textContent = 'Le navigateur Piaffe est fermé. Vérifiez le résultat juste en dessous.';
+      voileTitre.textContent = 'Tout est copié'; voileTexte.textContent = 'Le navigateur Stabl est fermé. Vérifiez le résultat juste en dessous.';
       try {
         const capture = await appel('/' + id + '/capture');
         const fichier = new File([JSON.stringify(capture)], 'capture-' + (capture.logiciel || 'logiciel') + '.json', { type: 'application/json' });
@@ -131,7 +131,7 @@ export async function ouvrir(adresse, { cible, nom = 'votre logiciel', surCaptur
     if (e.phase === 'erreur') {
       flux.close(); titre.textContent = 'Le robot s’est arrêté';
       voileTitre.textContent = 'Copie interrompue';
-      voileTexte.textContent = (e.message || 'Erreur inconnue') + ' L’équipe Piaffe est prévenue. Vous pouvez réessayer ou déposer un export.';
+      voileTexte.textContent = (e.message || 'Erreur inconnue') + ' L’équipe Stabl est prévenue. Vous pouvez réessayer ou déposer un export.';
       resoudre(null);
     }
   });

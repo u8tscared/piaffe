@@ -4,7 +4,7 @@ import { registerHooks } from "./hooks";
 
 /*
  * Lot C : factures, avoirs, acomptes, paiements, PDF Factur-X, facture électronique (plateforme agréée),
- * accès comptable et exports, factures de Piaffe aux clubs. Détails métier et sources : REGLES.md.
+ * accès comptable et exports, factures de Stabl aux clubs. Détails métier et sources : REGLES.md.
  */
 registerHooks();
 export default app;

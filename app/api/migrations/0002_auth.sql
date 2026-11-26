@@ -1,4 +1,4 @@
--- Piaffe · lot A (comptes et données) : jetons à usage unique, invitations, état OAuth Google.
+-- Stabl · lot A (comptes et données) : jetons à usage unique, invitations, état OAuth Google.
 -- Tous les jetons sont stockés hachés (SHA-256 hex) : la base ne contient jamais un jeton utilisable.
 
 -- Jetons envoyés par e-mail : vérification d'adresse, changement d'adresse, réinitialisation, lien magique.

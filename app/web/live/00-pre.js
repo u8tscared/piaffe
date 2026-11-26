@@ -38,7 +38,7 @@ var EMPTY={
   pensions:['owner','Aucune pension pour l’instant','Ajoutez un cheval de propriétaire pour suivre sa pension.','horse','Ajouter un cheval'],
   contrats:['contract','Aucun contrat','Créez un contrat de pension, de demi-pension ou d’inscription à faire signer en ligne.','go:contrats','Voir les modèles'],
   boutique:['shop','Votre boutique est vide','Ajoutez vos stages et vos produits pour les vendre en ligne.','go:reglages','Ouvrir les réglages'],
-  facturation:['invoice','Aucune facture','Créez une facture ou laissez Piaffe facturer les forfaits automatiquement.','invoice','Créer une facture'],
+  facturation:['invoice','Aucune facture','Créez une facture ou laissez Stabl facturer les forfaits automatiquement.','invoice','Créer une facture'],
   compta:['accounting','La comptabilité se remplit avec vos factures','Invitez votre comptable : il accède aux exports FEC et aux PDF.','go:lv-comptable','Inviter mon comptable'],
   equipe:['team','Ajoutez votre équipe','Moniteurs, palefreniers, accueil : chacun reçoit son espace sur téléphone.','staff','Ajouter un salarié'],
   coachs:['coach','Aucun coach','Ajoutez un moniteur ou un coach extérieur réservable.','coach','Ajouter un coach'],

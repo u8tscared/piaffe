@@ -137,7 +137,7 @@ svg.i .af{fill:var(--strass);stroke:none}
 .nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
 .nav.sc{border-color:var(--line)}
 .nav-in{display:flex;align-items:center;gap:8px;height:var(--nav-h)}
-.marque{display:inline-flex;align-items:center;gap:9px;font:800 22px/1 var(--f-display);letter-spacing:-.03em;min-height:44px;margin-right:auto}
+.marque{display:inline-flex;align-items:center;gap:4px;font:800 28px/1 var(--f-display);letter-spacing:-.055em;min-height:44px;margin-right:auto}
 .nav-l{display:flex;gap:2px;margin-right:auto}
 .nav-l a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;font-size:14.5px;font-weight:500;color:var(--ink-2);transition:background .2s,color .2s}
 .nav-l a:hover{background:var(--surface-3);color:var(--ink)}
@@ -211,7 +211,7 @@ section.sec{padding:clamp(56px,7.5vw,104px) 0}
 .puces small{display:block;margin-top:2px;font-size:15px;color:var(--mut);line-height:1.5}
 .mod-f{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
 .mod-f .lien{color:var(--d-ink)}
-/* ---------- Piaffe AI ---------- */
+/* ---------- Stabl AI ---------- */
 .ai{position:relative;margin:0 clamp(8px,1.4vw,20px);border-radius:clamp(28px,4vw,52px);color:var(--ai-ink);overflow:hidden;isolation:isolate;scroll-margin-top:calc(var(--nav-h) + 8px)}
 .ai-fond{position:absolute;inset:0;z-index:-1;background:
   radial-gradient(50% 26% at 82% 2%,color-mix(in srgb,var(--ai-glow) 46%,transparent),transparent 70%),
@@ -712,7 +712,7 @@ section.espaces{padding-bottom:0}
 .inv .legendes{justify-content:flex-end}
 .mod-ip{display:none;transition:transform 1.3s var(--e-out),opacity .8s var(--e-out)}
 
-/* ---------- Piaffe AI : orbe ---------- */
+/* ---------- Stabl AI : orbe ---------- */
 .ai{transform-origin:50% 0;transform:scale(calc(.93 + var(--k,1) * .07))}
 .orb{position:relative;width:104px;height:104px;margin:0 auto 20px;display:grid;place-items:center}
 .orb-c{position:relative;width:68px;height:68px;border-radius:50%;display:grid;place-items:center;color:#fff;--acc:#a9bcff;background:radial-gradient(circle at 32% 26%,#5c78f2,#1d2f80 44%,#060c24 80%);box-shadow:inset 0 0 0 1px rgba(169,188,255,.55),inset 0 -8px 16px rgba(109,139,255,.35),0 0 44px rgba(109,139,255,.8);animation:souffle 4.2s ease-in-out infinite}

@@ -1,4 +1,4 @@
--- Piaffe · lot B (Stripe) : abonnement des clubs à Piaffe et paiements des adhérents vers leur club (Connect).
+-- Stabl · lot B (Stripe) : abonnement des clubs à Stabl et paiements des adhérents vers leur club (Connect).
 -- Montants en centimes. Aucune donnée de carte ou d'IBAN n'est stockée : seulement les identifiants Stripe.
 
 -- Événements Stripe reçus (idempotence des webhooks). status : processing | processed | failed | ignored
@@ -15,7 +15,7 @@ CREATE TABLE stripe_events (
 );
 CREATE INDEX idx_stripe_events_received ON stripe_events(received_at);
 
--- Abonnement d'un club à Piaffe (client Stripe du compte de la plateforme).
+-- Abonnement d'un club à Stabl (client Stripe du compte de la plateforme).
 CREATE TABLE billing_subscriptions (
   club_id TEXT PRIMARY KEY REFERENCES clubs(id) ON DELETE CASCADE,
   stripe_customer_id TEXT UNIQUE,
@@ -72,7 +72,7 @@ CREATE TABLE online_payments (
   user_id TEXT,
   kind TEXT NOT NULL DEFAULT 'checkout',-- checkout | link | installment | autopay
   amount_cents INTEGER NOT NULL,
-  fee_cents INTEGER NOT NULL DEFAULT 0, -- commission Piaffe (APPLICATION_FEE_PERCENT)
+  fee_cents INTEGER NOT NULL DEFAULT 0, -- commission Stabl (APPLICATION_FEE_PERCENT)
   refunded_cents INTEGER NOT NULL DEFAULT 0,
   currency TEXT NOT NULL DEFAULT 'eur',
   method TEXT,                          -- card | sepa_debit | …

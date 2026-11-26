@@ -153,7 +153,7 @@ export async function handlePlatformEvent(env: Env, ctx: Ctx, evt: any): Promise
       for (const m of await ownerEmails(db, row.club_id)) {
         await sendMail(env, { to: m.email, template: "payment_failed", data: {
           first: m.first, amount_cents: Number(o.amount_due) || 0, number: o.number || undefined,
-          reason: `abonnement ${club?.name ? "de " + club.name : "Piaffe"}, accès en écriture maintenu ${WRITE_GRACE_DAYS} jours`,
+          reason: `abonnement ${club?.name ? "de " + club.name : "Stabl"}, accès en écriture maintenu ${WRITE_GRACE_DAYS} jours`,
           retry_url: appUrl(env, RETURN_PATHS.portalReturn),
         } });
       }
@@ -171,7 +171,7 @@ async function rewardReferrer(env: Env, row: BillingRow) {
   const r = await run(env.DB, "UPDATE billing_subscriptions SET referral_rewarded_at = ? WHERE club_id = ? AND referral_rewarded_at IS NULL", nowIso(), row.club_id);
   if (!r.meta.changes) return;
   await stripeRequest(env, "POST", `/v1/customers/${ref.stripe_customer_id}/balance_transactions`, {
-    amount: -REFERRAL.referrer_credit_cents, currency: "eur", description: "Parrainage Piaffe", metadata: { referee_club_id: row.club_id },
+    amount: -REFERRAL.referrer_credit_cents, currency: "eur", description: "Parrainage Stabl", metadata: { referee_club_id: row.club_id },
   }, { idempotencyKey: "piaffe_referral_" + row.club_id });
   await audit(env.DB, { club_id: row.referred_by, action: "billing.referral_reward", target: row.club_id, data: { cents: REFERRAL.referrer_credit_cents } });
 }
@@ -309,7 +309,7 @@ app.post("/api/billing/checkout", requireRole("owner"), async (c) => {
 
   const customer = await ensureCustomer(c, row);
   const cl = await one<any>(db, "SELECT trial_ends_at FROM clubs WHERE id = ?", club.id);
-  // L'essai de 30 jours court dans Piaffe sans carte ; s'il reste plus de 2 jours, Stripe ne facture qu'à sa fin.
+  // L'essai de 30 jours court dans Stabl sans carte ; s'il reste plus de 2 jours, Stripe ne facture qu'à sa fin.
   const trialEnd = cl?.trial_ends_at && Date.parse(cl.trial_ends_at) > Date.now() + 49 * 3600e3 ? Math.floor(Date.parse(cl.trial_ends_at) / 1000) : undefined;
   const lineItem: Record<string, unknown> = { price: price.id, quantity: 1 };
   let automaticTax: unknown;
@@ -331,7 +331,7 @@ app.post("/api/billing/checkout", requireRole("owner"), async (c) => {
     automatic_tax: automaticTax,
     discounts: discounts.length ? discounts : undefined,
     allow_promotion_codes: discounts.length ? undefined : true,
-    subscription_data: { metadata: meta, trial_end: trialEnd, description: "Abonnement Piaffe " + (founder ? FOUNDER_OFFER.name : plan.name) },
+    subscription_data: { metadata: meta, trial_end: trialEnd, description: "Abonnement Stabl " + (founder ? FOUNDER_OFFER.name : plan.name) },
     metadata: meta,
   });
   if (referredBy) await run(db, "UPDATE billing_subscriptions SET referred_by = ? WHERE club_id = ? AND referred_by IS NULL", referredBy, club.id);

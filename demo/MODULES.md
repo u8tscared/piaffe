@@ -1,10 +1,10 @@
-# Écrire un écran Piaffe
+# Écrire un écran Stabl
 
 Ce document est le contrat commun de tous les écrans de la démo. Lisez-le en entier, puis lisez `core/tokens.css`, `core/shell.css`, `core/engine.js`, `core/data.js` et l'écran de référence `modules/10-cockpit.js` avant d'écrire une ligne.
 
 ## Le produit
 
-Piaffe est la plateforme tout-en-un des centres équestres et écuries (club fictif de démo : **Écurie des Tilleuls**, 46 boxes, date du jour **mardi 17 novembre 2026, 9 h 41**). Quatre vues :
+Stabl est la plateforme tout-en-un des centres équestres et écuries (club fictif de démo : **Écurie des Tilleuls**, 46 boxes, date du jour **mardi 17 novembre 2026, 9 h 41**). Quatre vues :
 
 - **Gérant** (ordinateur et tablette d'abord) : pilote tout le club.
 - **Employé** (téléphone d'abord) : moniteurs, palefreniers, accueil. Utilisateur de démo : Antoine Leroy, palefrenier soigneur (`s05`).

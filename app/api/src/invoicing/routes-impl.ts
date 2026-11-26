@@ -360,7 +360,7 @@ app.patch("/api/accounting/purchases/:id", MANAGERS, async (c) => {
   return c.json({ purchase: await one(db, "SELECT * FROM incoming_invoices WHERE id = ?", f.id) });
 });
 
-/* ================= Factures Piaffe (abonnement du club) ================= */
+/* ================= Factures Stabl (abonnement du club) ================= */
 
 app.get("/api/invoicing/piaffe-invoices", BOOKS, async (c) => {
   const rows = await all<InvoiceRow>(c.env.DB, "SELECT * FROM invoices WHERE club_id = ? AND buyer_club_id = ? AND number IS NOT NULL ORDER BY issue_date DESC, seq DESC LIMIT 200", PLATFORM_CLUB, clubId(c));

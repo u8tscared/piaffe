@@ -228,9 +228,9 @@ app.post("/auth/magic", async (c) => {
 app.get("/auth/magic/callback", (c) => {
   const token = (c.req.query("token") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 200);
   c.header("cache-control", "no-store");
-  return c.html(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="same-origin"><title>Connexion à Piaffe</title>
+  return c.html(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="same-origin"><title>Connexion à Stabl</title>
 <style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f7f5f0;color:#1d1b16}form{text-align:center}button{font:inherit;padding:12px 22px;border-radius:10px;border:0;background:#1d1b16;color:#fff;cursor:pointer}</style></head>
-<body><form method="post" action="/auth/magic/callback"><input type="hidden" name="token" value="${token}"><p>Connexion à votre espace Piaffe…</p><button type="submit">Me connecter</button></form>
+<body><form method="post" action="/auth/magic/callback"><input type="hidden" name="token" value="${token}"><p>Connexion à votre espace Stabl…</p><button type="submit">Me connecter</button></form>
 <script>document.forms[0].submit()</script></body></html>`);
 });
 

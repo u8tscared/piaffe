@@ -26,7 +26,7 @@ export interface IcsEvent {
   url?: string;
 }
 
-export const PRODID = "-//Piaffe//Calendrier Piaffe 1.0//FR";
+export const PRODID = "-//Stabl//Calendrier Stabl 1.0//FR";
 
 export const VTIMEZONE_PARIS = [
   "BEGIN:VTIMEZONE", "TZID:Europe/Paris", "X-LIC-LOCATION:Europe/Paris",

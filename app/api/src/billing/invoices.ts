@@ -63,7 +63,7 @@ export function tableInvoiceLookup(table = "invoices"): InvoiceLookup {
     async get(db, clubId, invoiceId) {
       if (!(await tableExists(db, table))) return null;
       const r = await one<any>(db, `SELECT * FROM ${table} WHERE id = ? AND club_id = ?`, invoiceId, clubId);
-      // Seules les factures du club à ses clients se paient ici (pas les factures de Piaffe au club, ni les avoirs).
+      // Seules les factures du club à ses clients se paient ici (pas les factures de Stabl au club, ni les avoirs).
       if (!r || (r.issuer && r.issuer !== "club") || (r.kind && r.kind === "credit_note")) return null;
       return rowToInfo(r);
     },

@@ -1,11 +1,11 @@
--- Piaffe · lot C : factures, avoirs, acomptes, paiements, facture électronique, comptabilité.
+-- Stabl · lot C : factures, avoirs, acomptes, paiements, facture électronique, comptabilité.
 -- Montants en centimes (INTEGER). Taux de TVA en points de base (550 = 5,5 %).
 -- Une facture émise est gelée : les déclencheurs ci-dessous refusent toute modification de son contenu
 -- (correction uniquement par avoir). Seuls les champs de suivi (statut, paiements, envoi, e-facture) bougent.
 
 -- ---------- Factures (et avoirs, acomptes) ----------
 -- issuer = 'club' : facture d'un club à ses clients (club_id = le club vendeur).
--- issuer = 'platform' : facture de Piaffe (Marceau Ruis EI) à un club ; club_id = 'platform', buyer_club_id = le club.
+-- issuer = 'platform' : facture de Stabl (Marceau Ruis EI) à un club ; club_id = 'platform', buyer_club_id = le club.
 CREATE TABLE invoices (
   id TEXT PRIMARY KEY,                    -- inv_xxx
   club_id TEXT NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE einvoice_reports (
   UNIQUE (club_id, kind, period_start)
 );
 
--- Factures fournisseurs reçues (plateforme agréée, ou factures Piaffe de l'abonnement).
+-- Factures fournisseurs reçues (plateforme agréée, ou factures Stabl de l'abonnement).
 CREATE TABLE incoming_invoices (
   id TEXT PRIMARY KEY,                    -- inc_xxx
   club_id TEXT NOT NULL,

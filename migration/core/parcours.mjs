@@ -1,4 +1,4 @@
-// Parcours « Passer à Piaffe » : les questions posées une à une et le plan de bascule qui en découle.
+// Parcours « Passer à Stabl » : les questions posées une à une et le plan de bascule qui en découle.
 // Partagé par la page autonome (web/app.mjs) et l'onboarding de l'appli : même logique, mêmes réponses.
 //
 // reponses = {
@@ -21,7 +21,7 @@ export const QUESTIONS = [
   { id: 'principal', titre: 'Lequel gère votre club aujourd’hui ?', sous: 'C’est celui qu’on vide entièrement, puis que vous résiliez.', type: 'logiciel',
     si: r => r.depart && r.depart !== 'zero', familles: r => PRINCIPAUX[r.depart] || PRINCIPAUX.oui, adresse: true },
   { id: 'outils', titre: 'Quels autres outils utilisez-vous ?', sous: 'Cochez tout ce qui sert au club : paiements, comptabilité, fédération, agenda…', type: 'cases', familles: FAMILLES_OUTILS },
-  { id: 'choix', titre: 'Pour chacun : on change ou on intègre ?', sous: 'Le choix recommandé est déjà fait. « Changer » : Piaffe le remplace. « Intégrer » : vous le gardez, on le branche.', type: 'decisions',
+  { id: 'choix', titre: 'Pour chacun : on change ou on intègre ?', sous: 'Le choix recommandé est déjà fait. « Changer » : Stabl le remplace. « Intégrer » : vous le gardez, on le branche.', type: 'decisions',
     si: r => (r.outils || []).length > 0 },
   { id: 'plan', titre: 'Votre plan de bascule', sous: 'Voici exactement ce qui va se passer.', type: 'plan' },
   { id: 'recuperation', titre: 'Récupération', sous: 'Choisissez comment on sort vos données.', type: 'recuperation' },

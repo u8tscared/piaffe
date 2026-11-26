@@ -144,7 +144,7 @@ export async function familyRefs(db: D1Database, clubId: string, personRef: stri
 function memberAddress(m: Record<string, any>): Address | null {
   const a = m.address ?? m.addr;
   if (a && typeof a === "object") {
-    // Formats rencontrés : {line1, zip, city} (Piaffe) ou {ligne1, code_postal, ville} (import).
+    // Formats rencontrés : {line1, zip, city} (Stabl) ou {ligne1, code_postal, ville} (import).
     return { line1: a.line1 ?? a.ligne1 ?? a.street, line2: a.line2 ?? a.ligne2, zip: a.zip ?? a.code_postal ?? a.cp, city: a.city ?? a.ville, country: a.country ?? a.pays ?? "FR" };
   }
   if (typeof a === "string" && a.trim()) {

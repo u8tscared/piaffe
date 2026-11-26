@@ -1,4 +1,4 @@
-// Robot navigateur Piaffe. Il travaille dans l'onglet où le gérant est connecté à son ancien logiciel.
+// Robot navigateur Stabl. Il travaille dans l'onglet où le gérant est connecté à son ancien logiciel.
 // Il lit les pages, suit le bouton « suivant » et les liens du menu ; il ne remplit et n'envoie aucun formulaire.
 import { extrairePage, cliquer, empreinte } from './extraire.js';
 
@@ -147,7 +147,7 @@ async function rejouer(tabId) {
     const t = page.tables.find(x => sig(x) === s.signature);
     if (!t) {
       const incident = { origine, etape: s.chemin, attendu: s.signature, trouve: page.tables.map(sig), le: new Date().toISOString(), connexion: page.connexion };
-      await maj(e => { e.incidents.push(incident); journal(e, `Écran changé : ${s.titre || s.chemin}. Signalé à Piaffe ; je passe en exploration pour cette page.`); });
+      await maj(e => { e.incidents.push(incident); journal(e, `Écran changé : ${s.titre || s.chemin}. Signalé à Stabl ; je passe en exploration pour cette page.`); });
       const { serveur } = await chrome.storage.local.get('serveur');
       if (serveur) fetch(serveur + '/api/v1/migration/incidents', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(incident) }).catch(() => {});
       if (page.connexion) break;

@@ -1,4 +1,4 @@
-# Piaffe, le vrai logiciel : architecture
+# Stabl, le vrai logiciel : architecture
 
 La démo (`demo/`) reste la vitrine publique sur GitHub Pages. Le logiciel vendu aux écuries vit dans `app/` :
 
@@ -71,7 +71,7 @@ Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la 
 - Déclencheurs (`src/records/triggers.ts`) : nouvel adhérent avec e-mail → invitation et e-mail de bienvenue (si l'option du club est active) ; réservation d'une reprise → `booking_confirmed` ; place libérée → `waitlist_spot`.
 
 ### Stripe (lot B)
-- Abonnement des clubs à Piaffe (vendeur : Marceau Ruis EI) : `GET /api/billing/plans`, `POST /api/billing/checkout` `{plan, interval:"month"|"year"}` → URL Stripe Checkout ; `POST /api/billing/portal` → URL du portail client ; `GET /api/billing/subscription`.
+- Abonnement des clubs à Stabl (vendeur : Marceau Ruis EI) : `GET /api/billing/plans`, `POST /api/billing/checkout` `{plan, interval:"month"|"year"}` → URL Stripe Checkout ; `POST /api/billing/portal` → URL du portail client ; `GET /api/billing/subscription`.
 - Paiements des adhérents vers le club (Stripe Connect, le club encaisse sur son propre compte) : `POST /api/connect/onboard` → lien d'activation Stripe ; `GET /api/connect/status` ; `POST /api/pay/invoice/:id` → URL Checkout (carte, SEPA) pour une facture du club ; `POST /api/pay/mandate` → mise en place d'un prélèvement SEPA pour les échéances ; `POST /api/pay/link` (gérant) lien de paiement à envoyer.
 - `POST /webhooks/stripe` (plateforme) et `POST /webhooks/stripe-connect` (comptes connectés), signatures vérifiées, idempotents. Émettent `subscription.changed`, `invoice.paid`, `payment.failed`.
 
@@ -79,10 +79,10 @@ Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la 
 - `GET /api/invoices?status=&member=&from=&to=`, `POST /api/invoices` (brouillon), `PATCH /api/invoices/:id` (brouillon seulement), `POST /api/invoices/:id/issue` (numérotation légale continue, gel, PDF Factur-X dans R2, envoi), `POST /api/invoices/:id/credit-note` (avoir), `POST /api/invoices/:id/payments` (paiement manuel : chèque, espèces, ANCV, virement), `GET /api/invoices/:id/pdf`, `GET /api/invoices/:id/facturx.xml`.
 - Facture électronique : adaptateur de plateforme agréée (`src/invoicing/pa/`), transmission des factures B2B, e-reporting des ventes aux particuliers, réception des factures fournisseurs, statuts de cycle de vie. Fournisseur `sandbox` pour les tests.
 - Comptable : rôle `accountant` (invité par le gérant), `GET /api/accounting/exports/fec?year=` (FEC conforme), `GET /api/accounting/exports/sales.csv`, `GET /api/accounting/exports/pdfs.zip?month=`, journal des ventes et des encaissements.
-- Factures de Piaffe aux clubs (vendeur Marceau Ruis EI) générées au même format à partir des paiements Stripe.
+- Factures de Stabl aux clubs (vendeur Marceau Ruis EI) générées au même format à partir des paiements Stripe.
 
 ### E-mails, calendriers, import (lot D)
-- `sendMail` + modèles HTML et texte (charte Piaffe, logo remplaçable), fournisseurs `log`, `resend`, `brevo`, file d'attente `email_outbox` avec reprise par le cron, `POST /webhooks/mail` (rebonds), désinscription des e-mails non essentiels.
+- `sendMail` + modèles HTML et texte (charte Stabl, logo remplaçable), fournisseurs `log`, `resend`, `brevo`, file d'attente `email_outbox` avec reprise par le cron, `POST /webhooks/mail` (rebonds), désinscription des e-mails non essentiels.
 - ICS : `GET /api/calendars` (liens de l'utilisateur) ; `POST /api/calendars` `{scope}` ; flux `GET /ics/:token.ics` (adhérent : ses reprises et ses rendez-vous ; coach : son agenda ; gérant : planning du club, soins, concours ; cheval : soins et maréchal). Compatible Google Agenda, Apple Calendrier, Outlook.
 - Import (utilisé par l'outil de migration depuis Kavalog et par l'import de fichiers) : voir « API d'import » ci-dessous.
 
@@ -96,6 +96,6 @@ Authentification : clé d'API du club avec le scope `import` (`Authorization: Be
 
 - `POST /api/v1/import/jobs` `{source:"kavalog"|"equimondo"|"csv"|…, dry_run?:bool}` → `{job_id}`.
 - `POST /api/v1/import/jobs/:id/items` `{coll, items:[{external_id, data}]}` (jusqu'à 500 objets par appel, répétable). `coll` ∈ `members, horses, staff, coaches, forfaits, lessons, halfboard, care, contracts, competitions, invoices, payments, stock`. `data` au format de la démo (voir `demo/core/data.js`). Les références entre objets utilisent les `external_id` de la source préfixés par `ext:` (ex. `owner:"ext:K-1234"`) : le serveur les traduit.
-- `POST /api/v1/import/jobs/:id/commit` → applique (ou simule si `dry_run`) : création ou mise à jour idempotente grâce à la table de correspondance `(club, source, coll, external_id) → id Piaffe`. Réponse : compte par collection, avertissements (doublons, champs manquants), erreurs par objet.
+- `POST /api/v1/import/jobs/:id/commit` → applique (ou simule si `dry_run`) : création ou mise à jour idempotente grâce à la table de correspondance `(club, source, coll, external_id) → id Stabl`. Réponse : compte par collection, avertissements (doublons, champs manquants), erreurs par objet.
 - `GET /api/v1/import/jobs/:id` → état et rapport. `POST /api/v1/import/jobs/:id/rollback` → supprime ce que ce job a créé.
 - `POST /api/v1/import/csv` (multipart) : import de fichiers CSV/Excel exportés d'un autre logiciel, avec détection des colonnes.

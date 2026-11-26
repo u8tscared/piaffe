@@ -59,7 +59,7 @@ describe("billing · signature des webhooks", () => {
     const t2 = Math.floor(Date.now() / 1000) - 290;
     expect(await verifyStripeSignature(body, await signPayload(body, "whsec_a", t2), "whsec_a")).toBe(true);
   });
-  it("accepte plusieurs v1 (rotation du secret côté Stripe) et plusieurs secrets côté Piaffe", async () => {
+  it("accepte plusieurs v1 (rotation du secret côté Stripe) et plusieurs secrets côté Stabl", async () => {
     const good = (await signPayload(body, "whsec_new")).split(",")[1];
     const t = Math.floor(Date.now() / 1000);
     const header = `t=${t},v1=${"0".repeat(64)},${good},v0=deadbeef,extra=1`;

@@ -1,4 +1,4 @@
-# Règles de facturation appliquées par Piaffe (lot C)
+# Règles de facturation appliquées par Stabl (lot C)
 
 État vérifié le 24 novembre 2026. Les sources sont citées à la fin de chaque section.
 
@@ -10,7 +10,7 @@
 | 1er septembre 2026 | grandes entreprises et ETI | **émettre** en facture électronique + e-reporting |
 | 1er septembre 2027 | PME et micro-entreprises (presque tous les centres équestres) | **émettre** + e-reporting |
 
-Conséquence pour Piaffe : aujourd'hui, un club doit déjà pouvoir **recevoir** ses factures fournisseurs (foin, maréchal, vétérinaire) par une PA. L'émission électronique devient obligatoire pour lui en septembre 2027, mais nous la préparons dès maintenant (même PDF Factur-X, envoi par la PA dès que le club est raccordé).
+Conséquence pour Stabl : aujourd'hui, un club doit déjà pouvoir **recevoir** ses factures fournisseurs (foin, maréchal, vétérinaire) par une PA. L'émission électronique devient obligatoire pour lui en septembre 2027, mais nous la préparons dès maintenant (même PDF Factur-X, envoi par la PA dès que le club est raccordé).
 
 Les associations loi 1901 **non assujetties** à la TVA (régime `association_exoneree`) ne sont pas concernées pour leurs opérations exonérées : canal `none`, pas d'e-reporting.
 
@@ -30,7 +30,7 @@ Sources : [impots.gouv.fr, calendrier](https://impots.gouv.fr/professionnel/ques
 | Réel simplifié (cas le plus fréquent) | mensuel (`monthly`, valeur par défaut), entre le 25 et le 30 du mois suivant | mensuel |
 | Franchise en base | bimestriel (`bimonthly`, forcé) | bimestriel |
 
-Piaffe déclare chaque période **dès le lendemain de sa fin** (cron quotidien), rattrape les trois dernières périodes en cas d'incident et ne déclare jamais deux fois la même (contrainte d'unicité). Catégories : `TLB1` livraisons de biens, `TPS1` prestations de services, `TNT1` opérations non taxées (débours, franchise, exonérations). Les acomptes sont déclarés à leur émission, la facture finale ne déclare que le solde.
+Stabl déclare chaque période **dès le lendemain de sa fin** (cron quotidien), rattrape les trois dernières périodes en cas d'incident et ne déclare jamais deux fois la même (contrainte d'unicité). Catégories : `TLB1` livraisons de biens, `TPS1` prestations de services, `TNT1` opérations non taxées (débours, franchise, exonérations). Les acomptes sont déclarés à leur émission, la facture finale ne déclare que le solde.
 
 Pour les factures B2B de **prestations de services** sans option sur les débits, l'encaissement est transmis à la PA sous forme du statut **212 « Encaissée »**, ventilé par taux.
 
@@ -41,7 +41,7 @@ Sources : [données de facture](https://www.impots.gouv.fr/facturation-electroni
 Depuis le 1er septembre 2026 : SIREN et pays du vendeur et du client, **catégorie de l'opération** (livraison de biens, prestations de services ou mixte), date d'émission, numéro unique chronologique et continu, HT et TVA par taux, devise ; selon le cas : numéros de TVA, numéro de la facture rectifiée (avoir), **option pour le paiement de la TVA d'après les débits**, motif d'exonération (franchise comprise), date de la prestation si différente, date de l'acompte.
 À partir du 1er septembre 2027 : désignation, quantité et prix unitaire HT par ligne (déjà fait), adresse de livraison si différente (champ `delivery_address`), date de la facture initiale pour un avoir (déjà fait).
 
-Pour un **client professionnel**, Piaffe ajoute : pénalités de retard (taux réglable, par défaut « trois fois le taux d'intérêt légal »), **indemnité forfaitaire de 40 €** (art. L441-10 et D441-5 du code de commerce), « Pas d'escompte pour paiement anticipé », et dans le XML les notes normées `PMD`, `PMT`, `AAB`. Délai de paiement B2B plafonné à 60 jours.
+Pour un **client professionnel**, Stabl ajoute : pénalités de retard (taux réglable, par défaut « trois fois le taux d'intérêt légal »), **indemnité forfaitaire de 40 €** (art. L441-10 et D441-5 du code de commerce), « Pas d'escompte pour paiement anticipé », et dans le XML les notes normées `PMD`, `PMT`, `AAB`. Délai de paiement B2B plafonné à 60 jours.
 
 Mentions selon `clubs.vat_regime` :
 - `normal` : TVA par taux, numéro de TVA intracommunautaire (calculé depuis le SIREN s'il n'est pas saisi).
@@ -129,6 +129,6 @@ Journaux : `VE` ventes, `BQ` banque, `CA` caisse, `AC` achats. Le client est let
 - **Écritures CSV** (`entries.csv`) : `Journal;Date;Pièce;Compte;Compte auxiliaire;Libellé du compte auxiliaire;Libellé;Débit;Crédit;Échéance;Lettrage`, UTF-8 avec BOM, dates JJ/MM/AAAA, virgule décimale. Import : Pennylane (Comptabilité > Import d'écritures, « Fichier CSV »), Tiime (Import FEC ou CSV), Sage 100 / Génération Expert (import paramétrable, une ligne par mouvement). Le FEC est aussi importable tel quel dans tous ces logiciels.
 - **Journal des ventes** (`sales.csv`) : une ligne par facture, bases et TVA par taux. **Encaissements** (`payments.csv`). **Archive ZIP** du mois (factures, avoirs, factures fournisseurs).
 
-## 11. Factures de Piaffe aux clubs
+## 11. Factures de Stabl aux clubs
 
 Émetteur : variables `PLATFORM_*` (Marceau Ruis EI, SIREN 934 733 122, franchise en base par défaut). Déclencheur : `subscription.paid {club_id, stripe_invoice_id, amount_cents, tax_cents, period_start, period_end, plan}` émis par le lot Stripe. Une facture par paiement (idempotence `stripe_invoice_id`), série `PIA-AAAA-NNNNN`, réglée par carte, rangée aussi dans les achats du club (compte 651000). Si `PLATFORM_VAT_REGIME = normal`, la TVA à 20 % est extraite du TTC payé.

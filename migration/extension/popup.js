@@ -15,7 +15,7 @@ if (origine) {
   $('#origine').textContent = origine;
   if (!nom) { $('#alerte').hidden = false; $('#alerte').textContent = 'Pas encore dans notre liste : le robot va explorer le logiciel tout seul, en lecture seule.'; }
 } else {
-  $('#nom').textContent = 'Ouvrez votre ancien logiciel'; $('#origine').textContent = 'Allez sur sa page, connectez-vous, puis rouvrez Piaffe.';
+  $('#nom').textContent = 'Ouvrez votre ancien logiciel'; $('#origine').textContent = 'Allez sur sa page, connectez-vous, puis rouvrez Stabl.';
   $('#actions').hidden = true;
 }
 

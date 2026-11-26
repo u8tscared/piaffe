@@ -1,4 +1,4 @@
-// Passer à Piaffe : parcours pas à pas (une question par écran), puis récupération des données.
+// Passer à Stabl : parcours pas à pas (une question par écran), puis récupération des données.
 // Mode intégré (ouvert depuis l'onboarding de l'appli) : ?source=<id>&adresse=<url>&outils=<ids>&retour=<url>
 // saute les questions et va droit à la récupération ; l'import se fait sur la session du gérant (même origine).
 import { lireFichier } from '../core/lire.mjs';
@@ -23,7 +23,7 @@ const etat = { tables: [], paquet: null };
 const rep = { depart: null, principal: null, adresse: null, outils: [], choix: {} };
 const SERVEUR_MIGRATION = globalThis.PIAFFE_SERVEUR || '';   // vide tant que le serveur n'ouvre pas la reprise par codes
 const COULEURS = { equestre: 'hz', federation: 'tm', adhesions: 'mo', agenda: 'rd', compta: 'mo', rh: 'tm', tableurs: 'hz', papier: 'pf' };
-const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Piaffe', au_choix: 'Au choix' };
+const NOM_REL = { branche: 'Gardé et branché', remplace: 'Remplacé par Stabl', au_choix: 'Au choix' };
 const COURT = { depart: 'Départ', principal: 'Logiciel', outils: 'Outils', choix: 'Choix', plan: 'Plan', recuperation: 'Récupération' };
 
 // Mode intégré
@@ -157,7 +157,7 @@ function dessinerDecisions() {
     const l = LOGICIELS[id], possibles = decisionsPossibles(id), d = decision(rep, id);
     const commande = possibles.length > 1
       ? `<div class="seg" role="radiogroup" aria-label="${esc(l.nom)}">${possibles.map(p => `<button type="button" role="radio" aria-checked="${p === d}" class="${p === d ? 'on' : ''}" data-id="${id}" data-d="${p}">${p === 'changer' ? 'Changer' : 'Intégrer'}</button>`).join('')}</div>`
-      : `<span class="fixe rel ${d === 'changer' ? 'remplace' : 'branche'}">${d === 'changer' ? 'Remplacé par Piaffe' : 'Gardé et branché'}</span>`;
+      : `<span class="fixe rel ${d === 'changer' ? 'remplace' : 'branche'}">${d === 'changer' ? 'Remplacé par Stabl' : 'Gardé et branché'}</span>`;
     return `<div class="decision" style="--i:${i}">${pastille(l, 36)}<span class="nom">${esc(l.nom)}</span>${commande}<p class="effet" id="effet-${id}">${esc(l.effets[d])}</p></div>`;
   }).join('');
 }
@@ -179,7 +179,7 @@ function dessinerPlan() {
   const p = planDeBascule(rep);
   const col = (cls, i, icone, titre, sous, items, rien) => `<div class="col ${cls}" style="--i:${i}"><h3><i>${icone}</i>${titre}</h3><p>${sous}</p>${items.length ? `<ul>${items.join('')}</ul>` : `<p class="rien">${rien}</p>`}</div>`;
   $('#plan').innerHTML =
-    col('c-rec', 0, '↓', 'À récupérer', 'On copie tout dans Piaffe.', p.recuperer.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.quoi)}${x.garde ? ' (l’outil est gardé)' : ''}</small></li>`), 'Rien : vous partez de zéro.') +
+    col('c-rec', 0, '↓', 'À récupérer', 'On copie tout dans Stabl.', p.recuperer.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.quoi)}${x.garde ? ' (l’outil est gardé)' : ''}</small></li>`), 'Rien : vous partez de zéro.') +
     col('c-bra', 1, '⇄', 'À brancher', 'Vous les gardez, on les relie.', p.brancher.map((x, j) => `<li style="--j:${j}"><b>${esc(x.nom)}</b><small>${esc(x.effet)}</small></li>`), 'Aucun outil à garder.') +
     col('c-res', 2, '✕', 'À résilier', 'Une fois la reprise vérifiée.', p.resilier.map(itemResil), 'Rien à résilier.');
   $('#etape-bonus').hidden = true;
@@ -206,7 +206,7 @@ function carteMode(mode, corps, i) {
   const m = MODES[mode];
   return `<article class="mode m-${mode}" style="--i:${i}"><header><span class="mi" aria-hidden="true">${m.icone}</span><div><span class="badge">${m.badge}</span><h3>${m.titre}</h3></div></header>${corps}</article>`;
 }
-const ASSISTEE = 'Le robot Piaffe ouvre votre logiciel sur nos serveurs ; vous vous connectez ici même, dans cette page, double authentification comprise ; il copie tout et vous montre le résultat. Rien à installer.';
+const ASSISTEE = 'Le robot Stabl ouvre votre logiciel sur nos serveurs ; vous vous connectez ici même, dans cette page, double authentification comprise ; il copie tout et vous montre le résultat. Rien à installer.';
 function blocAssistee(nom, adresse, inconnu) {
   return `<p>${ASSISTEE}</p>${inconnu ? `<p class="fine">Nous ne connaissons pas encore ce logiciel : le robot explore seul les menus de <b>${esc(adresse)}</b>, et garde le chemin pour le prochain club.</p>` : ''}
     <p class="actions-m"><button class="bouton" type="button" id="ouvrir-robot" data-adresse="${esc(adresse || '')}" data-nom="${esc(nom)}">Ouvrir mon logiciel</button></p><div id="robot-distant"></div><p class="fine" id="robot-info"></p>`;
@@ -215,15 +215,15 @@ function cartesModes(l) {
   const adresse = rep.adresse || (l.site ? 'https://' + l.site : '');
   const blocs = {
     robot: blocAssistee(l.nom, adresse, false),
-    ordinateur: `<ol><li>Téléchargez le robot Piaffe pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Piaffe et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
+    ordinateur: `<ol><li>Téléchargez le robot Stabl pour Windows sur l’ordinateur où ${esc(l.nom)} est installé.</li><li>Il repère tout seul les exports et le dossier de données, et n’en lit qu’une copie.</li><li>Il prépare le paquet Stabl et le rapport, puis vous les déposez ici.</li></ol><p class="fine">Version Windows signée bientôt disponible. En attendant, utilisez l’export de fichier.</p>`,
     codes: `<p>Confiez-nous l’accès : notre robot fait la migration à votre place, puis efface vos identifiants.</p>
       ${SERVEUR_MIGRATION ? '' : '<p class="bientot">Bientôt disponible. Rien n’est envoyé depuis cette page pour l’instant.</p>'}
       <form id="codes" class="codes" autocomplete="off"><input name="identifiant" placeholder="Identifiant ${esc(l.nom)}" ${SERVEUR_MIGRATION ? '' : 'disabled'}><input name="motDePasse" type="password" placeholder="Mot de passe" ${SERVEUR_MIGRATION ? '' : 'disabled'}>
       <label class="plein"><input type="checkbox" name="doubleAuth" ${SERVEUR_MIGRATION ? '' : 'disabled'}> Mon compte a une double authentification (code par SMS ou application) : on vous appellera pour le saisir ensemble.</label>
       <button class="bouton second plein" ${SERVEUR_MIGRATION ? '' : 'disabled'}>Envoyer de façon chiffrée</button><p class="fine plein" id="codes-sortie">Chiffré dans votre navigateur avant envoi, effacé après la migration.</p></form>`,
     export: `<ol>${l.voies[0].etapes.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` +
-      (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Piaffe rapproche les licences et complète les fiches.</p>` : '') +
-      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Piaffe reconnaît les colonnes tout seul.</p>` : ''),
+      (l.famille === 'equestre' ? `<p class="astuce">Ajoutez aussi la liste des licenciés exportée de FFE Club SIF : Stabl rapproche les licences et complète les fiches.</p>` : '') +
+      (!l.confirme ? `<p class="fine">Les noms de menus peuvent varier selon votre version : déposez ce que vous avez, Stabl reconnaît les colonnes tout seul.</p>` : ''),
   };
   return `<div class="modes">${['robot', 'ordinateur', 'codes', 'export'].filter(m => l.modes.includes(m)).map((m, i) => carteMode(m, blocs[m], i)).join('')}</div>`;
 }
@@ -314,7 +314,7 @@ $('#confirmer').addEventListener('click', async () => {
   try {
     const r = jobRobotUtilisable() ? await confirmerJobRobot()
       : await envoyer(etat.paquet, { essai: false, journal: m => { s.textContent += '\n' + m; } });
-    s.textContent += '\nC’est fait : vos données sont dans Piaffe.';
+    s.textContent += '\nC’est fait : vos données sont dans Stabl.';
     signaler('termine', r.job_id, etat.paquet.controle);
   } catch (err) { s.textContent += '\nÉchec : ' + err.message; b.disabled = false; }
 });

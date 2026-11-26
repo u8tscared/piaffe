@@ -1,5 +1,5 @@
 /**
- * Offres de Piaffe vendues aux clubs (vendeur : Marceau Ruis EI, SIREN 934 733 122).
+ * Offres de Stabl vendues aux clubs (vendeur : Marceau Ruis EI, SIREN 934 733 122).
  * FICHIER SANS IMPORT : il est aussi lu par scripts/setup-stripe.mjs (Node, suppression des types).
  *
  * Pour changer un prix : modifiez amount_cents ici, puis relancez le script de catalogue. Stripe ne permet
@@ -64,7 +64,7 @@ export const FOUNDER_OFFER = { plan: "club" as PlanKey, name: "Club fondateur", 
 /** Parrainage : le filleul reçoit un bon sur sa première facture, le parrain un crédit sur son compte. */
 export const REFERRAL = {
   coupon_id: "piaffe_parrainage",
-  coupon_name: "Parrainage Piaffe",
+  coupon_name: "Parrainage Stabl",
   /** Remise du filleul, une seule fois. */
   referee_amount_off_cents: 5000,
   /** Crédit offert au parrain sur sa prochaine facture, après le premier paiement du filleul. */
@@ -74,7 +74,7 @@ export const REFERRAL = {
 /** Coupons créés par le script de catalogue (les codes promo se créent ensuite dans Stripe sur ces coupons). */
 export const COUPONS = [
   { id: REFERRAL.coupon_id, name: REFERRAL.coupon_name, amount_off: REFERRAL.referee_amount_off_cents, currency: CURRENCY, duration: "once" },
-  { id: "piaffe_lancement", name: "Lancement Piaffe", percent_off: 20, duration: "repeating", duration_in_months: 3 },
+  { id: "piaffe_lancement", name: "Lancement Stabl", percent_off: 20, duration: "repeating", duration_in_months: 3 },
 ];
 
 /** Clé de recherche du Price Stripe (lookup_key). */
@@ -86,7 +86,7 @@ export function lookupKey(plan: PlanKey | "fondateur", interval: Interval): stri
 export function catalog() {
   const items = PLANS.map((p) => ({
     product_id: "piaffe_" + p.key,
-    product_name: "Piaffe " + p.name,
+    product_name: "Stabl " + p.name,
     description: p.tagline,
     prices: [
       { lookup_key: lookupKey(p.key, "month"), interval: "month" as Interval, amount: p.month_cents },
@@ -95,7 +95,7 @@ export function catalog() {
   }));
   items.push({
     product_id: "piaffe_fondateur",
-    product_name: "Piaffe " + FOUNDER_OFFER.name,
+    product_name: "Stabl " + FOUNDER_OFFER.name,
     description: "Offre des clubs fondateurs, prix garanti à vie",
     prices: [
       { lookup_key: lookupKey("fondateur", "month"), interval: "month", amount: FOUNDER_OFFER.month_cents },
@@ -119,7 +119,7 @@ export function planFromLookupKey(k: string | null | undefined): { plan: PlanKey
 
 /* ---------- Paiements des adhérents vers leur club (Stripe Connect) ---------- */
 
-/** Commission de Piaffe sur les paiements encaissés par les clubs, en pourcentage (0 = aucune). */
+/** Commission de Stabl sur les paiements encaissés par les clubs, en pourcentage (0 = aucune). */
 export const APPLICATION_FEE_PERCENT = 0;
 /** Nombres d'échéances proposés pour le paiement en plusieurs fois. */
 export const INSTALLMENT_COUNTS = [3, 10];

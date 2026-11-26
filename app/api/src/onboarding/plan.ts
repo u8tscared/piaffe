@@ -21,7 +21,7 @@ export interface Answers {
   arenas_indoor?: number; arenas_outdoor?: number; paddocks?: number; round_pen?: boolean;
   activities?: string[];
   software?: string;
-  /** Outils actuels : remplacés par Piaffe (récupération des données) ou gardés et connectés. */
+  /** Outils actuels : remplacés par Stabl (récupération des données) ou gardés et connectés. */
   migration?: MigrationAnswers;
   accountant?: boolean; accountant_email?: string; accountant_einvoice?: "yes" | "no" | "unknown";
   online_payments?: boolean; pay_methods?: string[];

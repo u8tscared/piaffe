@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Crée ou met à jour le catalogue Piaffe dans VOTRE compte Stripe (plateforme, Marceau Ruis EI) :
+ * Crée ou met à jour le catalogue Stabl dans VOTRE compte Stripe (plateforme, Marceau Ruis EI) :
  * produits Essentiel, Club, Domaine et Fondateur, prix mensuels et annuels (lookup_key piaffe_<offre>_<month|year>),
  * coupons de parrainage et de lancement, et le taux de TVA 20 % si PLATFORM_VAT_REGIME=normal.
  * Idempotent : relancez-le après chaque changement de prix dans src/billing/plans.ts.
@@ -41,7 +41,7 @@ const req = async (method, path, params = {}) => {
 };
 
 const mode = key.includes("_live_") ? "PRODUCTION" : "test";
-console.log(`Catalogue Piaffe, compte Stripe en mode ${mode}, API ${STRIPE_API_VERSION}`);
+console.log(`Catalogue Stabl, compte Stripe en mode ${mode}, API ${STRIPE_API_VERSION}`);
 try {
   const log = await ensureCatalog(req, catalog(), { vatRegime: process.env.PLATFORM_VAT_REGIME || "franchise" });
   for (const l of log) console.log(" - " + l);

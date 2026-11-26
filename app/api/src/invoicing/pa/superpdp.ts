@@ -12,8 +12,8 @@ import { PaError, paFetch } from "./types";
  * documentation officielle (superpdp.tech/documentation) n'était pas lisible depuis notre environnement :
  * les routes marquées « À CONFIRMER » sont à vérifier sur le compte éditeur avant la mise en production.
  *
- * Authentification : chaque club autorise Piaffe sur son propre compte SUPER PDP (OAuth2), Piaffe agit ensuite
- * pour son compte. EINVOICE_API_KEY = « client_id:client_secret » de l'application éditeur Piaffe.
+ * Authentification : chaque club autorise Stabl sur son propre compte SUPER PDP (OAuth2), Stabl agit ensuite
+ * pour son compte. EINVOICE_API_KEY = « client_id:client_secret » de l'application éditeur Stabl.
  */
 export const SUPERPDP_BASE = "https://api.superpdp.tech";
 /** À CONFIRMER : route de dépôt des données d'e-reporting (non exposée par le SDK public). */

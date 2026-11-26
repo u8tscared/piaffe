@@ -1,4 +1,4 @@
-// Assemble les tableaux lus en un « paquet Piaffe » (format piaffe-import 1.0) :
+// Assemble les tableaux lus en un « paquet Stabl » (format piaffe-import 1.0) :
 // une seule fiche par personne, familles reliées, chevaux reliés à leur propriétaire, factures regroupées.
 import { cle, vide } from './texte.mjs';
 import * as V from './valeurs.mjs';
@@ -362,7 +362,7 @@ class Paquet {
       }
       p.ids_source = p._idSources; delete p._idSources;
     }
-    for (const c of this.chevaux) if (!c.sire && !c.ueln) this.avertir('info', 'cheval_sans_sire', `${c.nom} n’a pas de numéro SIRE : Piaffe ne pourra pas pré-remplir sa fiche IFCE.`, c.origine[0]?.fichier, c.origine[0]?.ligne);
+    for (const c of this.chevaux) if (!c.sire && !c.ueln) this.avertir('info', 'cheval_sans_sire', `${c.nom} n’a pas de numéro SIRE : Stabl ne pourra pas pré-remplir sa fiche IFCE.`, c.origine[0]?.fichier, c.origine[0]?.ligne);
     for (const f of this.prestations) if (f.deduite) this.avertir('info', 'tarif_manquant', `Forfait « ${f.libelle} » trouvé sur des fiches mais sans tarif : à compléter.`);
   }
 
@@ -370,7 +370,7 @@ class Paquet {
     const impayes = this.factures.filter(f => f.reste > 0).reduce((a, f) => a + f.reste, 0);
     const soldes = this.personnes.filter(p => p.solde < 0).reduce((a, p) => a + p.solde, 0);
     return {
-      format: 'piaffe-import', version: VERSION_FORMAT, genere_le: new Date().toISOString(), outil: { nom: 'Passerelle Piaffe', version: VERSION_OUTIL },
+      format: 'piaffe-import', version: VERSION_FORMAT, genere_le: new Date().toISOString(), outil: { nom: 'Passerelle Stabl', version: VERSION_OUTIL },
       sources: this.sources,
       personnes: this.personnes, chevaux: this.chevaux, prestations: this.prestations, abonnements: this.abonnements,
       factures: this.factures, reglements: this.reglements, reprises: this.reprises, equipe: this.equipe, soins: this.soins,

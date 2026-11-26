@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Passerelle Piaffe</title>
+<title>Passerelle Stabl</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -169,8 +169,8 @@ footer{color:var(--mut);font-size:14px;text-align:center;padding:12px;line-heigh
 @media (max-width:640px){.grille{grid-template-columns:repeat(2,minmax(0,1fr))}.decision{grid-template-columns:auto 1fr}.decision .seg,.decision .fixe{grid-column:1/-1;justify-self:start}.decision .logo{grid-row:auto}.decision .effet{grid-column:1/-1}}
 </style></head><body><main>
 <div class="hero">
-  <div class="marque"><i></i> Piaffe</div>
-  <h1>Passez à Piaffe sans rien ressaisir.</h1>
+  <div class="marque"><i></i> Stabl</div>
+  <h1>Passez à Stabl sans rien ressaisir.</h1>
   <p>On récupère tout de votre ancien logiciel, on branche les outils que vous gardez.</p>
   <div class="garantie"><span>Rien à installer</span><span>Vos données restent à vous</span><span>Gratuit</span></div>
   <svg class="flux" viewBox="0 0 340 120" aria-hidden="true"><path id="chemin" d="M10 90 C 90 10, 200 130, 330 30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="4 6"/>
@@ -190,10 +190,10 @@ footer{color:var(--mut);font-size:14px;text-align:center;padding:12px;line-heigh
   <input id="recherche-outils" type="search" placeholder="Rechercher : SumUp, HelloAsso, Pennylane…" aria-label="Rechercher un outil" style="font:inherit;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card);color:var(--ink);width:100%">
   <div id="outils"></div></section>
 
-<section class="ecran" data-ecran="choix" tabindex="-1" hidden><h2>Pour chacun : on change ou on intègre ?</h2><p class="sous">Le choix recommandé est déjà fait. <b>Changer</b> : Piaffe le remplace, on récupère et vous résiliez. <b>Intégrer</b> : vous le gardez, on le branche.</p><div class="decisions" id="decisions"></div></section>
+<section class="ecran" data-ecran="choix" tabindex="-1" hidden><h2>Pour chacun : on change ou on intègre ?</h2><p class="sous">Le choix recommandé est déjà fait. <b>Changer</b> : Stabl le remplace, on récupère et vous résiliez. <b>Intégrer</b> : vous le gardez, on le branche.</p><div class="decisions" id="decisions"></div></section>
 
 <section class="ecran" data-ecran="plan" tabindex="-1" hidden><h2>Votre plan de bascule</h2><p class="sous">Voici exactement ce qui va se passer.</p><div class="plan" id="plan"></div>
-  <div id="etape-bonus" hidden><h3>Lettre de résiliation : <span id="lettre-pour"></span></h3><p class="sous">Piaffe prépare la lettre recommandée, avec la demande de restitution de vos données.</p>
+  <div id="etape-bonus" hidden><h3>Lettre de résiliation : <span id="lettre-pour"></span></h3><p class="sous">Stabl prépare la lettre recommandée, avec la demande de restitution de vos données.</p>
   <form id="resiliation" class="resil"><input name="club" placeholder="Nom du club" required><input name="siret" placeholder="SIRET"><input name="adresse" class="plein" placeholder="Adresse du club"><input name="ville" placeholder="Ville (pour la date)"><input name="signataire" placeholder="Signataire (nom, qualité)">
   <input id="r-logiciel" name="logiciel" placeholder="Logiciel"><input id="r-editeur" name="editeur" placeholder="Éditeur"><input name="adresse_editeur" class="plein" placeholder="Adresse de l’éditeur (sur votre contrat ou vos factures)"><input name="numero_client" placeholder="Numéro client"><label class="date">Date d’effet souhaitée <input name="date_effet" type="date"></label>
   <button class="bouton plein">Préparer la lettre</button></form>
@@ -205,19 +205,19 @@ footer{color:var(--mut);font-size:14px;text-align:center;padding:12px;line-heigh
   <div id="zone"><div class="icone"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2448d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
   <b>Glissez vos fichiers ici</b><p>ou</p><label class="bouton">Choisir des fichiers<input id="choisir" type="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xlsm,.xls,.json,.ics"></label>
   <p style="margin-top:14px"><button class="lien" id="exemple" type="button">Essayer avec des fichiers d’exemple</button></p></div></div>
-  <div class="bloc" id="etape-fichiers" hidden><h3>Ce que Piaffe a compris</h3><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></div>
-  <div class="bloc" id="etape-resultat" hidden><h3>Prêt pour Piaffe</h3><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
+  <div class="bloc" id="etape-fichiers" hidden><h3>Ce que Stabl a compris</h3><p class="sous">Vérifiez le type de chaque fichier. Vous pouvez corriger une colonne mal reconnue.</p><div id="fichiers"></div></div>
+  <div class="bloc" id="etape-resultat" hidden><h3>Prêt pour Stabl</h3><p class="sous">Comparez ces chiffres avec votre ancien logiciel avant d’importer.</p>
   <div id="tuiles"></div><div id="avert"></div>
-  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Piaffe</button></div>
-  <div class="importer" id="importer-zone" hidden><h3>Importer dans Piaffe</h3><p class="fine">On fait d’abord un essai : rien n’est enregistré tant que vous ne confirmez pas.</p>
-    <div class="actions"><button class="bouton" id="importer" type="button">Importer dans Piaffe</button><button class="bouton" id="confirmer" type="button" hidden>Confirmer l’import</button></div><pre id="importer-sortie"></pre></div>
-  <details id="envoi-details"><summary>Envoyer directement à mon compte Piaffe</summary>
-  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Piaffe (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
+  <div class="actions"><button class="bouton" id="dl-rapport" type="button">Télécharger le rapport</button><button class="bouton second" id="dl-paquet" type="button">Télécharger le paquet Stabl</button></div>
+  <div class="importer" id="importer-zone" hidden><h3>Importer dans Stabl</h3><p class="fine">On fait d’abord un essai : rien n’est enregistré tant que vous ne confirmez pas.</p>
+    <div class="actions"><button class="bouton" id="importer" type="button">Importer dans Stabl</button><button class="bouton" id="confirmer" type="button" hidden>Confirmer l’import</button></div><pre id="importer-sortie"></pre></div>
+  <details id="envoi-details"><summary>Envoyer directement à mon compte Stabl</summary>
+  <form id="envoi"><input type="url" name="url" placeholder="Adresse de Stabl (https://…)" required><input type="password" name="cle" placeholder="Clé d’API « import » (Réglages)" required>
   <div class="ligne"><label><input type="checkbox" name="reel"> Enregistrer pour de vrai (sinon c’est un essai)</label><button class="bouton">Envoyer</button></div><pre id="envoi-sortie"></pre></form></details></div>
 </section>
 
 <div class="nav" id="nav"><button class="bouton second retour" id="retour" type="button">Retour</button><a class="lien passer" id="passer" href="#">Passer cette étape</a><button class="bouton" id="continuer" type="button">Continuer</button></div>
-<footer>Les marques et logos cités appartiennent à leurs propriétaires ; Piaffe n’est pas affilié à ces éditeurs.<br>Passerelle Piaffe · prototype. Les fichiers déposés sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous n’importez pas.</footer>
+<footer>Les marques et logos cités appartiennent à leurs propriétaires ; Stabl n’est pas affilié à ces éditeurs.<br>Passerelle Stabl · prototype. Les fichiers déposés sont lus dans ce navigateur et ne sont envoyés nulle part tant que vous n’importez pas.</footer>
 </main>
 <script type="module" src="app.mjs"></script>
 </body></html>

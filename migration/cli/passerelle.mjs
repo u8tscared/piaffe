@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Passerelle Piaffe, version ordinateur.
+// Passerelle Stabl, version ordinateur.
 //   node passerelle.mjs chercher [dossier…]          repère les exports et les bases d'un ancien logiciel sur ce poste
-//   node passerelle.mjs convertir <fichiers|dossier…> [--sortie dossier]   fabrique le paquet Piaffe + le rapport
+//   node passerelle.mjs convertir <fichiers|dossier…> [--sortie dossier]   fabrique le paquet Stabl + le rapport
 // Rien n'est envoyé sur Internet. Les fichiers d'origine ne sont jamais modifiés.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,7 +29,7 @@ if (commande === 'chercher') await chercher(cibles);
 else if (commande === 'convertir') await convertir(cibles);
 else if (commande === 'envoyer') { /* plus bas */ }
 else {
-  console.log(`Passerelle Piaffe : changer de logiciel sans rien ressaisir.
+  console.log(`Passerelle Stabl : changer de logiciel sans rien ressaisir.
 
   chercher [dossier…]            repère les exports et les bases d'un ancien logiciel (Kavalog, Equimondo…)
   convertir <fichiers|dossier…>  fabrique paquet-piaffe.json et rapport-migration.html
@@ -113,7 +113,7 @@ async function convertir(cibles) {
   console.log(`\nÉcrit : ${fj}\n       ${fr}`);
 }
 
-// ---------- envoi vers Piaffe ----------
+// ---------- envoi vers Stabl ----------
 async function envoyerCmd(args) {
   const { envoyer, versLots } = await import('../core/vers-api.mjs');
   const o = { essai: true };

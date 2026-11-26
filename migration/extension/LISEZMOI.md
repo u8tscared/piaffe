@@ -1,4 +1,4 @@
-# Extension « Piaffe : changer de logiciel » (robot navigateur)
+# Extension « Stabl : changer de logiciel » (robot navigateur)
 
 Le gérant se connecte **lui-même** à son ancien logiciel (double authentification comprise), puis clique sur l'extension :
 
@@ -12,7 +12,7 @@ Le gérant se connecte **lui-même** à son ancien logiciel (double authentifica
 - Il ne voit jamais le mot de passe : le gérant se connecte lui-même ; les champs mot de passe ne sont jamais lus.
 - Accès au site demandé au moment voulu, pour ce site seulement (`optional_host_permissions`).
 - Une pause de 0,7 s entre deux pages pour ne pas charger le serveur de l'ancien éditeur.
-- Tout reste dans le navigateur jusqu'au téléchargement. Seuls les chemins appris (sans aucune donnée de club) et les incidents peuvent être envoyés à Piaffe si une adresse de serveur est configurée.
+- Tout reste dans le navigateur jusqu'au téléchargement. Seuls les chemins appris (sans aucune donnée de club) et les incidents peuvent être envoyés à Stabl si une adresse de serveur est configurée.
 
 ## Essayer
 

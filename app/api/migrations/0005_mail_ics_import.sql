@@ -1,4 +1,4 @@
--- Piaffe · lot D : e-mails transactionnels, calendriers ICS, API d'import.
+-- Stabl · lot D : e-mails transactionnels, calendriers ICS, API d'import.
 
 -- ---------- E-mails : file d'attente ----------
 -- Chaque e-mail passe par cette table : envoi immédiat tenté, puis reprise par le cron avec délai croissant.
@@ -99,7 +99,7 @@ CREATE TABLE import_items (
   PRIMARY KEY (job_id, coll, external_id)
 );
 
--- Correspondance idempotente : (club, source, collection, id externe) → id Piaffe.
+-- Correspondance idempotente : (club, source, collection, id externe) → id Stabl.
 CREATE TABLE import_map (
   club_id TEXT NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
   source TEXT NOT NULL,

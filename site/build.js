@@ -1,4 +1,4 @@
-/* Piaffe · landing. node site/build.js
+/* Stabl · landing. node site/build.js
    Assemble src/landing.html + landing.css + landing.js, injecte les icônes, le logo, les illustrations (demo/core/icons.js)
    et le cheval 3D (demo/core/horse.inc.js).
    Sorties : dist/landing.html (publication, images en shots/…) et dist/preview.html (document complet, images en ../shots/…). */
@@ -15,7 +15,7 @@ const DEMO=process.env.PIAFFE_DEMO==='pages'?'demo/':'https://claude.ai/artifact
 html=html.replace(/\{\{demo:([a-z0-9-]+)\}\}/g,(m,r)=>'href="'+DEMO+'#'+r+'" target="_blank" rel="noopener"');
 html=html.replace(/\{\{demobase\}\}/g,DEMO);
 /* icônes : {{i:nom}} */
-const vm=require('vm');const ctx={window:{}};vm.runInNewContext(rd(path.join(CORE,'icons.js')),ctx);
+const vm=require('vm');const ctx={window:{}};vm.runInNewContext((fs.existsSync(path.join(CORE,'brand.js'))?rd(path.join(CORE,'brand.js'))+'\n;\n':'')+rd(path.join(CORE,'icons.js')),ctx);
 html=html.replace(/\{\{i:([a-z_]+)\}\}/g,(m,n)=>{if(!ctx.window.ICONS[n])throw new Error('Icône inconnue : '+n);return ctx.window.ICON(n)});
 html=html.replace(/\{\{logo:(\d+)\}\}/g,(m,n)=>ctx.window.LOGO(+n,'currentColor','var(--acc)',true));
 /* espaces insécables dans le texte HTML (hors style et script) */

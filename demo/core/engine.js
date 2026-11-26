@@ -143,7 +143,7 @@ var HW='<span class="hw cam"></span><span class="hw island"></span><span class="
 function buildDemo(){
   /* la page publiée place styles et polices dans <body> : on les met à l'abri dans <head> avant de redessiner */
   Array.prototype.slice.call(document.body.querySelectorAll('style,link,meta,title')).forEach(function(n){document.head.appendChild(n)});
-  document.body.innerHTML='<div id="demo"><header class="dbar"><div class="brand">'+LOGO(28,'var(--ink)','var(--strass)',true)+'<span>'+F.esc((window.BRAND||{}).name||'Piaffe')+'</span><small>Démo</small></div>'+
+  document.body.innerHTML='<div id="demo"><header class="dbar"><div class="brand">'+LOGO(28,'var(--ink)','var(--strass)',true)+'<span>'+F.esc((window.BRAND||{}).wordmark||(window.BRAND||{}).name||'stabl')+'</span><small>Démo</small></div>'+
    '<div class="roles">'+P.ui.seg(Object.keys(P.roles).map(function(k){return [k,ICON(P.roles[k].icon)+'<span class="lbl">'+P.roles[k].label+'</span>']}),S.role,'data-role')+'</div>'+
    '<div class="right"><div class="dev">'+P.ui.seg([['desktop',DEVI.desktop],['tablet',DEVI.tablet],['phone',DEVI.phone]],S.dev,'data-dev')+'</div>'+
    '<button class="btn ghost icon sm" data-theme-t title="Thème clair ou sombre">'+ICON('moon')+'</button>'+
@@ -210,12 +210,12 @@ P.renderShell=function(){
   app.className='app nav-'+P.navMode()+(mobile?' mobile':'')+(rail?' rail':'');app.classList.toggle('mini',P.navMini());app.setAttribute('data-role',role);
   var cur=P.mods[S.route]||{};
   var SPACE={gerant:'Espace gérant',employe:'Espace équipe',adherent:'Espace cavalier',coach:'Espace coach'};
-  app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Piaffe Coach':D.club.name)+'</b><small>'+SPACE[role]+'</small></span></button>'+
+  app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Stabl Coach':D.club.name)+'</b><small>'+SPACE[role]+'</small></span></button>'+
     '<nav aria-label="Menu">'+navHTML()+'</nav><div class="me">'+P.ui.av(me)+'<span class="cn"><b>'+F.esc(me.first+' '+me.last)+'</b><small>'+F.esc(me.role||(me.galop?'Galop '+me.galop:me.spec?'Coach '+me.spec:R.label))+'</small></span></div></aside>'+
     '<div class="main"><header class="top"><div class="lft"><button class="btn ghost icon mback" data-back title="Retour">'+ICON('back')+'</button><button class="mlogo" data-go="'+R.home+'" title="Accueil">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</button><div class="crumb">'+crumbHTML(cur)+'</div></div>'+
     '<button class="cmdk" data-pal title="Rechercher (⌘K)">'+ICON('search')+'<span class="q">Rechercher un cheval, un cavalier, un écran…</span><kbd>⌘ K</kbd></button>'+
     '<div class="tools"><button class="btn ghost icon msearch" data-pal title="Rechercher">'+ICON('search')+'</button><button class="btn ghost icon bellb" data-notifs title="Notifications">'+ICON('bell')+'<i></i></button>'+
-    '<button class="ai" data-ai title="Piaffe AI"><span class="aim">'+LOGO(18,'var(--navy-ink)','var(--strass)')+'</span><span class="lbl">Piaffe AI</span></button></div><div class="mt">'+(cur.phoneTitle||cur.title||'')+'</div></header><div class="stw">'+secTabsHTML()+'</div><div class="view"></div></div>'+
+    '<button class="ai" data-ai title="Stabl AI"><span class="aim">'+LOGO(18,'var(--navy-ink)','var(--strass)')+'</span><span class="lbl">Stabl AI</span></button></div><div class="mt">'+(cur.phoneTitle||cur.title||'')+'</div></header><div class="stw">'+secTabsHTML()+'</div><div class="view"></div></div>'+
     (mobile?'':navTogHTML())+'<nav class="tabbar">'+tabsHTML()+'</nav><div class="toasts"></div>';
   view=$('.view',app);setDom(cur);
   if(mobile)mbk(S.stack.length&&!R0(cur))
@@ -293,7 +293,7 @@ function notifs(btn){P.closeSheets();var r=btn.getBoundingClientRect(),ar=app.ge
 /* ---------- Palette de commandes ⌘K ---------- */
 P.actions=[];/* P.actions.push({role,label,icon,run:function(){}}) */
 P.palette=function(){if($('.pal',app))return;var sc=document.createElement('div');sc.className='scrim';sc.style.background='rgba(10,22,54,.20)';
-  var pl=document.createElement('div');pl.className='pal';pl.innerHTML='<div class="pin">'+ICON('search')+'<input id="pal-q" placeholder="Chercher un cheval, un adhérent, un écran, une action…" autocomplete="off"><span class="kbd">Échap</span></div><div class="pres"></div><div class="pfoot"><span><span class="kbd">↑↓</span> naviguer</span><span><span class="kbd">↵</span> ouvrir</span><span style="margin-left:auto;display:flex;align-items:center;gap:8px">'+LOGO(18,'var(--mut)','var(--strass)')+'Piaffe</span></div>';
+  var pl=document.createElement('div');pl.className='pal';pl.innerHTML='<div class="pin">'+ICON('search')+'<input id="pal-q" placeholder="Chercher un cheval, un adhérent, un écran, une action…" autocomplete="off"><span class="kbd">Échap</span></div><div class="pres"></div><div class="pfoot"><span><span class="kbd">↑↓</span> naviguer</span><span><span class="kbd">↵</span> ouvrir</span><span style="margin-left:auto;display:flex;align-items:center;gap:8px">'+LOGO(18,'var(--mut)','var(--strass)')+'Stabl</span></div>';
   app.appendChild(sc);app.appendChild(pl);var inp=$('input',pl),res=$('.pres',pl),items=[],sel=0;
   function close(){pl.remove();sc.remove()}sc.onclick=close;
   function run(q){q=(q||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');var n=function(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')};items=[];
@@ -316,8 +316,8 @@ P.palette=function(){if($('.pal',app))return;var sc=document.createElement('div'
 P.brain=[];
 P.suggestions={gerant:['Qui n’a pas payé ce mois-ci ?','Prépare le planning de samedi','Combien me coûte Ulysse ?','Relance les impayés'],employe:['Qu’est-ce que je fais maintenant ?','Signale un problème au box 12','Qui sort au paddock ?'],adherent:['Réserve-moi un rattrapage samedi','Comment va Ulysse ?','Trouve un coach CSO jeudi'],coach:['Mes cours de la semaine','Qui a progressé ce mois-ci ?','Bloque mon vendredi']};
 P.assistant=function(first){var ex=$('.aip',app);if(ex){ex.remove();if(!first)return}
-  var w=document.createElement('div');w.className='aip';w.innerHTML='<div class="aih"><span class="orb">'+LOGO(24,'var(--navy-ink)','var(--strass)',true)+'</span><div class="grow"><b>Piaffe AI</b><div class="xs mut">Il agit dans '+D.club.short+' avec vos droits '+(function(l){l=l.toLowerCase();return (/^[aeéèiouh]/.test(l)?'d’':'de ')+l})(P.roles[S.role].label)+'</div></div><button class="btn ghost icon sm" data-x>'+ICON('x')+'</button></div>'+
-   '<div class="aib"><div class="msg a">Bonjour '+P.ctx().me.first+'. Posez une question ou demandez une action : je cherche dans tout Piaffe et je vous montre ce que je vais faire avant de le faire.</div></div>'+
+  var w=document.createElement('div');w.className='aip';w.innerHTML='<div class="aih"><span class="orb">'+LOGO(24,'var(--navy-ink)','var(--strass)',true)+'</span><div class="grow"><b>Stabl AI</b><div class="xs mut">Il agit dans '+D.club.short+' avec vos droits '+(function(l){l=l.toLowerCase();return (/^[aeéèiouh]/.test(l)?'d’':'de ')+l})(P.roles[S.role].label)+'</div></div><button class="btn ghost icon sm" data-x>'+ICON('x')+'</button></div>'+
+   '<div class="aib"><div class="msg a">Bonjour '+P.ctx().me.first+'. Posez une question ou demandez une action : je cherche dans tout Stabl et je vous montre ce que je vais faire avant de le faire.</div></div>'+
    '<div class="aif"><div class="sugg">'+(P.suggestions[S.role]||[]).map(function(s){return '<button>'+s+'</button>'}).join('')+'</div><form class="comp"><input id="ai-q" placeholder="Demandez n’importe quoi…" autocomplete="off"><button class="btn icon sm pri" title="Envoyer">'+ICON('send','sm')+'</button></form></div>';
   app.appendChild(w);var body=$('.aib',w),inp=$('input',w);
   $('[data-x]',w).onclick=function(){w.remove()};
@@ -421,7 +421,7 @@ function glideWatch(e){var b=e.target.closest&&e.target.closest('.seg>button,.ta
 function lnchIdx(){$$('.lnch .lapp',app).forEach(function(b,i){b.style.setProperty('--i',Math.min(i,16))})}
 /* écran de lancement : le logo, le nom, le club ; il s'efface seul et ne bloque jamais les clics */
 function splash(){if(!frame)return;var B=window.BRAND||{};var sp=document.createElement('div');sp.className='splash';sp.setAttribute('aria-hidden','true');
-  sp.innerHTML='<div class="spc"><span class="spl">'+LOGO(92,'var(--hero-ink)','var(--strass)',true)+'</span><b>'+F.esc(B.name||'Piaffe')+'</b><small>'+F.esc(D.club.name)+'</small><i class="spbar"><i></i></i></div>';
+  sp.innerHTML='<div class="spc"><span class="spl">'+LOGO(92,'var(--hero-ink)','var(--strass)',true)+'</span><b>'+F.esc(B.wordmark||B.name||'stabl')+'</b><small>'+F.esc(D.club.name)+'</small><i class="spbar"><i></i></i></div>';
   frame.appendChild(sp);setTimeout(function(){sp.classList.add('out')},RM?300:1050);setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp)},RM?600:1500)}
 P.splash=splash;
 

@@ -1,11 +1,11 @@
-# Format du paquet Piaffe (piaffe-import 1.0)
+# Format du paquet Stabl (piaffe-import 1.0)
 
 Le paquet est un fichier JSON produit par la passerelle. Il décrit le club tel qu'il était dans l'ancien logiciel, déjà nettoyé et dédoublonné. Les références internes (`p0001`, `c0001`, `f001`…) ne valent que dans le paquet ; pour l'API, `core/vers-api.mjs` les remplace par des identifiants stables.
 
 ```jsonc
 {
   "format": "piaffe-import", "version": "1.0", "genere_le": "2026-11-24T16:30:00Z",
-  "outil": { "nom": "Passerelle Piaffe", "version": "0.1.0" },
+  "outil": { "nom": "Passerelle Stabl", "version": "0.1.0" },
   "sources": [ { "fichier": "kavalog-cavaliers.csv", "feuille": null, "logiciel": "kavalog", "type": "adherents",
                  "lignes": 8, "ligne_entete": 3, "colonnes": { "N° licence": "licence" }, "ignorees": [], "candidats": [] } ],
   "personnes": [ { "ref": "p0001", "prenom": "Léa", "nom": "Martin", "naissance": "2012-03-14", "sexe": "F",

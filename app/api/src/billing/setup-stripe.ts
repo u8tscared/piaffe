@@ -1,5 +1,5 @@
 /**
- * Création idempotente du catalogue Piaffe dans le compte Stripe de la plateforme (Marceau Ruis EI) :
+ * Création idempotente du catalogue Stabl dans le compte Stripe de la plateforme (Marceau Ruis EI) :
  * produits, prix (retrouvés par lookup_key), coupons, et taux de TVA 20 % si le régime passe à « normal ».
  *
  * AUCUN IMPORT À L'EXÉCUTION : ce fichier est utilisé par la route d'administration du Worker ET par

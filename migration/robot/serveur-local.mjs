@@ -103,4 +103,4 @@ http.createServer(async (req, res) => {
     if (!action && req.method === 'DELETE') { fermer(s); return json(res, 200, { ok: true }); }
     json(res, 404, { error: { code: 'introuvable' } });
   } catch (err) { json(res, 500, { error: { code: 'erreur', message: String(err.message || err) } }); }
-}).listen(PORT, () => console.log(`Robot Piaffe : http://localhost:${PORT}${LOCAL ? ' (adresses locales autorisées)' : ''}`));
+}).listen(PORT, () => console.log(`Robot Stabl : http://localhost:${PORT}${LOCAL ? ' (adresses locales autorisées)' : ''}`));

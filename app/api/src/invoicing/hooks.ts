@@ -14,7 +14,7 @@ import { createPlatformInvoice } from "./platform";
  *  - payment.refunded  {club_id, invoice_id, amount_cents (part nouvellement remboursée), stripe_ref, payment_id}
  *                      → paiement négatif (remboursement) ; la facture redevient due ou partiellement payée.
  *  - subscription.paid {club_id, stripe_invoice_id, number, amount_cents, tax_cents, period_start, period_end, plan, …}
- *                      → facture Factur-X de Piaffe (Marceau Ruis EI) au club, rangée aussi dans ses achats.
+ *                      → facture Factur-X de Stabl (Marceau Ruis EI) au club, rangée aussi dans ses achats.
  * Événement émis : invoice.issued {club_id, invoice_id, number, kind}.
  */
 export function registerHooks() {

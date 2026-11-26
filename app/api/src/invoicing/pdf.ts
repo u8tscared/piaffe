@@ -227,7 +227,7 @@ async function finalizeFacturX(doc: PDFDocument, s: Snapshot, xml: string, creat
   const author = s.seller.name;
   const subject = `${title}, ${s.buyer.name}`;
   const keywords = "Factur-X, facture électronique, " + s.number;
-  const producer = "Piaffe";
+  const producer = "Stabl";
   doc.setTitle(title, { showInWindowTitleBar: true });
   doc.setAuthor(author); doc.setSubject(subject); doc.setKeywords([keywords]);
   doc.setProducer(producer); doc.setCreator(producer);

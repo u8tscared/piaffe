@@ -1,9 +1,9 @@
-# Landing Piaffe v3 : brief
+# Landing Stabl v3 : brief
 
 ## Contexte
-Piaffe est le logiciel tout-en-un des centres équestres (démo : /home/claude/piaffe/demo, 55 écrans, 4 espaces : gérant, employé, adhérent, coach). Marceau, le fondateur, va bientôt présenter le produit. Il veut une landing qui fasse dire « ça a l'air dingue, je veux ça ».
+Stabl est le logiciel tout-en-un des centres équestres (démo : /home/claude/piaffe/demo, 55 écrans, 4 espaces : gérant, employé, adhérent, coach). Marceau, le fondateur, va bientôt présenter le produit. Il veut une landing qui fasse dire « ça a l'air dingue, je veux ça ».
 
-Ses mots : « plus complète, plus sympa, avec les bonnes couleurs, qu'on comprenne toute l'application et ses parties (gérant, employé, adhérent, coach). Ultra clair, ultra dingue en design, qui reprend la direction artistique et les vrais écrans. Du motion design, ultra bien expliqué. Le titre et les textes ne doivent pas bouger : un seul texte hyper clair. Une partie Piaffe AI, en rouge, expliquée comme Gusto AI sur growthgusto.fr. Ultra complet, et on doit pouvoir essayer la démo. »
+Ses mots : « plus complète, plus sympa, avec les bonnes couleurs, qu'on comprenne toute l'application et ses parties (gérant, employé, adhérent, coach). Ultra clair, ultra dingue en design, qui reprend la direction artistique et les vrais écrans. Du motion design, ultra bien expliqué. Le titre et les textes ne doivent pas bouger : un seul texte hyper clair. Une partie Stabl AI, en rouge, expliquée comme Gusto AI sur growthgusto.fr. Ultra complet, et on doit pouvoir essayer la démo. »
 
 ## Modèle : growthgusto.fr (une autre entreprise de Marceau)
 C'est très clair dès la première page. Reprendre sa logique (pas son contenu) :
@@ -36,7 +36,7 @@ C'est très clair dès la première page. Reprendre sa logique (pas son contenu)
 11. Tarifs « Trois packs. C'est tout. » avec bascule mensuel/annuel.
 12. Comparatif, FAQ, bandeau final, pied de page à colonnes.
 
-### Gusto AI sur growthgusto.fr (à transposer en Piaffe AI)
+### Gusto AI sur growthgusto.fr (à transposer en Stabl AI)
 - Bloc module : « Posez la question, il lit vos chiffres. » Il lit ventes, achats, stock et planning, répond avec les vrais chiffres, repère les problèmes et propose l'action. Rien ne se fait sans validation. Puces : « Vos chiffres, en une question » (« Pourquoi ma marge baisse ? »), « Il propose, vous validez », « Aussi dans Claude et ChatGPT ». Maquette : question, réponse chiffrée, carte de proposition avec boutons « Valider ».
 - Bloc « Parlez à votre établissement, dans Claude et ChatGPT. » : maquette d'un chat Claude avec « Growth Gusto relié », une ligne d'outil « A lu ventes et marges », la réponse chiffrée, et la légende « Exemple, avec les chiffres d'un établissement fictif. ». Logos des IA (Claude, ChatGPT, Le Chat, Perplexity, Grok), en pastilles texte : pas de vrais logos de marque.
 - Page détaillée en sections numérotées :
@@ -51,10 +51,10 @@ C'est très clair dès la première page. Reprendre sa logique (pas son contenu)
 ## Ce qu'on construit
 Une landing longue et complète, en français. Proposition de déroulé, que tu peux améliorer :
 
-1. **Nav** : logo Piaffe, liens Fonctionnalités, Quatre espaces, Piaffe AI, Tarifs, Questions, thème clair/sombre, bouton « Essayer la démo ».
+1. **Nav** : logo Stabl, liens Fonctionnalités, Quatre espaces, Stabl AI, Tarifs, Questions, thème clair/sombre, bouton « Essayer la démo ».
 2. **Hero, sans aucune animation de texte** :
    - H1 du type « Tout votre centre équestre dans une seule app. » ;
-   - chapeau qui nomme planning, chevaux et soins, adhérents, facturation et compta, équipe, caméras, concours, Piaffe AI ;
+   - chapeau qui nomme planning, chevaux et soins, adhérents, facturation et compta, équipe, caméras, concours, Stabl AI ;
    - boutons « Essayer la démo » et « Voir les fonctionnalités », avec la légende sur la démo pré-remplie ;
    - ligne de confiance (prends les vrais engagements de l'ancienne landing : essai, sans engagement, reprise des données, hébergé en France) ;
    - visuel : capture réelle g-cockpit dans un cadre navigateur soigné, téléphone p-adh-accueil qui chevauche, 2 ou 3 cartes flottantes de vraies données de la démo (exemples : « 7 relances prêtes, 2 073 € », « Xanthos, box B23, boit 40 % de moins », « Planning de la semaine rempli à 86 % »).
@@ -63,7 +63,7 @@ Une landing longue et complète, en français. Proposition de déroulé, que tu 
    - onglets Gérant, Employé, Adhérent, Coach ;
    - pour chaque espace : qui c'est, 3 ou 4 puces, la ou les vraies captures dans le bon appareil (gérant : ordinateur, employé : téléphone et tablette, adhérent : téléphone, coach : ordinateur et téléphone), et un lien « Ouvrir l'espace … dans la démo » vers la bonne route ;
    - transition soignée entre les onglets.
-5. **Tour des modules** « Ce que fait Piaffe, métier par métier » :
+5. **Tour des modules** « Ce que fait Stabl, métier par métier » :
    - barre d'ancres collante ;
    - environ 8 à 10 blocs : Planning et reprises, Chevaux et soins, Écurie connectée (plan 3D, caméras, alimentation), Adhérents, pensions et contrats, Facturation et comptabilité, Équipe et pointage, Compétitions et coachs, Communication, Connecteurs et import ;
    - chaque bloc est construit comme ceux de Gusto, avec la vraie capture.
@@ -74,14 +74,14 @@ Une landing longue et complète, en français. Proposition de déroulé, que tu 
    - léger effet de profondeur au défilement.
 
    Le titre en deux temps ne passe pas par l'italique (Marceau refuse les titres en italique) : la seconde moitié prend la couleur du domaine.
-6. **Piaffe AI** (MISE À JOUR : PAS de rouge ; identité navy + strass de l'assistant dans la démo, cohérente avec le reste) : la pièce maîtresse, aussi complète que Gusto AI.
+6. **Stabl AI** (MISE À JOUR : PAS de rouge ; identité navy + strass de l'assistant dans la démo, cohérente avec le reste) : la pièce maîtresse, aussi complète que Gusto AI.
    - Fond rouge profond ou dégradé rouge, avec du texte clair, pensé pour les modes clair et sombre. S'appuyer sur le rouge du système (--cr #ee5f48, --cr-ink #972414) et le pousser vers un rouge riche et premium.
-   - Titre du type « Posez la question. Piaffe AI répond avec les chiffres de votre écurie. »
+   - Titre du type « Posez la question. Stabl AI répond avec les chiffres de votre écurie. »
    - Exemples de questions en pastilles : « Qui n'a pas payé ce mois-ci ? », « Quels chevaux ont trop travaillé cette semaine ? », « Remplis les places libres de samedi », « Prépare les factures de pension ».
    - Chat interactif en HTML : on clique une question, la réponse s'écrit avec de vrais chiffres de la démo et une carte d'action « Valider », « Modifier ». Ici seulement, l'animation de frappe est permise, puisque c'est le produit qui parle, pas un titre.
    - Les capacités en sections numérotées, sur le modèle Gusto 01 à 06.
    - Le point du matin.
-   - Bloc « Votre écurie dans Claude et ChatGPT » : maquette de chat Claude, « Piaffe relié », ligne d'outil, adresse MCP à copier, pastilles des IA.
+   - Bloc « Votre écurie dans Claude et ChatGPT » : maquette de chat Claude, « Stabl relié », ligne d'outil, adresse MCP à copier, pastilles des IA.
    - Garanties.
    - La vraie capture g-ai-relances.
 7. **Multi-appareils** : « Le téléphone à l'écurie, l'ordinateur au bureau. »
@@ -104,7 +104,7 @@ Une landing longue et complète, en français. Proposition de déroulé, que tu 
   - apparitions au défilement (fondu et légère montée, en cascade) ;
   - captures qui se posent avec un léger 3D ou parallaxe ;
   - onglets qui glissent ;
-  - le chat Piaffe AI ;
+  - le chat Stabl AI ;
   - survols riches.
 
   Respecter prefers-reduced-motion.
@@ -157,4 +157,4 @@ Une landing longue et complète, en français. Proposition de déroulé, que tu 
 ## Rapport final (court)
 - Déroulé des sections.
 - Ce qui a été vérifié.
-- Les chemins de 4 captures représentatives : hero, quatre espaces, Piaffe AI, téléphone.
+- Les chemins de 4 captures représentatives : hero, quatre espaces, Stabl AI, téléphone.

@@ -5,7 +5,7 @@ import { createPlatformInvoice } from "../src/invoicing/platform";
 import { extractFacturX } from "../src/invoicing/pdf";
 import { parisToday } from "../src/invoicing/invoices";
 
-describe("factures de Piaffe aux clubs", () => {
+describe("factures de Stabl aux clubs", () => {
   it("subscription.paid produit une facture Factur-X de Marceau Ruis EI, réglée, idempotente, rangée dans les achats du club", async () => {
     const o = await setupClub();
     const ev = { type: "subscription.paid", club_id: o.clubId, stripe_invoice_id: "in_" + o.clubId, number: "ABC-0001", amount_cents: 5900, tax_cents: 0,
@@ -26,7 +26,7 @@ describe("factures de Piaffe aux clubs", () => {
     const purchases = await (await call(`/api/accounting/purchases?year=${parisToday().slice(0, 4)}`, { token: o.token })).json() as any;
     expect(purchases.purchases).toHaveLength(1);
     expect(purchases.purchases[0]).toMatchObject({ source: "piaffe", total_ttc: 5900, account: "651000", has_pdf: true });
-    // La facture Piaffe n'apparaît pas dans les ventes du club et n'est pas payable par le lot Stripe.
+    // La facture Stabl n'apparaît pas dans les ventes du club et n'est pas payable par le lot Stripe.
     const sales = await (await call("/api/invoices", { token: o.token })).json() as any;
     expect(sales.invoices).toHaveLength(0);
   });
@@ -37,7 +37,7 @@ describe("factures de Piaffe aux clubs", () => {
     expect(inv).toMatchObject({ total_ttc: 7080, total_ht: 5900, total_vat: 1180, status: "paid" });
   });
 
-  it("seuls les gérants et le comptable du club acheteur voient ses factures Piaffe", async () => {
+  it("seuls les gérants et le comptable du club acheteur voient ses factures Stabl", async () => {
     const a = await setupClub(); const b = await setupClub();
     await createPlatformInvoice(env, { club_id: a.clubId, amount_cents: 2900, period_start: null, period_end: null, stripe_invoice_id: "in_x_" + a.clubId, plan: "essentiel" });
     const lb = await (await call("/api/invoicing/piaffe-invoices", { token: b.token })).json() as any;

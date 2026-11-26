@@ -58,8 +58,8 @@ export async function planAccess(db: D1Database, clubId: string, now = Date.now(
 
 const WRITE_BLOCKED_MSG = {
   blocked_trial: "Votre période d'essai est terminée. Choisissez une offre pour continuer à modifier vos données\u00a0; elles restent consultables.",
-  blocked_unpaid: "Le paiement de votre abonnement Piaffe n'a pas abouti. Mettez à jour votre moyen de paiement pour continuer à modifier vos données\u00a0; elles restent consultables.",
-  blocked_canceled: "Votre abonnement Piaffe est résilié. Réabonnez-vous pour continuer à modifier vos données\u00a0; elles restent consultables.",
+  blocked_unpaid: "Le paiement de votre abonnement Stabl n'a pas abouti. Mettez à jour votre moyen de paiement pour continuer à modifier vos données\u00a0; elles restent consultables.",
+  blocked_canceled: "Votre abonnement Stabl est résilié. Réabonnez-vous pour continuer à modifier vos données\u00a0; elles restent consultables.",
 } as Record<string, string>;
 
 /**

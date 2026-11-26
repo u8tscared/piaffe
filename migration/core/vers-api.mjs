@@ -1,4 +1,4 @@
-// Traduit un paquet piaffe-import 1.0 en lots pour l'API d'import du serveur Piaffe
+// Traduit un paquet piaffe-import 1.0 en lots pour l'API d'import du serveur Stabl
 // (POST /api/v1/import/jobs/:id/items {coll, items:[{external_id, data}]}, voir app/ARCHITECTURE.md).
 // `data` suit la forme de demo/core/data.js ; les références s'écrivent "ext:<external_id>".
 // Les external_id sont stables d'une passe à l'autre (licence, SIRE, numéro de facture…) pour que

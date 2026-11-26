@@ -1,4 +1,4 @@
-// Moteur d'exploration du robot Piaffe, indépendant du navigateur qui l'exécute.
+// Moteur d'exploration du robot Stabl, indépendant du navigateur qui l'exécute.
 // `page` suit l'interface commune à Playwright et Puppeteer : goto(url), url(), evaluate(fn, arg).
 // Utilisé par le robot côté serveur (aucune installation chez le club). Mêmes règles que l'extension :
 // lecture seule, seul le bouton « suivant » est cliqué, liens dangereux ignorés, pause entre les pages.

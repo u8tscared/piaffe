@@ -177,10 +177,10 @@ var I={
 I.horse_logo='<path class="f" d="M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z" stroke-width="4" stroke="currentColor"/>';
 window.ICONS=I;
 window.ICON=function(n,k){var b=I[n]||I.dot;return '<svg class="i'+(k?' '+k:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+b+'</svg>'};
-/* Logo Piaffe « La pièce » : tête de cheval pleine, œil en strass */
+/* Logo Stabl « La pièce » : tête de cheval pleine, œil en strass */
 window.LOGO=function(size,col,eye,anim){size=size||24;col=col||'currentColor';eye=eye||'var(--strass)';var B=window.BRAND||{path:'M28 86C28 62 37 45 50 35L47 16L62 28C76 33 85 46 88 62L77 68C71 59 63 56 57 58C58 69 63 77 70 86Z',eye:'M65 35.500Q65 44 73.500 44Q65 44 65 52.500Q65 44 56.500 44Q65 44 65 35.500Z'};
   if(B.src)return '<img src="'+B.src+'" width="'+size+'" height="'+size+'" alt="" style="flex:none;display:block;object-fit:contain">';
-  return '<svg class="logo" width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="'+col+'" stroke="'+col+'" stroke-width="4" stroke-linejoin="round" d="'+B.path+'"/>'+(B.eye?'<path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="'+B.eye+'"/>':'')+'</svg>'};
+  return '<svg class="logo" width="'+size+'" height="'+size+'" viewBox="0 0 100 100" aria-hidden="true" style="flex:none;display:block"><path class="lg-b" fill="'+col+'" d="'+B.path+'"/>'+(B.eye?'<path '+(anim?'class="sc" ':'')+'fill="'+eye+'" d="'+B.eye+'"/>':'')+'</svg>'};
 window.HORSE_GLYPH=function(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="'+HEAD+'Z" transform="translate(-2.2 0)"/><circle cx="13.5" cy="10.6" r="1.1" fill="var(--surface)"/></svg>'};
 
 /* =====================================================================

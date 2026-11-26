@@ -20,4 +20,4 @@ Option 2 de l'écran « Changer de logiciel » : le gérant n'a pas le temps, il
 ## Réserves à trancher par Marceau
 
 - Beaucoup de conditions d'utilisation interdisent de partager ses identifiants avec un tiers : à faire vérifier, logiciel par logiciel, avant d'ouvrir l'option. L'option 1 (le gérant se connecte lui-même et l'extension copie chez lui) n'a pas ce problème.
-- Ce stockage, même chiffré et temporaire, est la donnée la plus sensible de Piaffe : audit de sécurité avant la mise en service.
+- Ce stockage, même chiffré et temporaire, est la donnée la plus sensible de Stabl : audit de sécurité avant la mise en service.

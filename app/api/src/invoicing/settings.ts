@@ -138,7 +138,7 @@ export async function clubSeller(db: D1Database, clubId: string, s?: InvoicingSe
   };
 }
 
-/** Piaffe (Marceau Ruis EI), émetteur des factures d'abonnement (variables PLATFORM_*). */
+/** Stabl (Marceau Ruis EI), émetteur des factures d'abonnement (variables PLATFORM_*). */
 export function platformSeller(env: Env): Seller {
   const regime: VatRegime = env.PLATFORM_VAT_REGIME === "normal" ? "normal" : "franchise";
   const addr = String(env.PLATFORM_ADDRESS || "");
