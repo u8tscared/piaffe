@@ -1,1 +1,1 @@
-Panneau « Tous les écrans » refait aux couleurs de Stabl, icônes mieux choisies et nouvelles illustrations.
+Le panneau « Tous les écrans » reprend les pastilles colorées du menu de l’ordinateur : même style sur téléphone, tablette et ordinateur.

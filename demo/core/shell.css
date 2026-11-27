@@ -529,3 +529,10 @@ svg.illu.il2.still .il2-g,svg.illu.il2.still .il2-ring{animation:none}
 .lapp .aic,.app.mobile .lapp .aic{position:static}
 .lapp .aic em{top:50%;right:10px;transform:translateY(-50%);box-shadow:none;animation:none}
 .lapp:has(em) b{padding-right:34px}
+/* lanceur = mêmes pastilles colorées que le menu de l'ordinateur (couleur du domaine) */
+.lapp .aic,.app.mobile .lapp .aic{width:40px;height:40px;border-radius:12px;background:var(--d-bg);color:var(--d-ink)}
+.lapp .aic svg.i{width:21px;height:21px}
+.lapp:hover{background:var(--d-bg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--d) 30%,transparent)}
+.lapp:hover .aic,.lapp[aria-current="page"] .aic,.lapp.cur .aic{background:var(--d);color:#fff}
+.lapp[aria-current="page"],.lapp.cur{background:var(--d-bg);box-shadow:none}
+.lapp[aria-current="page"] b,.lapp.cur b{color:var(--d-ink)}
