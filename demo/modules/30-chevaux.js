@@ -1752,6 +1752,7 @@ P.css(`
 .lb-row .t{font-size:15px}.lb-row .grow>.s{font-size:14px}
 .lb-dl dt{font-size:13px}.lb-dl dd{font-size:15px}
 @container main (max-width:1180px){.lb-hb .big{font-size:80px}}
+@container main (min-width:1240px){.lb-bento{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}.lb-bento>.lb-hero{grid-row:auto}.lb-bento>.lb-kpi:last-child:nth-child(4){grid-column:auto}.lb-bento>*{min-height:0}.lb-hero{min-height:0;padding:22px 24px}.lb-hb .big{font-size:72px}.lb-hu{font-size:21px}.lb-hc{gap:9px}.lb-hi{width:min(40%,220px)}.lb-bento .lb-kpi .val{white-space:normal}.lb-bento .lb-kpi .val small{white-space:nowrap}}
 @container main (max-width:1080px){.lb-bento{grid-template-columns:repeat(2,minmax(0,1fr))}.lb-bento>.lb-hero{grid-row:auto}.lb-hero{min-height:260px}}
 @container main (max-width:760px){.lb-kpi .val{font-size:34px}.lb-hc{max-width:66%}}
 @container main (max-width:520px){.lb-bento{gap:10px}.lb-hero{padding:20px;min-height:250px}.lb-hb .big{font-size:68px}.lb-hu{font-size:19px}.lb-hs{font-size:15px}.lb-hi{width:52%;right:-34px;bottom:-30px}.lb-hc{max-width:72%}.lb-hst>div{padding:8px 12px;min-width:0}.lb-hst b{font-size:22px}

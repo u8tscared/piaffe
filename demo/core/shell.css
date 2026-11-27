@@ -453,3 +453,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 :where(.app.mobile, .app.rail) :where(.btn.sm, .seg>button, button.tag, a.tag){position:relative}
 :where(.app.mobile, .app.rail) :where(.btn.sm, .seg>button, button.tag, a.tag)::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}
 @media (pointer:coarse){:where(.btn.sm, .seg>button, button.tag, a.tag){position:relative}:where(.btn.sm, .seg>button, button.tag, a.tag)::before{content:"";position:absolute;left:0;right:0;top:50%;height:44px;min-height:100%;transform:translateY(-50%)}}
+
+/* ---------- Échelle d'affichage et barre de démo repliable ---------- */
+.app:not(.mobile){zoom:var(--z,1)}
+.dbar{zoom:var(--zb,1)}
+#demo.nobar{grid-template-rows:minmax(0,1fr)}
+#demo.nobar .dbar{display:none}
+.top .dbshow{display:none;gap:6px;height:36px;padding:0 12px 0 9px;border-radius:12px;color:var(--mut);font-weight:600}
+#demo.nobar .top .dbshow{display:inline-flex}
+.app.mobile .top .dbshow span{display:none}
+.app.mobile .top .dbshow{width:40px;padding:0;justify-content:center}
+/* téléphone : titres un peu plus sobres pour voir le contenu plus tôt */
+.app.mobile .top .mt{font-size:29px;padding:2px 0 0}
+@media (max-width:600px){.dbar .dzb{display:none}}

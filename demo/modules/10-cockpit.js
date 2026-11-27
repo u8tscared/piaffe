@@ -501,8 +501,8 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
   var tip=P.$('.ck-tip',el),W={pad:'Au paddock',work:'Au travail',box:'Au box',soin:'Au box, en soins'};
   bento.addEventListener('mouseover',function(e){var b=e.target.closest('.ck-bx');if(!b){tip.classList.remove('on');return}var hid=b.getAttribute('data-h'),h=hid&&D.horse(hid);
     tip.innerHTML=h?E(h.name)+'<small>Box '+h.box+' · '+W[h.status==='bad'?'soin':where(h)]+(h.alerts&&h.alerts[0]?' · '+E(h.alerts[0]):'')+'</small>':'Box '+b.getAttribute('data-box')+'<small>Libre, réservable pour une pension</small>';
-    var br=bento.getBoundingClientRect(),r=b.getBoundingClientRect();tip.style.left=(r.left+r.width/2-br.left)+'px';tip.style.top=(r.top-br.top)+'px';tip.classList.add('on');
-    var tr=tip.getBoundingClientRect();if(tr.right>br.right)tip.style.left=(parseFloat(tip.style.left)-(tr.right-br.right))+'px';if(tr.left<br.left)tip.style.left=(parseFloat(tip.style.left)+(br.left-tr.left))+'px'});
+    var zk=P.zk(),br=bento.getBoundingClientRect(),r=b.getBoundingClientRect();tip.style.left=((r.left+r.width/2-br.left)/zk)+'px';tip.style.top=((r.top-br.top)/zk)+'px';tip.classList.add('on');
+    var tr=tip.getBoundingClientRect();if(tr.right>br.right)tip.style.left=(parseFloat(tip.style.left)-(tr.right-br.right)/zk)+'px';if(tr.left<br.left)tip.style.left=(parseFloat(tip.style.left)+(br.left-tr.left)/zk)+'px'});
   bento.addEventListener('mouseleave',function(){tip.classList.remove('on')});
   bento.addEventListener('click',function(e){var b=e.target.closest('.ck-bx');if(!b)return;e.stopPropagation();var hid=b.getAttribute('data-h');if(hid)P.go('cheval',{id:hid});else P.go('pensions')},true);
 
