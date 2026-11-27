@@ -107,7 +107,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .bellb{position:relative}
 .bellb i{position:absolute;top:9px;right:10px;width:10px;height:10px;border-radius:50%;background:var(--cr);box-shadow:0 0 0 2.5px var(--bg)}
 .view{overflow-y:auto;overflow-x:hidden;min-height:0;padding:6px 32px 64px;scroll-behavior:smooth;position:relative;overscroll-behavior:contain}
-.view>.page{max-width:1360px;margin:0 auto;min-width:0}
+.view>.page{max-width:1680px;margin:0 auto;min-width:0}
 .view.enter>.page{animation:pageIn var(--t-4) var(--e-out) both}
 @keyframes pageIn{from{opacity:0;transform:translateY(10px)}}
 .mt,.mback{display:none}
