@@ -1,0 +1,19 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(self), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com https://connect.stripe.com https://accounts.google.com; connect-src 'self' https://api-adresse.data.gouv.fr https://api.open-meteo.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' https://cdnjs.cloudflare.com 'sha256-WV4Mql8xTptTC54no9cQ9GGeVwGeupOPSsPL3MnUpt8=' 'sha256-lPD9lvedNY5P2fGUphFkuJ6ajENB52qDxvshxoCKbLM=' 'sha256-Ucuu2H4k5zCFiDUvvEmVS/DLmn9WJrC+ChvgZEwUgog=' 'sha256-LvJcr+IIdmvI0TsW1JpRC/w7ezN2TS/CmYgcBE4UmKQ=' 'sha256-RXGTdn05ZJ/2QDof4W6OTjKorDcJuEZGghh8wCGli3U=' 'sha256-CVzZVloui+lqSkW2giRjuf256WqmZaEhbfYZo1iTXkc=' 'sha256-3kYQaXjDdQ6M7hFGIYGWLybqOUe6O6ezsbpAxVmxbkc=' 'sha256-Iug+jmYGnjhYEU+Sg5kZfPBuMMTUTdtceXfgfzskT6g=' 'sha256-bKmwJNqC084+qsix6Ii8TuydguRLFyp2fq5YbbRRr9M=' 'sha256-YelJTxLWfIz+4dQHqjM62ca4IjfM61K8mXzDChaD2mk=' 'sha256-SDjnkAeEAhEozdzSwRJY26Njkoi/PG4Xlun5BDH9B4w=' 'sha256-9B9tHsLzXQhKluKQHIA66es4EEj48HvMO4/hTVHJs3c=' 'sha256-3g7Qxpu3Dkq8CVtujkWEKLBbQONkhhQUu6mSGWFzg20=' 'sha256-C8/Le6o54sO7vUPvyX8JGZG9rsx3i53g+YZdTbABFQM=' 'sha256-dR11LB1ro5E3bfavwmCKd5lW7TNcJfG6TDDBW4taO8w=' 'sha256-CinTFnTPhyCnuqbEKJdCjueedPqH3awWh0MIgTAdJDY=' 'sha256-K+82V3I9IiwCYzf0QwCQh5sviejKjk8WYwMXiJlDW5Q=' 'sha256-/G/eMfQdKXlj5dT36fz/yN97mS9JkCuALmEWJMm1o+c=' 'sha256-1oxAOVE5CU5RvXtvkNhKbHYBACNYdcg9w2m+k/hNyPk=' 'sha256-W3aGh7CyOFt/S91GYhgYe0T2I/HR77GEcI6nXeeyVJ4=' 'sha256-udPNCcn1YpiOZdzRTKmzjR46xbiSXVhbhfdXdyGDH+Y=' 'sha256-nc2EuemWknU6Wi8//WeKGwEiw9imS5NtEbfqjfc3o84=' 'sha256-Df2XYfl5Jll+JXubder3YrgGP0djTv3pVXeZVNp8lrE=' 'sha256-TXndDFY0rhlSKD0Wue4r4W4dTM+eaLRkdnuXjGUIThU=' 'sha256-gvPZncqfFRUSKEilI/0RxdJfMNtfGMbYo4qYWRQKNig=' 'sha256-QVKf3mKEn6cyZFzuFCZA169nbowEymw1YNmhPJaeK4Q=' 'sha256-uQQhakyTnEvgcDzjl7JH0g/3Dnz4KaY7c8VYxweF3Gs=' 'sha256-UF9HTa7RooeFTVaXyyseB0Kcj/Kpr8+Tg3lTqsrVwGo='
+/migration/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com https://connect.stripe.com https://accounts.google.com; connect-src 'self' https://api-adresse.data.gouv.fr https://api.open-meteo.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/splash/*
+  Cache-Control: public, max-age=604800

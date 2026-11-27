@@ -875,7 +875,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .splash .spl{filter:drop-shadow(0 10px 30px rgba(109,139,255,.25))}
 .app.mobile .lgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 4px}
 .app.mobile .lapp .aic{width:58px;height:58px;border-radius:17px}
-.side .nv .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.side .nv .lb{white-space:normal;hyphens:none;-webkit-hyphens:none;overflow-wrap:normal;word-break:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.15;letter-spacing:-.01em}
 .side .nv:has(.bdg) .lb{font-size:14.5px}
 .side .nv{gap:10px}
 .side .acc-g .nv{gap:8px;padding-right:6px}

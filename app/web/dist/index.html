@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Stabl">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611262354">
+<meta name="piaffe-version" content="202611270001">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -915,7 +915,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .splash .spl{filter:drop-shadow(0 10px 30px rgba(109,139,255,.25))}
 .app.mobile .lgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 4px}
 .app.mobile .lapp .aic{width:58px;height:58px;border-radius:17px}
-.side .nv .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.side .nv .lb{white-space:normal;hyphens:none;-webkit-hyphens:none;overflow-wrap:normal;word-break:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.15;letter-spacing:-.01em}
 .side .nv:has(.bdg) .lb{font-size:14.5px}
 .side .nv{gap:10px}
 .side .acc-g .nv{gap:8px;padding-right:6px}
@@ -1246,7 +1246,7 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Stabl a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611262354",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611270001",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    STABL · Marque (logo officiel du 26/11/2026 : silhouette marine, sans œil)
@@ -12654,7 +12654,7 @@ P.mod({id:'sondages',role:'gerant',group:'Croissance',n:40,title:'Satisfaction',
    (alerts.length?'<div class="card pad tint d-cr" style="margin-bottom:16px"><div class="gr-row sp wrap">'+alerts.slice(0,1).map(function(x){return '<div class="gr-row" style="align-items:flex-start;min-width:0;flex:1">'+U.av(x.a.member)+'<div style="min-width:0"><b>'+E(nameOf(x.a.member))+'</b> · '+E(x.s.title)+' '+stars(x.a.global)+'<div style="margin-top:4px;line-height:1.45">« '+E(x.a.text||'Pas de commentaire.')+' »</div></div></div>'}).join('')+
      '<div class="gr-actions"><button class="btn sm" data-call>'+ICON('phone','sm')+'Appeler</button><button class="btn sm dark" data-done>'+ICON('check','sm')+'Marquer comme traité</button></div></div></div>':'')+
    '<div class="gr-two"><div class="card"><div class="ch"><h3>Derniers sondages</h3><span class="mut">Touchez un sondage pour lire les réponses</span></div><div style="padding:6px 0">'+
-     (S.length?S.slice().sort(function(a,b){return a.date<b.date?1:-1}).map(function(s){var A0=ans(s),n=A0.length,r=s.sent?Math.round(n/s.sent*100):0;return '<button class="gr-sv" data-sv="'+s.id+'"><div style="min-width:0"><div class="t ellip">'+E(s.title)+'</div><div class="s">'+F.dateY(s.date)+(s.coach?' · '+E(D.name(s.coach)):'')+' · '+n+' sur '+s.sent+' ont répondu</div></div><div class="gr-row" style="gap:14px">'+(n?'<b class="num" style="font:800 20px var(--f-display)">'+note(svAvg(A0,'global'))+'</b>':'<span class="chip line">En attente</span>')+U.ring(r,r+NB+'%','var(--ex)',48)+'</div></button>'}).join(''):U.empty('checkc','Aucun sondage envoyé','Envoyez le premier à la fin de votre prochain stage.'))+'</div></div>'+
+     (S.length?S.slice().sort(function(a,b){return a.date<b.date?1:-1}).map(function(s){var A0=ans(s),n=A0.length,r=s.sent?Math.round(n/s.sent*100):0;return '<button class="gr-sv" data-sv="'+s.id+'"><div style="min-width:0"><div class="t ellip">'+E(s.title)+'</div><div class="s">'+(s.date?F.dateY(s.date):'Date inconnue')+(s.coach?' · '+E(D.name(s.coach)):'')+' · '+n+' sur '+(s.sent||n)+' ont répondu</div></div><div class="gr-row" style="gap:14px">'+(n?'<b class="num" style="font:800 20px var(--f-display)">'+note(svAvg(A0,'global'))+'</b>':'<span class="chip line">En attente</span>')+U.ring(r,r+NB+'%','var(--ex)',48)+'</div></button>'}).join(''):U.empty('checkc','Aucun sondage envoyé','Envoyez le premier à la fin de votre prochain stage.'))+'</div></div>'+
     '<div class="card pad"><div class="gr-row sp"><div class="gr-h">Note par moniteur</div><span class="mut s">Question « Le moniteur »</span></div>'+
      (coaches.length?'<div style="margin-top:8px">'+coaches.map(function(c){var p=D.person(c.id);return '<div class="gr-coach">'+U.av(c.id,'sm')+'<div style="min-width:0"><div class="gr-row sp"><span class="b ellip">'+E(D.name(c.id))+'</span><span class="xs mut">'+pl(c.n,'avis','avis')+'</span></div>'+U.bar(c.v/5*100,'var(--ex)')+'</div><b>'+note(c.v)+'</b></div>'}).join('')+'</div>':U.empty('team','Pas encore de note','Les notes apparaissent dès les premières réponses.'))+
      '<p class="xs mut" style="margin-top:12px;line-height:1.45">Une note se lit avec ses commentaires : un groupe difficile ou la météo comptent aussi.</p></div></div>';
