@@ -897,6 +897,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* téléphone : titres un peu plus sobres pour voir le contenu plus tôt */
 .app.mobile .top .mt{font-size:29px;padding:2px 0 0}
 @media (max-width:600px){.dbar .dzb{display:none}}
+/* proportions : titres et grands chiffres plus sobres, en-tête plus bas */
+.ph h1{font-size:38px}
+.ph{margin-bottom:20px}
+.big{font-size:40px}
+.top{height:66px}
+.cmdk{height:44px}
+.top .ai{height:40px}
+.app:not(.mobile) .ck-ph h1{font-size:40px}
+.app:not(.mobile) .ck-hero h2{font-size:26px}
+.app:not(.mobile) .ck-big{font-size:46px}
+.app:not(.mobile) .ck-hay .ck-big,.app:not(.mobile) .ck-rev .ck-big{font-size:44px}
+.app:not(.mobile) .ck-pt{padding-top:7px;padding-bottom:7px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -1657,13 +1669,13 @@ function buildDemo(){
 /* échelle d'affichage : sur ordinateur et tablette, toute l'appli est réduite pour que l'essentiel d'un écran tienne sans défiler.
    Trois tailles au choix (Compacte, Normale, Grande), mémorisées. Le téléphone garde l'échelle 1. */
 var DENS_I='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 18.5 8 6.5l4.5 12M5.2 14.2h5.6M14.5 18.5l3-8 3 8M15.6 15.8h3.8"/></svg>';
-P.densities=[['compact','Compacte',.9],['normal','Normale',1],['grand','Grande',1.12]];
+P.densities=[['compact','Compacte',.92],['normal','Normale',1],['grand','Grande',1.1]];
 P.density=function(){var d=P.store.get('density','normal');return P.densities.filter(function(x){return x[0]===d})[0]||P.densities[1]};
 P.applyZoom=function(){var d=effDev(),W=window.innerWidth,H=window.innerHeight,k=P.density()[2],z=1,zb=1;
-  if(d==='desktop'||d==='tablet')z=Math.max(.74,Math.min(.92,W/1720,H/980))*k;
-  else if(d==='tablet-full')z=Math.max(.84,Math.min(.92,W/1300,H/950))*k;
+  if(d==='desktop'||d==='tablet')z=Math.max(.86,Math.min(1,W/1560,H/880))*k;
+  else if(d==='tablet-full')z=Math.max(.88,Math.min(1,W/1240,H/880))*k;
   else if(!realPhone())z=1;
-  z=Math.max(.66,Math.min(1.05,z));zb=realPhone()?1:Math.max(.8,Math.min(.92,z));
+  z=Math.max(.66,Math.min(1.05,z));zb=realPhone()?1:Math.max(.9,Math.min(1,z));
   document.documentElement.style.setProperty('--z',z.toFixed(3));document.documentElement.style.setProperty('--zb',zb.toFixed(3))};
 /* facteur réel entre les coordonnées à l'écran (getBoundingClientRect, clientX) et les px CSS de l'appli */
 P.zk=function(){if(!app||!app.offsetWidth)return 1;var k=app.getBoundingClientRect().width/app.offsetWidth;return k>0?k:1};
