@@ -490,3 +490,42 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* icônes Phosphor (duotone) : pleines, la couche claire prend 22 % de la couleur */
 svg.i.phi{fill:currentColor;stroke:none}
 svg.i.phi .d{opacity:.22}
+/* illustrations v2 : disque clair, grande icône deux tons couleur du domaine */
+svg.illu.il2{color:var(--d,var(--acc));overflow:visible}
+svg.illu.il2 .il2-bg{fill:var(--surface);opacity:.72}
+svg.illu.il2 .il2-ring{fill:none;stroke:currentColor;stroke-width:1.4;opacity:.18;stroke-dasharray:4 7}
+svg.illu.il2 .d{opacity:.25}
+svg.illu.il2 .il2-g{transform-box:fill-box;transform-origin:center;animation:il2f 6s var(--e-in-out) infinite}
+svg.illu.il2 .il2-ring{transform-box:fill-box;transform-origin:center;animation:il2r 40s linear infinite}
+svg.illu.il2.still .il2-g,svg.illu.il2.still .il2-ring{animation:none}
+@keyframes il2f{50%{transform:translateY(-3px) rotate(-2deg)}}
+@keyframes il2r{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){svg.illu.il2 *{animation:none!important}}
+/* lanceur « Tous les écrans » v2 : lignes claires, pastille pastel et icône deux tons */
+.lgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.lapp{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;padding:9px 12px 9px 9px;border-radius:16px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);text-align:left;transition:background var(--t-2),box-shadow var(--t-2),transform .35s var(--e-spring);animation-name:lappIn2}
+.lapp:hover{background:var(--d-bg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--d) 30%,transparent)}
+.lapp:active{transform:scale(.97)}
+.lapp b{font:600 14.5px/1.25 var(--f-text);text-align:left;flex:1;min-width:0;color:var(--ink)}
+.lapp .aic,.app.mobile .lapp .aic{width:40px;height:40px;border-radius:12px;background:var(--d-bg);color:var(--d-ink);box-shadow:none;flex:none}
+.lapp .aic svg.i{width:22px;height:22px;filter:none}
+.lapp:hover .aic{transform:none;box-shadow:none;background:var(--surface)}
+.lapp .aic em{top:-5px;right:-5px;min-width:20px;height:20px;font-size:12px;line-height:20px;padding:0 5px}
+.lapp[aria-current="page"],.lapp.cur{background:var(--d-bg)}
+.lnch .eyebrow{display:flex;align-items:center;gap:8px}
+@keyframes lappIn2{from{opacity:0;transform:translateY(8px)}}
+.app.mobile .lgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.app.mobile .lapp{gap:9px;padding:8px 9px 8px 8px}
+.app.mobile .lapp b{font-size:13.5px}
+.app.mobile .lapp .aic{width:36px;height:36px;border-radius:11px}
+/* lanceur : une seule couleur, celle de Stabl (marine et saphir), plus d'arc-en-ciel */
+.lapp .aic,.app.mobile .lapp .aic{background:var(--acc-bg);color:var(--acc)}
+.lapp:hover{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.lapp:hover .aic{background:var(--acc);color:var(--on-acc)}
+.lapp[aria-current="page"],.lapp.cur{background:var(--acc-bg);box-shadow:inset 0 0 0 1px var(--acc-line)}
+.lapp[aria-current="page"] b,.lapp.cur b{color:var(--acc-deep)}
+.lapp .aic em{background:var(--cr)}
+.lapp{position:relative}
+.lapp .aic,.app.mobile .lapp .aic{position:static}
+.lapp .aic em{top:50%;right:10px;transform:translateY(-50%);box-shadow:none;animation:none}
+.lapp:has(em) b{padding-right:34px}

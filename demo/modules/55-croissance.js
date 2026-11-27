@@ -811,7 +811,7 @@ function gains(mk){var c=cfg('rapporte',RPCFG),t=tIso(),inM=function(d){return d
   var mins=H.reduce(function(s,h){return s+h[0]*h[1]},0),hours=Math.round(mins/6)/10;
   return {lines:L,hrs:H,hours:hours,timeV:Math.round(hours*c.rate),total:L.reduce(function(s,l){return s+l.v},0),rate:c.rate,partial:mk===monthKey(t)}}
 var RS={mk:null};
-P.mod({id:'rapporte',role:'gerant',group:'Pilotage',n:25,title:'Gains du mois',icon:'trend',phoneTitle:'Rapporté',short:'Rapporté',
+P.mod({id:'rapporte',role:'gerant',group:'Pilotage',n:25,title:'Gains du mois',icon:'gains',phoneTitle:'Rapporté',short:'Rapporté',
  render:function(el){var t=tIso(),cur=monthKey(t),months=[];for(var i=2;i>=0;i--){var d=new Date(D.today.getFullYear(),D.today.getMonth()-i,1);months.push(D.iso(d).slice(0,7))}
   if(!RS.mk||months.indexOf(RS.mk)<0)RS.mk=cur;var g=gains(RS.mk),c=cfg('rapporte',RPCFG),times=PLAN?Math.floor((g.total+g.timeV)/PLAN.price):0;
   el.innerHTML=U.ph('Ce que '+E(brand())+' vous a rapporté','Chaque chiffre vient des données du mois, avec son calcul écrit dessous. Rien n’est estimé sans être dit.',

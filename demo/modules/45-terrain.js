@@ -933,10 +933,10 @@ P.mod({id:'pres',role:'gerant',group:'Écurie',title:'Prés et paddocks',icon:'p
 P.mod({id:'ventes',role:'gerant',group:'Écurie',title:'Vente de chevaux',icon:'tag',n:85,phoneTitle:'Ventes',short:'Ventes',
   badge:function(){ensure();var n=newLeads();return n?{v:n}:null},render:veRender});
 P.mod({id:'annonce',role:'gerant',group:'Écurie',title:'Annonce',icon:'tag',hidden:true,tab:'ventes',phoneTitle:'Annonce',render:anRender});
-P.mod({id:'cours',role:'gerant',group:'Club',title:'Cours en direct',icon:'stopwatch',n:12,phoneTitle:'Cours en direct',short:'Cours',render:ceRender});
+P.mod({id:'cours',role:'gerant',group:'Club',title:'Cours en direct',icon:'live',n:12,phoneTitle:'Cours en direct',short:'Cours',render:ceRender});
 P.mod({id:'emp-pres',role:'employe',group:'Écurie',title:'Sorties au pré',icon:'paddock',n:15,phoneTitle:'Sorties au pré',short:'Prés',
   badge:function(){try{ensure();var t=nowMin(),n=movesOf(curSlot()).filter(function(m){if(!m.out||m.back)return false;var w=clash(m),due=m.plan||(w?fromMin(mm(w.at)-15):null);return due&&t>=mm(due)-5}).length;return n?{v:n,hot:true}:null}catch(e){return null}},render:epRender});
-P.mod({id:'emp-cours',role:'employe',group:'Ma journée',title:'Cours en direct',icon:'stopwatch',n:25,phoneTitle:'Cours en direct',short:'Cours',render:ceRender});
+P.mod({id:'emp-cours',role:'employe',group:'Ma journée',title:'Cours en direct',icon:'live',n:25,phoneTitle:'Cours en direct',short:'Cours',render:ceRender});
 P.mod({id:'adh-pre',role:'adherent',group:'Cheval',title:'Au pré',icon:'paddock',n:15,phoneTitle:'Au pré',short:'Au pré',render:apRender});
 
 /* ---------- Palette ⌘K ---------- */
