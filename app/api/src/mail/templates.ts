@@ -39,6 +39,7 @@ const ROLE_INVITE: Record<string, { label: string; intro: string; can: string[] 
   staff: { label: "membre de l'équipe", intro: "vous invite à rejoindre l'équipe sur Stabl.", can: ["consulter le planning et vos tâches du jour", "noter les soins et le journal des chevaux", "échanger avec l'équipe et les cavaliers"] },
   coach: { label: "coach", intro: "vous invite à gérer vos cours sur Stabl.", can: ["voir votre agenda et vos élèves", "faire l'appel et noter la progression de vos cavaliers", "proposer vos créneaux de cours particuliers"] },
   accountant: { label: "comptable", intro: "vous ouvre un accès comptable sur Stabl.", can: ["consulter les factures et les encaissements", "télécharger le FEC et les exports des ventes", "récupérer les factures électroniques en PDF"] },
+  provider: { label: "praticien", intro: "vous ouvre l'accès aux chevaux que vous suivez, sur Stabl.", can: ["voir votre tournée et les demandes de visite du club", "consulter le carnet de santé et noter vos actes au carnet du cheval", "préparer vos factures et, pour un vétérinaire, les certificats d'engagement"] },
   manager: { label: "co-gérant", intro: "vous invite à gérer le club avec elle ou lui sur Stabl.", can: ["gérer les adhérents, les chevaux et le planning", "émettre les factures et suivre les encaissements", "configurer le club et inviter l'équipe"] },
 };
 

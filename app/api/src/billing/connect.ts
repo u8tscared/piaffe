@@ -8,7 +8,7 @@ import { ApiError, bad, body, forbidden, isEmail, notFound } from "../lib/http";
 import { newId, nowIso } from "../lib/ids";
 import { randomToken, sha256 } from "../lib/crypto";
 import { sendMail } from "../mail/send";
-import { APPLICATION_FEE_PERCENT, AUTOPAY_NOTICE_DAYS, INSTALLMENT_COUNTS, INSTALLMENT_MIN_CENTS, MAX_CHARGE_ATTEMPTS, PAY_LINK_DAYS } from "./plans";
+import { APPLICATION_FEE_PERCENT, AUTOPAY_NOTICE_DAYS, INSTALLMENT_COUNTS, INSTALLMENT_MIN_CENTS, KLARNA_MAX_CENTS, KLARNA_MIN_CENTS, MAX_CHARGE_ATTEMPTS, PAY_LINK_DAYS } from "./plans";
 import { stripe, stripeRequest, StripeError } from "./stripe";
 import { METHOD_LABEL, RETURN_PATHS, appUrl, euros, ownerEmails } from "./common";
 import { invoices, NOT_PAYABLE, remainingCents, type InvoiceInfo } from "./invoices";
@@ -21,7 +21,7 @@ const DAY = 864e5;
 
 export interface ConnectRow {
   club_id: string; stripe_account_id: string; charges_enabled: number; payouts_enabled: number; details_submitted: number;
-  card_enabled: number; sepa_enabled: number; requirements: string; disabled_reason: string | null;
+  card_enabled: number; sepa_enabled: number; klarna_enabled?: number; requirements: string; disabled_reason: string | null;
 }
 export const connectRow = (db: D1Database, clubId: string) => one<ConnectRow>(db, "SELECT * FROM connect_accounts WHERE club_id = ?", clubId);
 
@@ -45,20 +45,20 @@ export function feeFor(amount: number) {
 export async function applyAccount(env: Env, clubId: string, acct: any) {
   const caps = acct.capabilities || {};
   const req = [...new Set([...(acct.requirements?.currently_due || []), ...(acct.requirements?.past_due || [])])];
-  await run(env.DB, `UPDATE connect_accounts SET charges_enabled = ?, payouts_enabled = ?, details_submitted = ?, card_enabled = ?, sepa_enabled = ?,
+  await run(env.DB, `UPDATE connect_accounts SET charges_enabled = ?, payouts_enabled = ?, details_submitted = ?, card_enabled = ?, sepa_enabled = ?, klarna_enabled = ?,
       requirements = ?, disabled_reason = ?, updated_at = ? WHERE club_id = ? AND stripe_account_id = ?`,
     acct.charges_enabled ? 1 : 0, acct.payouts_enabled ? 1 : 0, acct.details_submitted ? 1 : 0,
-    caps.card_payments === "active" ? 1 : 0, caps.sepa_debit_payments === "active" ? 1 : 0,
+    caps.card_payments === "active" ? 1 : 0, caps.sepa_debit_payments === "active" ? 1 : 0, caps.klarna_payments === "active" ? 1 : 0,
     JSON.stringify(req.slice(0, 50)), acct.requirements?.disabled_reason || null, nowIso(), clubId, acct.id);
 }
 
 function statusJson(a: ConnectRow | null) {
-  if (!a) return { connected: false, charges_enabled: false, payouts_enabled: false, details_submitted: false, card: false, sepa: false, requirements: [], disabled_reason: null };
+  if (!a) return { connected: false, charges_enabled: false, payouts_enabled: false, details_submitted: false, card: false, sepa: false, klarna: false, requirements: [], disabled_reason: null };
   let req: string[] = [];
   try { req = JSON.parse(a.requirements); } catch { req = []; }
   return {
     connected: true, account_id: a.stripe_account_id, charges_enabled: !!a.charges_enabled, payouts_enabled: !!a.payouts_enabled,
-    details_submitted: !!a.details_submitted, card: !!a.card_enabled, sepa: !!a.sepa_enabled, requirements: req,
+    details_submitted: !!a.details_submitted, card: !!a.card_enabled, sepa: !!a.sepa_enabled, klarna: !!a.klarna_enabled, requirements: req,
     disabled_reason: a.disabled_reason, dashboard_url: "https://dashboard.stripe.com/",
   };
 }
@@ -100,9 +100,11 @@ async function assertNoActiveSchedule(db: D1Database, clubId: string, invoiceId:
 }
 
 /** Crée un Checkout (mode payment) sur le compte connecté pour le reste dû d'une facture. */
-async function invoiceCheckout(env: Env, o: { inv: InvoiceInfo; acct: ConnectRow; userId: string | null; email: string | null; kind: "checkout" | "link"; successPath: string; cancelPath: string }) {
+async function invoiceCheckout(env: Env, o: { inv: InvoiceInfo; acct: ConnectRow; userId: string | null; email: string | null; kind: "checkout" | "link"; successPath: string; cancelPath: string; methods?: string[] }) {
   const { inv, acct } = o;
   const amount = await outstanding(env, inv);
+  if (o.methods?.includes("klarna") && (amount < KLARNA_MIN_CENTS || amount > KLARNA_MAX_CENTS))
+    throw bad("klarna_amount", `Le paiement en 3 fois avec Klarna est possible de ${euros(KLARNA_MIN_CENTS)} à ${euros(KLARNA_MAX_CENTS)}.`);
   if (amount <= 0) throw new ApiError(409, "nothing_due", "Cette facture est déjà réglée.");
   if (amount < 50) throw new ApiError(409, "amount_too_small", "Le montant restant est trop faible pour un paiement en ligne.");
   await assertNoActiveSchedule(env.DB, inv.club_id, inv.id);
@@ -125,7 +127,7 @@ async function invoiceCheckout(env: Env, o: { inv: InvoiceInfo; acct: ConnectRow
   const label = inv.number ? `Facture ${inv.number}` : "Facture";
   const session = await stripe(env, "POST", "/v1/checkout/sessions", {
     mode: "payment", locale: "fr", customer: cus?.id, client_reference_id: payId,
-    payment_method_types: methodsFor(acct),
+    payment_method_types: o.methods || methodsFor(acct),
     line_items: [{ quantity: 1, price_data: { currency: inv.currency || "eur", unit_amount: amount, product_data: { name: label, description: inv.label || undefined } } }],
     payment_intent_data: { metadata: meta, description: label, application_fee_amount: fee > 0 ? fee : undefined },
     metadata: meta,
@@ -512,7 +514,8 @@ app.get("/api/pay/options", requireUser, async (c) => {
   if (!club || !c.get("membership")) throw new ApiError(403, "no_club", "Choisissez d'abord un club.");
   const a = await connectRow(c.env.DB, club.id);
   const on = !!a?.charges_enabled;
-  return c.json({ enabled: on, card: on, sepa: on && !!a?.sepa_enabled, installments: on ? INSTALLMENT_COUNTS : [], installment_min_cents: INSTALLMENT_MIN_CENTS, mandate: on && !!a?.sepa_enabled });
+  return c.json({ enabled: on, card: on, sepa: on && !!a?.sepa_enabled, installments: on ? INSTALLMENT_COUNTS : [], installment_min_cents: INSTALLMENT_MIN_CENTS, mandate: on && !!a?.sepa_enabled,
+    klarna: on && !!a?.klarna_enabled, klarna_min_cents: KLARNA_MIN_CENTS, klarna_max_cents: KLARNA_MAX_CENTS });
 });
 
 app.post("/api/pay/invoice/:id", payers, async (c) => {
@@ -522,7 +525,14 @@ app.post("/api/pay/invoice/:id", payers, async (c) => {
   await assertCanActFor(c, inv.customer_ref);
   // L'e-mail du client Stripe est celui de la facture ou de la fiche, jamais celui d'un gérant qui encaisse au guichet.
   const email = inv.email || (c.get("membership")!.role === "member" ? c.get("user")!.email : null);
-  const r = await invoiceCheckout(c.env, { inv, acct: a, userId: c.get("user")!.id, email, kind: "checkout",
+  // Paiement en 3 fois par Klarna : le club reçoit tout de suite le montant total, Klarna encaisse ensuite la famille.
+  const b = await body<{ method?: string }>(c).catch(() => ({} as { method?: string }));
+  let methods: string[] | undefined;
+  if (b.method === "klarna") {
+    if (!a.klarna_enabled) throw new ApiError(409, "klarna_not_ready", "Le paiement en 3 fois avec Klarna n'est pas activé par votre club.");
+    methods = ["klarna"];
+  }
+  const r = await invoiceCheckout(c.env, { inv, acct: a, userId: c.get("user")!.id, email, kind: "checkout", methods,
     successPath: RETURN_PATHS.invoiceSuccess(inv.id), cancelPath: RETURN_PATHS.invoiceCancel(inv.id) });
   return c.json(r);
 });

@@ -25,6 +25,7 @@ export interface PolicyCtx {
   coachIds: Set<string>;    // coach : ses ids (c.. et s.. lié)
   students: Set<string>;    // coach : cavaliers de ses reprises et de coachStudents
   coachLessons: Set<string>; // coach : ses reprises
+  owners?: Set<string>;     // prestataire : propriétaires des chevaux (pour les joindre)
 }
 
 export class PolicyError extends Error {
@@ -37,6 +38,7 @@ const deny = (msg = "Vous n'avez pas le droit de modifier ces données.") => new
 export function ctxCollections(role: Role): string[] {
   if (role === "member") return ["members", "horses", "halfboard", "lessons"];
   if (role === "coach") return ["coaches", "lessons", "coachStudents", "coachNotes"];
+  if (role === "provider") return ["horses"];
   return [];
 }
 
@@ -54,6 +56,10 @@ export function buildCtx(role: Role, personRef: string | null, rows: Record<stri
       const riders: string[] = Array.isArray(l.riders) ? l.riders : [];
       if (riders.some((r) => ctx.family.has(r))) for (const r of riders) if (!ctx.family.has(r)) ctx.coRiders.add(r);
     }
+  }
+  if (role === "provider") {
+    ctx.owners = new Set();
+    for (const h of rows.horses || []) if (typeof h.owner === "string" && h.owner) ctx.owners.add(h.owner);
   }
   if (role === "coach") {
     for (const id of personIds) ctx.coachIds.add(id);
@@ -93,6 +99,13 @@ const MEMBER_PEER = ["id", "first", "last", "color", "galop"];
 const STAFF_DIRECTORY = ["id", "first", "last", "role", "color", "dip"];
 const COACH_PUBLIC = ["id", "first", "last", "spec", "level", "rate", "rating", "reviews", "ext", "bio", "slots", "color", "staff"];
 const HORSE_PUBLIC = ["id", "name", "breed", "pony", "sex", "age", "born", "coat", "height", "kind", "box", "level", "mood", "color", "status"];
+/** Prestataire (vétérinaire, maréchal, dentiste, ostéopathe) : la santé du cheval, rien de financier. */
+const HORSE_PRO = [...HORSE_PUBLIC, "sire", "chip", "owner", "weight", "bcs", "ration", "alerts", "vacc", "worm", "farrier", "dentist", "osteo", "paddock", "photo", "work", "workMax"];
+const MEMBER_OWNER_CONTACT = ["id", "first", "last", "color", "phone", "email", "address", "zip", "city"];
+/** Collections lues telles quelles par le prestataire. */
+const PRO_READ = new Set(["care", "journal", "journalMore", "practitioners", "pharmacy", "club"]);
+/** Collections propres au prestataire : il ne voit et ne modifie que ses lignes (champ pro). */
+const PRO_OWN = new Set(["proActs", "proRequests"]);
 const LESSON_SLOT = ["id", "dow", "day", "start", "dur", "title", "coach", "arena", "cap", "kind", "status", "date"];
 
 /** Champs qu'un adhérent peut modifier sur sa fiche (ou celle d'un enfant de sa famille). */
@@ -106,6 +119,7 @@ const STAFF_READ = new Set([
   "empNights", "empNotes", "empThreads", "empDocs", "empLeaves", "empHugo", "planExtras", "planHolidays", "planStages", "planVacations",
   "tours", "schedules", "forfaits", "halfboard", "club", "facts", "pensionPlans", "pensionExtras", "walkins", "declarations", "notifs",
   "pastures", "pastureMoves", "pastureRules", "horseCues", "horseAds", "horseTrials", "lessonCalls", "lessonCredits",
+  "wxMoves",
 ]);
 /** Collections que l'employé peut modifier. */
 const STAFF_WRITE = new Set([
@@ -129,6 +143,7 @@ const HORSE_MANAGER_FIELDS = ["owner", "kind", "costMonth"];
 const CLUB_PUBLIC = new Set([
   "forfaits", "halfboardOffers", "pensionPlans", "pensionExtras", "shopItems", "adhNews", "adhOffers", "adhStages", "camps",
   "clubEvents", "planStages", "planHolidays", "competitions", "club", "vans", "carpool", "reviews", "coachReviews", "trackBookings",
+  "wxMoves",
 ]);
 
 // ---------- Lecture ----------
@@ -146,6 +161,13 @@ export function projectRead(ctx: PolicyCtx, coll: string, r: Row): Row | null {
     if (coll === "halfboard") return omit(r, ["price"]);
     if (coll === "hr") return null;
     return STAFF_READ.has(coll) ? r : null;
+  }
+
+  if (role === "provider") {
+    if (coll === "horses") return pick(r, HORSE_PRO);
+    if (coll === "members") return ctx.owners?.has(r.id) ? pick(r, MEMBER_OWNER_CONTACT) : null;
+    if (PRO_OWN.has(coll)) return touches(r, ["pro"], ctx.personIds) ? r : null;
+    return PRO_READ.has(coll) ? r : null;
   }
 
   if (role === "coach") {
@@ -260,6 +282,33 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
   if (coll === "aids" && next) next = protect(next, prev, ["invoice", "invoiceNumber"]);
   if (role === "owner" || role === "manager") return next;
   if (role === "accountant") throw deny();
+
+  if (role === "provider") {
+    const me = [...ctx.personIds][0];
+    if (!me) throw deny("Votre accès n'est relié à aucune fiche de praticien.");
+    if (del) throw deny("Un acte enregistré ne se supprime pas : corrigez-le.");
+    if (coll === "care") {
+      // un soin terminé par un autre praticien ne se modifie pas
+      if (prev && prev.pro && !ctx.personIds.has(prev.pro) && prev.status === "fait") throw deny("Ce soin a été fait par un autre praticien.");
+      return { ...next!, pro: prev?.pro && prev.status === "fait" ? prev.pro : me };
+    }
+    if (coll === "journal" || coll === "journalMore") {
+      if (prev) throw deny();
+      return { ...next!, who: me };
+    }
+    if (PRO_OWN.has(coll)) {
+      if (prev && !ctx.personIds.has(prev.pro)) throw deny();
+      if (coll === "proRequests" && !prev) throw deny("Les demandes de visite viennent du club.");
+      return { ...next!, pro: prev?.pro ?? me };
+    }
+    if (coll === "horses" && prev && next) {
+      // seul le suivi de santé est modifiable : poids, état, dates des derniers soins
+      const o = { ...prev };
+      for (const k of ["weight", "bcs", "vacc", "worm", "farrier", "dentist", "osteo", "alerts"]) if (next[k] !== undefined) o[k] = next[k];
+      return o;
+    }
+    throw deny();
+  }
 
   if (role === "staff") {
     if (!STAFF_WRITE.has(coll)) throw deny();

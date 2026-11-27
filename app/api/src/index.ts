@@ -67,6 +67,7 @@ app.route("/", R.mcpRoutes);
 app.route("/", R.adminRoutes);
 app.route("/", R.mediaRoutes);
 app.route("/", R.publicRoutes);
+app.route("/", R.proRoutes);
 
 app.all("/api/*", (c) => c.json({ error: { code: "not_found", message: "Route d'API inconnue." } }, 404));
 app.get("*", (c) => c.env.ASSETS.fetch(c.req.raw));

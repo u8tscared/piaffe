@@ -94,7 +94,7 @@ try {
   const list = JSON.parse(rd(path.join(WEB, 'static', 'splash', 'splash.json')));
   SPLASH = list.map((x) => `<link rel="apple-touch-startup-image" media="(device-width: ${x.w}px) and (device-height: ${x.h}px) and (-webkit-device-pixel-ratio: ${x.d}) and (orientation: ${x.land ? 'landscape' : 'portrait'})" href="/splash/${x.name}">`).join('\n');
 } catch (e) { SPLASH = ''; }
-const html = `<!doctype html>
+let html = `<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -135,6 +135,11 @@ ${liveScripts}
 `;
 
 fs.mkdirSync(DIST, { recursive: true });
+/* Cloudflare ignore une ligne de _headers de plus de 2 000 caractères : avec une empreinte CSP par <script>,
+   la CSP sautait. On fusionne les <script> intégrés qui se suivent (chaque module garde son try/catch) et on
+   vérifie à la construction que chaque script fusionné se lit sans erreur de syntaxe. */
+html = html.replace(/<\/script>\s*<script>/g, '\n;\n');
+for (const m of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) new (require('vm').Script)(m[1]);
 fs.writeFileSync(path.join(DIST, 'index.html'), html);
 
 /* fichiers statiques : icônes, manifest, service worker */
@@ -188,8 +193,10 @@ const CSP_COMMON = "default-src 'self'; style-src 'self' 'unsafe-inline' https:/
   "connect-src 'self' https://api-adresse.data.gouv.fr https://api.open-meteo.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com";
 const SEC = ['  Strict-Transport-Security: max-age=31536000; includeSubDomains', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
   '  X-Frame-Options: DENY', '  Permissions-Policy: camera=(self), microphone=(), geolocation=(self), payment=(), usb=()', '  Cross-Origin-Opener-Policy: same-origin'];
+const CSP_LINE = "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' https://cdnjs.cloudflare.com " + hashes.join(' ');
+if (CSP_LINE.length > 2000) throw new Error('CSP de ' + CSP_LINE.length + ' caractères : Cloudflare l’ignorerait (2 000 au plus)');
 fs.writeFileSync(path.join(DIST, '_headers'), [
-  '/*', ...SEC, "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' https://cdnjs.cloudflare.com " + hashes.join(' '),
+  '/*', ...SEC, CSP_LINE,
   '/migration/*', '  ! Content-Security-Policy', "  Content-Security-Policy: " + CSP_COMMON + "; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
   '/sw.js', '  Cache-Control: no-cache',
   '/index.html', '  Cache-Control: no-cache',

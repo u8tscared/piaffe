@@ -488,7 +488,10 @@ function trialSheet(id,done){var t=D.horseTrials.find(function(x){return x.id===
 /* vente conclue : contrat, visite, paiement, SIRE, départ */
 function transfer(adId,leadId,done){var a=ad(adId),h=a&&D.horse(a.horse),l=leadId?lead(leadId):null;if(!h)return;
   var st=a.steps=a.steps||{},price=l&&l.offer||a.price,sire=h.sire||'';
+  /* certificat d'engagement et de connaissance de l'acheteur (module 46-certificats) : coché tout seul quand il est reçu ou que l'acheteur est dispensé */
+  var cec=P.cec&&P.cec.forAd?P.cec.forAd(a,l):null;if(cec&&(cec.status==='reçu'||cec.status==='dispensé')&&!st.cec)st.cec=today();
   var S=[['contract','Contrat de vente signé','Le modèle « Vente de cheval » reprend le cheval, le prix et les deux parties.','<button class="btn sm" data-go="contrats">'+ICON('contract','sm')+'Préparer le contrat</button>'],
+    ['cec','Certificat d’engagement de l’acheteur','Obligatoire avant la remise du cheval si l’acheteur n’est pas un professionnel de la filière. Il est délivré par un vétérinaire ou un organisme agréé ; vous en gardez une copie.'+(cec?' État : '+E(cec.status)+'.':''),P.cec?'<button class="btn sm" data-go="certificats">'+ICON('doc','sm')+'Suivre le certificat</button>':''],
     ['vet','Visite vétérinaire d’achat','Faite par le vétérinaire de l’acheteur, compte rendu joint au dossier.',''],
     ['pay','Paiement reçu','<b class="num">'+F.eur(price)+'</b>'+(a.seller&&a.seller!=='club'?', dont '+F.eur(Math.round(price*(a.fee||0)/100))+' de commission pour le club':'')+'.',''],
     ['sire','Changement de propriétaire au SIRE','Le vendeur déclare la vente sur le site de l’IFCE avec le code de la carte d’immatriculation, puis l’acheteur confirme de son côté.','<button class="btn sm" data-copy>'+ICON('copy','sm')+'Copier le n° SIRE</button><a class="btn sm" href="https://www.ifce.fr" target="_blank" rel="noopener">'+ICON('ext','sm')+'Ouvrir le site de l’IFCE</a>'],

@@ -321,3 +321,41 @@ describe("billing · échéanciers, mandats et liens", () => {
     expect(await j(await call("/api/pay/options", { token: m.token }))).toMatchObject({ enabled: true, sepa: true, installments: [3, 10] });
   });
 });
+
+describe("billing · paiement en 3 fois avec Klarna", () => {
+  it("non activé : refus clair ; activé : Checkout Klarna seul, le club reçoit le total", async () => {
+    fake = fakeStripe();
+    const club = await seedConnectedClub();
+    await addMember(club.clubId, "m001", { first: "Léa", last: "Martin", email: "lea.martin@exemple.fr", fam: "F1" });
+    const m = await memberOf(club.clubId);
+    const inv = addInvoice(club.clubId, "m001", 62000);
+    let opts = await j(await call("/api/pay/options", { token: m.token }));
+    expect(opts.klarna).toBe(false);
+    let r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
+    expect(r.status).toBe(409);
+    expect((await j(r)).error.code).toBe("klarna_not_ready");
+    // le club active Klarna dans son tableau de bord Stripe : account.updated le signale
+    await sendEvent({ id: evtId(), type: "account.updated", account: club.acct, data: { object: { id: club.acct, charges_enabled: true, payouts_enabled: true, details_submitted: true, capabilities: { card_payments: "active", sepa_debit_payments: "active", klarna_payments: "active" }, requirements: { currently_due: [] } } } }, { connect: true });
+    opts = await j(await call("/api/pay/options", { token: m.token }));
+    expect(opts).toMatchObject({ klarna: true, klarna_min_cents: 100, klarna_max_cents: 450000 });
+    r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
+    expect(r.status).toBe(200);
+    const cs = fake.find("POST", "/v1/checkout/sessions")[0];
+    expect(cs.params["payment_method_types[0]"]).toBe("klarna");
+    expect(cs.params["payment_method_types[1]"]).toBeUndefined();
+    expect(cs.params["line_items[0][price_data][unit_amount]"]).toBe("62000");
+    expect(cs.headers["stripe-account"]).toBe(club.acct);
+  });
+
+  it("au-delà de 4 500 € : Klarna refusé", async () => {
+    fake = fakeStripe();
+    const club = await seedConnectedClub();
+    await env.DB.prepare("UPDATE connect_accounts SET klarna_enabled = 1 WHERE club_id = ?").bind(club.clubId).run();
+    await addMember(club.clubId, "m001", { first: "Léa", fam: "F1" });
+    const m = await memberOf(club.clubId);
+    const inv = addInvoice(club.clubId, "m001", 480000);
+    const r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
+    expect(r.status).toBe(400);
+    expect((await j(r)).error.code).toBe("klarna_amount");
+  });
+});

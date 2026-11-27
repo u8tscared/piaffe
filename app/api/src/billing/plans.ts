@@ -125,6 +125,9 @@ export const APPLICATION_FEE_PERCENT = 0;
 export const INSTALLMENT_COUNTS = [3, 10];
 /** Montant minimal d'une facture pour le paiement en plusieurs fois (centimes). */
 export const INSTALLMENT_MIN_CENTS = 9000;
+/** Paiement en 3 fois par Klarna en France (doc Stripe) : de 1 € à 4 500 €, le club reçoit le total tout de suite. */
+export const KLARNA_MIN_CENTS = 100;
+export const KLARNA_MAX_CENTS = 450000;
 /** Délai entre l'avis de prélèvement et le prélèvement automatique d'une facture (jours). */
 export const AUTOPAY_NOTICE_DAYS = 3;
 /** Nouvelles tentatives d'un prélèvement échoué avant de prévenir le gérant. */

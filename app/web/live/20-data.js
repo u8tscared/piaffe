@@ -181,7 +181,7 @@ PL.afterModules=function(){var data=PL.server||{};
 };
 
 /* ---------- Qui suis-je dans les données ---------- */
-PL.personLabel={owner:'Gérant',manager:'Gérant',staff:'Équipe',coach:'Coach',member:'Adhérent',accountant:'Comptable'};
+PL.personLabel={owner:'Gérant',manager:'Gérant',staff:'Équipe',coach:'Coach',member:'Adhérent',accountant:'Comptable',provider:'Praticien'};
 PL.setPeople=function(me){var u=PL.user||{},role=me.role||'owner',ids=me.person_ids||String(me.person_ref||'').split(',').filter(Boolean),ref=ids[0]||null;PL.personIds=ids;
   PL.role=role;PL.personRef=ref;
   var self={id:'me',first:u.first||(u.email||'').split('@')[0]||'Vous',last:u.last||'',role:PL.personLabel[role]||'',email:u.email||'',color:'var(--acc)',galop:0,age:null};
@@ -189,7 +189,7 @@ PL.setPeople=function(me){var u=PL.user||{},role=me.role||'owner',ids=me.person_
   var p0=D.person;if(!p0.__lv){D.person=function(i){return p0(i)||(i==='me'||i===PL.personRef?PL.mePerson:undefined)};D.person.__lv=true;
     var n0=D.name;D.name=function(i){var p=D.person(i);return p?((p.first||'')+' '+(p.last||'')).trim():''}}
   var who=ref&&p0(ref)?ref:'me';
-  D.me={gerant:who,employe:who,adherent:who,coach:who,comptable:who};
+  D.me={gerant:who,employe:who,adherent:who,coach:who,comptable:who,pro:who};
   Object.keys(P.roles).forEach(function(r){P.roles[r].who=who});
 };
 })();

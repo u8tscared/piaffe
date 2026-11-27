@@ -30,6 +30,12 @@ export const ARRAY_COLLS = [
   "aids", "gReviews", "referrals", "surveys", "growthCfg",
   // pages publiques du club (src/public) : demandes de cartes cadeaux arrivées par /c/:club/offrir (gérant seulement)
   "giftRequests",
+  // météo (demo/modules/47-meteo.js) : reprises déplacées pour une date, suggestions ignorées
+  "wxMoves", "wxSkips",
+  // certificats d'engagement et de connaissance (46-certificats.js), gérant seulement
+  "cecs",
+  // espace des praticiens (97-pro.js) : actes à facturer et demandes de visite du club
+  "proActs", "proRequests",
 ] as const;
 
 export const SINGLETON_COLLS = [

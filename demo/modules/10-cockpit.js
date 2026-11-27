@@ -396,7 +396,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     var DONE={wx:(moved.length>1?'<b>'+moved.length+' reprises basculées</b>':'<b>Reprise basculée</b>')+' au '+low(indoor.name)+'. Cavaliers prévenus.',rel:'<b>'+pl(late.length,'relance')+' envoyée'+(late.length>1?'s':'')+'</b> par e-mail et SMS, pour '+F.eur(lateSum)+'.',cmd:shav?'<b>Commande de '+shav.min+' '+E(shav.unit)+'</b> envoyée à '+E(shav.supplier)+', livraison jeudi.':''};
     var n=pts.filter(function(p){return !(p[3]&&S.hero[p[3]])}).length;
     var head=n?(bad.length>3?'Journée tendue. ':'Belle journée en vue. ')+(n>1?word(n)+' points méritent':'Un point mérite')+' votre œil.':'Tout est réglé. Belle journée au club.';
-    var BT={wx:['swap','Basculer au '+low(indoor.name),'pri'],rel:['send','Envoyer les relances',''],cmd:['bag','Commander les '+(shav?low(shav.name.split(' ')[0]):''),'']};
+    var BT={wx:['swap',P.mods.meteo?'Voir les suggestions météo':'Basculer au '+low(indoor.name),'pri'],rel:['send','Envoyer les relances',''],cmd:['bag','Commander les '+(shav?low(shav.name.split(' ')[0]):''),'']};
     return ILLU.cheval({size:null})+'<span class="ck-ast">'+ICON('today','sm')+'Résumé du matin</span><h2>'+head+'</h2>'+
      '<div class="ck-pts">'+pts.slice(0,5).map(function(p,j){var ok=p[3]&&S.hero[p[3]];var tag=p[4]?'button':'div';
        return '<'+tag+' style="--j:'+j+'" class="ck-pt d-'+p[0]+(ok?' ok':'')+'"'+(p[4]?' data-go="'+p[4]+'" data-id="'+p[5]+'"':'')+'><span class="ico">'+ICON(ok?'check':p[1],'sm')+'</span><span>'+(ok?DONE[p[3]]:p[2])+'</span></'+tag+'>'}).join('')+'</div>'+
@@ -486,7 +486,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
     var vb=e.target.closest('[data-val]');if(vb){e.stopPropagation();validate(vb);return}
     var fb=e.target.closest('[data-fin]');if(fb){S.fin=+fb.getAttribute('data-fin');P.$$('[data-fin]',el).forEach(function(b){b.setAttribute('aria-selected',b===fb)});var bd=P.$('[data-finbody]',el);bd.innerHTML=fin(S.fin);P.animate(bd);return}
   });
-  function heroAct(k){var lbl={wx:moved.length>1?moved.length+' reprises déplacées au '+low(indoor.name)+', cavaliers prévenus':'Reprise déplacée au '+low(indoor.name)+', cavaliers prévenus',
+  function heroAct(k){if(k==='wx'&&P.mods.meteo){P.go('meteo');return}var lbl={wx:moved.length>1?moved.length+' reprises déplacées au '+low(indoor.name)+', cavaliers prévenus':'Reprise déplacée au '+low(indoor.name)+', cavaliers prévenus',
       rel:pl(late.length,'relance')+' envoyée'+(late.length>1?'s':'')+' par e-mail et SMS',cmd:shav?'Commande de '+shav.min+' '+shav.unit+' envoyée à '+shav.supplier+', livraison jeudi':''};
     var m=flipFirst(bento);S.hero[k]=1;retile('hero');retile('hay');retile('wx');flipPlay(bento,m);
     P.toast(lbl[k],{undo:function(){delete S.hero[k];retile('hero');retile('hay');retile('wx');P.toast(k==='rel'?'Relances annulées':k==='cmd'?'Commande annulée':'Reprises remises en carrière',{icon:'refresh'})}})}

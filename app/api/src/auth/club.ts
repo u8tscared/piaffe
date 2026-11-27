@@ -26,7 +26,7 @@ export const CLUB_KINDS = ["centre", "ecurie_pension", "ecurie_proprietaires", "
 const LEGAL_FORMS = ["association", "ei", "eurl", "sarl", "sas", "sasu", "earl", "gaec", "scea", "autre"];
 export const TRIAL_DAYS = 30;
 export const API_SCOPES = ["import", "read", "write", "invoices", "accounting", "ics"];
-const ALL_ROLES: Role[] = ["owner", "manager", "staff", "coach", "member", "accountant"];
+const ALL_ROLES: Role[] = ["owner", "manager", "staff", "coach", "member", "accountant", "provider"];
 
 const ip = (c: Context) => clientIp(c);
 const isOwner = (c: Context<AppEnv>) => c.get("membership")?.role === "owner";

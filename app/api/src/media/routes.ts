@@ -20,7 +20,7 @@ export const MAX_FILE = 1_500_000;      // l'appareil compresse à 400 Ko enviro
 export const MAX_THUMB = 200_000;
 export const MAX_PER_HORSE = 300;
 export const MAX_PER_CLUB = 20_000;
-const KINDS = new Set(["profil", "soin", "marques"]);
+const KINDS = new Set(["profil", "soin", "marques", "document"]);
 const MEDIA_ID = /^med_[A-Za-z0-9_-]{6,48}$/;
 const REF_ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/;
 /** Statuts HTTP propres aux fichiers (413 trop lourd, 415 type refusé, 410 supprimée). */

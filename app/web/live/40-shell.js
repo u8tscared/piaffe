@@ -9,7 +9,7 @@
 var P=window.P,D=window.DATA,PL=window.PL,esc=P.fmt.esc;
 
 /* ---------- Rôle → vue ---------- */
-PL.VIEW={owner:'gerant',manager:'gerant',staff:'employe',coach:'coach',member:'adherent',accountant:'comptable'};
+PL.VIEW={owner:'gerant',manager:'gerant',staff:'employe',coach:'coach',member:'adherent',accountant:'comptable',provider:'pro'};
 P.roles.comptable={label:'Comptable',icon:'accounting',who:'me',home:'cpt-accueil',tabs:['cpt-accueil','cpt-factures','cpt-exports']};
 P.groups.comptable=['Comptabilité','Compte'];
 P.domGroups['Comptabilité']='mo';
@@ -88,7 +88,7 @@ document.addEventListener('click',function(e){
 PL.onShell=function(){var rs0=P.renderShell;P.renderShell=function(){var r=rs0.apply(P,arguments);PL.decorate();return r};PL.sync.listeners.push(refreshPill)};
 
 /* ---------- Mon compte ---------- */
-var ROLEFR={owner:'Gérant titulaire',manager:'Gérant',staff:'Équipe',coach:'Coach',member:'Adhérent',accountant:'Comptable'};
+var ROLEFR={owner:'Gérant titulaire',manager:'Gérant',staff:'Équipe',coach:'Coach',member:'Adhérent',accountant:'Comptable',provider:'Praticien'};
 PL.account=function(){var u=PL.user||{},clubs=PL.clubs||[];
   var dk=document.documentElement.getAttribute('data-theme')||'auto';
   P.sheet({title:'Mon compte',icon:'user',body:function(b){

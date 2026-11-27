@@ -5,7 +5,7 @@ function sum(a,f){return a.reduce(function(s,x){return s+(f?f(x):x)},0)}
 function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
 function clip(t,msg){try{var p=navigator.clipboard&&navigator.clipboard.writeText(t);if(p&&p.catch)p.catch(function(){})}catch(e){}P.toast(msg||'Copié dans le presse-papiers',{icon:'copy'})}
 var LOGS=[];
-function XF(k,n,o,m){var f=P['x'+k];if(f){f(n,o);P.toast(m||(n+' téléchargé'),{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}
+function XF(k,n,o,m){var f=P['x'+k];if(f){f(n,o);P.toast(m||(n+' téléchargé'),{icon:'download'})}else P.toast('Téléchargement indisponible sur cet appareil',{icon:'alert'})}P.XF=XF;
 function CONVTXT(){return $$('.view .pfa-u, .view .pfa-a, .view [data-msg]').map(function(m){return m.innerText.replace(/\s+/g,' ').trim()}).filter(Boolean).slice(0,40)}
 function on(root,sel,fn,ev){$$(sel,root).forEach(function(b){b.addEventListener(ev||'click',function(e){fn(b,e)})})}
 /* Logos dessinés : un motif géométrique propre à chaque service, tracé au trait 1,8 sur une pastille dégradée */
@@ -1044,7 +1044,7 @@ function renderConn(el,ctx){
     function keepY(){var v=el.closest('.view'),y=v.scrollTop;X.quiet();v.style.scrollBehavior='auto';v.scrollTop=y;v.style.scrollBehavior=''}
     on(el,'[data-ep]',function(b){CX.ep=+b.getAttribute('data-ep');keepY()});
     on(el,'[data-lang]',function(b){CX.lang=b.getAttribute('data-lang');keepY()});
-    q('[data-oas]').onclick=function(){XF('file','stabl-openapi.json',JSON.stringify({openapi:'3.1.0',info:{title:'API Stabl',version:'1.0.0'},servers:[{url:API_URL}],components:{securitySchemes:{cle:{type:'http',scheme:'bearer'}}},security:[{cle:[]}],paths:{'/members':{get:{summary:'Lister les adhérents'}},'/horses':{get:{summary:'Lister les chevaux'}},'/lessons':{get:{summary:'Lister les reprises'}},'/invoices':{get:{summary:'Lister les factures'}},'/import/csv':{post:{summary:'Importer un fichier CSV'}}}},null,2),'Description OpenAPI 3.1 téléchargée')};
+    q('[data-oas]').onclick=function(){P.XF('file','stabl-openapi.json',JSON.stringify({openapi:'3.1.0',info:{title:'API Stabl',version:'1.0.0'},servers:[{url:API_URL}],components:{securitySchemes:{cle:{type:'http',scheme:'bearer'}}},security:[{cle:[]}],paths:{'/members':{get:{summary:'Lister les adhérents'}},'/horses':{get:{summary:'Lister les chevaux'}},'/lessons':{get:{summary:'Lister les reprises'}},'/invoices':{get:{summary:'Lister les factures'}},'/import/csv':{post:{summary:'Importer un fichier CSV'}}}},null,2),'Description OpenAPI 3.1 téléchargée')};
     var tr=q('[data-try]');if(tr)tr.onclick=function(){var r=q('[data-res]'),s=q('[data-status]');r.style.opacity=.25;s.textContent='Appel en cours';tr.disabled=true;setTimeout(function(){if(!r.isConnected)return;r.style.opacity=1;tr.disabled=false;s.innerHTML='<b class="okc">'+(endpoints()[CX.ep].code||200)+'</b> en '+(96+CX.ep*23)+' ms · <span class="pf-mono">RateLimit-Remaining: '+(81-CX.ep)+'</span>'},P.RM?0:650)};
   }
   if(ctx.params.do){var d=ctx.params.do;delete ctx.params.do;setTimeout(function(){var b=el.querySelector('[data-do="'+d+'"]');if(b)b.click()},80)}

@@ -39,7 +39,7 @@ export interface Env {
   ROBOT?: DurableObjectNamespace;
 }
 
-export type Role = "owner" | "manager" | "staff" | "coach" | "member" | "accountant";
+export type Role = "owner" | "manager" | "staff" | "coach" | "member" | "accountant" | "provider";
 
 export interface AuthUser { id: string; email: string; first: string | null; last: string | null; email_verified_at: string | null }
 export interface AuthClub { id: string; name: string; slug: string; plan: string; plan_status: string }

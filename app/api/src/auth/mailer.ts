@@ -26,5 +26,5 @@ export function appUrl(env: Env, path: string): string {
 }
 
 export const ROLE_LABEL: Record<string, string> = {
-  owner: "gérant titulaire", manager: "gérant", staff: "employé", coach: "coach", member: "adhérent", accountant: "comptable",
+  owner: "gérant titulaire", manager: "gérant", staff: "employé", coach: "coach", member: "adhérent", accountant: "comptable", provider: "praticien (vétérinaire, maréchal…)",
 };

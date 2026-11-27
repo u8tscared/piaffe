@@ -116,7 +116,7 @@ P.groups={gerant:['Pilotage','Écurie','Club','Argent','Équipe','Plateforme'],e
 P.domGroups={'Pilotage':'acc','Écurie':'hz','Club':'rd','Argent':'mo','Équipe':'tm','Plateforme':'pf','Ma journée':'acc','Moi':'tm','Équitation':'rd','Cheval':'hz','Compte':'mo','Coaching':'rd'};
 P.domMods={'soins':'cr','emp-soins':'cr','emp-signaler':'cr','adh-accueil':'acc','adh-bienvenue':'acc','adh-progression':'rd','adh-profil':'pf','coach-profil':'pf','adh-messages':'tm','emp-messages':'tm','communication':'tm','coach-revenus':'mo','coach-concours':'rd'};
 P.domOf=function(m){if(typeof m==='string')m=P.mods[m];if(!m)return 'acc';return m.dom||P.domMods[m.id]||P.domGroups[m.group]||'acc'};
-var GICON={'Pilotage':'today','Écurie':'horse','Club':'members','Argent':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
+var GICON={'Ma tournée':'route','Pilotage':'today','Écurie':'horse','Club':'members','Argent':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
 
 /* ---------- Registre des modules ---------- */
 /* P.mod({id, role, group, title, icon, sub, badge, tab, phoneTitle, render(el,ctx), wide}) */
@@ -224,8 +224,8 @@ P.renderShell=function(){
   var mobile=dev==='phone',rail=(dev==='tablet'||dev==='tablet-full');P.applyZoom();
   app.className='app nav-'+P.navMode()+(mobile?' mobile':'')+(rail?' rail':'');app.classList.toggle('mini',P.navMini());app.setAttribute('data-role',role);
   var cur=P.mods[S.route]||{};
-  var SPACE={gerant:'Espace gérant',employe:'Espace équipe',adherent:'Espace cavalier',coach:'Espace coach'};
-  app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Stabl Coach':D.club.name)+'</b><small>'+SPACE[role]+'</small></span></button>'+
+  var SPACE={gerant:'Espace gérant',employe:'Espace équipe',adherent:'Espace cavalier',coach:'Espace coach',pro:'Espace praticien'};
+  app.innerHTML='<aside class="side"><button class="club" data-go="'+R.home+'"><span class="lg">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</span><span class="cn"><b>'+F.esc(role==='coach'?'Stabl Coach':role==='pro'?'Stabl Pro':D.club.name)+'</b><small>'+(SPACE[role]||R.label)+'</small></span></button>'+
     '<nav aria-label="Menu">'+navHTML()+'</nav><div class="me">'+P.ui.av(me)+'<span class="cn"><b>'+F.esc(me.first+' '+me.last)+'</b><small>'+F.esc(me.role||(me.galop?'Galop '+me.galop:me.spec?'Coach '+me.spec:R.label))+'</small></span></div></aside>'+
     '<div class="main"><header class="top"><div class="lft"><button class="btn ghost icon mback" data-back title="Retour">'+ICON('back')+'</button><button class="mlogo" data-go="'+R.home+'" title="Accueil">'+LOGO(24,'var(--navy-ink)','var(--strass)')+'</button><div class="crumb">'+crumbHTML(cur)+'</div></div>'+
     '<button class="cmdk" data-pal title="Rechercher (⌘K)">'+ICON('search')+'<span class="q">Rechercher un cheval, un cavalier, un écran…</span><kbd>⌘ K</kbd></button>'+

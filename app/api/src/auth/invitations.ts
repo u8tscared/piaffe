@@ -7,7 +7,7 @@ import { INVITATION_DAYS } from "./tokens";
 import { appUrl, mail, ROLE_LABEL, WEB } from "./mailer";
 import { mergeRefs } from "./users";
 
-export const INVITABLE_ROLES: Role[] = ["manager", "staff", "coach", "member", "accountant"];
+export const INVITABLE_ROLES: Role[] = ["manager", "staff", "coach", "member", "accountant", "provider"];
 
 export interface InvitationRow {
   id: string; club_id: string; email: string; role: Role; person_ref: string | null; first: string | null; last: string | null;

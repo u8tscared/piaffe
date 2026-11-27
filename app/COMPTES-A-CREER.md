@@ -43,7 +43,8 @@ Rien n'a été créé à ton nom. Voici, dans l'ordre, les comptes à ouvrir et 
 7. Créer le catalogue (d'abord avec la clé de test) : `cd app/api && STRIPE_SECRET_KEY=sk_test_… node scripts/setup-stripe.mjs`.
 8. Codes promo : Produits > Coupons > Codes promo, sur `piaffe_lancement` ou `piaffe_parrainage`.
 9. **Ne pas activer Stripe Tax** tant que la franchise de TVA s'applique. Le jour où elle cesse : `PLATFORM_VAT_REGIME=normal` dans wrangler.jsonc et relancer le script.
-10. Facultatif : secret `BILLING_ADMIN_SECRET` (24 caractères ou plus) pour accorder l'offre fondateurs à un club.
+10. Paiement en 3 fois avec **Klarna** (facultatif, gratuit à activer) : Paramètres > Connect > Moyens de paiement, activer Klarna pour les comptes connectés. Chaque club le voit ensuite dans son tableau de bord Stripe et l'active ; Stabl le propose à l'adhérent dès que Stripe le déclare actif (capacité `klarna_payments`). Le club est payé en entier tout de suite, Klarna porte le risque ; frais Klarna à la charge du club. Montants de 1 € à 4 500 €, particuliers seulement.
+11. Facultatif : secret `BILLING_ADMIN_SECRET` (24 caractères ou plus) pour accorder l'offre fondateurs à un club.
 
 À valider : prix (Essentiel 59 €, Club 149 €, Domaine 289 € par mois, annuel au prix de 10 mois, offre fondateurs 99 € à vie pour 30 clubs), parrainage 50 €, délai de grâce 7 jours, commission Stabl sur les paiements des clubs à 0 %, pré-notification SEPA de 3 jours (à prévoir dans le mandat, sinon 14 jours).
 
