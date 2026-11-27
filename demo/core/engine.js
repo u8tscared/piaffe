@@ -531,11 +531,24 @@ function splash(){if(!frame)return;var B=window.BRAND||{};var sp=document.create
   frame.appendChild(sp);setTimeout(function(){sp.classList.add('out')},RM?300:1050);setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp)},RM?600:1500)}
 P.splash=splash;
 
+/* ---------- Mises à jour : « Mise à jour faite » au premier lancement d'une nouvelle version,
+   et « Nouvelle version disponible » si une version plus récente est publiée pendant qu'on s'en sert ---------- */
+function updBar(html,stay){var o=$('.updb',demo);if(o)o.remove();var b=document.createElement('div');b.className='updb';b.setAttribute('role','status');b.innerHTML=html;demo.appendChild(b);
+  var x=$('[data-updx]',b);if(x)x.onclick=function(){b.classList.add('out');setTimeout(function(){b.remove()},300)};
+  var r=$('[data-updr]',b);if(r)r.onclick=function(){P.store.set('verreload',1);location.reload()};
+  if(!stay)setTimeout(function(){if(b.isConnected){b.classList.add('out');setTimeout(function(){b.remove()},300)}},7000);return b}
+P.checkUpdate=function(){var V=window.DEMO_V;if(!V||!/^https?:/.test(location.protocol))return;
+  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===V.v||$('.updb.avail',demo))return;
+    updBar('<span class="ui">'+ICON('download','sm')+'</span><div class="ut"><b>Nouvelle version disponible</b><small>'+F.esc(j.note||'Des améliorations vous attendent.')+'</small></div><button class="btn sm pri" data-updr>Mettre à jour</button><button class="btn ghost icon sm" data-updx title="Plus tard">'+ICON('x','sm')+'</button>',true).classList.add('avail')}).catch(function(){})};
+function updStart(){var V=window.DEMO_V;if(!V)return;var last=P.store.get('ver',null);P.store.set('ver',V.v);
+  if(last&&last!==V.v)setTimeout(function(){updBar('<span class="ui ok">'+ICON('checkc','sm')+'</span><div class="ut"><b>Mise à jour faite</b><small>'+F.esc(V.note||'Vous avez la dernière version de Stabl.')+'</small></div><button class="btn ghost icon sm" data-updx title="Fermer">'+ICON('x','sm')+'</button>')},RM?400:1500);
+  setInterval(P.checkUpdate,4*60*1000);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')P.checkUpdate()});setTimeout(P.checkUpdate,8000)}
+
 /* ---------- Démarrage ---------- */
 P.start=function(){
   var th=P.store.get('theme',null);if(th)document.documentElement.setAttribute('data-theme',th);
   var h=(location.hash||'').slice(1);if(h&&P.mods[h]){S.role=P.mods[h].role;S.route=h}else{S.route=P.roles[S.role].home}
-  document.documentElement.lang='fr';buildDemo();P.renderShell();splash();
+  document.documentElement.lang='fr';buildDemo();P.renderShell();splash();updStart();
   document.addEventListener('click',glideWatch,true);document.addEventListener('click',onClick);
   if(window.PIAFFE_MENUS){demo.insertAdjacentHTML('beforeend',navSwitchHTML());demo.classList.add('has-navsw')}
   document.addEventListener('mouseover',function(e){if(!app||P.isMobile()||(P.navMode()!=='survol'&&!P.navMini()))return;var r=e.target.closest&&e.target.closest('[data-navfly]');if(r&&app.contains(r)){var g=r.getAttribute('data-navfly');if(navGroupsOf().by[g].length>1||P.navMini())P.navFly(g,r);else P.navFlyClose()}});

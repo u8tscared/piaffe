@@ -10,6 +10,7 @@ H1='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewp
 H2='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Stabl · démo</title>'"$META"'<link rel="icon" href="../icons/favicon.svg" type="image/svg+xml"><link rel="icon" href="../icons/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="../icons/apple-touch-icon-180.png"><link rel="manifest" href="manifest.webmanifest"><style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>'
 cp site/dist/index.html site/dist/robots.txt site/dist/sitemap.xml _pages/
 { printf '%s\n' "$H2"; cat demo/dist/piaffe.html; printf '\n</body></html>\n'; } > _pages/demo/index.html
+cp demo/dist/version.json _pages/demo/version.json
 mkdir -p _pages/icons && cp brand/stabl/icone/favicon.svg brand/stabl/icone/favicon.ico brand/stabl/icone/apple-touch-icon-180.png brand/stabl/icone/pwa-192.png brand/stabl/icone/pwa-512.png brand/stabl/icone/pwa-maskable-512.png _pages/icons/
 cp brand/stabl/web/manifest-site.webmanifest _pages/manifest.webmanifest && cp brand/stabl/web/manifest-demo.webmanifest _pages/demo/manifest.webmanifest
 cp -r site/shots _pages/shots && rm -rf _pages/shots/_png

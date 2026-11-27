@@ -478,3 +478,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .app:not(.mobile) .ck-big{font-size:46px}
 .app:not(.mobile) .ck-hay .ck-big,.app:not(.mobile) .ck-rev .ck-big{font-size:44px}
 .app:not(.mobile) .ck-pt{padding-top:7px;padding-bottom:7px}
+/* bandeau de mise à jour */
+.updb{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100vw - 24px);padding:10px 10px 10px 12px;border-radius:18px;background:var(--raise);box-shadow:var(--shadow-3),inset 0 0 0 1px var(--line);animation:updin .45s var(--e-spring) both;font-family:var(--f-text)}
+.updb.out{opacity:0;transform:translate(-50%,-12px);transition:opacity .3s,transform .3s}
+.updb .ui{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--acc-bg);color:var(--acc);flex:none}
+.updb .ui.ok{background:var(--ok-pale);color:var(--ok)}
+.updb .ut{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:420px}
+.updb .ut b{font:700 15px/1.2 var(--f-text);color:var(--ink)}
+.updb .ut small{font:500 13px/1.35 var(--f-text);color:var(--mut)}
+@keyframes updin{from{opacity:0;transform:translate(-50%,-16px)}}
+/* icônes Phosphor (duotone) : pleines, la couche claire prend 22 % de la couleur */
+svg.i.phi{fill:currentColor;stroke:none}
+svg.i.phi .d{opacity:.22}
