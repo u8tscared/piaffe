@@ -606,6 +606,44 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       };
     },
   },
+  pro_invoice: {
+    name: "Facture d'un praticien",
+    description: "Facture d'un vétérinaire, maréchal, dentiste ou ostéopathe, envoyée toute seule au club ou au propriétaire du cheval, PDF en pièce jointe.",
+    category: "essential",
+    fields: { first: "Prénom (propriétaire, facultatif)", pro_name: "Nom du praticien", pro_job: "Métier", number: "Numéro de facture", amount_cents: "Montant TTC en centimes", due_date: "Date d'échéance (facultatif)", horses: "Chevaux concernés", club_name: "Écurie", iban: "IBAN du praticien (facultatif)", to_club: "true si la facture est adressée au club" },
+    sample: { first: "Léa", pro_name: "Dr Antoine Leclerc", pro_job: "Vétérinaire", number: "PRO-2026-00042", amount_cents: 8160, due_date: "2026-12-28", horses: "Ulysse", club_name: "Écurie des Tilleuls", iban: "FR76 3000 4000 0312 3456 7890 143" },
+    build: (d) => ({
+      subject: `Facture ${d.number} de ${d.pro_name} : ${money(d)}`,
+      preheader: `${d.pro_job ? d.pro_job + ", " : ""}${d.horses ? d.horses + ", " : ""}${money(d)}.`,
+      blocks: [
+        { t: "h", text: "Votre facture est disponible" },
+        { t: "p", text: `${hello(d)} voici la facture de ${d.pro_name}${d.pro_job ? " (" + String(d.pro_job).toLowerCase() + ")" : ""} pour ${d.horses ? "les soins de " + d.horses : "ses actes"}${d.club_name && !d.to_club ? " à " + d.club_name : ""}. Elle est en pièce jointe au format PDF.` },
+        { t: "rows", rows: opt([["Facture", d.number], ["Montant", money(d)], ["À régler avant le", d.due_date ? dateLong(d.due_date) : "à réception"], ["Virement", d.iban]]) },
+        ...(d.to_club ? [{ t: "note", tone: "ok", text: "Elle est aussi rangée dans vos factures fournisseurs sur Stabl, avec son fichier Factur-X pour votre comptable." } as Block] : []),
+        { t: "p", muted: true, text: `Une question sur cette facture ? Répondez simplement à cet e-mail : il arrive chez ${d.pro_name}.` },
+      ],
+    }),
+  },
+
+  pro_invoice_copy: {
+    name: "Copie de facture pour le praticien",
+    description: "Copie envoyée au praticien de chaque facture partie à son nom (faite à la main ou toute seule).",
+    category: "essential",
+    fields: { first: "Prénom du praticien", number: "Numéro", amount_cents: "Montant TTC en centimes", customer_name: "Client", sent_to: "Adresse d'envoi (vide si le client n'a pas d'e-mail)", club_name: "Écurie", auto: "true si la facture a été faite toute seule", invoices_url: "Lien vers ses factures" },
+    sample: { first: "Antoine", number: "PRO-2026-00042", amount_cents: 8160, customer_name: "Léa Martin", sent_to: "lea@exemple.fr", club_name: "Écurie des Tilleuls", auto: true, invoices_url: "https://app.stablapp.fr/" },
+    build: (d) => ({
+      subject: `${d.auto ? "Facture faite pour vous" : "Copie de votre facture"} ${d.number} : ${money(d)}, ${d.customer_name}`,
+      preheader: d.sent_to ? `Envoyée à ${d.sent_to}.` : "Le client n'a pas d'e-mail : remettez-lui le PDF.",
+      blocks: [
+        { t: "h", text: d.auto ? "Votre facture est partie toute seule" : "Copie de votre facture" },
+        { t: "p", text: `${hello(d)} ${d.auto ? "vos actes ont été facturés automatiquement" : "voici la copie de votre facture"} (${d.club_name}). Le PDF est en pièce jointe pour vos archives.` },
+        { t: "rows", rows: opt([["Facture", d.number], ["Client", d.customer_name], ["Montant", money(d)], ["Envoyée à", d.sent_to || "personne : pas d'adresse e-mail connue"]]) },
+        ...(d.sent_to ? [] : [{ t: "note", tone: "warn", text: "Le client n'a pas d'adresse e-mail dans Stabl : remettez-lui le PDF, ou demandez au club de compléter sa fiche." } as Block]),
+        ...(d.invoices_url ? [{ t: "button", label: "Voir toutes mes factures", url: d.invoices_url } as Block] : []),
+        { t: "p", text: `À bientôt, l'équipe ${BRAND.name}.` },
+      ],
+    }),
+  },
 };
 
 export const TEMPLATE_KEYS = Object.keys(TEMPLATES);

@@ -17,6 +17,7 @@ import { cron as onboardingCron } from "./onboarding/routes";
 import { cron as robotCron } from "./robot/routes";
 import { cron as mcpCron } from "./mcp/routes";
 import { cron as mediaCron } from "./media/routes";
+import { cron as proCron } from "./pro/routes";
 
 /*
  * Plan des URL :
@@ -105,7 +106,7 @@ export default {
   async scheduled(ev: ScheduledController, rawEnv: Env, ctx: ExecutionContext) {
     const env = withSecrets(rawEnv);
     if (!env) { console.error("cron ignoré : SESSION_SECRET manquant"); return; }
-    for (const f of [authCron, recordsCron, billingCron, invoicingCron, mailCron, icsCron, importCron, onboardingCron, robotCron, mcpCron, mediaCron]) {
+    for (const f of [authCron, recordsCron, billingCron, invoicingCron, mailCron, icsCron, importCron, onboardingCron, robotCron, mcpCron, mediaCron, proCron]) {
       ctx.waitUntil(f(env, ev.cron).catch((e) => console.error("cron", e)));
     }
   },

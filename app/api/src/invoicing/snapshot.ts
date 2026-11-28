@@ -5,7 +5,7 @@ import type { VatRegime } from "./catalog";
 /** Contenu figé d'une facture à son émission : tout ce qu'il faut pour régénérer le PDF et le XML à l'identique. */
 export interface Snapshot {
   v: 1;
-  issuer: "club" | "platform";
+  issuer: "club" | "platform" | "pro";
   kind: "invoice" | "deposit" | "credit_note";
   type_code: "380" | "381" | "386";
   number: string;

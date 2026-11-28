@@ -31,6 +31,7 @@ let step = "";
 const ok = (cond, what) => { if (!cond) { console.error("✗ " + step + " : " + what); throw new Error(what); } console.log("  ✓ " + what); };
 const RUN = Date.now().toString(36);
 const mail = (who) => `${who}.${RUN}@exemple.fr`;
+const E_ADH = mail("adherent");
 const PASS = "Cheval-Bai-2026!";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -282,9 +283,64 @@ async function main() {
   ok(horses.find((h) => h.name === "Quartz").paddock === "Pré du bas" && horses.find((h) => h.name === "Ulysse de la Roche").coat === "Bai", "les deux onglets ont enregistré leurs changements");
   ok(await g2.evaluate(() => DATA.horses.find((x) => x.name === "Quartz").paddock === "Pré du bas"), "l'onglet 2 voit le changement de l'onglet 1");
 
+  say("Vétérinaire : actes saisis, factures envoyées toutes seules au propriétaire et au club");
+  await vetScenario(browser, g, club);
+
   console.log("\n" + (problems.length ? "✗ Problèmes relevés :\n  " + problems.join("\n  ") : "✓ Zéro erreur console, zéro 500."));
   await browser.close();
   if (problems.length) process.exit(1);
+}
+
+async function vetScenario(browser, g, club) {
+  const vet = mail("veto");
+  await g.evaluate(() => { DATA.practitioners.push({ id: "pv1", name: "Dr Ana Roche", short: "Dr Roche", job: "Vétérinaire", kinds: ["Vétérinaire", "Vaccin"], phone: "06 11 22 33 44" }); P.rerender(); });
+  await synced(g);
+  await g.evaluate(() => P.go("praticiens")); await sleep(700);
+  await g.click('[data-inv="pv1"]'); await g.waitForSelector('.sheet [data-f="email"]');
+  await g.fill('.sheet [data-f="email"]', vet); await g.click(".sheet [data-ok]"); await sleep(1200);
+  ok(q1("SELECT 1 AS x FROM invitations WHERE email = ? AND role = 'provider'", vet), "invitation du vétérinaire");
+  const V = await acceptInvite(browser, vet, "Ana", "véto");
+  ok(await V.page.evaluate(() => PL.view === "pro"), "le vétérinaire arrive dans son espace");
+
+  await V.page.evaluate(() => P.go("pro-profil")); await sleep(900);
+  await V.page.fill('[data-f="siret"]', "52341890700034"); await V.page.fill('[data-f="address"]', "4 rue des Vignes, 78120 Rambouillet");
+  await V.page.fill('[data-f="iban"]', "FR7630004000031234567890143"); await V.page.click("[data-sv]"); await sleep(1200);
+  const vu = q1("SELECT id FROM users WHERE email = ?", vet);
+  const prof = JSON.parse(q1("SELECT data FROM pro_profiles WHERE user_id = ?", vu.id)?.data || "{}");
+  ok(prof.siret === "52341890700034" && prof.auto === "day", "profil de facturation gardé sur le serveur");
+
+  const addAct = async (horse, note, price) => {
+    await V.page.evaluate(() => P.go("pro-chevaux")); await sleep(700);
+    const id = await V.page.evaluate((n) => DATA.horses.find((h) => h.name === n).id, horse);
+    await V.page.click(`[data-h="${id}"]`); await V.page.waitForSelector(".sheet [data-a]"); await V.page.click(".sheet [data-a]");
+    await V.page.waitForSelector('.sheet [data-f="note"]');
+    await V.page.fill('.sheet [data-f="note"]', note); await V.page.fill('.sheet [data-f="price"]', String(price));
+    await V.page.click(".sheet [data-ok]"); await sleep(600); await synced(V.page);
+  };
+  await addAct("Tornade", "Vaccin grippe et tétanos", 58);
+  await addAct("Quartz", "Contrôle de boiterie", 68);
+  ok(rec(club.id, "proActs").length === 2, "2 actes enregistrés dans le club");
+
+  await V.page.evaluate(() => P.go("pro-factures"));
+  await V.page.waitForSelector("[data-all]", { timeout: 15000 }); await V.page.click("[data-all]"); await sleep(300);
+  await shot(V.page, "09-veto-factures"); await V.page.click("[data-mk]");
+  await V.page.waitForFunction(() => !document.querySelector("[data-mk]"), null, { timeout: 20000 });
+  const pins = qa("SELECT * FROM pro_invoices WHERE user_id = ? ORDER BY seq", vu.id);
+  ok(pins.length === 2 && pins.every((i, k) => i.number === `PRO-${new Date().getFullYear()}-0000${k + 1}`), "2 factures, une série unique au vétérinaire (" + pins.map((i) => i.number).join(", ") + ")");
+  const own = pins.find((i) => i.bill_to === "owner"), cl = pins.find((i) => i.bill_to === "club");
+  ok(own && own.customer_email === E_ADH && own.total_ttc === 6960, "facture de Tornade adressée à sa propriétaire (69,60 € TTC)");
+  ok(lastMail(E_ADH, "pro_invoice"), "e-mail de facture parti chez la propriétaire, PDF joint");
+  ok(lastMail(vet, "pro_invoice_copy"), "copie reçue par le vétérinaire");
+  ok(cl && q1("SELECT 1 AS x FROM incoming_invoices WHERE club_id = ? AND provider_ref = ?", club.id, cl.id), "facture de Quartz rangée dans les achats du club");
+  await V.page.evaluate(() => PL.sync.pull()); await sleep(800);
+  ok(rec(club.id, "proActs").every((a) => /^PRO-/.test(a.inv)), "actes marqués facturés");
+  await shot(V.page, "10-veto-factures-envoyees");
+  const pdf = await api(V.page, "GET", "/api/pro/factures/" + own.id + "/pdf");
+  ok(pdf.status === 200, "PDF de la facture téléchargeable par le vétérinaire");
+
+  await g.evaluate(() => P.go("praticiens")); await sleep(1500); await g.evaluate(() => P.rerender()); await sleep(500);
+  ok(await g.evaluate((n) => document.querySelector(".view").textContent.includes(n), cl.number), "le gérant voit la facture reçue dans « Véto et maréchal »");
+  await shot(g, "11-gerant-factures-praticiens");
 }
 
 async function offlineScenario(g, Emp, club) {

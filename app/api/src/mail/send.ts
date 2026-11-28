@@ -13,7 +13,9 @@ import { enqueue } from "./outbox";
  */
 export interface MailInput {
   to: string; template: string; data: Record<string, unknown>;
-  club_id?: string | null; reply_to?: string; attachments?: { filename: string; content_b64: string; type: string }[];
+  club_id?: string | null; reply_to?: string;
+  /** Nom d'expéditeur à la place de celui du club (« Dr Leclerc via Stabl » pour les factures d'un praticien). */
+  from_name?: string | null; attachments?: { filename: string; content_b64: string; type: string }[];
 }
 export async function sendMail(env: Env, m: MailInput): Promise<string> {
   return enqueue(env, m);

@@ -142,7 +142,7 @@ export async function familyRefs(db: D1Database, clubId: string, personRef: stri
   const rows = await all<{ id: string }>(db, "SELECT id FROM records WHERE club_id = ? AND coll = 'members' AND deleted = 0 AND json_extract(data, '$.fam') = ? LIMIT 50", clubId, String(me.fam));
   return [...new Set([personRef, ...rows.map((r) => r.id)])];
 }
-function memberAddress(m: Record<string, any>): Address | null {
+export function memberAddress(m: Record<string, any>): Address | null {
   const a = m.address ?? m.addr;
   if (a && typeof a === "object") {
     // Formats rencontrés : {line1, zip, city} (Stabl) ou {ligne1, code_postal, ville} (import).

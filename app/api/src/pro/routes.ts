@@ -10,6 +10,7 @@ import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { requireUser } from "../lib/auth";
 import { all } from "../lib/db";
+import factures, { autoInvoice } from "./factures";
 
 const app = new Hono<AppEnv>();
 
@@ -56,5 +57,12 @@ app.get("/api/pro/tournee", requireUser, async (c) => {
   requests.sort((a, b) => Number(b.urgent) - Number(a.urgent) || String(a.date).localeCompare(String(b.date)));
   return c.json({ clubs, visits, requests, from: today, until });
 });
+
+app.route("/", factures);
+
+/** Cron quotidien : facturation automatique des praticiens (src/pro/factures.ts). */
+export async function cron(env: AppEnv["Bindings"], expr: string): Promise<void> {
+  if (expr === "0 6 * * *") await autoInvoice(env);
+}
 
 export default app;

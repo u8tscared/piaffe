@@ -105,6 +105,14 @@ Un gérant (ou un employé) relie son assistant à Stabl en ajoutant l'adresse *
 - **Pour l'écran Connecteurs** (session) : `GET /api/mcp/tools` (adresse du serveur et outils permis à ce rôle), `GET /api/mcp/grants` (assistants reliés ; un employé ne voit que les siens), `DELETE /api/mcp/grants/:id` (retire l'accès et coupe les jetons), `GET /api/mcp/calls?limit=` (journal des 90 derniers jours, gérant).
 - **Déploiement** : `wrangler.jsonc` fait passer `/mcp`, `/oauth/*` et `/.well-known/*` par le Worker avant les fichiers statiques ; `APP_URL` doit valoir `https://app.stablapp.fr` (il donne l'émetteur et l'adresse de la ressource).
 
+### Praticiens : tournée et factures · `src/pro/`
+
+Rôle `provider` (vétérinaire, maréchal, dentiste, ostéopathe), invité par chaque club (`person_ref` = sa fiche `practitioners`), un seul compte pour tous ses clubs.
+- `GET /api/pro/tournee` : visites et demandes de visite de toutes ses écuries.
+- Factures (`factures.ts`, migration 0022) : le praticien est le vendeur. Série `PRO-AAAA-00001` unique pour lui (table `pro_invoice_counters`), une facture par client (propriétaire du cheval si l'acte ou le profil le demande, sinon le club), PDF Factur-X du moteur `src/invoicing`, gelée par déclencheur. À l'émission : e-mail `pro_invoice` au client (expéditeur « <praticien> via Stabl », réponse chez lui), copie `pro_invoice_copy` au praticien, facture au club rangée dans `incoming_invoices` (compte 622600), actes `proActs` marqués (`inv`, `invId`, `invAt`, `client`, `billTo`, `paid`, champs que seul le serveur pose).
+- Profil côté serveur (`pro_profiles`) : `GET/PUT /api/pro/profil` ; `auto` = `day` (cron 6 h UTC, actes de la veille), `month` (le 1er) ou `off`.
+- `GET /api/pro/factures` (toutes écuries + actes à facturer), `POST /api/pro/factures` `{club, acts?, bill_to?}`, `GET …/:id/pdf`, `POST …/:id/payee`, `POST …/:id/renvoyer`. Côté club : `GET /api/club/factures-praticiens[/:id/pdf]` (gérants et comptable, factures adressées au club seulement).
+
 ### Pages publiques du club · `src/public/`
 
 Pages servies par le Worker (HTML sans cadre, style Stabl, téléphone d'abord, CSP avec nonce, aucun compte demandé). `wrangler.jsonc` fait passer `/c/*` et `/s/*` par le Worker ; `sw.js` ne les met jamais en cache.

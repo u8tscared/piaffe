@@ -47,7 +47,7 @@ export async function enqueue(env: Env, m: MailInput, o: EnqueueOpts = {}): Prom
     }
     const def = TEMPLATES[m.template];
     const club = await loadClub(env, m.club_id);
-    const fromName = senderName(club?.name);
+    const fromName = senderName(m.from_name || club?.name);
     const base = [id, m.club_id || null, to, m.template, fromName, o.dedupe_key || null];
     const fail = async (status: string, err: string, subject = "", category = def?.category || "essential") => {
       await run(db, `INSERT INTO email_outbox (id, club_id, to_email, template, from_name, dedupe_key, subject, category, status, last_error) VALUES (?,?,?,?,?,?,?,?,?,?)`,

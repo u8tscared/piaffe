@@ -299,6 +299,12 @@ export function prepareWrite(ctx: PolicyCtx, coll: string, prev: Row | null, nex
     if (PRO_OWN.has(coll)) {
       if (prev && !ctx.personIds.has(prev.pro)) throw deny();
       if (coll === "proRequests" && !prev) throw deny("Les demandes de visite viennent du club.");
+      if (coll === "proActs") {
+        // la facturation (src/pro/factures.ts) est seule à poser ces champs ; un acte facturé ne change plus de prix
+        let o = protect({ ...next!, pro: prev?.pro ?? me }, prev, ["inv", "invId", "invAt", "client", "billTo", "paid"]);
+        if (prev?.inv) o = protect(o, prev, ["price", "horse", "kind", "date", "bill"]);
+        return o;
+      }
       return { ...next!, pro: prev?.pro ?? me };
     }
     if (coll === "horses" && prev && next) {
