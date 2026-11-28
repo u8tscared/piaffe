@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Stabl">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611281129">
+<meta name="piaffe-version" content="202611281217">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -1331,14 +1331,32 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 
 /* ---------- Coque de l'onboarding : question à gauche, aperçu à droite ---------- */
 .lv-ob.v2{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
-@media (min-width:1100px){
-  .lv-ob.v2{grid-template-columns:minmax(0,1fr) minmax(420px,44%);grid-template-rows:auto minmax(0,1fr) auto}
-  .lv-ob.v2>.lv-ob-top,.lv-ob.v2>.lv-ob-body,.lv-ob.v2>.lv-ob-foot{grid-column:1}
-  .lv-ob.v2>.ob-live{grid-column:2;grid-row:1 / span 3}
-}
+
 .lv-ob.v2 .lv-ob-top{gap:18px}
 .lv-ob.v2 .lv-ob-body{padding:28px clamp(20px,5vw,72px) 40px}
-.lv-ob.v2 .lv-q{max-width:680px}
+.lv-ob.v2 .lv-q{max-width:760px}
+.lv-ob.v2{background:radial-gradient(60% 50% at 50% -10%,var(--acc-pale),transparent 70%),var(--bg)}
+.lv-ob.v2 .lv-ob-top{max-width:1100px;width:100%;margin:0 auto;box-sizing:border-box}
+/* entrée élément par élément, sortie au « Continuer » */
+.lv-ob.v2 .lv-q.fwd,.lv-ob.v2 .lv-q.back{animation:none}
+.lv-ob.v2 .lv-q>*{animation:obUp .6s var(--e-out) both}
+.lv-ob.v2 .lv-q>*:nth-child(1){animation-delay:.02s}.lv-ob.v2 .lv-q>*:nth-child(2){animation-delay:.07s}.lv-ob.v2 .lv-q>*:nth-child(3){animation-delay:.13s}
+.lv-ob.v2 .lv-q>*:nth-child(4){animation-delay:.19s}.lv-ob.v2 .lv-q>*:nth-child(5){animation-delay:.25s}.lv-ob.v2 .lv-q>*:nth-child(n+6){animation-delay:.3s}
+.lv-ob.v2 .lv-q.back>*{animation-name:obDown}
+@keyframes obUp{from{opacity:0;transform:translateY(22px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes obDown{from{opacity:0;transform:translateY(-18px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.lv-ob.v2 .lv-q.out{animation:obOut .23s var(--e-in-out) forwards}
+.lv-ob.v2 .lv-q.out-back{animation:obOutB .23s var(--e-in-out) forwards}
+@keyframes obOut{to{opacity:0;transform:translateY(-16px) scale(.985);filter:blur(3px)}}
+@keyframes obOutB{to{opacity:0;transform:translateY(16px) scale(.985);filter:blur(3px)}}
+.lv-ob.v2 .lv-q h1{font-size:clamp(30px,4.4vw,52px)}
+.lv-ob.v2 [data-next]{transition:transform .25s var(--e-spring),box-shadow .3s,background .2s}
+.lv-ob.v2 [data-next]:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 12px 24px -10px color-mix(in srgb,var(--acc) 70%,transparent)}
+.lv-ob.v2 [data-next]:not(:disabled):active{transform:scale(.97)}
+.lv-ob.v2 .lv-ob-foot{max-width:none;padding-left:max(20px,calc((100% - 760px)/2));padding-right:max(20px,calc((100% - 760px)/2))}
+.lv-ob.v2 .lv-opt[aria-pressed="true"]{animation:obPick .45s var(--e-spring)}
+@keyframes obPick{40%{transform:scale(1.025)}}
+@media (prefers-reduced-motion:reduce){.lv-ob.v2 .lv-q>*,.lv-ob.v2 .lv-q.out,.lv-ob.v2 .lv-q.out-back,.lv-ob.v2 .lv-opt[aria-pressed="true"]{animation:none!important}}
 .lv-ob.v2 .lv-ob-foot{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(10px)}
 .ob-saved{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);white-space:nowrap;opacity:0;transition:opacity .4s}
 .ob-saved.on{opacity:1}
@@ -1563,13 +1581,18 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
   .ob-ring .h path{fill:#fff;stroke-width:0}
 }
 .ob-steps .li{border:0!important;padding:0!important;min-height:0!important;background:none!important}
+/* logos des logiciels : plus grands, posés sur une tuile blanche */
+.lv-logo.lv-tile{padding:0;display:inline-grid;place-items:center}
+.lv-tools .lv-opt .ico,.lv-tp .ico{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.lv-tools .lv-opt .ico .lv-logo,.lv-tp .ico .lv-logo{width:28px;height:28px}
+.ob-move .src span .lv-logo{width:26px;height:26px}
 </style>
 <script src="/vendor/three-r128.min.js" defer></script>
 </head>
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Stabl a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611281129",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611281217",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    STABL · Marque (logo officiel du 26/11/2026 : silhouette marine, sans œil)
@@ -24591,7 +24614,12 @@ function effect(id,action){var f=MIG().effetPour;if(typeof f!=='function')return
 function logo(id){var L=MIG().LOGOS;var v=L&&L[id];if(!v)return '';if(typeof v==='object')v=v.svg||v.src||v.data||'';if(!v)return '';
   if(/^\s*<svg/i.test(v))return '<span class="lv-logo" aria-hidden="true">'+v+'</span>';
   if(/^(data:|https?:|\/)/.test(v))return '<img class="lv-logo" alt="" src="'+esc(v)+'">';return ''}
-function icon(id){return logo(id)||ICON(ICO[fam(id)]||'swap')}
+/* pastilles maison quand l'éditeur n'a pas de logo dans le catalogue (couleur de la marque, initiales) */
+var TILE={excel:['#1d6f42','grid'],'google-sheets':['#188038','grid'],papier:['#b08550','doc'],qonto:['#1d1d2b','Q'],pegase:['#8b1d2c','P'],ffe:['#0b3c8c','FFE'],
+  'google-agenda':['#1a73e8','calendar_add'],autre:['#59627c','swap']};
+function tile(id){var t=TILE[id];if(!t)return '';var inner=/^[A-Z]+$/.test(t[1])?'<b style="font:800 '+(t[1].length>2?'8.5':'12.5')+'px/1 var(--f-display);letter-spacing:-.02em;color:#fff">'+t[1]+'</b>':ICON(t[1],'sm').replace('class="i','style="width:15px;height:15px;color:#fff" class="i');
+  return '<span class="lv-logo lv-tile" aria-hidden="true" style="background:'+t[0]+'">'+inner+'</span>'}
+function icon(id){return logo(id)||tile(id)||ICON(ICO[fam(id)]||'swap')}
 
 /* recherche dans le catalogue complet, pour « autre » */
 function search(q){q=(q||'').trim().toLowerCase();if(q.length<2)return [];var out=[];
@@ -24734,7 +24762,7 @@ var STEPS=[
    '<div class="lv-row2"><label class="lv-fl"><span>Code postal</span><input class="in" id="ob-zip" value="'+esc((A.address||{}).zip||'')+'" inputmode="numeric" autocomplete="postal-code" maxlength="10"></label>'+
    '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div></div>'},
    bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets'),t=0;
-     n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live()};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
+     n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live();clearTimeout(t);if(!A.siren&&A.name.length>=4)t=setTimeout(find,700)};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
      /* adresse saisie à la main (la recherche officielle peut être indisponible ou ne pas trouver la structure) */
      var ad=function(k){return q.querySelector('#ob-'+k)};
      ['line1','zip','city'].forEach(function(k){ad(k).oninput=function(){A.address=A.address&&typeof A.address==='object'?A.address:{country:'FR'};A.address[k]=ad(k).value.trim();saveLocal();if(k==='city')live()}});
@@ -24884,7 +24912,11 @@ function foot(){if(!el)return;var s=cur(),f=el.querySelector('.lv-ob-foot');if(!
   var bk=f.querySelector('[data-back]');if(bk)bk.style.visibility=stepIdx>0?'visible':'hidden'}
 function rail(){var v=visible(),n=v.length-1,r=el.querySelector('.ob-rail');if(!r)return;var h='';for(var i=1;i<=n;i++)h+='<i class="'+(i<stepIdx?'done':i===stepIdx?'cur':'')+'"></i>';r.innerHTML=h;
   r.setAttribute('aria-valuenow',String(stepIdx));r.setAttribute('aria-valuemax',String(n));el.querySelector('.lv-ob-step').textContent=stepIdx?(stepIdx+' / '+n):''}
-function draw(){var s=cur();rail();
+var swapping=false;
+/* au « Continuer » : la question sort (glisse et s'efface), la suivante entre élément par élément */
+function draw(){var body=el.querySelector('.lv-ob-body'),old=body.querySelector('.lv-q');
+  if(old&&!P.RM&&!swapping){swapping=true;old.classList.add(dir==='back'?'out-back':'out');setTimeout(function(){swapping=false;paint()},230);return}paint()}
+function paint(){var s=cur();rail();
   var body=el.querySelector('.lv-ob-body');body.innerHTML='<div class="lv-q '+dir+'" data-step="'+s.id+'">'+s.render()+'</div>';body.scrollTop=0;
   var q=body.querySelector('.lv-q');if(s.bind)s.bind(q);foot();live();
   var first=q.querySelector('input.in');if(first&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!q.contains(a))first.focus()},80)}
@@ -24935,7 +24967,7 @@ PL.onboarding=function(o){o=o||{};loadLocal();if(o.answers&&Object.keys(o.answer
   if(o.skipHello&&stepIdx===0)stepIdx=1;
   document.body.classList.add('lv-booting');document.title='Configuration · '+PL.brandName();
   var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';document.body.appendChild(r)}r.innerHTML='<div class="lv-ob v2"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="ob-rail" role="progressbar" aria-label="Avancement" aria-valuemin="0"></div><span class="lv-ob-step"></span><span class="ob-saved">'+ICON('checkc','sm')+'Enregistré</span></header><main class="lv-ob-body"></main>'+
-    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer><aside class="ob-live" aria-hidden="true"></aside></div>';
+    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer></div>';
   el=r.firstChild;el.querySelector('[data-next]').onclick=next;el.querySelector('[data-back]').onclick=back;
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.target.closest('button,[data-find]')&&e.target.id!=='ob-siret'){e.preventDefault();next()}});
   draw()};

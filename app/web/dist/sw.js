@@ -8,7 +8,7 @@
      les données du club sont gardées par l'appli elle-même (IndexedDB) avec leur file de synchronisation.
    - Mise à jour : la nouvelle version s'installe en arrière-plan puis attend ; l'appli affiche « Recharger »
      et envoie SKIP_WAITING quand l'utilisateur le décide (ou tout de suite s'il n'est pas dans l'appli). */
-const VERSION = '202611281129';
+const VERSION = '202611281217';
 const SHELL = 'stabl-shell-' + VERSION;
 const RUNTIME = 'stabl-runtime-v1';
 const PRECACHE = ["/","/manifest.webmanifest","/vendor/three-r128.min.js","/icon-180.png","/icon-192.png","/icon-512.png","/icon-maskable-512.png","/icon.svg"];
