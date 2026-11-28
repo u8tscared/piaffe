@@ -40,6 +40,14 @@ export function dateLong(v: unknown, withYear = true): string {
   const dow = new Date(Date.UTC(p.y, p.m - 1, p.d)).getUTCDay();
   return `${DOW[dow]} ${p.d === 1 ? "1er" : p.d} ${MON[p.m - 1]}${withYear ? " " + p.y : ""}`;
 }
+/** Pavé date des cartes : { weekday: "mer.", day: "25", month: "nov." }, ou null si la valeur n'est pas une date. */
+const MON_SHORT = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+export function dayParts(v: unknown): { weekday: string; day: string; month: string } | null {
+  const p = parseDay(v);
+  if (!p) return null;
+  const dow = new Date(Date.UTC(p.y, p.m - 1, p.d)).getUTCDay();
+  return { weekday: DOW[dow].slice(0, 3) + ".", day: String(p.d), month: MON_SHORT[p.m - 1] };
+}
 /** « 18/11/2026 ». */
 export function dateShort(v: unknown): string {
   const p = parseDay(v);
