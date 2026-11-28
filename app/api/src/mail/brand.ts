@@ -24,6 +24,21 @@ export const BRAND = {
     logoSapphire: `${ASSETS}/stabl-logo-saphir@2x.png`,
     symbolSapphire: `${ASSETS}/stabl-symbole-saphir@2x.png`,
     symbolWhite: `${ASSETS}/stabl-symbole-blanc@2x.png`,
+    /** En-tête « Nuit au box » : tête de cheval en filigrane sur fond box (600 × 520, opaque). */
+    watermark: `${ASSETS}/filigrane-nuit@2x.png`,
+  },
+  /** DA « Nuit au box » (choisie le 28/11/2026) : tout le mail en marine, titres blancs énormes, accents strass. */
+  night: {
+    page: "#060e26",      // autour du mail et pied de page
+    body: "#0a1636",      // corps du mail
+    box: "#0e1d4a",       // en-tête et panneaux
+    watermark: "#1a3172", // filigrane, fonds de pastilles
+    line: "#22356f",      // filets
+    edge: "#2a3f80",      // bordure basse de l'en-tête, boutons secondaires
+    strass: "#6d8bff",    // étiquettes, boutons, liens
+    lead: "#c6cfec",      // texte courant
+    soft: "#aeb9de",      // texte secondaire
+    faint: "#7f8cb8",     // pied de page
   },
   colors: {
     ink: "#0a1636",       // encre marine : titres, texte fort, bandeau

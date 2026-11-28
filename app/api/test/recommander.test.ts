@@ -99,18 +99,18 @@ describe("mise en page des e-mails", () => {
     expect(bare.html).not.toContain("&#8220;"); // pas de citation vide
   });
 
-  it("bandeau marine : logo Stabl pour la plateforme, pastille du club sinon ; signature Stabl en pied", () => {
+  it("DA Nuit au box : en-tête marine à filigrane, logo Stabl pour la plateforme, pastille du club sinon ; signature Stabl en pied", () => {
     const base: Frame = { subject: "Test", preheader: "Pré", headerName: "Stabl", footer: [], blocks: [{ t: "h", text: "Titre promu" }, { t: "p", text: "Corps" }] };
     const p = renderHtml({ ...base, logoUrl: BRAND.logoUrl });
     expect(p).toContain(BRAND.img.logoWhite);
     expect(p).toContain('class="hero-title"');
     expect(p).toContain("Titre promu");
-    expect(p).toContain(BRAND.img.logoSapphire);
+    expect(p).toContain(BRAND.img.watermark);
     expect(p).toContain(BRAND.legal);
     const c = renderHtml({ ...base, headerName: "Écurie du Moulin", isClub: true, footer: ["Écurie du Moulin", "Lozanne"] });
     expect(c).toContain("via Stabl");
     expect(c).toMatch(/>M<\/td>/);
-    expect(c).not.toContain(BRAND.img.logoWhite);
+    expect(c).not.toContain('alt="Stabl" style="display:block;width:52px');
     const t = renderText({ ...base, footer: ["Écurie du Moulin"] });
     expect(t.startsWith("Titre promu\n")).toBe(true);
     expect(t).toContain("Envoyé avec Stabl");
