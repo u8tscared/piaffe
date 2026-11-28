@@ -10,6 +10,7 @@
  *   POST /api/public/reviews/:club/google {ack}  l'avis a été publié sur Google (bouton cliqué)
  *   POST /api/public/surveys/:token  {global, coach?, again?, text?, site, shown}
  *   GET  /api/public/horse-ads/:club/:ad/photo   photo de profil du cheval d'une annonce en ligne
+ *   POST /api/public/recommander     un cavalier recommande Stabl à son écurie (./recommander.ts)
  * Pour le gérant (session) :
  *   GET  /api/growth/links[?member=]                liens à partager (offrir, avis, sondages, annonces)
  *   POST /api/growth/gift-requests/:id/issue        demande réglée au club : crée la carte et l'envoie à l'acheteur
@@ -30,9 +31,11 @@ import { appUrl, ownerEmails } from "../billing/common";
 import { stripe, stripeConfigured } from "../billing/stripe";
 import { connectRow, feeFor } from "../billing/connect";
 import { signLink, readLink } from "./tokens";
+import recommander from "./recommander";
 import { adPage, csp, giftPage, messagePage, reviewPage, surveyPage, eur, type PubClub } from "./pages";
 
 const app = new Hono<AppEnv>();
+app.route("/", recommander);
 type Ctx = { waitUntil(p: Promise<unknown>): void } | null;
 
 export const GIFT_DEFAULTS: [string, number][] = [["Baptême à poney", 12], ["Balade d’une heure", 35], ["Carte 10 séances", 290], ["Stage de Noël", 240]];

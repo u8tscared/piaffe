@@ -3,11 +3,11 @@
  * (sample, utilisé par la page d'aperçu et les tests) et construit sujet, pré-en-tête et blocs.
  * Les montants s'acceptent en centimes (amount_cents) ou en euros (amount). Les dates en ISO ou JJ/MM/AAAA.
  */
-import type { Block } from "./layout";
+import type { Block, IconName } from "./layout";
 import { BRAND } from "./brand";
-import { dateLong, dateShort, duration, hour, money } from "./fmt";
+import { dateLong, dateShort, dayParts, duration, hour, money } from "./fmt";
 
-export type Category = "essential" | "bookings" | "reminders" | "waitlist";
+export type Category = "essential" | "bookings" | "reminders" | "waitlist" | "referrals";
 export interface MailCtx {
   club: { id: string; name: string; email?: string | null; phone?: string | null } | null;
   appUrl: string;
@@ -43,23 +43,25 @@ const ROLE_INVITE: Record<string, { label: string; intro: string; can: string[] 
   manager: { label: "co-gérant", intro: "vous invite à gérer le club avec elle ou lui sur Stabl.", can: ["gérer les adhérents, les chevaux et le planning", "émettre les factures et suivre les encaissements", "configurer le club et inviter l'équipe"] },
 };
 
+const ROLE_ICON: Record<string, IconName> = { member: "horse", parent: "users", owner_horse: "horse", staff: "users", coach: "calendar", accountant: "invoice", provider: "horse", manager: "key" };
+
 export const TEMPLATES: Record<string, TemplateDef> = {
   verify_email: {
     name: "Confirmation de l'adresse e-mail",
     description: "Envoyé à l'inscription pour vérifier l'adresse.",
     category: "essential", sensitive: true,
-    fields: { first: "Prénom (facultatif)", verify_url: "Lien de confirmation", code: "Code à 6 chiffres (facultatif)", expires_hours: "Validité du lien en heures (24 par défaut)" },
+    fields: { first: "Prénom (facultatif)", verify_url: "Lien de confirmation", code: "Code à 6 chiffres (facultatif)", expires_hours: "Validité du lien en heures (24 par défaut)", change: "true s'il s'agit d'un changement d'adresse" },
     sample: { first: "Léa", verify_url: "https://app.stablapp.fr/auth/verify?token=exemple", code: "482913" },
     build: (d) => ({
       subject: d.change ? "Confirmez votre nouvelle adresse e-mail" : "Confirmez votre adresse e-mail",
-      preheader: "Un clic pour activer votre compte Stabl.",
+      preheader: d.code ? `Votre code : ${d.code}. Ou un clic pour activer votre compte ${BRAND.name}.` : `Un clic pour activer votre compte ${BRAND.name}.`,
       blocks: [
-        { t: "h", text: "Confirmez votre adresse e-mail" },
+        { t: "hero", icon: "mail", badge: d.change ? "Changement d'adresse" : "Dernière étape", title: d.change ? "Confirmez votre nouvelle adresse" : "Confirmez votre adresse e-mail", text: d.change ? "Un clic pour terminer le changement." : "Un clic, et votre compte est prêt." },
         { t: "p", text: d.change
           ? `${hello(d)} vous avez demandé à utiliser cette adresse pour votre compte ${BRAND.name}. Confirmez-la pour terminer le changement.`
-          : `${hello(d)} merci d'avoir créé votre compte ${BRAND.name}. Pour sécuriser votre compte, confirmez que cette adresse est bien la vôtre.` },
+          : `${hello(d)} merci d'avoir créé votre compte ${BRAND.name}. Pour le sécuriser, confirmez que cette adresse est bien la vôtre.` },
         { t: "button", label: "Confirmer mon adresse", url: d.verify_url },
-        ...(d.code ? [{ t: "p", text: "Vous pouvez aussi saisir ce code dans l'application :" } as Block, { t: "code", text: String(d.code) } as Block] : []),
+        ...(d.code ? [{ t: "p", muted: true, text: "Vous préférez saisir un code ? Le voici :" } as Block, { t: "code", text: String(d.code) } as Block] : []),
         { t: "fallback", url: d.verify_url },
         { t: "p", muted: true, text: `Ce lien est valable ${d.expires_hours || 24} heures. Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet e-mail.` },
       ],
@@ -76,7 +78,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: "Choisissez un nouveau mot de passe",
       preheader: "Vous avez demandé à réinitialiser votre mot de passe.",
       blocks: [
-        { t: "h", text: "Nouveau mot de passe" },
+        { t: "hero", icon: "lock", badge: "Sécurité du compte", title: "Nouveau mot de passe", text: "Choisissez-le en quelques secondes." },
         { t: "p", text: `${hello(d)} vous avez demandé à réinitialiser le mot de passe de votre compte ${BRAND.name}. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.` },
         { t: "button", label: "Choisir un nouveau mot de passe", url: d.reset_url },
         { t: "fallback", url: d.reset_url },
@@ -95,8 +97,8 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Votre lien de connexion à ${clubName(ctx)}`,
       preheader: "Connectez-vous en un clic, sans mot de passe.",
       blocks: [
-        { t: "h", text: "Votre lien de connexion" },
-        { t: "p", text: `${hello(d)} voici votre lien pour vous connecter, sans mot de passe.` },
+        { t: "hero", icon: "key", badge: "Connexion", title: "Votre lien de connexion", text: "Pas de mot de passe à retenir : un clic suffit." },
+        { t: "p", text: `${hello(d)} voici votre lien pour vous connecter${ctx.club ? " à votre espace " + ctx.club.name : ""}.` },
         { t: "button", label: "Me connecter", url: d.login_url },
         { t: "fallback", url: d.login_url },
         { t: "p", muted: true, text: `Ce lien est valable ${d.expires_minutes || 15} minutes et ne fonctionne qu'une fois. Ne le transférez à personne. Si vous n'avez pas demandé à vous connecter, ignorez cet e-mail.` },
@@ -109,26 +111,36 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     description: "Invitation à rejoindre le club, avec un texte adapté au rôle.",
     category: "essential", sensitive: true,
     fields: {
-      role: "member | parent | owner_horse | staff | coach | accountant | manager (co-gérant)",
+      role: "member | parent | owner_horse | staff | coach | accountant | provider | manager (co-gérant)",
       first: "Prénom de l'invité (facultatif)", inviter_name: "Nom de la personne qui invite (facultatif)",
-      invitation_url: "Lien d'acceptation", child_first: "Prénom de l'enfant (rôle parent, facultatif)", expires_days: "Validité en jours (14 par défaut)",
+      invitation_url: "Lien d'acceptation", child_first: "Prénom de l'enfant (rôle parent, facultatif)", horse_name: "Cheval suivi (rôle propriétaire, facultatif)", expires_days: "Validité en jours (14 par défaut)",
     },
     sample: { role: "member", first: "Léa", inviter_name: "Claire", invitation_url: "https://app.stablapp.fr/invitation/exemple" },
     build: (d, ctx) => {
-      const r = ROLE_INVITE[d.role === "owner" ? "manager" : d.role] || ROLE_INVITE.member;
-      const who = d.inviter_name ? `${d.inviter_name}, de ${clubName(ctx)},` : clubName(ctx);
+      const role = d.role === "owner" ? "manager" : d.role;
+      const r = ROLE_INVITE[role] || ROLE_INVITE.member;
+      const who = d.inviter_name ? `${d.inviter_name} (${clubName(ctx)})` : clubName(ctx);
+      const rider = ["member", "parent", "owner_horse"].includes(role) || !ROLE_INVITE[role];
+      const subtitle = role === "parent" && d.child_first ? `Suivez ${d.child_first} et toute la famille depuis un seul compte.`
+        : role === "owner_horse" && d.horse_name ? `${d.horse_name} a désormais son carnet en ligne.`
+        : `Votre accès ${r.label} vous attend.`;
       return {
         subject: `${clubName(ctx)} vous invite sur ${BRAND.name}`,
-        preheader: `Votre accès ${r.label} vous attend.`,
+        preheader: `Votre accès ${r.label} vous attend. Deux minutes suffisent pour l'activer.`,
         blocks: [
-          { t: "h", text: `Bienvenue chez ${clubName(ctx)}` },
+          { t: "hero", icon: ROLE_ICON[role] || "horse", badge: `Invitation · ${r.label}`, title: `Bienvenue chez ${clubName(ctx)}`, text: subtitle },
           { t: "p", text: `${hello(d)} ${who} ${r.intro}` },
-          ...(d.role === "parent" && d.child_first ? [{ t: "p", text: `Vous pourrez suivre ${d.child_first} et toute la famille depuis un seul compte.` } as Block] : []),
+          ...(role === "parent" && d.child_first ? [{ t: "p", text: `Vous pourrez suivre ${d.child_first} et toute la famille depuis un seul compte.` } as Block] : []),
           { t: "p", text: "Avec votre accès, vous pourrez :" },
-          { t: "list", items: r.can },
+          { t: "checks", items: r.can },
           { t: "button", label: "Accepter l'invitation", url: d.invitation_url },
           { t: "fallback", url: d.invitation_url },
-          { t: "p", muted: true, text: `Cette invitation est valable ${d.expires_days || 14} jours. Vous pourrez vous connecter avec votre compte Google ou créer un mot de passe.` },
+          ...(rider ? [{ t: "h", text: "En deux minutes" } as Block, { t: "steps", items: [
+            { title: "Acceptez l'invitation", text: "Le bouton ci-dessus ouvre votre espace." },
+            { title: "Choisissez comment vous connecter", text: "Avec votre compte Google, ou un mot de passe." },
+            { title: role === "parent" ? "Vérifiez la fiche de la famille" : "Vérifiez votre fiche", text: "Coordonnées, contact d'urgence et autorisations : le club a peut-être déjà tout rempli." },
+          ] } as Block] : []),
+          { t: "p", muted: true, text: `Cette invitation est valable ${d.expires_days || 14} jours. ${rider ? "Vous pouvez aussi installer l'application sur votre téléphone depuis votre espace." : "Vous pourrez vous connecter avec votre compte Google ou créer un mot de passe."}` },
         ],
       };
     },
@@ -144,19 +156,21 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: d.first ? `Bienvenue chez ${clubName(ctx)}, ${d.first}` : `Bienvenue chez ${clubName(ctx)}`,
       preheader: "Votre espace adhérent est prêt : réservez, payez et suivez tout depuis votre téléphone.",
       blocks: [
-        { t: "h", text: `Bienvenue chez ${clubName(ctx)}` },
+        { t: "hero", icon: "horse", badge: d.child_first ? "Nouvelle famille" : "Nouvel adhérent", title: `Bienvenue chez ${clubName(ctx)}`,
+          text: d.child_first ? `L'espace famille de ${d.child_first} est prêt.` : d.first ? `${String(d.first).trim()}, votre espace adhérent est prêt.` : "Votre espace adhérent est prêt." },
         { t: "p", text: d.child_first
           ? `${hello(d)} nous sommes ravis d'accueillir ${d.child_first} parmi nos cavaliers. Votre espace famille est prêt : il vous suffit de l'activer pour suivre ses cours et ses factures.`
           : `${hello(d)} nous sommes ravis de vous compter parmi nos cavaliers. Votre espace adhérent est prêt : il vous suffit de l'activer pour en profiter.` },
-        ...(d.forfait || d.first_lesson || d.horse_name ? [{ t: "rows", rows: opt([["Forfait", d.forfait], ["Première reprise", d.first_lesson], ["Cheval", d.horse_name]]) } as Block] : []),
+        ...(d.forfait || d.first_lesson || d.horse_name ? [{ t: "card", kicker: "Votre inscription", title: String(d.forfait || "Inscription enregistrée"), status: { text: "Prêt", tone: "ok" },
+          rows: opt([["Première reprise", d.first_lesson], ["Cheval", d.horse_name]]) } as Block] : []),
+        { t: "button", label: "Activer mon espace", url: d.activation_url },
         { t: "p", text: "Dans l'application, vous pouvez :" },
-        { t: "list", items: [
+        { t: "checks", items: [
           "**réserver** vos reprises, vos rattrapages et les cours particuliers",
           "**payer** vos factures en ligne, par carte ou par prélèvement",
           d.horse_name ? `**suivre ${d.horse_name}** : soins, maréchal, vaccins et journal de travail` : "**suivre votre cheval** et votre progression, du galop aux concours",
           "**signer** vos documents et recevoir les informations du club",
         ] },
-        { t: "button", label: "Activer mon espace", url: d.activation_url },
         { t: "fallback", url: d.activation_url },
         { t: "p", text: `Une question ? Répondez simplement à cet e-mail, l'équipe vous répondra.` },
         sign(ctx),
@@ -168,25 +182,24 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     name: "Bienvenue au gérant",
     description: "Après la création du club : prochaines étapes de la mise en route.",
     category: "essential",
-    fields: { first: "Prénom du gérant", club_name: "Nom du club", dashboard_url: "Lien vers le tableau de bord", trial_ends_at: "Fin de l'essai (facultatif)", import_url: "Lien vers l'import de données (facultatif)" },
+    fields: { first: "Prénom du gérant", club_name: "Nom du club", dashboard_url: "Lien vers le tableau de bord", trial_ends_at: "Fin de l'essai (facultatif)", import_url: "Lien vers l'import de données (facultatif)", invite_url: "Lien vers l'invitation des adhérents (facultatif)", payments_url: "Lien vers l'activation du paiement en ligne (facultatif)" },
     sample: { first: "Claire", club_name: "Écurie des Tilleuls", dashboard_url: "https://app.stablapp.fr/", trial_ends_at: "2026-12-24", import_url: "https://app.stablapp.fr/reglages/import" },
     build: (d) => ({
       subject: `${d.club_name || "Votre club"} est prêt sur ${BRAND.name}`,
-      preheader: "Vos prochaines étapes pour démarrer sereinement.",
+      preheader: "Trois étapes pour démarrer sereinement : vos données, vos adhérents, le paiement en ligne.",
       blocks: [
-        { t: "h", text: `Bienvenue sur ${BRAND.name}` },
-        { t: "p", text: `${hello(d)} l'espace de **${d.club_name || "votre club"}** est créé. Voici les étapes qui vous feront gagner le plus de temps, dans l'ordre :` },
-        { t: "list", items: [
-          "**Importez vos données** depuis votre ancien logiciel ou un fichier Excel : adhérents, chevaux, forfaits et historique.",
-          "**Vérifiez votre planning** de reprises et vos forfaits types.",
-          "**Activez l'encaissement en ligne** pour être payé plus vite, sans relance.",
-          "**Invitez votre équipe et votre comptable**, chacun avec le bon niveau d'accès.",
-          "**Invitez vos adhérents** : ils réservent et paient depuis leur téléphone.",
+        { t: "hero", icon: "sparkles", badge: "Votre club est créé", title: `Bienvenue sur ${BRAND.name}`, text: `L'espace de **${d.club_name || "votre club"}** est prêt. Trois étapes, et vous êtes en selle.` },
+        { t: "p", text: `${hello(d)} merci de nous faire confiance. Voici, dans l'ordre, les étapes qui vous feront gagner le plus de temps :` },
+        { t: "steps", items: [
+          { title: "Importez vos données", text: "Depuis votre ancien logiciel ou un fichier Excel : adhérents, chevaux, forfaits et historique. Vous vérifiez avant de valider." },
+          { title: "Invitez vos adhérents", text: "Chacun reçoit son lien personnel et réserve, paie et suit son cheval depuis son téléphone." },
+          { title: "Activez le paiement en ligne", text: "Carte bancaire et prélèvement SEPA : les factures se règlent sans relance, l'argent arrive sur votre compte." },
         ] },
-        { t: "button", label: "Ouvrir mon tableau de bord", url: d.dashboard_url },
-        ...(d.import_url ? [{ t: "button", label: "Importer mes données", url: d.import_url } as Block] : []),
-        ...(d.trial_ends_at ? [{ t: "note", text: `Votre essai gratuit court jusqu'au ${dateLong(d.trial_ends_at)}. Aucun moyen de paiement n'est demandé d'ici là.` } as Block] : []),
-        { t: "p", text: "Besoin d'un coup de main pour démarrer ? Répondez à cet e-mail : nous vous aidons personnellement." },
+        ...(d.import_url
+          ? [{ t: "button", label: "Importer mes données", url: d.import_url } as Block, { t: "button", variant: "secondary", label: "Ouvrir mon tableau de bord", url: d.dashboard_url } as Block]
+          : [{ t: "button", label: "Ouvrir mon tableau de bord", url: d.dashboard_url } as Block]),
+        ...(d.trial_ends_at ? [{ t: "note", text: `Votre essai gratuit court jusqu'au **${dateLong(d.trial_ends_at)}**. Aucun moyen de paiement n'est demandé d'ici là.` } as Block] : []),
+        { t: "p", text: "Ensuite, invitez votre équipe et votre comptable, chacun avec le bon niveau d'accès. Besoin d'un coup de main pour démarrer ? Répondez à cet e-mail : nous vous aidons personnellement." },
         { t: "p", text: `À très vite, l'équipe ${BRAND.name}.` },
       ],
     }),
@@ -200,15 +213,18 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     sample: { first: "Léa", number: "F-2026-1173", amount_cents: 52000, due_date: "2026-12-05", label: "Pension complète décembre, Ulysse de la Roche", pay_url: "https://app.stablapp.fr/payer/exemple" },
     build: (d, ctx) => ({
       subject: `Facture ${d.number} de ${clubName(ctx)} : ${money(d)}`,
-      preheader: `${money(d)} à régler avant le ${dateShort(d.due_date)}.`,
+      preheader: d.sepa ? `${money(d)}, prélevés automatiquement à l'échéance.` : `${money(d)} à régler avant le ${dateShort(d.due_date)}.`,
       blocks: [
-        { t: "h", text: "Votre facture est disponible" },
+        { t: "hero", icon: "invoice", badge: `Facture ${d.number}`, title: "Votre facture est disponible",
+          text: d.sepa ? `${money(d)}, prélevés automatiquement à l'échéance.` : d.due_date ? `${money(d)} à régler avant le ${dateLong(d.due_date, false)}.` : `${money(d)} à régler.` },
         { t: "p", text: `${hello(d)} voici votre facture${d.label ? " pour « " + d.label + " »" : ""}. Vous la trouverez en pièce jointe au format PDF.` },
-        { t: "rows", rows: opt([["Facture", d.number], ["Montant", money(d)], ["À régler avant le", d.due_date ? dateLong(d.due_date) : ""]]) },
+        { t: "card", kicker: `Facture ${d.number}`, title: String(d.label || clubName(ctx)), amount: money(d),
+          status: d.sepa ? { text: "Prélèvement prévu", tone: "info" } : { text: "À régler", tone: "warn" },
+          rows: opt([["À régler avant le", d.due_date ? dateLong(d.due_date) : ""], ["Émise par", clubName(ctx)]]) },
         ...(d.sepa
           ? [{ t: "note", tone: "ok", text: "Rien à faire : ce montant sera prélevé automatiquement sur votre compte à l'échéance." } as Block]
           : d.pay_url ? [{ t: "button", label: `Payer ${money(d)} en ligne`, url: d.pay_url } as Block, { t: "p", muted: true, text: "Paiement sécurisé par carte bancaire ou prélèvement SEPA." } as Block] : []),
-        ...(d.invoice_url ? [{ t: "p", text: `Vous pouvez aussi retrouver toutes vos factures dans votre espace : ${d.invoice_url}` } as Block] : []),
+        ...(d.invoice_url ? [{ t: "button", variant: "secondary", label: "Voir mes factures", url: d.invoice_url } as Block] : []),
         { t: "p", text: "Merci pour votre confiance." },
         sign(ctx),
       ],
@@ -225,11 +241,12 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Paiement reçu : ${money(d)}, merci`,
       preheader: `Nous avons bien reçu votre paiement de ${money(d)}.`,
       blocks: [
-        { t: "h", text: "Merci, paiement reçu" },
-        { t: "p", text: `${hello(d)} nous avons bien reçu votre paiement. Ce message vous sert de reçu.` },
-        { t: "rows", rows: opt([["Montant", money(d)], ["Date", d.paid_at ? dateLong(d.paid_at) : ""], ["Moyen de paiement", d.method], ["Facture", d.number], ["Reste à payer", d.balance_cents != null ? money(d, "balance") : ""]]) },
+        { t: "hero", icon: "check", badge: "Reçu de paiement", title: "Merci, paiement reçu", text: `Nous avons bien reçu ${money(d)}${d.paid_at ? " le " + dateLong(d.paid_at, false) : ""}.` },
+        { t: "p", text: `${hello(d)} votre paiement est bien arrivé. Ce message vous sert de reçu.` },
+        { t: "card", kicker: d.number ? `Facture ${d.number}` : "Paiement", title: String(d.method || "Paiement reçu"), amount: money(d), status: { text: "Payé", tone: "ok" },
+          rows: opt([["Date", d.paid_at ? dateLong(d.paid_at) : ""], ["Facture", d.number], ["Reste à payer", d.balance_cents != null ? money(d, "balance") : ""]]) },
         ...(d.balance_cents === 0 ? [{ t: "note", tone: "ok", text: "Votre compte est à jour." } as Block] : []),
-        ...(d.invoice_url ? [{ t: "button", label: "Voir la facture", url: d.invoice_url } as Block] : []),
+        ...(d.invoice_url ? [{ t: "button", variant: "secondary", label: "Voir la facture", url: d.invoice_url } as Block] : []),
         sign(ctx),
       ],
     }),
@@ -253,7 +270,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
         subject,
         preheader: `${money(d)} restent à régler.`,
         blocks: [
-          { t: "h", text: lvl === 3 ? "Dernière relance avant suspension" : lvl === 2 ? "Votre facture reste à régler" : "Un petit rappel" },
+          { t: "hero", icon: "bell", badge: "Rappel de paiement", title: lvl === 3 ? "Dernière relance avant suspension" : lvl === 2 ? "Votre facture reste à régler" : "Un petit rappel" },
           { t: "p", text: intro },
           { t: "rows", rows: opt([["Facture", d.number], ["Reste à payer", money(d)], ["Échéance", d.due_date ? dateLong(d.due_date) : ""]]) },
           { t: "button", label: `Régler ${money(d)}`, url: d.pay_url },
@@ -274,7 +291,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Votre paiement de ${money(d)} n'a pas abouti`,
       preheader: "Quelques secondes suffisent pour régulariser.",
       blocks: [
-        { t: "h", text: "Votre paiement n'a pas abouti" },
+        { t: "hero", icon: "bell", badge: "Paiement", title: "Votre paiement n'a pas abouti" },
         { t: "p", text: `${hello(d)} votre paiement${d.method ? " par " + String(d.method).toLowerCase() : ""} de **${money(d)}**${d.number ? " pour la facture " + d.number : ""} a été refusé${d.reason ? " (" + d.reason + ")" : ""}. Aucun montant n'a été débité.` },
         { t: "p", text: "Vous pouvez régler maintenant ou mettre à jour votre moyen de paiement :" },
         { t: "button", label: "Régulariser mon paiement", url: d.retry_url },
@@ -290,18 +307,24 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     category: "bookings",
     fields: { first: "Prénom", title: "Intitulé", date: "Date", time: "Heure HH:MM", dur: "Durée en minutes", coach: "Moniteur ou coach", arena: "Lieu", horse: "Cheval (facultatif)", manage_url: "Lien pour gérer la réservation", ics_url: "Lien .ics pour l'ajouter à l'agenda (facultatif)", cancel_hours: "Délai d'annulation en heures (facultatif)" },
     sample: { first: "Léa", title: "Galop 3-4", date: "2026-11-25", time: "17:00", dur: 60, coach: "Hugo Lefèvre", arena: "Grand manège", horse: "Quiétude", manage_url: "https://app.stablapp.fr/reservations", cancel_hours: 24 },
-    build: (d, ctx) => ({
-      subject: `C'est réservé : ${d.title}, ${dayShort(d)}${d.time ? " à " + hour(d.time) : ""}`,
-      preheader: "Votre place est confirmée.",
-      blocks: [
-        { t: "h", text: "Votre place est réservée" },
-        { t: "p", text: `${hello(d)} c'est confirmé, nous vous attendons.` },
-        { t: "rows", rows: opt([["Cours", d.title], ["Quand", when(d)], ["Durée", duration(d.dur)], ["Avec", d.coach], ["Où", d.arena], ["Cheval", d.horse]]) },
-        ...(d.ics_url ? [{ t: "button", label: "Ajouter à mon agenda", url: d.ics_url } as Block] : []),
-        ...(d.manage_url ? [{ t: "p", text: `Un empêchement ? ${d.cancel_hours ? "Annulez au moins " + d.cancel_hours + " heures avant depuis votre espace pour libérer la place : " : "Prévenez-nous depuis votre espace pour libérer la place : "}${d.manage_url}` } as Block] : []),
-        sign(ctx),
-      ],
-    }),
+    build: (d, ctx) => {
+      const tile = dayParts(d.date);
+      const info = [tile ? "" : dayShort(d), d.time ? hour(d.time) : "", d.dur ? duration(d.dur) : "", d.arena ? String(d.arena) : ""].filter(Boolean).join(" · ");
+      return {
+        subject: `C'est réservé : ${d.title}, ${dayShort(d)}${d.time ? " à " + hour(d.time) : ""}`,
+        preheader: `Votre place est confirmée${d.horse ? ", avec " + d.horse : ""}.`,
+        blocks: [
+          { t: "hero", icon: "calendar", badge: "Réservation confirmée", title: "Votre place est réservée", text: `${when(d) ? "Rendez-vous " + when(d) + "." : "C'est confirmé, nous vous attendons."}` },
+          { t: "p", text: `${hello(d)} c'est confirmé, nous vous attendons. Voici le récapitulatif :` },
+          { t: "card", date: tile, kicker: "Réservation", title: String(d.title || "Réservation"), text: info || undefined, status: { text: "Confirmé", tone: "ok" },
+            rows: opt([["Avec", d.coach], ["Cheval", d.horse]]) },
+          ...(d.ics_url ? [{ t: "button", label: "Ajouter à mon agenda", url: d.ics_url } as Block] : []),
+          ...(d.manage_url ? [{ t: "button", variant: d.ics_url ? "secondary" : "primary", label: "Gérer ma réservation", url: d.manage_url } as Block,
+            { t: "p", muted: true, text: `Un empêchement ? ${d.cancel_hours ? "Annulez au moins " + d.cancel_hours + " heures avant depuis votre espace pour libérer la place." : "Prévenez-nous depuis votre espace pour libérer la place."}` } as Block] : []),
+          sign(ctx),
+        ],
+      };
+    },
   },
 
   booking_cancelled: {
@@ -314,7 +337,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: d.by_member ? `Annulation enregistrée : ${d.title}, ${dayShort(d)}` : `Annulé : ${d.title}, ${dayShort(d)}${d.time ? " à " + hour(d.time) : ""}`,
       preheader: d.credit ? "Un rattrapage vous est crédité." : "Nous vous prévenons dès que possible.",
       blocks: [
-        { t: "h", text: d.by_member ? "Votre annulation est enregistrée" : "Ce cours est annulé" },
+        { t: "hero", icon: "calendar", badge: "Planning", title: d.by_member ? "Votre annulation est enregistrée" : "Ce cours est annulé" },
         { t: "p", text: d.by_member
           ? `${hello(d)} nous avons bien pris en compte l'annulation de votre réservation. Merci d'avoir prévenu, votre place pourra profiter à un autre cavalier.`
           : `${hello(d)} nous sommes désolés : le cours ci-dessous ne pourra pas avoir lieu${d.reason ? " (" + String(d.reason).toLowerCase() + ")" : ""}.` },
@@ -336,7 +359,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Une place s'est libérée : ${d.title}, ${dayShort(d)}`,
       preheader: "Premier arrivé, premier servi.",
       blocks: [
-        { t: "h", text: "Une place vient de se libérer" },
+        { t: "hero", icon: "sparkles", badge: "Liste d'attente", title: "Une place vient de se libérer" },
         { t: "p", text: `${hello(d)} bonne nouvelle : une place est disponible dans le cours pour lequel vous étiez en liste d'attente.` },
         { t: "rows", rows: opt([["Cours", d.title], ["Quand", when(d)]]) },
         { t: "button", label: "Je prends la place", url: d.claim_url },
@@ -356,7 +379,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Demain ${hour(d.time)} : ${d.title}`,
       preheader: d.horse ? `Vous montez ${d.horse}.` : "On vous attend demain.",
       blocks: [
-        { t: "h", text: "À demain en selle" },
+        { t: "hero", icon: "bell", badge: "Rappel", title: "À demain en selle" },
         { t: "p", text: `${hello(d)} petit rappel pour votre cours de demain.` },
         { t: "rows", rows: opt([["Cours", d.title], ["Quand", when(d)], ["Durée", duration(d.dur)], ["Avec", d.coach], ["Où", d.arena], ["Votre cheval", d.horse]]) },
         { t: "p", text: "Pensez à arriver 15 minutes avant pour préparer votre cheval." },
@@ -376,7 +399,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: Number(d.days_left) <= 0 ? "Votre essai est terminé" : `Votre essai se termine dans ${d.days_left} jour${Number(d.days_left) > 1 ? "s" : ""}`,
       preheader: "Choisissez votre formule pour continuer sans interruption.",
       blocks: [
-        { t: "h", text: Number(d.days_left) <= 0 ? "Votre essai est terminé" : "Votre essai touche à sa fin" },
+        { t: "hero", icon: "bell", badge: "Votre abonnement", title: Number(d.days_left) <= 0 ? "Votre essai est terminé" : "Votre essai touche à sa fin" },
         { t: "p", text: `${hello(d)} l'essai gratuit de **${d.club_name || "votre club"}** se termine le ${dateLong(d.trial_ends_at)}. Pour continuer sans interruption, choisissez la formule qui vous convient : vos données, vos adhérents et vos réglages sont conservés.` },
         { t: "button", label: "Choisir ma formule", url: d.plan_url },
         { t: "p", text: "Sans engagement : vous pouvez changer de formule ou arrêter à tout moment. Une question sur les tarifs ? Répondez à cet e-mail." },
@@ -395,7 +418,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Reçu de votre abonnement ${BRAND.name} : ${money(d)}`,
       preheader: "Merci, votre abonnement est à jour.",
       blocks: [
-        { t: "h", text: "Merci, votre abonnement est à jour" },
+        { t: "hero", icon: "check", badge: "Abonnement Stabl", title: "Merci, votre abonnement est à jour" },
         { t: "p", text: `${hello(d)} nous avons bien reçu le paiement de l'abonnement de **${d.club_name || "votre club"}**.` },
         { t: "rows", rows: opt([["Formule", d.plan], ["Montant", money(d)], ["Période", d.period_start && d.period_end ? `du ${dateShort(d.period_start)} au ${dateShort(d.period_end)}` : ""], ["Facture", d.invoice_number]]) },
         ...(d.invoice_url ? [{ t: "button", label: "Télécharger la facture", url: d.invoice_url } as Block] : []),
@@ -414,7 +437,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `${clubName(ctx)} vous donne accès à sa comptabilité`,
       preheader: "Factures, encaissements, FEC et factures électroniques, en lecture seule.",
       blocks: [
-        { t: "h", text: "Votre accès comptable" },
+        { t: "hero", icon: "invoice", badge: "Accès comptable", title: "Votre accès comptable" },
         { t: "p", text: `${hello(d)} ${d.inviter_name ? d.inviter_name + ", de " + clubName(ctx) + "," : clubName(ctx)} vous invite${d.firm ? " (" + d.firm + ")" : ""} à consulter sa comptabilité sur ${BRAND.name}.` },
         { t: "list", items: [
           "factures émises, avoirs et encaissements, avec leur statut de facture électronique",
@@ -439,7 +462,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Votre export est prêt : ${d.export_name}`,
       preheader: "Téléchargez-le dès maintenant.",
       blocks: [
-        { t: "h", text: "Votre export est prêt" },
+        { t: "hero", icon: "invoice", badge: "Export", title: "Votre export est prêt" },
         { t: "p", text: `${hello(d)} l'export que vous avez demandé pour ${clubName(ctx)} est disponible.` },
         { t: "rows", rows: opt([["Export", d.export_name], ["Période", d.period]]) },
         { t: "button", label: "Télécharger", url: d.download_url },
@@ -458,7 +481,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Document à signer : ${d.title}`,
       preheader: "Signature en ligne en deux minutes, depuis votre téléphone.",
       blocks: [
-        { t: "h", text: "Un document attend votre signature" },
+        { t: "hero", icon: "invoice", badge: "Signature en ligne", title: "Un document attend votre signature" },
         { t: "p", text: `${hello(d)} ${d.sender_name ? d.sender_name + ", de " + clubName(ctx) + "," : clubName(ctx)} vous envoie un document à signer.` },
         { t: "rows", rows: opt([["Document", d.title], ["Cheval", d.horse], ["À signer avant le", d.due_date ? dateLong(d.due_date) : ""]]) },
         { t: "button", label: "Lire et signer", url: d.sign_url },
@@ -482,7 +505,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
         subject: d.overdue ? `${d.horse_name} : ${label.replace(/^l[ea]s? |^l'/, "")} est en retard` : `${d.horse_name} : ${k.toLowerCase()} le ${dateShort(d.date)}`,
         preheader: `${d.horse_name}, ${dateLong(d.date)}.`,
         blocks: [
-          { t: "h", text: d.overdue ? `${d.horse_name} a besoin de vous` : `Rappel pour ${d.horse_name}` },
+          { t: "hero", icon: "horse", badge: "Carnet du cheval", title: d.overdue ? `${d.horse_name} a besoin de vous` : `Rappel pour ${d.horse_name}` },
           { t: "p", text: d.overdue
             ? `${hello(d)} ${label} de ${d.horse_name} était prévu le ${dateLong(d.date)} et n'a pas encore été noté comme fait. Pouvez-vous nous confirmer ce qu'il en est ?`
             : `${hello(d)} ${label} de ${d.horse_name} est prévu ${when(d)}.` },
@@ -508,13 +531,14 @@ export const TEMPLATES: Record<string, TemplateDef> = {
         subject: `${clubName(ctx)} change d'application : tout est déjà prêt pour vous`,
         preheader: "Votre forfait, votre solde et vos reprises vous suivent, sans rien ressaisir.",
         blocks: [
-          { t: "h", text: "Votre club passe à Stabl" },
+          { t: "hero", icon: "sparkles", badge: "Nouvelle application", title: "Votre club passe à Stabl", text: "Vous n'avez rien à ressaisir : votre forfait, vos reprises et votre cheval vous suivent." },
           { t: "p", text: `${hello(d)} ${clubName(ctx)} ${d.switch_date ? "utilisera à partir du " + dateLong(d.switch_date) : "utilise désormais"} une nouvelle application pour les réservations, les paiements et le suivi des chevaux${d.previous_software ? ", à la place de " + d.previous_software : ""}.` },
           { t: "p", text: "Bonne nouvelle : **vous n'avez rien à ressaisir**. Voici ce que nous avons déjà transféré pour vous :" },
-          { t: "rows", rows: opt([["Forfait", d.forfait], ["Solde", balTxt], ["Vos reprises", lessons.slice(0, 3).join(" ; ")], [horses.length > 1 ? "Vos chevaux" : "Votre cheval", horses.join(", ")]]) },
+          { t: "card", kicker: "Déjà transféré", title: d.first ? `La fiche de ${String(d.first).trim()}` : "Votre fiche", status: { text: "Prêt", tone: "ok" },
+            rows: opt([["Forfait", d.forfait], ["Solde", balTxt], ["Vos reprises", lessons.slice(0, 3).join(" ; ")], [horses.length > 1 ? "Vos chevaux" : "Votre cheval", horses.join(", ")]]) },
           ...(d.activate_url
             ? [{ t: "p", text: "Il ne vous reste qu'à activer votre espace : un clic suffit, sans mot de passe à créer." } as Block, { t: "button", label: "Activer mon espace", url: d.activate_url } as Block]
-            : [{ t: "p", text: "Vous recevrez très bientôt votre lien d'activation personnel : un clic suffira, sans mot de passe à créer." } as Block]),
+            : [{ t: "note", text: "Vous recevrez très bientôt votre lien d'activation personnel : un clic suffira, sans mot de passe à créer." } as Block]),
           { t: "p", muted: true, text: "Une information vous semble inexacte ? Répondez à cet e-mail, nous la corrigerons." },
           sign(ctx),
         ],
@@ -528,20 +552,30 @@ export const TEMPLATES: Record<string, TemplateDef> = {
     category: "essential", sensitive: true,
     fields: { first: "Prénom", activate_url: "Lien d'activation", forfait: "Forfait repris (facultatif)", lessons: "Prochaines reprises (tableau, facultatif)", horses: "Chevaux (tableau, facultatif)", expires_days: "Validité du lien en jours (30 par défaut)" },
     sample: { first: "Léa", activate_url: "https://app.stablapp.fr/api/migration/activer/exemple", forfait: "Forfait annuel 1 h / semaine", lessons: ["mercredi 17 h, Galop 3-4"], horses: [] },
-    build: (d, ctx) => ({
-      subject: `${d.first ? d.first + ", votre" : "Votre"} espace ${clubName(ctx)} est prêt`,
-      preheader: "Un clic pour l'activer, votre fiche est déjà remplie.",
-      blocks: [
-        { t: "h", text: "Votre espace est prêt" },
-        { t: "p", text: `${hello(d)} votre fiche a été préparée à partir des informations du club. Activez votre espace en un clic : vous serez connecté directement, sans mot de passe à créer.` },
-        { t: "button", label: "Activer mon espace", url: d.activate_url },
-        { t: "p", text: "Ensuite, prenez deux minutes pour vérifier votre fiche (coordonnées, contacts d'urgence, autorisations). Vous pourrez alors :" },
-        { t: "list", items: ["réserver vos reprises et vos rattrapages", "payer en ligne et retrouver toutes vos factures", Array.isArray(d.horses) && d.horses.length ? `suivre ${d.horses.join(", ")} : soins, maréchal, vaccins` : "suivre votre progression et vos concours"] },
-        { t: "fallback", url: d.activate_url },
-        { t: "p", muted: true, text: `Ce lien personnel est valable ${d.expires_days || 30} jours. Ne le transférez pas : il ouvre votre compte.` },
-        sign(ctx),
-      ],
-    }),
+    build: (d, ctx) => {
+      const lessons: string[] = Array.isArray(d.lessons) ? d.lessons : [];
+      const horses: string[] = Array.isArray(d.horses) ? d.horses : [];
+      return {
+        subject: `${d.first ? d.first + ", votre" : "Votre"} espace ${clubName(ctx)} est prêt`,
+        preheader: "Un clic pour l'activer, votre fiche est déjà remplie.",
+        blocks: [
+          { t: "hero", icon: "key", badge: "Activation en un clic", title: "Votre espace est prêt", text: "Votre fiche est déjà remplie : il ne manque que vous." },
+          { t: "p", text: `${hello(d)} votre fiche a été préparée à partir des informations du club. Activez votre espace en un clic : vous serez connecté directement, sans mot de passe à créer.` },
+          ...(d.forfait || lessons.length || horses.length ? [{ t: "card", kicker: "Votre fiche", title: String(d.forfait || "Fiche pré-remplie"), status: { text: "Prêt", tone: "ok" },
+            rows: opt([["Vos reprises", lessons.slice(0, 3).join(" ; ")], [horses.length > 1 ? "Vos chevaux" : "Votre cheval", horses.join(", ")]]) } as Block] : []),
+          { t: "button", label: "Activer mon espace", url: d.activate_url },
+          { t: "h", text: "Et ensuite" },
+          { t: "steps", items: [
+            { title: "Vérifiez votre fiche", text: "Coordonnées, contacts d'urgence, autorisations : deux minutes suffisent." },
+            { title: "Réservez vos reprises et vos rattrapages", text: "Depuis votre téléphone, à toute heure." },
+            { title: horses.length ? `Suivez ${horses.join(", ")}` : "Payez en ligne", text: horses.length ? "Soins, maréchal, vaccins et journal de travail." : "Et retrouvez toutes vos factures au même endroit." },
+          ] },
+          { t: "fallback", url: d.activate_url },
+          { t: "p", muted: true, text: `Ce lien personnel est valable ${d.expires_days || 30} jours. Ne le transférez pas : il ouvre votre compte.` },
+          sign(ctx),
+        ],
+      };
+    },
   },
 
   gift_card: {
@@ -554,7 +588,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       subject: `Votre carte cadeau ${clubName(ctx)} : ${d.code}`,
       preheader: "Le code est à donner au club au moment de réserver.",
       blocks: [
-        { t: "h", text: "Votre carte cadeau est prête" },
+        { t: "hero", icon: "gift", badge: "Carte cadeau", title: "Votre carte cadeau est prête" },
         { t: "p", text: `${hello(d)} merci pour votre achat. Voici la carte cadeau de ${clubName(ctx)}${d.to ? " pour " + String(d.to).trim() : ""}.` },
         { t: "code", text: String(d.code || "") },
         { t: "rows", rows: opt([["Montant", money(d)], ["Prestation", d.label], ["Pour", d.to], ["Message", d.message], ["Valable jusqu'au", d.valid_until ? dateLong(d.valid_until) : ""]]) },
@@ -595,7 +629,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
         subject: two ? `Dernier rappel : activez votre espace ${clubName(ctx)}` : `Avez-vous vu votre nouvel espace ${clubName(ctx)} ?`,
         preheader: two ? "Les réservations passent désormais par l'application." : "Votre fiche vous attend, un clic suffit.",
         blocks: [
-          { t: "h", text: two ? "Ne manquez pas vos prochaines réservations" : "Votre espace vous attend" },
+          { t: "hero", icon: "key", badge: "Activation", title: two ? "Ne manquez pas vos prochaines réservations" : "Votre espace vous attend" },
           { t: "p", text: two
             ? `${hello(d)} les réservations, les rattrapages et les paiements de ${clubName(ctx)} passent désormais par l'application. Activez votre espace pour garder la main sur vos cours.`
             : `${hello(d)} il y a quelques jours, nous vous avons préparé votre espace. Il n'est pas encore activé : cela prend dix secondes.` },
@@ -643,6 +677,40 @@ export const TEMPLATES: Record<string, TemplateDef> = {
         { t: "p", text: `À bientôt, l'équipe ${BRAND.name}.` },
       ],
     }),
+  },
+
+  club_referral: {
+    name: "Recommandation d'un cavalier à son écurie",
+    description: "Un cavalier recommande Stabl à son écurie (POST /api/public/recommander). Expéditeur « Stabl », réponse directe au cavalier.",
+    category: "referrals",
+    fields: { club_name: "Nom de l'écurie (facultatif)", from_first: "Prénom du cavalier", from_last: "Nom du cavalier (facultatif)", message: "Mot du cavalier (facultatif, 500 caractères au plus, texte brut)", url: "Lien vers stablapp.fr" },
+    sample: { club_name: "Écurie du Moulin", from_first: "Léa", from_last: "Martin", message: "Bonjour Claire, j'utilise Stabl dans une autre écurie pour suivre Ulysse et c'est vraiment pratique. Je me suis dit que ça pourrait vous plaire !", url: "https://stablapp.fr/?ref=cavalier" },
+    build: (d) => {
+      const from = [d.from_first, d.from_last].map((x) => String(x ?? "").trim()).filter(Boolean).join(" ") || "Un cavalier";
+      const first = String(d.from_first ?? "").trim() || from;
+      const club = String(d.club_name ?? "").trim();
+      const msg = String(d.message ?? "").trim().slice(0, 500);
+      return {
+        subject: `${from} vous recommande ${BRAND.name}${club ? " pour " + club : ""}`,
+        preheader: "Planning, facturation, paiement en ligne et suivi des chevaux, dans une seule application.",
+        blocks: [
+          { t: "hero", icon: "heart", badge: "Recommandation", title: `${first} vous recommande ${BRAND.name}`, text: club ? `Pour ${club} : le logiciel qui simplifie la vie des écuries et de leurs cavaliers.` : "Le logiciel qui simplifie la vie des écuries et de leurs cavaliers." },
+          { t: "p", text: `Bonjour, ${from}, qui monte ${club ? "chez " + club : "dans votre écurie"}, aimerait pouvoir réserver ses reprises, payer et suivre son cheval sur ${BRAND.name}, et vous propose de le découvrir.` },
+          ...(msg ? [{ t: "quote", text: msg, by: from } as Block] : []),
+          { t: "h", text: `${BRAND.name}, en bref` },
+          { t: "checks", items: [
+            "**Planning** des reprises, rattrapages et listes d'attente",
+            "**Facturation**, paiement en ligne et relances",
+            "**Suivi des chevaux** : soins, maréchal, vaccins, pensions",
+            "**Une application** pour vos cavaliers et leurs familles",
+            "**Reprise de vos données** depuis votre logiciel actuel ou un fichier Excel",
+          ] },
+          { t: "button", label: `Découvrir ${BRAND.name}`, url: d.url || BRAND.site },
+          { t: "p", text: `Pour répondre à ${first}, répondez simplement à cet e-mail : votre réponse lui arrive directement.` },
+          { t: "p", muted: true, text: `Vous recevez cet e-mail parce que ${from} a indiqué votre adresse sur ${BRAND.site.replace(/^https:\/\//, "")}. Pour ne plus recevoir de recommandations, utilisez le lien en bas de cet e-mail.` },
+        ],
+      };
+    },
   },
 };
 

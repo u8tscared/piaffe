@@ -2,7 +2,7 @@ import type { Env } from "../env";
 import { one, json } from "../lib/db";
 import { b64url, b64urlDecode, hmacSha256, safeEqual } from "../lib/crypto";
 import { BRAND } from "./brand";
-import { renderHtml, renderText } from "./layout";
+import { renderHtml, renderText, type Frame } from "./layout";
 import { TEMPLATES, type Category, type MailCtx } from "./templates";
 
 export interface ClubInfo { id: string; name: string; email: string | null; phone: string | null; address: string | null; logo_key: string | null; settings: string | null }
@@ -40,6 +40,7 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   bookings: "Confirmations de réservation",
   reminders: "Rappels de cours et de soins",
   waitlist: "Places libérées en liste d'attente",
+  referrals: "Recommandations de Stabl envoyées par des cavaliers",
 };
 
 /**
@@ -81,15 +82,17 @@ export async function renderTemplate(env: Env, template: string, data: Record<st
   if (def.category !== "essential" && to) {
     unsubscribeUrl = `${appUrl(env)}/api/mail/unsubscribe?t=${encodeURIComponent(await unsubToken(env, to, def.category, club?.id || ""))}`;
   }
-  const footer = club
-    ? [club.name, addressLine(club.address), [club.email, club.phone].filter(Boolean).join(" · "), `Envoyé avec ${BRAND.name}, ${BRAND.tagline.toLowerCase()}.`]
-    : [`${BRAND.name}, ${BRAND.tagline.toLowerCase()}.`, BRAND.legal, BRAND.supportEmail];
-  const frame = {
+  // Pied de page : coordonnées du club ; la signature Stabl et les mentions légales sont ajoutées par la mise en page.
+  const footer = club ? [club.name, addressLine(club.address), [club.email, club.phone].filter(Boolean).join(" · ")] : [];
+  const frame: Frame = {
     subject: b.subject, preheader: b.preheader, blocks: b.blocks,
     headerName: club?.name || BRAND.name,
+    isClub: !!club,
     logoUrl: club?.logo_key ? `${appUrl(env)}/api/mail/logo/${club.id}` : (club ? null : BRAND.logoUrl || null),
     footer, unsubscribeUrl,
-    preferencesUrl: unsubscribeUrl ? `${appUrl(env)}/reglages/notifications` : null,
+    unsubscribeLabel: def.category === "referrals" ? "Ne plus recevoir de recommandations" : null,
+    // Les recommandations arrivent à des écuries sans compte : pas de page de réglages à proposer.
+    preferencesUrl: unsubscribeUrl && def.category !== "referrals" ? `${appUrl(env)}/reglages/notifications` : null,
     pixelUrl: typeof data.tracking_pixel === "string" ? data.tracking_pixel : null,
   };
   return {
