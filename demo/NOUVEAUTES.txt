@@ -1,2 +1,2 @@
-Nouveau : espace véto et maréchal, paiement en 3 fois avec Klarna, certificat d’engagement à la vente, météo avec suggestions à confirmer.
+Nouveau : espace véto et maréchal, certificat d’engagement à la vente, météo avec suggestions à confirmer.
 Le panneau « Tous les écrans » reprend les pastilles colorées du menu de l’ordinateur : même style sur téléphone, tablette et ordinateur.

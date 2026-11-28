@@ -44,7 +44,7 @@ export const PLANS: Plan[] = [
   {
     key: "club", name: "Club", tagline: "Le centre équestre complet",
     month_cents: 14900, year_cents: 149000, highlighted: true,
-    features: ["Tout Essentiel, sans limite de chevaux", "Pensions, soins et maréchalerie", "Prélèvements SEPA et paiement en plusieurs fois", "Accès comptable et exports FEC", "Reprise des données offerte"],
+    features: ["Tout Essentiel, sans limite de chevaux", "Pensions, soins et maréchalerie", "Prélèvements SEPA automatiques", "Accès comptable et exports FEC", "Reprise des données offerte"],
     limits: { horses: null, sites: 1 },
   },
   {
@@ -121,13 +121,6 @@ export function planFromLookupKey(k: string | null | undefined): { plan: PlanKey
 
 /** Commission de Stabl sur les paiements encaissés par les clubs, en pourcentage (0 = aucune). */
 export const APPLICATION_FEE_PERCENT = 0;
-/** Nombres d'échéances proposés pour le paiement en plusieurs fois. */
-export const INSTALLMENT_COUNTS = [3, 10];
-/** Montant minimal d'une facture pour le paiement en plusieurs fois (centimes). */
-export const INSTALLMENT_MIN_CENTS = 9000;
-/** Paiement en 3 fois par Klarna en France (doc Stripe) : de 1 € à 4 500 €, le club reçoit le total tout de suite. */
-export const KLARNA_MIN_CENTS = 100;
-export const KLARNA_MAX_CENTS = 450000;
 /** Délai entre l'avis de prélèvement et le prélèvement automatique d'une facture (jours). */
 export const AUTOPAY_NOTICE_DAYS = 3;
 /** Nouvelles tentatives d'un prélèvement échoué avant de prévenir le gérant. */

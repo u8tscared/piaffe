@@ -73,7 +73,7 @@ Chaque `src/<lot>/routes.ts` exporte par défaut un `Hono<AppEnv>` monté à la 
 
 ### Stripe (lot B)
 - Abonnement des clubs à Stabl (vendeur : Marceau Ruis EI) : `GET /api/billing/plans`, `POST /api/billing/checkout` `{plan, interval:"month"|"year"}` → URL Stripe Checkout ; `POST /api/billing/portal` → URL du portail client ; `GET /api/billing/subscription`.
-- Paiements des adhérents vers le club (Stripe Connect, le club encaisse sur son propre compte) : `POST /api/connect/onboard` → lien d'activation Stripe ; `GET /api/connect/status` ; `POST /api/pay/invoice/:id` → URL Checkout (carte, SEPA) pour une facture du club ; `POST /api/pay/mandate` → mise en place d'un prélèvement SEPA pour les échéances ; `POST /api/pay/link` (gérant) lien de paiement à envoyer.
+- Paiements des adhérents vers le club (Stripe Connect, le club encaisse sur son propre compte) : `POST /api/connect/onboard` → lien d'activation Stripe ; `GET /api/connect/status` ; `POST /api/pay/invoice/:id` → URL Checkout (carte, SEPA) pour une facture du club ; `POST /api/pay/mandate` → mise en place du prélèvement SEPA automatique des factures ; `POST /api/pay/link` (gérant) lien de paiement à envoyer.
 - `POST /webhooks/stripe` (plateforme) et `POST /webhooks/stripe-connect` (comptes connectés), signatures vérifiées, idempotents. Émettent `subscription.changed`, `invoice.paid`, `payment.failed`.
 
 ### Factures, facture électronique, comptable (lot C)

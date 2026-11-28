@@ -5,7 +5,6 @@ import { formEncode, signPayload, verifyStripeSignature, stripe, stripeRequest, 
 import { computeAccess, requireActivePlan } from "../src/billing/access";
 import { ensureCatalog } from "../src/billing/setup-stripe";
 import { catalog, planFromLookupKey, PLANS } from "../src/billing/plans";
-import { splitAmount } from "../src/billing/connect";
 import { tableInvoiceLookup, remainingCents } from "../src/billing/invoices";
 import { errorHandler } from "../src/lib/http";
 import { fakeStripe } from "./billing-helpers";
@@ -136,11 +135,6 @@ describe("billing · catalogue et utilitaires", () => {
     await ensureCatalog(req as any, cat);
     expect(prices.length).toBe(9);
     expect(prices.filter((x) => x.active).length).toBe(8);
-  });
-
-  it("découpe un montant en échéances entières sans perdre de centime", () => {
-    expect(splitAmount(100000, 3)).toEqual([33334, 33333, 33333]);
-    expect(splitAmount(52000, 10).reduce((a, b) => a + b, 0)).toBe(52000);
   });
 
   it("lit les factures du lot C (reste dû, acomptes, avoirs) et refuse celles d'un autre club ou de la plateforme", async () => {
