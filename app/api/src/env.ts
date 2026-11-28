@@ -31,6 +31,8 @@ export interface Env {
   BILLING_ADMIN_SECRET?: string;
   /** Espace admin : adresses e-mail des admins Stabl, séparées par des virgules (secret, jamais dans le code). */
   ADMIN_EMAILS?: string;
+  /** Adresses prévenues à chaque message du formulaire de contact (sinon ADMIN_EMAILS). */
+  SUPPORT_EMAILS?: string;
   /** "automatic" pour Stripe Tax, sinon absent. */
   STRIPE_TAX?: string;
   /** Browser Rendering (robot de migration, lot F). */

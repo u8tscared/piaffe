@@ -187,6 +187,24 @@ describe("désinscription et préférences", () => {
   });
 });
 
+describe("envoi groupé du club", () => {
+  it("un e-mail par adhérent qui a une adresse, prénom et solde remplacés, réservé au gérant", async () => {
+    const o = await seed("owner");
+    await putRecord(o.clubId, "members", "m1", { first: "Léa", email: "lea.groupe@exemple.fr", balance: -42 });
+    await putRecord(o.clubId, "members", "m2", { first: "Hugo", email: "" });
+    await putRecord(o.clubId, "members", "m3", { first: "Doublon", email: "LEA.groupe@exemple.fr" });
+    const r = await call("/api/mail/broadcast", { method: "POST", token: o.token, json: { subject: "Info pour {prénom}", text: "Bonjour {prénom},\n\nVotre solde : {solde}.", member_ids: ["m1", "m2", "m3", "inconnu"] } });
+    expect(r.status).toBe(200);
+    expect(await r.json()).toMatchObject({ sent: 1, no_email: 1 });
+    const m = await env.DB.prepare("SELECT * FROM email_outbox WHERE to_email = ? AND template = 'club_message'").bind("lea.groupe@exemple.fr").first<any>();
+    expect(m.subject).toBe("Info pour Léa");
+    expect(m.text).toContain("42");
+    expect((await call("/api/mail/broadcast", { method: "POST", token: o.token, json: { subject: "x", text: "Bonjour", member_ids: ["m1"] } })).status).toBe(400);
+    const a = await seed("member", { clubId: o.clubId });
+    expect((await call("/api/mail/broadcast", { method: "POST", token: a.token, json: { subject: "Salut", text: "Bonjour", member_ids: ["m1"] } })).status).toBe(403);
+  });
+});
+
 describe("aperçu des modèles", () => {
   it("le gérant voit la liste et l'aperçu ; un adhérent reçoit 403", async () => {
     const o = await seed("owner");

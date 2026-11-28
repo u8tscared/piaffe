@@ -1,6 +1,6 @@
 /*
  * Support : boîte « contact » alimentée par le formulaire du site (stablapp.fr) et de l'appli.
- *   POST /api/contact  {name?, email, phone?, subject?, message, source?: "site"|"app", site_web?: ""}  (public)
+ *   POST /api/contact  {name?, email (ou phone seul pour une demande de rappel), phone?, subject?, message, source?: "site"|"app", site_web?: ""}  (public)
  *     JSON ou formulaire classique ; « site_web » est un champ piège invisible (robots) ; 5 messages par heure et par adresse IP.
  *     Connecté, le message est rattaché au compte et au club courant.
  *   GET  /admin/api/support?etat=nouveau|en_cours|traite     PATCH /admin/api/support/:id {status?, note?}
@@ -12,6 +12,8 @@ import { ApiError, bad, body, isEmail, notFound } from "../lib/http";
 import { newId, nowIso } from "../lib/ids";
 import { clientIp } from "../auth/session";
 import { adminLog } from "./access";
+import { sendMail } from "../mail/send";
+import { appUrl } from "../auth/mailer";
 
 export const publicSupport = new Hono<AppEnv>();
 export const adminSupport = new Hono<AppEnv>();
@@ -43,7 +45,10 @@ publicSupport.post("/api/contact", async (c) => {
   if (String(b.site_web || "").trim()) return c.json({ ok: true }, 201); // robot : on fait comme si
   const txt = (k: string, max: number) => String(b[k] ?? "").trim().slice(0, max);
   const email = txt("email", 254).toLowerCase(), message = txt("message", 5000);
-  if (!isEmail(email)) throw bad("invalid_email", "Indiquez une adresse e-mail valide pour qu'on puisse vous répondre.", { field: "email" });
+  const phone = txt("phone", 40);
+  // Une demande de rappel peut ne donner qu'un numéro de téléphone.
+  const hasPhone = /\d{2}.*\d{2}.*\d{2}/.test(phone);
+  if (!isEmail(email) && !(hasPhone && !email)) throw bad("invalid_email", "Indiquez une adresse e-mail valide pour qu'on puisse vous répondre.", { field: "email" });
   if (message.length < 5) throw bad("missing_field", "Écrivez votre message.", { field: "message" });
   if (!(await rateLimit(c.env.DB, "contact:" + clientIp(c), 5, 3600))) throw new ApiError(429, "rate_limited", "Vous avez déjà envoyé plusieurs messages. Réessayez dans une heure ou écrivez à bonjour@stablapp.fr.");
   const user = c.get("user"), club = c.get("club");
@@ -51,7 +56,22 @@ publicSupport.post("/api/contact", async (c) => {
   const id = newId("sup");
   await run(c.env.DB, "INSERT INTO support_messages (id, source, club_id, user_id, name, email, phone, subject, message, ip) VALUES (?,?,?,?,?,?,?,?,?,?)",
     id, source, club?.id ?? null, user?.id ?? null, txt("name", 120) || [user?.first, user?.last].filter(Boolean).join(" ") || null, email,
-    txt("phone", 40) || null, txt("subject", 160) || null, message, clientIp(c));
+    phone || null, txt("subject", 160) || null, message, clientIp(c));
+  // Prévient l'équipe Stabl (SUPPORT_EMAILS, sinon ADMIN_EMAILS) : une demande de rappel ne doit pas dormir dans la base.
+  const name = txt("name", 120) || [user?.first, user?.last].filter(Boolean).join(" ");
+  const subject = txt("subject", 160);
+  const rows: [string, string][] = [["Nom", name], ["E-mail", email], ["Téléphone", phone], ["Objet", subject], ["Club", club?.name || ""], ["Message", message.slice(0, 1200)]];
+  const notified: string[] = [];
+  for (const to of supportRecipients(c.env)) {
+    await sendMail(c.env, { to, template: "club_notice", ...(email ? { reply_to: email } : {}), data: {
+      title: (phone ? "Demande de rappel" : "Nouveau message") + (source === "site" ? " depuis stablapp.fr" : " depuis l'appli") + (name ? " : " + name : ""),
+      intro: phone ? `${name || email || "Un visiteur"} demande à être rappelé au ${phone}.` : `${name || email || "Un visiteur"} vous a écrit.`,
+      rows: rows.filter(([, v]) => v), note: email ? "Répondez directement à cet e-mail : la réponse part à " + email + "." : "Pas d'adresse e-mail : rappelez au numéro indiqué.",
+      action_label: "Ouvrir la boîte Support", action_url: appUrl(c.env, "/admin#support"),
+    } });
+    notified.push(to);
+  }
+  if (!notified.length) console.warn("contact : aucun destinataire (SUPPORT_EMAILS ou ADMIN_EMAILS) pour", id);
   return c.json({ ok: true, id, message: "Merci, votre message est bien arrivé. Nous vous répondons sous 24 heures ouvrées." }, 201);
 });
 
@@ -74,3 +94,9 @@ adminSupport.patch("/admin/api/support/:id", async (c) => {
   await adminLog(c, "support.update", { club_id: row.club_id, target: row.id, data: { status, note: note !== undefined } });
   return c.json({ ok: true, status });
 });
+
+/** Adresses qui reçoivent les messages du formulaire de contact : SUPPORT_EMAILS, sinon ADMIN_EMAILS. */
+export function supportRecipients(env: { SUPPORT_EMAILS?: string; ADMIN_EMAILS?: string }): string[] {
+  const raw = (env.SUPPORT_EMAILS || env.ADMIN_EMAILS || "").split(/[,;\s]+/).map((x) => x.trim().toLowerCase()).filter(isEmail);
+  return [...new Set(raw)].slice(0, 5);
+}

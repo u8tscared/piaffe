@@ -30,4 +30,5 @@
   // Secrets (wrangler secret put …) : SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
   // STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, MAIL_API_KEY, MAIL_WEBHOOK_SECRET, EINVOICE_API_KEY, BILLING_ADMIN_SECRET,
   // ADMIN_EMAILS (adresses des admins de l'espace /admin, séparées par des virgules)
+  // SUPPORT_EMAILS (facultatif : qui reçoit un e-mail à chaque message ou demande de rappel du site ; par défaut ADMIN_EMAILS)
 }

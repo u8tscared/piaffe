@@ -15,8 +15,40 @@ import { sendMail } from "./send";
 import "./hooks";
 
 const app = new Hono<AppEnv>();
-for (const p of ["/api/mail/preferences", "/api/mail/test/*", "/api/mail/outbox/*"]) app.use(p, csrf);
+for (const p of ["/api/mail/preferences", "/api/mail/test/*", "/api/mail/outbox/*", "/api/mail/broadcast"]) app.use(p, csrf);
 const OPTIONAL = ["bookings", "reminders", "waitlist"] as const;
+
+/* ---------- Envoi groupé du club (Communication) ----------
+   POST /api/mail/broadcast {subject, text, member_ids: string[]} → un e-mail « club_message » par adhérent qui a une adresse.
+   {prénom} et {solde} sont remplacés pour chacun. 10 envois groupés par heure et 1 000 destinataires au plus. */
+app.post("/api/mail/broadcast", requireRole("owner", "manager"), async (c) => {
+  const b = await body<{ subject?: unknown; text?: unknown; member_ids?: unknown }>(c);
+  const subject = String(b.subject ?? "").trim().slice(0, 160), text = String(b.text ?? "").trim().slice(0, 8000);
+  if (subject.length < 2) throw bad("missing_field", "Écrivez l'objet du message.", { field: "subject" });
+  if (text.length < 2) throw bad("missing_field", "Écrivez le message.", { field: "text" });
+  const ids = Array.isArray(b.member_ids) ? [...new Set(b.member_ids.map(String))].slice(0, 1000) : [];
+  if (!ids.length) throw bad("missing_field", "Choisissez au moins un destinataire.", { field: "member_ids" });
+  const clubId = c.get("club")!.id;
+  if (!(await rateLimit(c.env.DB, "broadcast:" + clubId, 10, 3600))) throw new ApiError(429, "rate_limited", "10 envois groupés par heure au maximum. Réessayez un peu plus tard.");
+  const rows = await all<{ id: string; data: string }>(c.env.DB, "SELECT id, data FROM records WHERE club_id = ? AND coll = 'members' AND deleted = 0", clubId);
+  const want = new Set(ids), seen = new Set<string>();
+  let sent = 0, noEmail = 0;
+  for (const r of rows) {
+    if (!want.has(r.id)) continue;
+    let m: Record<string, any> = {};
+    try { m = JSON.parse(r.data) || {}; } catch { /* fiche illisible */ }
+    const to = String(m.email || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) { noEmail++; continue; }
+    if (seen.has(to)) continue;
+    seen.add(to);
+    const bal = Math.abs(Number(m.balance) || 0);
+    const solde = bal.toLocaleString("fr-FR", { minimumFractionDigits: bal % 1 ? 2 : 0, maximumFractionDigits: 2 }) + "\u00a0€";
+    const fill = (s: string) => s.replace(/\{prénom\}/g, String(m.first || "").trim()).replace(/\{solde\}/g, solde).replace(/ ,/g, ",");
+    await sendMail(c.env, { to, template: "club_message", club_id: clubId, data: { first: m.first || "", subject: fill(subject), text: fill(text) } });
+    sent++;
+  }
+  return c.json({ ok: true, sent, no_email: noEmail });
+});
 
 /* ---------- Modèles : liste et aperçu (gérant) ---------- */
 app.get("/api/mail/templates", requireRole("owner", "manager"), (c) =>

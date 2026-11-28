@@ -174,8 +174,8 @@ $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q
     var sujet='Demande de rappel'+(club?' : '+club:''),mail=el.mail.value.trim(),bt=f.querySelector('[type=submit]');
     function messagerie(){location.href='mailto:'+MAIL+'?subject='+encodeURIComponent(sujet)+'&body='+encodeURIComponent(corps.join('\n'));
       n.className='ct-n ok';n.textContent='Votre messagerie s’ouvre : il ne reste qu’à envoyer. Sinon, écrivez-nous à '+MAIL+'.'}
-    /* envoi direct à Stabl ; sans e-mail valide ou si l'envoi échoue, on repasse par la messagerie */
-    if(!window.fetch||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){messagerie();return}
+    /* envoi direct à Stabl (le téléphone suffit) ; e-mail mal saisi ou envoi impossible : on repasse par la messagerie */
+    if(!window.fetch||mail&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){messagerie();return}
     if(bt)bt.disabled=true;n.className='ct-n';n.textContent='Envoi en cours…';
     fetch('https://app.stablapp.fr/api/contact',{method:'POST',headers:{'content-type':'application/json'},
       body:JSON.stringify({name:el.nom.value.trim(),email:mail,phone:el.tel.value.trim(),subject:sujet,message:corps.join('\n'),source:'site',site_web:''})})

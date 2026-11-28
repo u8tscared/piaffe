@@ -2232,6 +2232,17 @@ window.DATA=D;
 var D=window.DATA,$=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
 var P=window.P={D:D,mods:{},order:[],icon:ICON,logo:LOGO,$:$,$$:$$,RM:RM};
+/* Vrai club (logiciel en ligne, hors bac à sable) : aucun chiffre ni envoi de démonstration ne doit y apparaître. */
+P.real=function(){return !!(window.PL&&PL.live&&!PL.sandbox)};
+/* Relances d'impayés. Vrai club : un e-mail part pour chaque facture (POST /api/invoices/:id/remind), jamais de SMS.
+   Démo : rien ne part, la promesse répond tout de suite. */
+P.relancer=function(list){list=(list||[]).filter(Boolean);
+  if(!P.real())return Promise.resolve({sent:list.length,failed:0,demo:true});
+  return Promise.all(list.map(function(i){var id=i._id||(i.live&&i.live.id);if(!id)return Promise.resolve(false);
+    return PL.post('/api/invoices/'+encodeURIComponent(id)+'/remind',{}).then(function(){i.reminded=true;return true},function(){return false})}))
+   .then(function(r){var ok=r.filter(Boolean).length;return {sent:ok,failed:r.length-ok}})};
+P.relancerMsg=function(r){var t=r.sent?r.sent+' relance'+(r.sent>1?'s':'')+' envoyée'+(r.sent>1?'s':'')+' par e-mail':'Aucune relance envoyée';
+  if(r.failed)t+=(r.sent?', ':' : ')+r.failed+' impossible'+(r.failed>1?'s':'')+' (adresse e-mail manquante ou facture déjà réglée)';return t};
 
 /* ---------- Styles propres à un module ---------- */
 P.css=function(css){var st=document.createElement('style');st.textContent=css;document.head.appendChild(st)};
@@ -2528,7 +2539,9 @@ P.closeSheets=function(){$$('.sheet,.scrim,.pop-o',app).forEach(function(e){e.re
 P.closeAll=function(){P.closeSheets();$$('[data-transient]',app).forEach(function(e){e.parentNode.removeChild(e)});var a=$('.aip',app);if(a)a.remove();var pl=$('.pal',app);if(pl)pl.remove()};
 
 /* ---------- Notifications éphémères ---------- */
-P.toast=function(msg,o){o=o||{};var t=document.createElement('div');t.className='toast';t.innerHTML=ICON(o.icon||'checkc')+'<span>'+msg+'</span>'+(o.undo?'<button>Annuler</button>':'');
+P.toast=function(msg,o){o=o||{};
+  /* vrai club : aucun SMS, aucune notification ni WhatsApp ne part encore. Un écran de démonstration qui l'annonce est corrigé ici. */
+  if(P.real()&&!o.real&&/SMS|notification|WhatsApp|appel (et|lancé)|appelé|\bprévenue?s?\b/i.test(String(msg))&&!/envoyez|collez|copiez|copié|seront prévenus/i.test(String(msg))){msg='C’est noté dans Stabl. Rien n’est parti : les SMS et les notifications ne sont pas encore disponibles, prévenez la personne vous-même.';o=Object.assign({},o,{icon:'info',undo:null,ms:6000})}var t=document.createElement('div');t.className='toast';t.innerHTML=ICON(o.icon||'checkc')+'<span>'+msg+'</span>'+(o.undo?'<button>Annuler</button>':'');
   var box=$('.toasts',app);if(!box)return;box.appendChild(t);if(o.undo)$('button',t).onclick=function(){o.undo();t.remove()};
   setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove()},320)},o.ms||3200)};
 
@@ -2645,8 +2658,8 @@ P.brain=[];
 P.suggestions={gerant:['Qui n’a pas payé ce mois-ci ?','Prépare le planning de samedi','Combien me coûte Ulysse ?','Relance les impayés'],employe:['Qu’est-ce que je fais maintenant ?','Signale un problème au box 12','Qui sort au paddock ?'],adherent:['Réserve-moi un rattrapage samedi','Comment va Ulysse ?','Trouve un coach CSO jeudi'],coach:['Mes cours de la semaine','Qui a progressé ce mois-ci ?','Bloque mon vendredi']};
 P.assistant=function(first){var ex=$('.aip',app);if(ex){ex.remove();if(!first)return}
   var w=document.createElement('div');w.className='aip';w.innerHTML='<div class="aih"><span class="orb">'+LOGO(24,'var(--navy-ink)','var(--strass)',true)+'</span><div class="grow"><b>Stabl AI</b><div class="xs mut">Il agit dans '+D.club.short+' avec vos droits '+(function(l){l=l.toLowerCase();return (/^[aeéèiouh]/.test(l)?'d’':'de ')+l})(P.roles[S.role].label)+'</div></div><button class="btn ghost icon sm" data-x>'+ICON('x')+'</button></div>'+
-   '<div class="aib"><div class="msg a">Bonjour '+P.ctx().me.first+'. Posez une question ou demandez une action : je cherche dans tout Stabl et je vous montre ce que je vais faire avant de le faire.</div></div>'+
-   '<div class="aif"><div class="sugg">'+(P.suggestions[S.role]||[]).map(function(s){return '<button>'+s+'</button>'}).join('')+'</div><form class="comp"><input id="ai-q" placeholder="Demandez n’importe quoi…" autocomplete="off"><button class="btn icon sm pri" title="Envoyer">'+ICON('send','sm')+'</button></form></div>';
+   '<div class="aib"><div class="msg a">Bonjour '+P.ctx().me.first+'. '+(P.real()?'Dites-moi ce que vous cherchez : je retrouve l’écran, la fiche ou l’action, et vous validez.':'Posez une question ou demandez une action : je cherche dans tout Stabl et je vous montre ce que je vais faire avant de le faire.')+'</div></div>'+
+   '<div class="aif"><div class="sugg">'+(P.real()?{gerant:['Relancer les impayés','Ajouter un adhérent','Planning'],employe:['Soins','Planning'],adherent:['Réserver','Mes factures'],coach:['Agenda','Élèves']}[S.role]||[]:P.suggestions[S.role]||[]).map(function(s){return '<button>'+s+'</button>'}).join('')+'</div><form class="comp"><input id="ai-q" placeholder="Demandez n’importe quoi…" autocomplete="off"><button class="btn icon sm pri" title="Envoyer">'+ICON('send','sm')+'</button></form></div>';
   app.appendChild(w);var body=$('.aib',w),inp=$('input',w);
   $('[data-x]',w).onclick=function(){w.remove()};
   $$('.sugg button',w).forEach(function(b){b.onclick=function(){ask(b.textContent)}});
@@ -2655,7 +2668,16 @@ P.assistant=function(first){var ex=$('.aip',app);if(ex){ex.remove();if(!first)re
     setTimeout(function(){ty.remove();var r=P.think(t);var a=document.createElement('div');a.className='msg a';a.innerHTML=r.text+(r.card?'<div class="act">'+r.card+'</div>':'')+(r.actions?'<div class="hrow wrap" style="margin-top:10px">'+r.actions.map(function(x,i){return '<button class="btn sm '+(i===0?'pri':'')+'" data-a="'+i+'">'+x.label+'</button>'}).join('')+'</div>':'');
       body.appendChild(a);$$('[data-a]',a).forEach(function(b){b.onclick=function(){var x=r.actions[+b.getAttribute('data-a')];var res=x.run&&x.run();b.parentNode.innerHTML='<span class="chip ok dot">'+(res||'Fait')+'</span>'}});body.scrollTop=1e6},RM?50:700+Math.random()*500)}
   if(first)ask(first);else setTimeout(function(){inp.focus()},50)};
-P.think=function(t){var c=P.ctx();for(var i=0;i<P.brain.length;i++){var b=P.brain[i];if((!b.role||b.role===S.role)&&b.re.test(t)){var r=b.reply(t,c);if(r)return r}}
+/* Vrai club : pas de réponses écrites d'avance. L'assistant retrouve un écran, une fiche ou une action et le dit franchement. */
+P.thinkReal=function(t){var STOP,n=function(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')},q=n(t),STOP=['les','des','une','pour','par','mes','mon','dans','avec','sur','qui','que','quoi','est','sont','combien','comment','faire','moi','ajoute','ajouter','voir','ouvre','ouvrir'],words=q.split(/[^a-z0-9]+/).filter(function(w){return w.length>2&&STOP.indexOf(w)<0}),hit=function(s){var ws=n(s).split(/[^a-z0-9]+/);return words.some(function(w){return ws.some(function(x){return x.length>2&&(x.indexOf(w)===0||x.length>3&&w.indexOf(x)===0)})})};
+  var acts=[],seen={};function add(a){if(acts.length<4&&!seen[a.label]){seen[a.label]=1;acts.push(a)}}
+  (D.horses||[]).forEach(function(h){if(h.name&&words.some(function(w){return n(h.name).split(/\s+/).indexOf(w)>=0}))add({label:'Fiche de '+h.name,run:function(){P.go(S.role==='gerant'?'cheval':'emp-cheval',{id:h.id});return 'Fiche ouverte'}})});
+  (D.members||[]).forEach(function(m){var nm=(m.first+' '+m.last).trim();if(nm&&words.some(function(w){return n(nm).split(/\s+/).indexOf(w)>=0}))add({label:'Fiche de '+nm,run:function(){P.go('adherent',{id:m.id});return 'Fiche ouverte'}})});
+  P.actions.filter(function(a){return (!a.role||a.role===S.role)&&hit(a.label)}).slice(0,3).forEach(function(a){add({label:a.label,run:function(){a.run();return 'C’est parti'}})});
+  P.order.map(function(id){return P.mods[id]}).filter(function(m){return m&&m.role===S.role&&m.title&&hit(m.title)}).slice(0,3).forEach(function(m){add({label:'Ouvrir '+m.title,run:function(){P.go(m.id);return 'Écran ouvert'}})});
+  if(acts.length)return {text:'Voici ce que j’ai trouvé dans '+(D.club.short||D.club.name)+' :',actions:acts};
+  return {text:'Je retrouve un écran, un cheval, un adhérent ou une action (par exemple « relancer les impayés », « ajouter un adhérent », « planning »). Les réponses rédigées à partir de vos chiffres arrivent bientôt.'}};
+P.think=function(t){if(P.real())return P.thinkReal(t);var c=P.ctx();for(var i=0;i<P.brain.length;i++){var b=P.brain[i];if((!b.role||b.role===S.role)&&b.re.test(t)){var r=b.reply(t,c);if(r)return r}}
   return {text:'Je peux chercher dans les chevaux, les adhérents, le planning, les factures, les soins et les stocks, et préparer des actions que vous validez. Essayez par exemple « '+(P.suggestions[S.role]||[''])[0]+' ».'}};
 
 /* ---------- Visite guidée ---------- */

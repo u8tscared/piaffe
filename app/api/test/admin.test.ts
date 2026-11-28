@@ -264,6 +264,21 @@ describe("support", () => {
     const done = await jsonOf(await get("/admin/api/support?etat=traite", admin.token));
     expect(done.messages.find((m: any) => m.id === mine.id).note).toBe("Rappelé");
   });
+  it("une demande de rappel du site prévient l'équipe Stabl par e-mail (réponse directe au visiteur)", async () => {
+    const r = await call("/api/contact", { method: "POST", headers: { origin: "https://stablapp.fr" }, json: { name: "Paul Rappel", email: "paul.rappel@centre-exemple.fr", phone: "06 12 34 56 78", message: "Rappelez-moi pour une démo." } });
+    expect(r.status).toBe(201);
+    const mails = (await env.DB.prepare("SELECT to_email, subject, reply_to, template FROM email_outbox WHERE reply_to = ?").bind("paul.rappel@centre-exemple.fr").all<any>()).results;
+    expect(mails.map((m) => m.to_email).sort()).toEqual(["admin.stabl@exemple.fr", "seconde.admin@exemple.fr"]);
+    expect(mails[0].template).toBe("club_notice");
+    expect(mails[0].subject).toContain("Demande de rappel");
+    const tel = await call("/api/contact", { method: "POST", headers: { origin: "https://stablapp.fr" }, json: { name: "Sans Mail", email: "", phone: "07 11 22 33 44", message: "Rappel svp, le matin." } });
+    expect(tel.status).toBe(201);
+    expect((await env.DB.prepare("SELECT COUNT(*) AS n FROM email_outbox WHERE subject LIKE ?").bind("%Sans Mail%").first<any>()).n).toBe(2);
+    expect((await call("/api/contact", { method: "POST", json: { email: "", phone: "12", message: "Bonjour" } })).status).toBe(400);
+    const bot = await call("/api/contact", { method: "POST", json: { email: "robot.rappel@spam.fr", phone: "0600000000", message: "Achetez", site_web: "x" } });
+    expect(bot.status).toBe(201);
+    expect((await env.DB.prepare("SELECT COUNT(*) AS n FROM email_outbox WHERE reply_to = ?").bind("robot.rappel@spam.fr").first<any>()).n).toBe(0);
+  });
 });
 
 describe("prospection", () => {

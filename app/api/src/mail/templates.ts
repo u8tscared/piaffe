@@ -712,6 +712,25 @@ export const TEMPLATES: Record<string, TemplateDef> = {
       };
     },
   },
+  club_message: {
+    name: "Message du club",
+    description: "Envoi groupé écrit par le gérant depuis Communication (fermeture, convocation, informations).",
+    category: "essential",
+    fields: { first: "Prénom du destinataire (facultatif)", subject: "Objet", text: "Texte du message (paragraphes séparés par une ligne vide)" },
+    sample: { first: "Léa", subject: "Carrière fermée jeudi", text: "Bonjour Léa,\n\nLa carrière sera fermée jeudi pour l'entretien du sol. Les reprises ont lieu au manège." },
+    build: (d, ctx) => {
+      const paras = String(d.text || "").split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean).slice(0, 30);
+      return {
+        subject: String(d.subject || "Message de " + clubName(ctx)).slice(0, 160),
+        preheader: (paras[0] || "").slice(0, 120),
+        blocks: [
+          { t: "h", text: String(d.subject || "Message de " + clubName(ctx)).slice(0, 160) },
+          ...paras.map((x) => ({ t: "p" as const, text: x })),
+          { t: "p", muted: true, text: `Envoyé par ${clubName(ctx)}. Répondez à cet e-mail pour écrire au club.` },
+        ],
+      };
+    },
+  },
 };
 
 export const TEMPLATE_KEYS = Object.keys(TEMPLATES);
