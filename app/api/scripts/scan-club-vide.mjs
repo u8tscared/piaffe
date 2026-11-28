@@ -39,7 +39,7 @@ for (const r of routes) {
   const big = [...t.matchAll(/[^\n]{0,40}\b([1-9]\d{1,}|[2-9])(,\d+)?[\s  ](contrats|archivés|boxes|adhérents|chevaux|jours?|ouvertures|messages|commandes|€)[^\n]{0,30}/g)].map((m) => m[0]);
   res.push({ r, bad, pct, big, t });
 }
-const out = { errs, res };
+const out = { errs, res, url: g.url(), title: await g.title() };
 if (OUT) writeFileSync(OUT, JSON.stringify(out, null, 1));
 for (const x of res) if ((x.bad && x.bad.length) || (x.pct && x.pct.length) || x.err) console.log("## " + x.r + "\n  " + [...(x.bad || []).map((s) => "BAD " + s), ...(x.pct || []).map((s) => "PCT " + s), x.err || ""].filter(Boolean).join("\n  "));
 console.log("routes", routes.length, "erreurs", errs.length, errs.slice(0, 10));

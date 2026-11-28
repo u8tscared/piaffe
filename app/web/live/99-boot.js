@@ -127,7 +127,7 @@ function launch(b,role){if(b.features)PL.setFeatures(b.features);
   PL.patchModules();
   PL.setView(role);
   /* chemin d'arrivée → écran */
-  var path=PATH,go=PL.PATHS&&PL.PATHS[path];
+  var path=location.pathname.replace(/\/+$/,'')||'/',go=PL.PATHS&&PL.PATHS[path];
   var SPEC={'/reglages/import':{gerant:'import'},'/reservations':{adherent:'adh-reserver',coach:'coach-agenda',gerant:'planning',employe:'emp-planning'},'/bienvenue':{adherent:'adh-bienvenue',employe:'emp-bienvenue'},'/reglages':{gerant:'reglages'}};
   if(!go&&SPEC[path])go=SPEC[path][PL.view];
   if(go&&P.mods[go]&&P.mods[go].role===PL.view){P.state.route=go;try{history.replaceState(null,'','/#'+go)}catch(e){}}
@@ -136,7 +136,7 @@ function launch(b,role){if(b.features)PL.setFeatures(b.features);
   var ready=function(){
     PL.ready=true;started=true;
     try{P.start()}catch(e){console.error('P.start',e)}
-    document.body.classList.remove('lv-booting');var rt=root();if(rt)rt.innerHTML='';
+    document.title=PL.brandName();document.body.classList.remove('lv-booting');var rt=root();if(rt)rt.innerHTML='';
     PL.decorate();
     try{PL.sync.start()}catch(e){console.error('sync',e)}
     PL.pwa&&PL.pwa.afterLaunch();
