@@ -5,7 +5,7 @@ var D=document,R=D.documentElement,$=function(s,c){return (c||D).querySelector(s
 var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
 var I=function(n){return window.ICON(n)};
 var SH='shots/';
-var BASE=$('.pg').getAttribute('data-demo');
+var BASE=$('.pg').getAttribute('data-demo'),APP=$('.pg').getAttribute('data-app');
 var MAIL='contact@stablapp.fr';
 function demo(r){return 'href="'+BASE+'#'+r+'" target="_blank" rel="noopener"'}
 /* espaces insécables, comme le build */
@@ -38,59 +38,84 @@ function tel(n,alt,o){o=o||{};var lz=o.vite?'':' loading="lazy"',ims;
 $$('[data-ip]').forEach(function(e){e.outerHTML=tel(e.dataset.ip,e.dataset.alt,{duo:e.dataset.duo,vite:e.dataset.vite,k:e.dataset.k})});
 function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.stablapp.fr</span></div>'}
 
-/* ---------- Fonctionnalités : onglets ---------- */
-/* m : origine [x, y] du recadrage au téléphone (640 × 560 px de l’écran d’origine) */
+/* ---------- Ce que fait Stabl : six blocs, on voit où l’on est en défilant ---------- */
+/* f : ce que chaque formule apporte dans ce bloc ; v : capture ordinateur ; t : téléphone par-dessus (facultatif) */
 var MODS=[
- {id:'planning',d:'rd',ic:'planning',n:'Planning',h:['Le planning se remplit,','et il ménage vos chevaux.'],
-  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes.',
-  u:[['Le montoir se compose seul','chaque cavalier a un cheval à son niveau, sans dépasser sa charge.'],['Rattrapages et liste d’attente','une place se libère, le suivant est prévenu.'],['L’appel sur le téléphone','les séances se décomptent toutes seules.']],
-  r:'planning',shot:'g-planning',alt:'Planning de la semaine : 23 reprises, 200 cavaliers, 85 % de remplissage',m:[296,148]},
- {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',h:['Chaque cheval suivi,','rien n’est oublié.'],
-  p:'Une fiche par cheval : identité SIRE, soins, ferrure, travail de la semaine, ration et coûts.',
-  u:[['Rappels de soins automatiques','vaccins, vermifuges, maréchal, dentiste.'],['Charge de travail surveillée','Stabl signale les chevaux au-dessus de leur seuil.'],['Le propriétaire voit tout','journal, soins et factures de son cheval.']],
-  r:'chevaux',shot:'g-chevaux',alt:'Chevaux : 44 chevaux et poneys, 8 à surveiller, coût moyen de 415 € par cheval',m:[780,170]},
- {id:'adherents',d:'acc',ic:'members',n:'Adhérents',h:['Une famille, un payeur,','tous les cavaliers.'],
-  p:'Fiches complètes, inscriptions en ligne, licences FFE en lot, pensions et demi-pensions.',
-  u:[['Inscriptions validées en un geste','certificat et autorisations déjà joints.'],['Licences FFE en lot','toutes les licences de la saison en un envoi.'],['Contrats signés sur le téléphone','modèle rempli, signature, archive.']],
-  r:'adherents',shot:'g-adherents',alt:'Adhérents : 148 cavaliers, inscriptions à valider, licences FFE',m:[296,300]},
- {id:'facturation',d:'mo',ic:'invoice',n:'Facturation',h:['Les factures du mois,','en un seul geste.'],
-  p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, SEPA, chèques-vacances : chaque paiement retrouve sa facture.',
-  u:[['69 factures prêtes','vous vérifiez, vous envoyez.'],['Relances automatiques','le lien de paiement est dans le message.'],['Comptabilité sans ressaisie','banque rapprochée, TVA, export FEC.']],
-  r:'facturation',shot:'g-facturation',alt:'Facturation : 69 factures prêtes pour 18 292 €, 31 846 € encaissés en novembre',m:[296,190]},
- {id:'equipe',d:'tm',ic:'team',n:'Équipe',h:['Plannings, pointage et paie,','enfin réunis.'],
-  p:'Chacun pointe sur son téléphone. Heures, congés, diplômes et échéances sont suivis, la paie part vers votre logiciel.',
-  u:[['Pointage au téléphone','fini les feuilles à recopier.'],['Échéances suivies','carte professionnelle, PSC1, fin de CDD.'],['Export vers la paie','PayFit ou Silae, sans ressaisie.']],
-  r:'equipe',shot:'g-equipe',alt:'Équipe : 6 salariés sur 9 en poste ce matin, échéances à traiter',m:[296,190]},
- {id:'ecurie',d:'cr',ic:'camera',n:'Écurie connectée',h:['L’écurie en direct,','même la nuit.'],
-  p:'Caméras de box, abreuvoirs et capteurs sont reliés. Stabl vous prévient quand quelque chose sort de l’habitude.',
-  u:[['Alerte avant la colique','Xanthos boit 40 % de moins : l’équipe est prévenue.'],['Rations et stocks reliés','la commande de foin part au bon moment.'],['Plan de l’écurie en 3D','boxes, paddocks et places libres.']],
-  r:'cameras',shot:'g-cameras',alt:'Caméras et capteurs : alerte sur Xanthos, box B23',m:[296,240]}
+ {id:'planning',d:'rd',ic:'planning',n:'Planning',s:'Reprises, stages, réservations',h:['Le planning se remplit,','et il ménage vos chevaux.'],
+  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes. Les cavaliers réservent et rattrapent leurs cours depuis leur téléphone.',
+  u:[['Réservation en ligne','les cavaliers s’inscrivent, annulent et rattrapent seuls.'],['Montoir composé seul','chaque cavalier a un cheval à son niveau, sans surcharger personne.'],['Liste d’attente','une place se libère, le suivant est prévenu.'],['Agendas synchronisés','Google, Apple ou Outlook, pour chacun.']],
+  f:[['Essentiel','planning, réservations, agendas'],['Club','montoir automatique, liste d’attente']],
+  r:'planning',v:'g-planning',t:'p-adh-reserver',alt:'Planning de la semaine : reprises, cavaliers, taux de remplissage'},
+ {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',s:'Fiches, soins, véto, maréchal',h:['Chaque cheval suivi,','rien n’est oublié.'],
+  p:'Une fiche par cheval : identité SIRE, soins, ferrure, travail de la semaine, ration et coûts. Le vétérinaire et le maréchal ont leur propre espace.',
+  u:[['Fiche complète en un numéro','le SIRE remplit la race, la robe et les origines.'],['Rappels de soins','vaccins, vermifuges, maréchal, dentiste.'],['Charge de travail surveillée','Stabl signale les chevaux au-dessus de leur plafond.'],['Le propriétaire voit tout','journal, soins et factures de son cheval.']],
+  f:[['Essentiel','fiches chevaux'],['Club','soins, rappels, véto et maréchal'],['Domaine','élevage, vente, caméras']],
+  r:'chevaux',v:'g-chevaux',t:'p-emp-soins',alt:'Chevaux : liste des chevaux, chevaux à surveiller, coût moyen par cheval'},
+ {id:'adherents',d:'acc',ic:'members',n:'Adhérents',s:'Familles, pensions, contrats',h:['Une famille, un payeur,','tous les cavaliers.'],
+  p:'Fiches complètes, inscriptions en ligne, licences FFE en lot, pensions et demi-pensions. Chaque cavalier a son espace sur téléphone.',
+  u:[['Inscriptions en ligne','certificat et autorisations déjà joints.'],['Licences FFE en lot','toutes les licences de la saison en un envoi.'],['Pensions et demi-pensions','le contrat, le cheval et la facture reliés.'],['Contrats signés sur téléphone','modèle rempli, signature, archive.']],
+  f:[['Essentiel','fiches, familles, espace cavalier'],['Club','pensions, contrats, coachs et concours']],
+  r:'adherents',v:'g-adherents',t:'p-adh-accueil',alt:'Adhérents : cavaliers, inscriptions à valider, licences FFE'},
+ {id:'facturation',d:'mo',ic:'invoice',n:'Facturation',s:'Factures, paiements, relances',h:['Les factures du mois,','en un seul geste.'],
+  p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, prélèvement, chèques-vacances : chaque paiement retrouve sa facture.',
+  u:[['Facture électronique prête','obligatoire pour les clubs en septembre 2027.'],['Prélèvement automatique','les pensions passent chaque mois, sans relance.'],['Relances en un clic','le lien de paiement est dans le message.'],['Comptabilité sans ressaisie','banque rapprochée, TVA, export FEC.']],
+  f:[['Essentiel','factures, facture électronique, carte'],['Club','prélèvement, relances, compta'],['Domaine','comptes séparés par activité']],
+  r:'facturation',v:'g-facturation',t:'p-adh-paiements',alt:'Facturation : factures prêtes, encaissements du mois'},
+ {id:'equipe',d:'tm',ic:'team',n:'Équipe',s:'Pointage, tournée, congés',h:['Plannings, pointage et paie,','enfin réunis.'],
+  p:'Chaque salarié a sa journée sur son téléphone : la tournée des boxes, les soins, les consignes. Même sans réseau au fond de l’écurie.',
+  u:[['Pointage au téléphone','fini les feuilles à recopier.'],['Tournée et soins','box après box, coché sur place.'],['Échéances suivies','diplômes, PSC1, fin de CDD.'],['Export vers la paie','PayFit ou Silae, sans ressaisie.']],
+  f:[['Club','appli équipe complète'],['Domaine','rôles et droits sur mesure']],
+  r:'equipe',v:'g-equipe',t:'p-emp-pointage',alt:'Équipe : salariés en poste, échéances à traiter'},
+ {id:'outils',d:'cr',ic:'plug',n:'Vos outils reliés',s:'Reprise, banque, compta, paie',h:['Vos anciens outils,','reliés ou repris.'],
+  p:'Vous quittez votre ancien logiciel sans rien ressaisir, et Stabl se branche sur ce que vous gardez : banque, comptable, paie, agendas, FFE.',
+  u:[['Reprise de l’ancien logiciel','Kavalog, Equimondo, Excel : le robot copie tout.'],['Banque et comptable reliés','Qonto, Pennylane, Tiime, export FEC.'],['Paie et signature','PayFit, Silae, Yousign.'],['Stabl dans Claude et ChatGPT','avec vos droits, pas plus.']],
+  f:[['Essentiel','import Excel, agendas'],['Club','reprise faite avec vous, banque, compta, paie'],['Domaine','API, Claude et ChatGPT']],
+  r:'connecteurs',v:'g-connecteurs',alt:'Connecteurs : banque, comptabilité, paie, agendas, FFE'}
 ];
-(function(){var el=$('#ong');
-  put(el,'<div class="ong-tabs" role="tablist" aria-label="Fonctionnalités">'+MODS.map(function(m,i){return '<button type="button" role="tab" class="d-'+m.d+'" id="ot-'+m.id+'" aria-controls="op" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'">'+I(m.ic)+m.n+'</button>'}).join('')+'</div>'+
-   '<div class="ong-p d-'+MODS[0].d+'" id="op" role="tabpanel" aria-labelledby="ot-'+MODS[0].id+'"><div class="txt"></div><div class="ong-v"><figure class="nav-frame">'+barre()+'<div class="crop">'+MODS.map(function(m,i){return '<img'+(i?'':' class="on"')+' src="'+SH+m.shot+'.webp" width="2160" height="1350" loading="lazy" alt="'+(i?'':m.alt)+'" data-alt="'+m.alt+'" style="--m:'+i+'">'}).join('')+'</div></figure></div></div>');
-  var tabs=$$('.ong-tabs button',el),p=$('#op'),txt=$('.txt',p),ims=$$('.crop img',p),crop=$('.crop',p),cur=-1,t=0;
-  function texte(m){return '<p class="ong-k">'+I(m.ic)+m.n+'</p><h3>'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p>'+m.p+'</p><ul>'+m.u.map(function(u){return '<li>'+I('check')+'<span><b>'+u[0]+'</b> : '+u[1]+'</span></li>'}).join('')+'</ul><a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a>'}
-  function set(i,focus){if(i===cur)return;var m=MODS[i],first=cur<0;cur=i;
-    tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===i);b.tabIndex=k===i?0:-1});p.setAttribute('aria-labelledby','ot-'+m.id);
-    crop.style.setProperty('--mx',m.m[0]);crop.style.setProperty('--my',m.m[1]);
-    ims.forEach(function(im,k){im.classList.toggle('on',k===i);im.alt=k===i?im.dataset.alt:'';if(k===i)im.loading='eager'});
-    p.className='ong-p d-'+m.d;
-    if(first||RM){put(txt,texte(m))}else{p.classList.add('chg');clearTimeout(t);t=setTimeout(function(){put(txt,texte(m));p.classList.remove('chg')},220)}
-    if(focus)tabs[i].focus()}
-  tabs.forEach(function(b,i){b.addEventListener('click',function(){set(i)});
-    b.addEventListener('keydown',function(e){var n=MODS.length;if(e.key==='ArrowRight'){e.preventDefault();set((i+1)%n,1)}else if(e.key==='ArrowLeft'){e.preventDefault();set((i+n-1)%n,1)}})});
-  set(0)})();
-put($('#aussi'),[['','Aussi inclus'],['trophy','Concours'],['chat','Messagerie des familles'],['sign','Contrats signés'],['shop','Boutique et stages'],['accounting','Comptabilité et TVA'],['report','Rapports'],['wifi','Mode hors ligne'],['plug','72 connecteurs']].map(function(x){return '<li>'+(x[0]?I(x[0]):'')+x[1]+'</li>'}).join(''));
+(function(){var rail=$('#recRail'),ch=$('#recCh');if(!rail)return;
+  put(rail,'<p class="rr-t">Les six blocs</p><ol>'+MODS.map(function(m,i){return '<li><a class="d-'+m.d+'" href="#b-'+m.id+'" data-i="'+i+'"><span class="rr-n">'+(i+1)+'</span><span class="rr-i">'+I(m.ic)+'</span><span class="rr-x"><b>'+m.n+'</b><small>'+m.s+'</small></span><i class="rr-p"></i></a></li>'}).join('')+'</ol><a class="rr-cta lien" '+demo('cockpit')+'>Tout voir dans la démo'+I('arrow')+'</a>');
+  put(ch,MODS.map(function(m,i){return '<article class="rc d-'+m.d+'" id="b-'+m.id+'" data-i="'+i+'" aria-labelledby="bt-'+m.id+'">'+
+    '<div class="rc-t"><p class="rc-k"><span class="rc-n">'+(i+1)+' / 6</span>'+I(m.ic)+m.n+'</p><h3 id="bt-'+m.id+'">'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p class="rc-p">'+m.p+'</p>'+
+    '<ul>'+m.u.map(function(u){return '<li>'+I('check')+'<span><b>'+u[0]+'</b> : '+u[1]+'</span></li>'}).join('')+'</ul>'+
+    '<dl class="rc-f">'+m.f.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+f[1]+'</dd></div>'}).join('')+'</dl>'+
+    '<a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a></div>'+
+    '<div class="rc-v"><figure class="nav-frame">'+barre()+'<div class="crop" style="--dx:240;--dy:0;--dw:1200;--dh:780"><img src="'+SH+m.v+'.webp" width="2160" height="1350" loading="lazy" alt="'+m.alt+'"></div></figure>'+(m.t?tel(m.t,'',{k:'rc-ip'}):'')+'</div></article>'}).join(''));
+  var as=$$('a[data-i]',rail),arts=$$('.rc',ch),cur=-1,sec=$('#fonctions');
+  function set(i){if(i===cur)return;cur=i;as.forEach(function(a,k){a.classList.toggle('on',k===i);a.classList.toggle('vu',k<i);if(k===i)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current')});
+    sec.className='sec d-'+MODS[i].d+' rec-on';
+    /* au téléphone, la barre suit le bloc en cours */
+    var a=as[i],ol=a.closest('ol');if(ol&&ol.scrollWidth>ol.clientWidth+4){ol.scrollTo({left:a.parentNode.offsetLeft-16,behavior:RM?'auto':'smooth'})}}
+  /* progression dans le bloc en cours */
+  var raf=0;function suivi(){raf=0;var mid=innerHeight*.45,best=0;arts.forEach(function(a,k){var r=a.getBoundingClientRect();if(r.top<=mid)best=k});
+    set(best);var r=arts[best].getBoundingClientRect(),pr=Math.max(0,Math.min(1,(mid-r.top)/Math.max(1,r.height)));as[best].style.setProperty('--pr',pr.toFixed(3));
+    var rs=sec.getBoundingClientRect();sec.classList.toggle('rec-in',rs.top<innerHeight*.5&&rs.bottom>innerHeight*.5)}
+  addEventListener('scroll',function(){if(!raf)raf=requestAnimationFrame(suivi)},{passive:true});addEventListener('resize',suivi);suivi();
+  as.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=arts[+a.dataset.i],y=t.getBoundingClientRect().top+scrollY-(innerWidth<=1100?140:110);
+    scrollTo({top:y,behavior:RM?'auto':'smooth'});history.replaceState(null,'','#b-'+MODS[+a.dataset.i].id)})})})();
 
-/* ---------- Quatre espaces ---------- */
+/* ---------- Un espace pour chacun ---------- */
+/* v : écran sur ordinateur (ou tablette), t : écran sur téléphone ; les deux montrent les mêmes données */
 var ESP=[
- {d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',t:'Toute l’écurie sous les yeux.',p:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',r:'cockpit',
-  v:'<figure class="nav-frame">'+barre()+'<div class="crop" style="--dx:276;--dy:0;--dw:1164;--dh:720"><img src="'+SH+'g-cockpit.webp" width="2160" height="1350" loading="lazy" alt="Tableau de bord du gérant"></div></figure>'},
- {d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',t:'Sa journée, box après box.',p:'La tournée, les soins et les consignes. Même sans réseau au fond de l’écurie.',r:'emp-jour',v:tel('p-emp-tournee','Tournée des boxes sur téléphone')},
- {d:'rd',ic:'user',n:'Adhérent',ap:'Téléphone',t:'Le club dans la poche.',p:'Réserver, rattraper un cours, payer, signer et suivre son cheval.',r:'adh-accueil',v:tel('p-adh-reserver','Réservation d’un cours sur téléphone')},
- {d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',t:'Un agenda qui se remplit seul.',p:'Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part.',r:'coach-agenda',v:tel('p-coach-agenda','Agenda de la coach sur téléphone')}];
-put($('#esp'),ESP.map(function(e,i){return '<article class="ec d-'+e.d+'" data-r style="--i:'+i+'"><div class="ec-v">'+e.v+'</div><div class="ec-t"><p class="ec-q">'+I(e.ic)+e.n+' · '+e.ap+'</p><h3>'+e.t+'</h3><p>'+e.p+'</p><a class="lien" '+demo(e.r)+'>Ouvrir l’espace '+e.n.toLowerCase()+I('arrow')+'</a></div></article>'}).join(''));
+ {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur et téléphone',t:'Toute l’écurie sous les yeux.',p:'Le matin, un écran dit ce qui demande une décision : chevaux à surveiller, impayés, cours à compléter. Le reste se règle en un geste.',
+  u:['Tableau de bord du jour','Factures, relances, rapports','Réglages, rôles et droits'],r:'cockpit',v:'g-cockpit',tl:'p-g-cockpit'},
+ {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',t:'Sa journée, box après box.',p:'La tournée, les soins à faire et les consignes du jour. Il coche sur place, même sans réseau au fond de l’écurie, et pointe ses heures.',
+  u:['Tournée des boxes et soins','Pointage et congés','Signalement d’un souci en photo'],r:'emp-jour',v:'e-tournee-tab',tab:1,tl:'p-emp-tournee'},
+ {id:'adherent',d:'rd',ic:'user',n:'Cavalier et famille',ap:'Téléphone',t:'Le club dans la poche.',p:'Réserver, rattraper un cours, payer, signer un contrat, suivre sa progression et son cheval. Un parent gère toute la famille. Rien à installer : un lien suffit.',
+  u:['Réservation et rattrapages','Paiement et factures','Progression et concours'],r:'adh-accueil',tl:'p-adh-reserver',tl2:'p-adh-progression'},
+ {id:'coach',d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',t:'Un agenda qui se remplit seul.',p:'Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part. Le coach suit ses élèves et ses concours, et voit ses revenus du mois.',
+  u:['Agenda et disponibilités','Élèves et engagements en concours','Revenus et part de l’écurie'],r:'coach-agenda',v:'c-agenda',tl:'p-coach-agenda'},
+ {id:'pro',d:'cr',ic:'care',n:'Véto et maréchal',ap:'Téléphone et ordinateur',t:'Sa tournée sur tous ses clubs.',p:'Les demandes de visite arrivent avec le cheval et le box. L’acte saisi part au carnet du cheval et au propriétaire, avec la facture à son nom.',
+  u:['Demandes de visite','Actes reliés au carnet de santé','Factures et certificats'],r:'pro-jour',v:'g-pro-jour',tl:'p-pro-jour'}];
+(function(){var el=$('#esp');if(!el)return;
+  function vue(e){var dsk=e.v?(e.tab?'<figure class="tab es-d"><div class="tab-c"><div class="crop" style="--dx:0;--dy:0;--dw:1180;--dh:820"><img src="'+SH+e.v+'.webp" width="1770" height="1230" loading="lazy" alt="Espace '+e.n.toLowerCase()+' sur tablette" style="--iw:1180"></div></div></figure>':
+      '<figure class="nav-frame es-d">'+barre()+'<div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:860"><img src="'+SH+e.v+'.webp" width="2160" height="1350" loading="lazy" alt="Espace '+e.n.toLowerCase()+' sur ordinateur"></div></figure>'):'';
+    return '<div class="es-scene'+(e.v?'':' solo')+'">'+dsk+tel(e.tl,'Espace '+e.n.toLowerCase()+' sur téléphone',{k:'es-ip'})+(e.tl2?tel(e.tl2,'',{k:'es-ip es-ip2'}):'')+'</div>'}
+  put(el,'<div class="es-tabs" role="tablist" aria-label="Espaces">'+ESP.map(function(e,i){return '<button type="button" role="tab" class="d-'+e.d+'" id="et-'+e.id+'" aria-controls="ep-'+e.id+'" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'"><span class="es-ti">'+I(e.ic)+'</span><span><b>'+e.n+'</b><small>'+e.ap+'</small></span></button>'}).join('')+'</div>'+
+    ESP.map(function(e,i){return '<div class="es-p d-'+e.d+'" role="tabpanel" id="ep-'+e.id+'" aria-labelledby="et-'+e.id+'"'+(i?' hidden':'')+'><div class="es-t"><p class="es-k">'+I(e.ic)+e.n+' · '+e.ap+'</p><h3>'+e.t+'</h3><p>'+e.p+'</p><ul>'+e.u.map(function(u){return '<li>'+I('check')+u+'</li>'}).join('')+'</ul><a class="lien" '+demo(e.r)+'>Ouvrir l’espace dans la démo'+I('arrow')+'</a></div>'+vue(e)+'</div>'}).join('')+
+    '<p class="es-same">'+I('refresh')+'<span><b>Les mêmes données partout.</b> Le soin coché par l’employé apparaît chez le gérant et chez le propriétaire. Le cours réservé par un cavalier remplit l’agenda du coach.</span></p>');
+  var tabs=$$('.es-tabs button',el),ps=$$('.es-p',el);
+  function set(i,f){tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===i);b.tabIndex=k===i?0:-1});ps.forEach(function(p,k){p.hidden=k!==i;if(k===i){p.classList.remove('entre');void p.offsetWidth;p.classList.add('entre')}});if(f)tabs[i].focus()}
+  tabs.forEach(function(b,i){b.addEventListener('click',function(){set(i)});b.addEventListener('keydown',function(e){var n=tabs.length;if(e.key==='ArrowRight'){e.preventDefault();set((i+1)%n,1)}else if(e.key==='ArrowLeft'){e.preventDefault();set((i+n-1)%n,1)}})})})();
 
 /* ---------- Stabl AI : questions et réponses, chiffres de la démo ---------- */
 function tb(h,rows,plus){return '<div class="b-carte"><table><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(x){return '<td>'+x+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+(plus?'<div class="plus">'+plus+'</div>':'')+'</div>'}
@@ -141,22 +166,42 @@ put($('#aiQs'),QA.map(function(x,i){return '<button type="button" data-q="'+i+'"
     for(var i=0;i<QA.length;i++){if(QA[i].re.test(v)){poser(i,v);return}}inconnu(v)});
   if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();if(!joue)poser(0)}},{threshold:.35}).observe($('#chat'))}else poser(0)})();
 
-/* ---------- Tarifs ---------- */
+/* ---------- Tarifs : trois cartes, puis le détail complet de chaque formule ---------- */
+/* Même grille que app/api/src/billing/plans.ts (prix HT par mois, annuel = 10 mois). */
 var OFFRES=[
- ['Essentiel','Poney-club et petite écurie',59,['Jusqu’à 30 chevaux','Adhérents, chevaux et planning','Facturation et facture électronique','Paiement en ligne des adhérents','Calendriers synchronisés'],0],
- ['Club','Le centre équestre complet',149,['Tout Essentiel, sans limite de chevaux','Pensions, soins et maréchalerie','Prélèvements SEPA automatiques','Accès comptable et exports FEC','Reprise des données offerte'],1],
- ['Domaine','Plusieurs sites, grandes structures',289,['Tout Club','Jusqu’à 10 sites','Accompagnement prioritaire','API et intégrations'],0]];
+ {n:'Essentiel',p:59,pour:'Pour démarrer',qui:'Petite écurie ou poney-club, jusqu’à 25 chevaux, géré à deux.',
+  base:'L’essentiel pour tenir le club',l:['25 chevaux, 2 comptes','Planning et réservation en ligne','Fiches chevaux et adhérents','Factures, facture électronique et paiement par carte','Espace cavalier sur téléphone']},
+ {n:'Club',p:149,v:1,pour:'Le centre équestre complet',qui:'Centre équestre avec enseignement, pensions et une équipe.',
+  base:'Tout Essentiel, sans limite, et en plus',l:['Chevaux et équipe illimités','Pensions et demi-pensions facturées seules','Prélèvement automatique et relances','Soins, véto et maréchal','Appli équipe : pointage, tournée, congés','Stabl AI, site du club, compta','Reprise de vos données faite avec vous']},
+ {n:'Domaine',p:289,pour:'Grandes structures',qui:'Plus de 60 chevaux, plusieurs activités (club, pension, élevage, commerce) ou une annexe.',
+  base:'Tout Club, et en plus',l:['Jusqu’à 3 sites ou activités, comptes séparés','Élevage et vente de chevaux','8 caméras d’écurie incluses','Rapports par activité et budget','Rôles et droits sur mesure','API, Claude et ChatGPT','Interlocuteur dédié, formation sur place']}];
+/* détail : [libellé, Essentiel, Club, Domaine] ; 1 = inclus, 0 = non, texte = valeur */
+var DETAIL=[
+ ['Votre écurie',null,[['Chevaux','25','Illimités','Illimités'],['Comptes pour l’équipe','2','Illimités','Illimités'],['Cavaliers et familles','Illimités','Illimités','Illimités'],['Sites ou activités séparées','1','1','Jusqu’à 3']]],
+ ['Planning','planning',[['Reprises, stages, balades, cours particuliers',1,1,1],['Réservation et annulation en ligne par les cavaliers',1,1,1],['Agendas synchronisés (Google, Apple, Outlook)',1,1,1],['Montoir composé automatiquement',0,1,1],['Rattrapages et liste d’attente',0,1,1]]],
+ ['Chevaux et soins','horse',[['Fiches chevaux avec numéro SIRE',1,1,1],['Soins, ferrure, vermifuges, vaccins, avec rappels',0,1,1],['Espace vétérinaire et maréchal',0,1,1],['Charge de travail et alimentation',0,1,1],['Certificat d’engagement et de connaissance',0,1,1],['Élevage et vente de chevaux',0,0,1],['Caméras d’écurie','En option','En option','8 incluses']]],
+ ['Adhérents','members',[['Fiches cavaliers et familles, un payeur par famille',1,1,1],['Espace cavalier sur téléphone',1,1,1],['Inscriptions en ligne et licences FFE en lot',1,1,1],['Pensions et demi-pensions',0,1,1],['Contrats signés en ligne',0,1,1],['Espace coach et concours',0,1,1],['Messagerie, SMS, e-mails et sondages',0,1,1],['Organisation de concours avec bénévoles',0,0,1]]],
+ ['Facturation','invoice',[['Factures et facture électronique (obligatoire en 2027)',1,1,1],['Paiement en ligne par carte',1,1,1],['Facturation automatique des pensions et forfaits',0,1,1],['Prélèvement SEPA automatique',0,1,1],['Relance des impayés',0,1,1],['Accès comptable, TVA et export FEC',0,1,1],['Boutique et site internet du club',0,1,1],['Comptes et factures séparés par activité',0,0,1],['Rapports par activité et budget',0,0,1]]],
+ ['Équipe','team',[['Appli équipe : tournée, soins, consignes',0,1,1],['Pointage, plannings et congés',0,1,1],['Échéances des diplômes et export vers la paie',0,1,1],['Rôles et droits sur mesure',0,0,1]]],
+ ['Outils et accompagnement','plug',[['Import de vos fichiers Excel ou CSV',1,1,1],['Reprise de l’ancien logiciel, faite avec vous',0,1,1],['Stabl AI, l’assistant de l’écurie',0,1,1],['Banque, comptable et paie reliés',0,1,1],['API, Claude et ChatGPT',0,0,1],['Aide','Par e-mail','Par téléphone','Interlocuteur dédié'],['Formation de l’équipe sur place',0,0,1]]]];
 function virg(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o[4]?' vedette':'')+'" data-r style="--i:'+i+'">'+(o[4]?'<span class="of-tag">La plus choisie</span>':'')+'<h3>'+o[0]+'</h3><p class="of-p">'+o[1]+'</p><div class="of-prix"><b>'+fr(an?o[2]*10:o[2])+'</b><span class="of-u">€ HT<br>'+(an?'par an':'par mois')+'</span></div><p class="of-an">'+(an?'Soit '+virg(o[2]*10/12)+' € HT par mois, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p><a class="btn '+(o[4]?'blanc':'sec')+'" href="#contact" data-offre="'+o[0]+'">Démarrer l’essai gratuit'+I('arrow')+'</a><ul>'+o[3].map(function(l){return '<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul></article>'}).join(''));
+function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o.v?' vedette':'')+'" data-r style="--i:'+i+'">'+(o.v?'<span class="of-tag">La plus choisie</span>':'')+
+    '<p class="of-pour">'+o.pour+'</p><h3>'+o.n+'</h3><p class="of-p">'+o.qui+'</p><div class="of-prix"><b>'+fr(an?o.p*10:o.p)+'</b><span class="of-u">€ HT<br>'+(an?'par an':'par mois')+'</span></div><p class="of-an">'+(an?'Soit '+virg(o.p*10/12)+' € HT par mois, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p>'+
+    '<a class="btn '+(o.v?'blanc':'sec')+'" href="'+APP+'?formule='+o.n.toLowerCase()+'">Essayer 30 jours gratuits'+I('arrow')+'</a><ul><li class="t">'+o.base+'</li>'+o.l.map(function(l){return '<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul><a class="of-det" href="#cmp">Voir tout le détail'+I('down')+'</a></article>'}).join(''));
   $$('#offres [data-r]').forEach(function(e){e.classList.add('in')})}
 offres(false);
 (function(){var b=$('#bascule');$$('button',b).forEach(function(x){x.addEventListener('click',function(){var an=x.dataset.p==='a';b.classList.toggle('annuel',an);$$('button',b).forEach(function(y){y.setAttribute('aria-pressed',y===x)});offres(an)})})})();
+(function(){var el=$('#cmpT');if(!el)return;
+  function cell(v){if(v===1)return '<td class="oui">'+I('check')+'<span class="sr">Inclus</span></td>';if(v===0)return '<td class="non"><span aria-hidden="true">–</span><span class="sr">Non inclus</span></td>';return '<td class="val">'+v+'</td>'}
+  put(el,'<table><caption class="sr">Détail des formules Essentiel, Club et Domaine</caption><thead><tr><th scope="col"><span class="sr">Fonction</span></th>'+OFFRES.map(function(o){return '<th scope="col"'+(o.v?' class="v"':'')+'><b>'+o.n+'</b><small>'+o.p+' € HT/mois</small></th>'}).join('')+'</tr></thead>'+
+    DETAIL.map(function(g){return '<tbody><tr class="g"><th colspan="4" scope="colgroup"><span>'+(g[1]?I(g[1]):'')+g[0]+'</span></th></tr>'+g[2].map(function(r){return '<tr><th scope="row">'+r[0]+'</th>'+cell(r[1])+cell(r[2])+cell(r[3])+'</tr>'}).join('')+'</tbody>'}).join('')+'</table>')})();
 
 /* ---------- FAQ ---------- */
 var FAQ=[['Combien de temps faut-il pour démarrer ?','Une après‑midi. La création de l’écurie prend une dizaine de minutes, puis la passerelle reprend vos données. Nous pouvons le faire avec vous, gratuitement.'],
  ['Comment reprendre les données de mon ancien logiciel ?','Avec la passerelle : choisissez Kavalog, Equimondo, votre tableur Excel ou votre logiciel de compta, connectez-vous comme d’habitude, et le robot copie tout en lecture seule. Un simple export CSV ou Excel fonctionne aussi. Rien n’est importé avant que vous ayez vérifié les totaux.'],
+ ['Quelle formule choisir ?','Essentiel pour une petite écurie gérée à deux, jusqu’à 25 chevaux. Club dès que vous avez des pensions, une équipe ou plus de 25 chevaux : c’est la formule de la plupart des centres. Domaine au-delà de 60 chevaux, avec plusieurs activités (club, pension, élevage, commerce) ou une annexe. Vous changez de formule quand vous voulez.'],
  ['Suis-je engagé ?','Non. L’abonnement mensuel se résilie en un clic. Vos données vous appartiennent : l’export complet est disponible à tout moment.'],
- ['Que se passe-t-il après les 30 jours d’essai ?','Vous choisissez une formule. Sinon, rien n’est perdu : vos données restent consultables et exportables.'],
+ ['Que se passe-t-il après les 30 jours d’essai ?','Pendant l’essai, vous avez tout Club. Ensuite, vous choisissez une formule. Sinon, rien n’est perdu : vos données restent consultables et exportables.'],
  ['Les cavaliers doivent-ils installer une application ?','Non, un lien suffit. Ils peuvent aussi ajouter Stabl à l’écran d’accueil de leur téléphone en un geste. Un parent paie pour toute la famille.'],
  ['Stabl AI peut-il agir sans moi ?','Non. Il lit vos données pour répondre et vous montre chaque action avant de la faire. Il agit avec vos droits, pas plus, et tout est noté dans un journal.'],
  ['Mes données sont-elles en sécurité ?','Elles sont chiffrées et sauvegardées automatiquement. Chaque rôle ne voit que ce qui le concerne, et Stabl respecte le RGPD, avec l’export et l’effacement par adhérent.']];

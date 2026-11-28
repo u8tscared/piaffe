@@ -1,5 +1,6 @@
 import type { Env, Role } from "../env";
-import { all, audit } from "../lib/db";
+import { all, audit, one } from "../lib/db";
+import { clubLimits, horseLimitMessage } from "../billing/limits";
 import { emit } from "../lib/events";
 import { nowIso } from "../lib/ids";
 import { isColl, isSingleton, ID_RE, MAX_OBJECT_BYTES, SINGLETON_ID } from "./collections";
@@ -130,6 +131,14 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
   const stmts: D1PreparedStatement[] = [];
   const pending: { idx: number; stmt: number; coll: string; id: string; version: number; data: Row | null; previous: Row | null; deleted: boolean; merged?: boolean; conflicts?: MergeConflict[] }[] = [];
   const batchOps = new Set<string>();
+  // Formule Essentiel : nombre de chevaux plafonné (billing/limits.ts). Compté seulement si le lot crée un cheval.
+  const createsHorse = ops.some((o: any) => o && o.op === "upsert" && o.coll === "horses");
+  const lim = createsHorse ? await clubLimits(db, p.clubId) : null;
+  let horsesLeft = Infinity;
+  if (lim && lim.horses !== null) {
+    const n = await one<{ n: number }>(db, "SELECT COUNT(*) AS n FROM records WHERE club_id = ? AND coll = 'horses' AND deleted = 0", p.clubId);
+    horsesLeft = lim.horses - (n?.n || 0);
+  }
 
   ops.forEach((o: any, idx) => {
     if (!o || typeof o !== "object") { results[idx] = errRes({}, "invalid_op", "Opération illisible."); return; }
@@ -176,6 +185,10 @@ export async function applyBatch(env: Env, ctxExec: { waitUntil(p: Promise<unkno
     } else if (!live) {
       results[idx] = { coll: o.coll, id: o.id, ok: true, version: serverVersion, deleted: true }; // déjà supprimé : idempotent
       return;
+    }
+    if (o.op === "upsert" && o.coll === "horses" && !live && lim) {
+      if (horsesLeft <= 0) { results[idx] = errRes(o, "plan_limit", horseLimitMessage(lim)); return; }
+      horsesLeft--;
     }
     let final: Row | null;
     let effect: ReturnType<typeof planCredit> = null;

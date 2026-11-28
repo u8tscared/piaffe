@@ -16,8 +16,10 @@ const parts={'/*__CSS__*/':rd(path.join(S,'landing.css')),'/*__ICONS__*/':rd(pat
 /* liens : {{demo:ecran}}, {{demobase}}, {{passerelle}} */
 const DEMO=PAGES?'demo/':'https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN';
 const PASS=PAGES?'passerelle/':SITE+'passerelle/';
+/* le vrai logiciel : « Créer un compte » (en-tête, héros, formules) */
+const APP_URL=process.env.STABL_APP_URL||'https://app.stablapp.fr/';
 html=html.replace(/\{\{demo:([a-z0-9-]+)\}\}/g,(m,r)=>'href="'+DEMO+'#'+r+'" target="_blank" rel="noopener"');
-html=html.replace(/\{\{demobase\}\}/g,DEMO).replace(/\{\{passerelle\}\}/g,PASS).replace(/\{\{description\}\}/g,DESC);
+html=html.replace(/\{\{app\}\}/g,APP_URL).replace(/\{\{demobase\}\}/g,DEMO).replace(/\{\{passerelle\}\}/g,PASS).replace(/\{\{description\}\}/g,DESC);
 /* logo officiel : symbole + « stabl » vectorisés, couleur du texte */
 const lockup=rd(path.join(BRAND,'logo/stabl-logo-marine.svg')).replace(/<\?xml[^>]*>/,'').replace(/fill="#0a1636"/gi,'').replace('<svg ','<svg class="lockup" aria-hidden="true" focusable="false" ').replace(/\s*xmlns="[^"]*"/,'').trim();
 if(!/viewBox/.test(lockup))throw new Error('Logo officiel illisible');
@@ -63,7 +65,7 @@ fs.writeFileSync(path.join(D,'landing.html'),PAGES?seo.filter(l=>!/rel="(icon|ap
 const m=body.match(/^([\s\S]*?<\/style>)\s*/);
 fs.writeFileSync(path.join(D,'index.html'),head+'\n'+m[1]+'\n</head>\n<body>\n'+body.slice(m[0].length)+'\n</body>\n</html>\n');
 fs.writeFileSync(path.join(D,'robots.txt'),'User-agent: *\nAllow: /\nSitemap: '+SITE+'sitemap.xml\n');
-fs.writeFileSync(path.join(D,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>'+SITE+'</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n<url><loc>'+SITE+'demo/</loc><priority>0.8</priority></url>\n<url><loc>'+SITE+'passerelle/</loc><priority>0.6</priority></url>\n</urlset>\n');
+fs.writeFileSync(path.join(D,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>'+SITE+'</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n<url><loc>'+SITE+'demo/</loc><priority>0.8</priority></url>\n<url><loc>'+SITE+'passerelle/</loc><priority>0.6</priority></url>\n'+['cgu','cgv','confidentialite','sous-traitance','mentions-legales'].map(function(k){return '<url><loc>'+SITE+k+'/</loc><priority>0.3</priority></url>\n'}).join('')+'</urlset>\n');
 const prev='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>'+html.replace(/(["'(])shots\//g,'$1../shots/')+'</body></html>';
 fs.writeFileSync(path.join(D,'preview.html'),prev);
 console.log('dist/index.html',(html.length/1024|0)+' Ko');

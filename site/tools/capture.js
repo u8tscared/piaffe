@@ -20,7 +20,7 @@ const L=[
  ['p-adh-accueil','adh-accueil','phone'],['p-adh-reserver','adh-reserver','phone'],['p-adh-cheval','adh-cheval','phone'],['p-adh-paiements','adh-paiements','phone'],['p-adh-progression','adh-progression','phone'],['p-adh-concours','adh-concours','phone'],
  ['p-emp-jour','emp-jour','phone'],['p-emp-tournee','emp-tournee','phone'],['p-emp-soins','emp-soins','phone'],['p-emp-pointage','emp-pointage','phone'],
  ['p-coach-agenda','coach-agenda','phone'],['p-coach-revenus','coach-revenus','phone'],
- ['p-g-cockpit','cockpit','phone'],['p-adh-accueil-dark','adh-accueil','phone',1]
+ ['p-g-cockpit','cockpit','phone'],['p-pro-jour','pro-jour','phone'],['g-pro-jour','pro-jour','desktop'],['p-pro-factures','pro-factures','phone'],['p-adh-accueil-dark','adh-accueil','phone',1]
 ];
 const only=process.argv.slice(2);
 (async()=>{const b=await chromium.launch({args:['--use-gl=swiftshader','--enable-webgl','--ignore-gpu-blocklist']});const idx={};

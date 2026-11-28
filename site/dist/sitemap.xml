@@ -3,4 +3,9 @@
 <url><loc>https://stablapp.fr/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
 <url><loc>https://stablapp.fr/demo/</loc><priority>0.8</priority></url>
 <url><loc>https://stablapp.fr/passerelle/</loc><priority>0.6</priority></url>
+<url><loc>https://stablapp.fr/cgu/</loc><priority>0.3</priority></url>
+<url><loc>https://stablapp.fr/cgv/</loc><priority>0.3</priority></url>
+<url><loc>https://stablapp.fr/confidentialite/</loc><priority>0.3</priority></url>
+<url><loc>https://stablapp.fr/sous-traitance/</loc><priority>0.3</priority></url>
+<url><loc>https://stablapp.fr/mentions-legales/</loc><priority>0.3</priority></url>
 </urlset>

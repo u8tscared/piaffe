@@ -92,118 +92,131 @@ export function initialOf(name: string): string {
 
 export const iconUrl = (n: IconName) => `${BRAND.assetsUrl}/icone-${n}@2x.png`;
 
-/** Texte enrichi minimal : **gras**. Le reste est échappé. */
-function rich(s: string): string {
-  return esc(typo(s)).replace(/\*\*(.+?)\*\*/g, '<strong style="color:' + C.ink + ';font-weight:600" class="dm-strong">$1</strong>');
-}
 const plain = (s: string) => typo(s).replace(/\*\*(.+?)\*\*/g, "$1");
 
 const F = BRAND.fontText;
 const FD = BRAND.fontDisplay;
-const P = `margin:0 0 18px 0;font-family:${F};font-size:16px;line-height:26px;color:${C.text};`;
+const N = BRAND.night;
+const P = `margin:0 0 18px 0;font-family:${F};font-size:16px;line-height:26px;color:${N.lead};`;
 const TB = `role="presentation" border="0" cellpadding="0" cellspacing="0"`;
+const LABEL = `font-family:${F};font-size:12px;line-height:16px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:${N.strass}`;
 
+/** Pastilles de statut lisibles sur fond marine. */
 const TONE: Record<Tone, { fg: string; bg: string }> = {
-  info: { fg: C.sapphire, bg: C.sapphireSoft },
-  ok: { fg: C.ok, bg: C.okSoft },
-  warn: { fg: C.warn, bg: C.warnSoft },
-  bad: { fg: C.bad, bg: C.badSoft },
+  info: { fg: "#a9bbff", bg: N.watermark },
+  ok: { fg: "#6fdca6", bg: "#0f3a34" },
+  warn: { fg: "#ffc46b", bg: "#3a2c14" },
+  bad: { fg: "#ff9b8a", bg: "#401d22" },
 };
+
+/** Texte enrichi minimal : **gras** (en blanc). Le reste est échappé. */
+function richN(s: string): string {
+  return esc(typo(s)).replace(/\*\*(.+?)\*\*/g, '<strong style="color:#ffffff;font-weight:600">$1</strong>');
+}
 
 function pill(text: string, tone: Tone = "info"): string {
   const t = TONE[tone];
-  return `<table ${TB} style="display:inline-table"><tr><td class="dm-pill-${tone}" style="padding:5px 11px;border-radius:999px;background:${t.bg};font-family:${F};font-size:12px;line-height:16px;font-weight:700;color:${t.fg};letter-spacing:0.2px;white-space:nowrap">${esc(typo(text))}</td></tr></table>`;
+  return `<table ${TB} style="display:inline-table"><tr><td style="padding:5px 11px;border-radius:999px;background:${t.bg};font-family:${F};font-size:12px;line-height:16px;font-weight:700;color:${t.fg};letter-spacing:0.3px;white-space:nowrap">${esc(typo(text))}</td></tr></table>`;
 }
 
 function button(b: { label: string; url: string; variant?: "primary" | "secondary" }): string {
   const url = esc(safeUrl(b.url));
   const label = esc(typo(b.label));
   const sec = b.variant === "secondary";
-  const w = Math.min(520, Math.max(220, Math.round(b.label.length * 9.2 + 72)));
-  const bg = sec ? "#ffffff" : C.sapphire;
-  const fg = sec ? C.ink : "#ffffff";
-  return `<table ${TB} class="btn-full" style="margin:6px 0 ${sec ? 22 : 14}px 0"><tr><td align="center" bgcolor="${bg}" class="${sec ? "dm-btn2" : "dm-btn"}" style="border-radius:12px;background:${bg};${sec ? `border:1.5px solid ${C.line};` : ""}">` +
-    `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:52px;v-text-anchor:middle;width:${w}px" arcsize="23%" ${sec ? `strokecolor="${C.line}" strokeweight="1.5px"` : 'stroke="f"'} fillcolor="${bg}"><w:anchorlock/><center style="color:${fg};font-family:Segoe UI,Arial,sans-serif;font-size:16px;font-weight:bold">${label}</center></v:roundrect><![endif]-->` +
-    `<!--[if !mso]><!--><a href="${url}" target="_blank" class="${sec ? "dm-btn2-a" : "dm-btn-a"}" style="display:block;padding:16px 30px;font-family:${F};font-size:16px;line-height:20px;font-weight:600;color:${fg};text-decoration:none;border-radius:12px;text-align:center;mso-hide:all">${label}${sec ? "" : "&nbsp;&nbsp;&#8594;"}</a><!--<![endif]-->` +
+  const w = Math.min(520, Math.max(200, Math.round(b.label.length * 9.4 + 68)));
+  const bg = sec ? N.body : N.strass;
+  const fg = sec ? "#ffffff" : C.navy;
+  return `<table ${TB} class="btn-full" style="margin:8px 0 ${sec ? 24 : 16}px 0"><tr><td align="center" bgcolor="${bg}" style="border-radius:6px;background:${bg};${sec ? `border:1.5px solid ${N.edge};` : ""}">` +
+    `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:56px;v-text-anchor:middle;width:${w}px" arcsize="11%" ${sec ? `strokecolor="${N.edge}" strokeweight="1.5px"` : 'stroke="f"'} fillcolor="${bg}"><w:anchorlock/><center style="color:${fg};font-family:Segoe UI,Arial,sans-serif;font-size:16px;font-weight:bold">${label}</center></v:roundrect><![endif]-->` +
+    `<!--[if !mso]><!--><a href="${url}" target="_blank" style="display:block;padding:18px 32px;font-family:${F};font-size:16px;line-height:20px;font-weight:700;color:${fg};text-decoration:none;border-radius:6px;text-align:center;mso-hide:all">${label}</a><!--<![endif]-->` +
     `</td></tr></table>`;
 }
 
+/** Lignes étiquette strass / valeur blanche, séparées par des filets (comme la fiche de réservation). */
 function rowsHtml(rows: [string, string][]): string {
-  return rows.map(([k, v], i) =>
-    `<tr><td class="dm-muted${i ? " dm-line" : ""}" style="padding:12px 0;${i ? `border-top:1px solid ${C.line};` : ""}font-family:${F};font-size:14px;line-height:20px;color:${C.muted};vertical-align:top;width:40%">${esc(typo(k))}</td>` +
-    `<td align="right" class="dm-strong${i ? " dm-line" : ""}" style="padding:12px 0 12px 12px;${i ? `border-top:1px solid ${C.line};` : ""}font-family:${F};font-size:15px;line-height:20px;color:${C.ink};font-weight:600;vertical-align:top;text-align:right">${rich(v)}</td></tr>`).join("");
+  return rows.map(([k, v]) =>
+    `<tr><td class="k" style="padding:16px 14px 16px 0;border-top:1px solid ${N.line};${LABEL};vertical-align:top;width:38%">${esc(typo(k))}</td>` +
+    `<td style="padding:14px 0;border-top:1px solid ${N.line};font-family:${F};font-size:16px;line-height:22px;color:#ffffff;font-weight:600;vertical-align:top">${richN(v)}</td></tr>`).join("");
 }
 
-function heroHtml(b: Extract<Block, { t: "hero" }>): string {
-  const mark = b.icon
-    ? `<img src="${esc(iconUrl(b.icon))}" width="28" height="28" alt="" style="display:block;margin:0 auto;width:28px;height:28px;border:0">`
-    : b.initial ? `<span style="font-family:${FD};font-size:24px;line-height:28px;font-weight:800;color:#ffffff">${esc(b.initial.slice(0, 2))}</span>` : "";
-  return (mark ? `<table ${TB} style="margin:0 0 22px 0"><tr><td width="56" height="56" align="center" valign="middle" bgcolor="${C.sapphire}" style="width:56px;height:56px;border-radius:18px;background:${C.sapphire};text-align:center;vertical-align:middle">${mark}</td></tr></table>` : "") +
-    (b.badge ? `<p style="margin:0 0 12px 0;font-family:${F};font-size:12px;line-height:16px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:${C.strass}">${esc(typo(b.badge))}</p>` : "") +
-    `<h1 class="hero-title" style="margin:0;font-family:${FD};font-size:34px;line-height:38px;font-weight:800;color:#ffffff;letter-spacing:-1px">${rich(b.title).replace(/color:#0a1636/g, "color:#ffffff")}</h1>` +
-    (b.text ? `<p class="hero-text" style="margin:14px 0 0 0;font-family:${F};font-size:17px;line-height:26px;color:${C.heroText}">${esc(typo(b.text)).replace(/\*\*(.+?)\*\*/g, '<strong style="color:#ffffff;font-weight:600">$1</strong>')}</p>` : "");
+function headHtml(f: Frame, hero: Extract<Block, { t: "hero" }> | null): string {
+  const stabl = `<img src="${esc(BRAND.img.logoWhite)}" width="${BRAND.logoWidth - 14}" height="${BRAND.logoHeight - 6}" alt="${esc(BRAND.name)}" style="display:block;width:${BRAND.logoWidth - 14}px;height:${BRAND.logoHeight - 6}px;border:0;outline:none;color:#ffffff;font-family:${FD};font-size:18px;font-weight:800">`;
+  let top: string;
+  if (f.isClub) {
+    const mark = f.logoUrl
+      ? `<td width="44" style="vertical-align:middle;padding-right:12px"><table ${TB}><tr><td width="34" height="34" align="center" valign="middle" bgcolor="#ffffff" style="width:34px;height:34px;border-radius:9px;background:#ffffff;text-align:center"><img src="${esc(safeUrl(f.logoUrl))}" width="26" height="26" alt="" style="display:block;margin:0 auto;width:26px;height:26px;border:0;object-fit:contain"></td></tr></table></td>`
+      : `<td width="44" style="vertical-align:middle;padding-right:12px"><table ${TB}><tr><td width="34" height="34" align="center" valign="middle" bgcolor="${N.watermark}" style="width:34px;height:34px;border-radius:9px;background:${N.watermark};font-family:${FD};font-size:17px;line-height:34px;font-weight:800;color:#ffffff;text-align:center">${esc(initialOf(f.headerName))}</td></tr></table></td>`;
+    top = `<table ${TB} width="100%"><tr>${mark}<td style="vertical-align:middle;font-family:${F};font-size:15px;line-height:19px;font-weight:700;color:#ffffff">${esc(typo(f.headerName))}</td>` +
+      `<td align="right" style="vertical-align:middle;font-family:${F};font-size:13px;line-height:18px;color:${N.soft};white-space:nowrap">via ${esc(BRAND.name)}</td></tr></table>`;
+  } else {
+    const logo = f.logoUrl ? stabl : `<span style="font-family:${FD};font-size:22px;line-height:26px;font-weight:800;color:#ffffff;letter-spacing:-0.8px">${esc(BRAND.name.toLowerCase())}</span>`;
+    top = `<table ${TB} width="100%"><tr><td style="vertical-align:middle">${logo}</td></tr></table>`;
+  }
+  if (!hero) return top;
+  const mark = hero.icon
+    ? `<table ${TB} style="margin:0 0 18px 0"><tr><td width="40" height="40" align="center" valign="middle" bgcolor="${N.watermark}" style="width:40px;height:40px;border-radius:11px;background:${N.watermark};text-align:center;vertical-align:middle"><img src="${esc(iconUrl(hero.icon))}" width="22" height="22" alt="" style="display:block;margin:0 auto;width:22px;height:22px;border:0"></td></tr></table>`
+    : "";
+  return top + `<div class="hd-gap" style="height:96px;line-height:96px;font-size:0">&nbsp;</div>` + mark +
+    (hero.badge ? `<p style="margin:0 0 14px 0;${LABEL}">${esc(typo(hero.badge))}</p>` : "") +
+    `<h1 class="hero-title" style="margin:0;font-family:${FD};font-size:50px;line-height:50px;font-weight:800;color:#ffffff;letter-spacing:-2px">${richN(hero.title)}</h1>`;
 }
 
 function blockHtml(b: Block): string {
   switch (b.t) {
     case "h":
-      return `<h2 class="dm-h" style="margin:8px 0 14px 0;font-family:${FD};font-size:22px;line-height:28px;font-weight:800;color:${C.ink};letter-spacing:-0.5px">${rich(b.text)}</h2>`;
+      return `<h2 style="margin:10px 0 14px 0;font-family:${FD};font-size:26px;line-height:30px;font-weight:800;color:#ffffff;letter-spacing:-0.9px">${richN(b.text)}</h2>`;
     case "p":
-      return `<p class="${b.muted ? "dm-muted" : "dm-text"}" style="${P}${b.muted ? `color:${C.muted};font-size:14px;line-height:22px;` : ""}">${rich(b.text)}</p>`;
+      return `<p style="${P}${b.muted ? `color:${N.soft};font-size:14px;line-height:22px;` : ""}">${richN(b.text)}</p>`;
     case "button":
       return button(b);
     case "rows":
-      return `<table ${TB} width="100%" class="dm-panel" style="margin:0 0 22px 0;background:${C.panel};border-radius:14px"><tr><td style="padding:4px 18px">` +
-        `<table ${TB} width="100%">${rowsHtml(b.rows)}</table></td></tr></table>`;
+      return `<table ${TB} width="100%" style="margin:4px 0 24px 0;border-bottom:1px solid ${N.line}">${rowsHtml(b.rows)}</table>`;
     case "list":
       return `<table ${TB} width="100%" style="margin:0 0 18px 0">` +
-        b.items.map((it) => `<tr><td width="20" class="dm-link" style="vertical-align:top;padding:2px 0 8px 0;font-family:${F};font-size:16px;line-height:24px;color:${C.sapphire};font-weight:700">&#8226;</td><td class="dm-text" style="padding:2px 0 8px 0;font-family:${F};font-size:16px;line-height:24px;color:${C.text}">${rich(it)}</td></tr>`).join("") +
+        b.items.map((it) => `<tr><td width="22" style="vertical-align:top;padding:2px 0 8px 0;font-family:${F};font-size:16px;line-height:24px;color:${N.strass};font-weight:700">&#8226;</td><td style="padding:2px 0 8px 0;font-family:${F};font-size:16px;line-height:24px;color:${N.lead}">${richN(it)}</td></tr>`).join("") +
         `</table>`;
     case "checks":
-      return `<table ${TB} width="100%" style="margin:0 0 20px 0">` +
-        b.items.map((it) => `<tr><td width="34" style="vertical-align:top;padding:0 0 12px 0"><table ${TB}><tr><td width="22" height="22" align="center" valign="middle" class="dm-pill-info" style="width:22px;height:22px;border-radius:11px;background:${C.sapphireSoft};font-family:Arial,sans-serif;font-size:13px;line-height:22px;font-weight:700;color:${C.sapphire};text-align:center">&#10003;</td></tr></table></td>` +
-          `<td class="dm-text" style="padding:0 0 12px 0;font-family:${F};font-size:16px;line-height:23px;color:${C.text};vertical-align:top">${rich(it)}</td></tr>`).join("") +
+      return `<table ${TB} width="100%" style="margin:4px 0 22px 0;border-bottom:1px solid ${N.line}">` +
+        b.items.map((it) => `<tr><td width="40" style="vertical-align:top;padding:14px 0;border-top:1px solid ${N.line}"><table ${TB}><tr><td width="24" height="24" align="center" valign="middle" style="width:24px;height:24px;border-radius:7px;background:${N.watermark};font-family:Arial,sans-serif;font-size:13px;line-height:24px;font-weight:700;color:${N.strass};text-align:center">&#10003;</td></tr></table></td>` +
+          `<td style="padding:15px 0 14px 0;border-top:1px solid ${N.line};font-family:${F};font-size:16px;line-height:23px;color:#ffffff;font-weight:500;vertical-align:top">${richN(it)}</td></tr>`).join("") +
         `</table>`;
     case "steps":
-      return `<table ${TB} width="100%" style="margin:4px 0 20px 0">` +
-        b.items.map((s, i) => `<tr><td width="48" style="vertical-align:top;padding:0 0 ${i === b.items.length - 1 ? 0 : 18}px 0"><table ${TB}><tr><td width="34" height="34" align="center" valign="middle" bgcolor="${C.navy}" class="dm-step" style="width:34px;height:34px;border-radius:12px;background:${C.navy};font-family:${FD};font-size:16px;line-height:34px;font-weight:800;color:#ffffff;text-align:center">${i + 1}</td></tr></table></td>` +
-          `<td style="vertical-align:top;padding:5px 0 ${i === b.items.length - 1 ? 0 : 18}px 0"><p class="dm-h" style="margin:0;font-family:${F};font-size:16px;line-height:23px;font-weight:700;color:${C.ink}">${rich(s.title)}</p>` +
-          (s.text ? `<p class="dm-muted" style="margin:3px 0 0 0;font-family:${F};font-size:14px;line-height:21px;color:${C.muted}">${rich(s.text)}</p>` : "") + `</td></tr>`).join("") +
+      return `<table ${TB} width="100%" style="margin:6px 0 24px 0;border-bottom:1px solid ${N.line}">` +
+        b.items.map((s, i) => `<tr><td width="48" style="vertical-align:top;padding:22px 0 20px 0;border-top:1px solid ${N.line};font-family:${FD};font-size:15px;line-height:26px;font-weight:800;color:${N.strass};letter-spacing:-0.3px">${String(i + 1).padStart(2, "0")}</td>` +
+          `<td style="vertical-align:top;padding:20px 0;border-top:1px solid ${N.line}"><p style="margin:0;font-family:${FD};font-size:22px;line-height:27px;font-weight:800;color:#ffffff;letter-spacing:-0.7px">${richN(s.title)}</p>` +
+          (s.text ? `<p style="margin:6px 0 0 0;font-family:${F};font-size:15px;line-height:23px;color:${N.soft}">${richN(s.text)}</p>` : "") + `</td></tr>`).join("") +
         `</table>`;
     case "card": {
-      const tile = b.date
-        ? `<td width="76" style="vertical-align:top;padding:0 16px 0 0"><table ${TB}><tr><td width="64" align="center" bgcolor="${C.navy}" style="width:64px;border-radius:14px;background:${C.navy};padding:9px 0 10px 0;text-align:center">` +
-          `<p style="margin:0;font-family:${F};font-size:11px;line-height:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.strass}">${esc(b.date.weekday)}</p>` +
-          `<p style="margin:1px 0;font-family:${FD};font-size:26px;line-height:30px;font-weight:800;color:#ffffff">${esc(b.date.day)}</p>` +
-          `<p style="margin:0;font-family:${F};font-size:12px;line-height:14px;color:${C.heroText}">${esc(b.date.month)}</p></td></tr></table></td>`
+      const big = b.date
+        ? `<table ${TB} width="100%" style="margin:0 0 6px 0"><tr><td class="big" style="vertical-align:bottom;width:1%;white-space:nowrap;padding-right:18px;font-family:${FD};font-size:96px;line-height:80px;font-weight:800;color:#ffffff;letter-spacing:-4px">${esc(b.date.day)}</td>` +
+          `<td style="vertical-align:bottom;padding-bottom:2px"><p style="margin:0;${LABEL}">${esc(b.date.weekday)}</p><p style="margin:4px 0 0 0;font-family:${FD};font-size:24px;line-height:28px;font-weight:800;color:#ffffff;letter-spacing:-0.8px">${esc(b.date.month)}</p></td></tr></table>`
         : "";
-      const head = `<table ${TB} width="100%"><tr>${tile}<td style="vertical-align:middle">` +
-        (b.kicker ? `<p class="dm-muted" style="margin:0 0 4px 0;font-family:${F};font-size:12px;line-height:16px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${C.muted}">${esc(typo(b.kicker))}</p>` : "") +
-        `<p class="dm-h" style="margin:0;font-family:${FD};font-size:21px;line-height:26px;font-weight:800;color:${C.ink};letter-spacing:-0.4px">${rich(b.title)}</p>` +
-        (b.text ? `<p class="dm-muted" style="margin:4px 0 0 0;font-family:${F};font-size:14px;line-height:20px;color:${C.muted}">${rich(b.text)}</p>` : "") +
-        `</td>${b.status ? `<td align="right" style="vertical-align:top;padding-left:8px">${pill(b.status.text, b.status.tone)}</td>` : ""}</tr></table>`;
-      const amount = b.amount ? `<p class="dm-h amount" style="margin:18px 0 2px 0;font-family:${FD};font-size:40px;line-height:44px;font-weight:800;color:${C.ink};letter-spacing:-1.2px">${esc(typo(b.amount))}</p>` : "";
-      const rows = b.rows && b.rows.length ? `<table ${TB} width="100%" style="margin-top:14px">${rowsHtml(b.rows)}</table>` : "";
-      return `<table ${TB} width="100%" class="dm-card2" style="margin:0 0 24px 0;border:1px solid ${C.line};border-radius:18px;background:#ffffff"><tr><td style="padding:20px 20px ${rows ? 8 : 20}px 20px">${head}${amount}${rows}</td></tr></table>`;
+      const head = `<table ${TB} width="100%" style="margin-top:${big ? 22 : 0}px"><tr><td style="vertical-align:top">` +
+        (b.kicker ? `<p style="margin:0 0 8px 0;${LABEL}">${esc(typo(b.kicker))}</p>` : "") +
+        `<p style="margin:0;font-family:${FD};font-size:24px;line-height:28px;font-weight:800;color:#ffffff;letter-spacing:-0.8px">${richN(b.title)}</p>` +
+        (b.text ? `<p style="margin:6px 0 0 0;font-family:${F};font-size:15px;line-height:22px;color:${N.soft}">${richN(b.text)}</p>` : "") +
+        `</td>${b.status ? `<td align="right" style="vertical-align:top;padding-left:10px">${pill(b.status.text, b.status.tone)}</td>` : ""}</tr></table>`;
+      const amount = b.amount ? `<p class="amount" style="margin:20px 0 4px 0;font-family:${FD};font-size:56px;line-height:58px;font-weight:800;color:#ffffff;letter-spacing:-2.4px">${esc(typo(b.amount))}</p>` : "";
+      const rows = b.rows && b.rows.length ? `<table ${TB} width="100%" style="margin-top:18px">${rowsHtml(b.rows)}</table>` : "";
+      return `<table ${TB} width="100%" style="margin:6px 0 26px 0;border-radius:16px;background:${N.box};border:1px solid ${N.line}"><tr><td class="card-in" style="padding:26px 26px ${rows ? 10 : 26}px 26px">${big}${head}${amount}${rows}</td></tr></table>`;
     }
     case "badge":
-      return `<table ${TB} style="margin:0 0 16px 0"><tr><td>${pill(b.text, b.tone)}</td></tr></table>`;
+      return `<table ${TB} style="margin:0 0 18px 0"><tr><td>${pill(b.text, b.tone)}</td></tr></table>`;
     case "quote":
-      return `<table ${TB} width="100%" class="dm-panel" style="margin:0 0 22px 0;background:${C.panel};border-radius:16px"><tr><td style="padding:20px 22px 18px 22px">` +
-        `<p style="margin:0 0 4px 0;font-family:Georgia,serif;font-size:40px;line-height:28px;color:${C.sapphire}" class="dm-link">&#8220;</p>` +
-        `<p class="dm-text" style="margin:0;font-family:${F};font-size:17px;line-height:27px;color:${C.ink};white-space:pre-line">${esc(typo(b.text))}</p>` +
-        (b.by ? `<p class="dm-muted" style="margin:12px 0 0 0;font-family:${F};font-size:14px;line-height:20px;color:${C.muted};font-weight:600">${esc(typo(b.by))}</p>` : "") +
+      return `<table ${TB} width="100%" style="margin:4px 0 24px 0"><tr><td style="padding:2px 0 2px 22px;border-left:3px solid ${N.strass}">` +
+        `<p style="margin:0;font-family:${FD};font-size:22px;line-height:30px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;white-space:pre-line">${esc(typo(b.text))}</p>` +
+        (b.by ? `<p style="margin:12px 0 0 0;${LABEL}">${esc(typo(b.by))}</p>` : "") +
         `</td></tr></table>`;
     case "note": {
       const t = TONE[b.tone || "info"];
-      return `<table ${TB} width="100%" style="margin:0 0 22px 0"><tr><td class="dm-panel" style="padding:15px 18px;border-left:4px solid ${t.fg};background:${C.panel};border-radius:4px 14px 14px 4px;font-family:${F};font-size:15px;line-height:23px;color:${C.text}"><span class="dm-text">${rich(b.text)}</span></td></tr></table>`;
+      return `<table ${TB} width="100%" style="margin:0 0 22px 0"><tr><td style="padding:16px 18px;border-left:3px solid ${t.fg};background:${N.box};border-radius:3px 12px 12px 3px;font-family:${F};font-size:15px;line-height:23px;color:${N.lead}">${richN(b.text)}</td></tr></table>`;
     }
     case "code":
-      return `<table ${TB} width="100%" style="margin:0 0 22px 0"><tr><td align="center" class="dm-panel dm-strong" style="padding:18px 16px;background:${C.sapphireSoft};border:1.5px dashed ${C.sapphire};border-radius:14px;font-family:Menlo,Consolas,'Courier New',monospace;font-size:30px;line-height:36px;font-weight:700;letter-spacing:8px;color:${C.ink};text-align:center">${esc(b.text)}</td></tr></table>`;
+      return `<table ${TB} width="100%" style="margin:0 0 22px 0"><tr><td align="center" style="padding:20px 16px;background:${N.box};border:1.5px dashed ${N.strass};border-radius:12px;font-family:Menlo,Consolas,'Courier New',monospace;font-size:32px;line-height:38px;font-weight:700;letter-spacing:9px;color:#ffffff;text-align:center">${esc(b.text)}</td></tr></table>`;
     case "fallback":
-      return `<p class="dm-muted" style="margin:4px 0 18px 0;font-family:${F};font-size:13px;line-height:19px;color:${C.muted}">${esc(typo("Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"))}<br><a href="${esc(safeUrl(b.url))}" class="dm-link" style="color:${C.sapphire};word-break:break-all">${esc(b.url)}</a></p>`;
+      return `<p style="margin:4px 0 18px 0;font-family:${F};font-size:13px;line-height:19px;color:${N.faint}">${esc(typo("Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"))}<br><a href="${esc(safeUrl(b.url))}" style="color:${N.soft};word-break:break-all">${esc(b.url)}</a></p>`;
     case "divider":
-      return `<table ${TB} width="100%" style="margin:8px 0 24px 0"><tr><td class="dm-line" style="border-top:1px solid ${C.line};font-size:0;line-height:0">&nbsp;</td></tr></table>`;
+      return `<table ${TB} width="100%" style="margin:8px 0 24px 0"><tr><td style="border-top:1px solid ${N.line};font-size:0;line-height:0">&nbsp;</td></tr></table>`;
     case "hero":
       return blockHtml({ t: "h", text: b.title }) + (b.text ? blockHtml({ t: "p", text: b.text }) : "");
   }
@@ -239,46 +252,31 @@ function splitHero(blocks: Block[]): { hero: Extract<Block, { t: "hero" }> | nul
   return { hero: null, rest: blocks };
 }
 
-function headerHtml(f: Frame): string {
-  if (!f.isClub) {
-    const logo = f.logoUrl
-      ? `<img src="${esc(safeUrl(f.logoUrl))}" width="${BRAND.logoWidth}" height="${BRAND.logoHeight}" alt="${esc(BRAND.name)}" style="display:block;width:${BRAND.logoWidth}px;height:${BRAND.logoHeight}px;border:0;outline:none;text-decoration:none;color:#ffffff;font-family:${FD};font-size:22px;font-weight:800">`
-      : `<span style="font-family:${FD};font-size:24px;line-height:28px;font-weight:800;color:#ffffff;letter-spacing:-0.8px">${esc(BRAND.name.toLowerCase())}</span>`;
-    return `<table ${TB} width="100%"><tr><td style="vertical-align:middle">${logo}</td></tr></table>`;
-  }
-  const mark = f.logoUrl
-    ? `<td width="52" style="vertical-align:middle;padding-right:12px"><table ${TB}><tr><td width="44" height="44" align="center" valign="middle" bgcolor="#ffffff" style="width:44px;height:44px;border-radius:12px;background:#ffffff;text-align:center"><img src="${esc(safeUrl(f.logoUrl))}" width="34" height="34" alt="" style="display:block;margin:0 auto;width:34px;height:34px;border:0;object-fit:contain"></td></tr></table></td>`
-    : `<td width="52" style="vertical-align:middle;padding-right:12px"><table ${TB}><tr><td width="44" height="44" align="center" valign="middle" bgcolor="${C.sapphire}" style="width:44px;height:44px;border-radius:12px;background:${C.sapphire};font-family:${FD};font-size:21px;line-height:44px;font-weight:800;color:#ffffff;text-align:center">${esc(initialOf(f.headerName))}</td></tr></table></td>`;
-  return `<table ${TB} width="100%"><tr>${mark}<td style="vertical-align:middle">` +
-    `<p style="margin:0;font-family:${F};font-size:16px;line-height:20px;font-weight:700;color:#ffffff">${esc(typo(f.headerName))}</p>` +
-    `<p style="margin:2px 0 0 0;font-family:${F};font-size:12px;line-height:16px;color:${C.strass};font-weight:500">via ${esc(BRAND.name)}</p></td></tr></table>`;
-}
-
 function footerHtml(f: Frame): string {
-  const muted = `font-family:${F};font-size:12px;line-height:19px;color:${C.muted}`;
+  const muted = `font-family:${F};font-size:12px;line-height:19px;color:${N.faint}`;
   const lines = f.footer.filter(Boolean);
+  const link = (href: string, label: string) => `<a href="${esc(href)}" style="color:${N.soft};text-decoration:underline">${esc(label)}</a>`;
   const club = lines.length
-    ? `<p class="dm-strong" style="margin:0 0 2px 0;font-family:${F};font-size:13px;line-height:19px;font-weight:700;color:${C.ink}">${esc(typo(lines[0]))}</p>` +
-      (lines.length > 1 ? `<p class="dm-muted" style="margin:0 0 22px 0;${muted}">${lines.slice(1).map((l) => esc(typo(l))).join("<br>")}</p>` : `<div style="height:22px;line-height:22px;font-size:0">&nbsp;</div>`)
+    ? `<p style="margin:0 0 2px 0;font-family:${F};font-size:13px;line-height:19px;font-weight:700;color:${N.lead}">${esc(typo(lines[0]))}</p>` +
+      (lines.length > 1 ? `<p style="margin:0 0 20px 0;${muted}">${lines.slice(1).map((l) => esc(typo(l))).join("<br>")}</p>` : `<div style="height:20px;line-height:20px;font-size:0">&nbsp;</div>`)
     : "";
-  const link = (href: string, label: string) => `<a href="${esc(href)}" class="dm-link" style="color:${C.muted};text-decoration:underline">${esc(label)}</a>`;
   const unsub = f.unsubscribeUrl
-    ? `<p class="dm-muted" style="margin:14px 0 0 0;${muted}">${link(safeUrl(f.unsubscribeUrl), f.unsubscribeLabel || "Ne plus recevoir ce type d'e-mail")}` +
+    ? `<p style="margin:14px 0 0 0;${muted}">${link(safeUrl(f.unsubscribeUrl), f.unsubscribeLabel || "Ne plus recevoir ce type d'e-mail")}` +
       (f.preferencesUrl ? ` &nbsp;·&nbsp; ${link(safeUrl(f.preferencesUrl), "Gérer mes notifications")}` : "") + `</p>`
     : "";
-  return `<tr><td align="center" class="px" style="padding:30px 40px 8px 40px;text-align:center">` + club +
-    `<table ${TB} align="center" style="margin:0 auto"><tr>` +
-    `<td class="dm-muted" style="vertical-align:middle;padding-right:7px;${muted}">Envoyé avec</td>` +
-    `<td style="vertical-align:middle"><a href="${esc(BRAND.site)}" style="text-decoration:none"><img src="${esc(BRAND.img.logoSapphire)}" width="47" height="20" alt="${esc(BRAND.name)}" style="display:block;width:47px;height:20px;border:0;color:${C.sapphire};font-family:${FD};font-size:15px;font-weight:800"></a></td>` +
-    `</tr></table>` +
-    `<p class="dm-muted" style="margin:6px 0 0 0;${muted}">${esc(BRAND.tagline)}</p>` +
-    `<p class="dm-muted" style="margin:10px 0 0 0;${muted}">${link(BRAND.site, "stablapp.fr")} &nbsp;·&nbsp; ${link("mailto:" + BRAND.supportEmail, "Aide")} &nbsp;·&nbsp; ${link(BRAND.site + "/#mentions", "Mentions légales")}</p>` +
-    `<p class="dm-muted" style="margin:10px 0 0 0;font-family:${F};font-size:11px;line-height:17px;color:${C.muted}">${esc(BRAND.name)} · ${esc(BRAND.legal)}</p>` +
+  return `<tr><td class="px" bgcolor="${N.page}" style="background:${N.page};padding:30px 48px 34px 48px">` + club +
+    `<table ${TB}><tr><td style="vertical-align:middle;padding-right:8px;${muted}">Envoyé avec</td>` +
+    `<td style="vertical-align:middle"><a href="${esc(BRAND.site)}" style="text-decoration:none"><img src="${esc(BRAND.img.logoWhite)}" width="42" height="18" alt="${esc(BRAND.name)}" style="display:block;width:42px;height:18px;border:0;color:#ffffff;font-family:${FD};font-size:14px;font-weight:800"></a></td></tr></table>` +
+    `<p style="margin:6px 0 0 0;${muted}">${esc(BRAND.tagline)}</p>` +
+    `<p style="margin:10px 0 0 0;${muted}">${link(BRAND.site, "stablapp.fr")} &nbsp;·&nbsp; ${link("mailto:" + BRAND.supportEmail, "Aide")} &nbsp;·&nbsp; ${link(BRAND.site + "/#mentions", "Mentions légales")}</p>` +
+    `<p style="margin:10px 0 0 0;font-family:${F};font-size:11px;line-height:17px;color:${N.faint}">${esc(BRAND.name)} · ${esc(BRAND.legal)}</p>` +
     unsub + `</td></tr>`;
 }
 
 export function renderHtml(f: Frame): string {
   const { hero, rest } = splitHero(f.blocks);
+  const wm = esc(BRAND.img.watermark);
+  const lead = hero?.text ? `<p class="lead" style="margin:0 0 26px 0;font-family:${F};font-size:18px;line-height:29px;color:${N.lead}">${richN(hero.text)}</p>` : "";
   return `<!DOCTYPE html>
 <html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -287,47 +285,36 @@ export function renderHtml(f: Frame): string {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="x-apple-disable-message-reformatting">
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-<meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark">
+<meta name="color-scheme" content="dark only">
+<meta name="supported-color-schemes" content="dark only">
 <title>${esc(typo(f.subject))}</title>
 <!--[if !mso]><!--><link href="${esc(BRAND.fontsHref)}" rel="stylesheet"><!--<![endif]-->
 <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><style>body,table,td,p,a,h1,h2,span{font-family:'Segoe UI',Arial,sans-serif!important}</style><![endif]-->
 <style>
-:root{color-scheme:light dark;supported-color-schemes:light dark}
-body{margin:0;padding:0;width:100%!important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+:root{color-scheme:dark only;supported-color-schemes:dark only}
+body{margin:0;padding:0;width:100%!important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background:${N.page}}
 table{border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0}
 img{-ms-interpolation-mode:bicubic}
-a{color:${C.sapphire}}
+a{color:${N.strass}}
 @media screen and (max-width:620px){
-.container{width:100%!important}.px{padding-left:24px!important;padding-right:24px!important}
-.hero-title{font-size:29px!important;line-height:33px!important}.hero-text{font-size:16px!important;line-height:24px!important}
-.btn-full{width:100%!important}.amount{font-size:34px!important;line-height:38px!important}.outer{padding:12px 8px!important}
+.container{width:100%!important}.px{padding-left:24px!important;padding-right:24px!important}.outer{padding:0!important}
+.hd{padding-top:28px!important;padding-bottom:38px!important;background-size:430px auto!important}.hd-gap{height:64px!important;line-height:64px!important}
+.hero-title{font-size:38px!important;line-height:40px!important;letter-spacing:-1.4px!important}.lead{font-size:17px!important;line-height:27px!important}
+.btn-full{width:100%!important}.amount{font-size:44px!important;line-height:48px!important}.big{font-size:72px!important;line-height:62px!important}
+.card-in{padding-left:20px!important;padding-right:20px!important}.k{width:34%!important}
 }
-@media (prefers-color-scheme:dark){
-.dm-bg{background:${C.darkBg}!important}.dm-card{background:${C.darkCard}!important}.dm-card2{background:${C.darkCard}!important;border-color:${C.darkLine}!important}
-.dm-panel{background:${C.darkPanel}!important;border-color:${C.darkLine}!important}.dm-h,.dm-strong{color:#ffffff!important}.dm-text{color:${C.darkText}!important}
-.dm-muted{color:${C.darkMuted}!important}.dm-link{color:${C.darkLink}!important}.dm-line{border-color:${C.darkLine}!important}
-.dm-step{background:${C.sapphire}!important}.dm-pill-info{background:#1d2a5c!important;color:${C.darkLink}!important}
-.dm-btn2{background:${C.darkCard}!important;border-color:${C.darkLine}!important}.dm-btn2-a{color:#ffffff!important}
-}
-[data-ogsc] .dm-h,[data-ogsc] .dm-strong{color:#ffffff!important}[data-ogsc] .dm-text{color:${C.darkText}!important}[data-ogsc] .dm-muted{color:${C.darkMuted}!important}[data-ogsc] .dm-link{color:${C.darkLink}!important}
+@media (prefers-color-scheme:dark){body{background:${N.page}!important}}
 </style>
 </head>
-<body class="dm-bg" style="margin:0;padding:0;background:${C.bg}">
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${C.bg};opacity:0">${esc(typo(f.preheader))}${"&#8204;&nbsp;".repeat(40)}</div>
-<table ${TB} width="100%" class="dm-bg" style="background:${C.bg}">
+<body style="margin:0;padding:0;background:${N.page}">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${N.page};opacity:0">${esc(typo(f.preheader))}${"&#8204;&nbsp;".repeat(40)}</div>
+<table ${TB} width="100%" bgcolor="${N.page}" style="background:${N.page}">
 <tr><td align="center" class="outer" style="padding:28px 12px">
 <!--[if mso]><table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" align="center"><tr><td><![endif]-->
-<table ${TB} width="600" class="container" style="width:600px;max-width:600px">
-<tr><td>
-<table ${TB} width="100%" style="border-radius:22px">
-<tr><td class="px" bgcolor="${C.navy}" style="background:${C.navy};border-radius:22px 22px 0 0;padding:28px 40px ${hero ? 30 : 26}px 40px">${headerHtml(f)}</td></tr>
-${hero ? `<tr><td class="px" bgcolor="${C.navy}" style="background:${C.navy};padding:6px 40px 40px 40px">${heroHtml(hero)}</td></tr>` : ""}
-<tr><td style="font-size:0;line-height:0"><table ${TB} width="100%"><tr><td width="62%" height="4" bgcolor="${C.sapphire}" style="height:4px;background:${C.sapphire};font-size:0;line-height:0">&nbsp;</td><td width="24%" height="4" bgcolor="${C.strass}" style="height:4px;background:${C.strass};font-size:0;line-height:0">&nbsp;</td><td width="14%" height="4" bgcolor="${C.heroText}" style="height:4px;background:${C.heroText};font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
-<tr><td class="dm-card px" bgcolor="${C.card}" style="background:${C.card};border-radius:0 0 22px 22px;padding:36px 40px 20px 40px">
-${rest.map(blockHtml).join("\n")}
-</td></tr>
-</table>
+<table ${TB} width="600" class="container" bgcolor="${N.body}" style="width:600px;max-width:600px;background:${N.body}">
+<tr><td class="px hd" bgcolor="${N.box}" background="${wm}" style="background-color:${N.box};background-image:url('${wm}');background-repeat:no-repeat;background-position:right top;background-size:600px auto;border-bottom:1px solid ${N.edge};padding:34px 48px ${hero ? 50 : 30}px 48px">${headHtml(f, hero)}</td></tr>
+<tr><td class="px" bgcolor="${N.body}" style="background:${N.body};padding:40px 48px 30px 48px">
+${lead}${rest.map(blockHtml).join("\n")}
 </td></tr>
 ${footerHtml(f)}
 </table>

@@ -7,8 +7,9 @@
  * (transfer_lookup_key) et archive l'ancien. Les abonnements existants gardent leur ancien prix
  * jusqu'à ce que vous les migriez dans le tableau de bord Stripe.
  *
- * Prix alignés sur le business plan du projet (Essentiel 59 €, centre complet 149 €, plusieurs sites
- * 289 €, fondateurs 99 € à vie). Montants HT en centimes. Annuel = 10 mois (2 mois offerts).
+ * Grille du 28/11/2026 : Essentiel 59 € (volontairement limité : 25 chevaux, 2 comptes), Club 149 € (l'offre
+ * évidente, tout illimité), Domaine 289 € (plus de 60 chevaux, plusieurs activités ou une annexe, 3 sites).
+ * Fondateurs 99 € à vie avec tout Club. Le détail affiché aux clubs est dans site/src/landing.js (DETAIL). Montants HT en centimes. Annuel = 10 mois (2 mois offerts).
  */
 
 export type PlanKey = "essentiel" | "club" | "domaine";
@@ -23,7 +24,7 @@ export interface Plan {
   year_cents: number;
   features: string[];
   /** Limites indicatives affichées dans l'interface (null = illimité). */
-  limits: { horses: number | null; sites: number };
+  limits: { horses: number | null; users: number | null; sites: number };
   highlighted?: boolean;
 }
 
@@ -36,22 +37,22 @@ export const TRIAL_REMINDER_DAYS = [7, 3, 1];
 
 export const PLANS: Plan[] = [
   {
-    key: "essentiel", name: "Essentiel", tagline: "Poney-club et petite écurie",
+    key: "essentiel", name: "Essentiel", tagline: "Pour démarrer : petite écurie, jusqu'à 25 chevaux",
     month_cents: 5900, year_cents: 59000,
-    features: ["Adhérents, chevaux et planning", "Facturation et facture électronique", "Paiement en ligne des adhérents", "Calendriers synchronisés"],
-    limits: { horses: 30, sites: 1 },
+    features: ["25 chevaux et 2 comptes", "Planning et réservation en ligne", "Fiches chevaux et adhérents", "Factures, facture électronique et paiement par carte", "Espace cavalier sur téléphone"],
+    limits: { horses: 25, users: 2, sites: 1 },
   },
   {
     key: "club", name: "Club", tagline: "Le centre équestre complet",
     month_cents: 14900, year_cents: 149000, highlighted: true,
-    features: ["Tout Essentiel, sans limite de chevaux", "Pensions, soins et maréchalerie", "Prélèvements SEPA automatiques", "Accès comptable et exports FEC", "Reprise des données offerte"],
-    limits: { horses: null, sites: 1 },
+    features: ["Chevaux et équipe illimités", "Pensions et demi-pensions facturées seules", "Prélèvement SEPA automatique et relances", "Soins, vétérinaire et maréchal", "Appli équipe : pointage, tournée, congés", "Stabl AI, site du club, accès comptable et FEC", "Reprise de vos données faite avec vous"],
+    limits: { horses: null, users: null, sites: 1 },
   },
   {
-    key: "domaine", name: "Domaine", tagline: "Plusieurs sites, grandes structures",
+    key: "domaine", name: "Domaine", tagline: "Grandes structures et multi-activités",
     month_cents: 28900, year_cents: 289000,
-    features: ["Tout Club", "Plusieurs sites", "Accompagnement prioritaire", "API et intégrations"],
-    limits: { horses: null, sites: 10 },
+    features: ["Tout Club", "Jusqu'à 3 sites ou activités, comptes séparés", "Élevage et vente de chevaux", "8 caméras d'écurie incluses", "Rapports par activité et budget", "Rôles et droits sur mesure", "API, Claude et ChatGPT", "Interlocuteur dédié et formation sur place"],
+    limits: { horses: null, users: null, sites: 3 },
   },
 ];
 
