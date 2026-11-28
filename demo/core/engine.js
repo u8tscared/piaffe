@@ -109,14 +109,14 @@ P.roles={
   adherent:{label:'Adhérent',icon:'helmet',who:'m001',home:'adh-accueil',tabs:['adh-accueil','adh-reserver','adh-cheval','adh-paiements']},
   coach:{label:'Coach',icon:'whistle',who:'c01',home:'coach-agenda',tabs:['coach-agenda','coach-eleves','coach-dispo','coach-revenus']}
 };
-P.groups={gerant:['Pilotage','Écurie','Club','Argent','Équipe','Plateforme'],employe:['Ma journée','Écurie','Moi'],adherent:['Moi','Équitation','Cheval','Compte'],coach:['Coaching','Compte']};
+P.groups={gerant:['Pilotage','Écurie','Club','Finances','Équipe','Plateforme'],employe:['Ma journée','Écurie','Moi'],adherent:['Moi','Équitation','Cheval','Compte'],coach:['Coaching','Compte']};
 
 /* ---------- Domaines : couleur de chaque écran (rail, onglets, palette, en-tête) ---------- */
 /* clés : acc (pilotage), hz (chevaux), rd (cavaliers), mo (argent), tm (équipe), cr (soins), pf (plateforme) */
-P.domGroups={'Pilotage':'acc','Écurie':'hz','Club':'rd','Argent':'mo','Équipe':'tm','Plateforme':'pf','Ma journée':'acc','Moi':'tm','Équitation':'rd','Cheval':'hz','Compte':'mo','Coaching':'rd'};
+P.domGroups={'Pilotage':'acc','Écurie':'hz','Club':'rd','Finances':'mo','Équipe':'tm','Plateforme':'pf','Ma journée':'acc','Moi':'tm','Équitation':'rd','Cheval':'hz','Compte':'mo','Coaching':'rd'};
 P.domMods={'soins':'cr','emp-soins':'cr','emp-signaler':'cr','adh-accueil':'acc','adh-bienvenue':'acc','adh-progression':'rd','adh-profil':'pf','coach-profil':'pf','adh-messages':'tm','emp-messages':'tm','communication':'tm','coach-revenus':'mo','coach-concours':'rd'};
 P.domOf=function(m){if(typeof m==='string')m=P.mods[m];if(!m)return 'acc';return m.dom||P.domMods[m.id]||P.domGroups[m.group]||'acc'};
-var GICON={'Ma tournée':'route','Pilotage':'today','Écurie':'horse','Club':'members','Argent':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
+var GICON={'Ma tournée':'route','Pilotage':'today','Écurie':'horse','Club':'members','Finances':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
 
 /* ---------- Registre des modules ---------- */
 /* P.mod({id, role, group, title, icon, sub, badge, tab, phoneTitle, render(el,ctx), wide}) */

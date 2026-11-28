@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Stabl">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611281054">
+<meta name="piaffe-version" content="202611281102">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -1329,7 +1329,7 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Stabl a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611281054",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611281102",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    STABL · Marque (logo officiel du 26/11/2026 : silhouette marine, sans œil)
@@ -2058,14 +2058,14 @@ P.roles={
   adherent:{label:'Adhérent',icon:'helmet',who:'m001',home:'adh-accueil',tabs:['adh-accueil','adh-reserver','adh-cheval','adh-paiements']},
   coach:{label:'Coach',icon:'whistle',who:'c01',home:'coach-agenda',tabs:['coach-agenda','coach-eleves','coach-dispo','coach-revenus']}
 };
-P.groups={gerant:['Pilotage','Écurie','Club','Argent','Équipe','Plateforme'],employe:['Ma journée','Écurie','Moi'],adherent:['Moi','Équitation','Cheval','Compte'],coach:['Coaching','Compte']};
+P.groups={gerant:['Pilotage','Écurie','Club','Finances','Équipe','Plateforme'],employe:['Ma journée','Écurie','Moi'],adherent:['Moi','Équitation','Cheval','Compte'],coach:['Coaching','Compte']};
 
 /* ---------- Domaines : couleur de chaque écran (rail, onglets, palette, en-tête) ---------- */
 /* clés : acc (pilotage), hz (chevaux), rd (cavaliers), mo (argent), tm (équipe), cr (soins), pf (plateforme) */
-P.domGroups={'Pilotage':'acc','Écurie':'hz','Club':'rd','Argent':'mo','Équipe':'tm','Plateforme':'pf','Ma journée':'acc','Moi':'tm','Équitation':'rd','Cheval':'hz','Compte':'mo','Coaching':'rd'};
+P.domGroups={'Pilotage':'acc','Écurie':'hz','Club':'rd','Finances':'mo','Équipe':'tm','Plateforme':'pf','Ma journée':'acc','Moi':'tm','Équitation':'rd','Cheval':'hz','Compte':'mo','Coaching':'rd'};
 P.domMods={'soins':'cr','emp-soins':'cr','emp-signaler':'cr','adh-accueil':'acc','adh-bienvenue':'acc','adh-progression':'rd','adh-profil':'pf','coach-profil':'pf','adh-messages':'tm','emp-messages':'tm','communication':'tm','coach-revenus':'mo','coach-concours':'rd'};
 P.domOf=function(m){if(typeof m==='string')m=P.mods[m];if(!m)return 'acc';return m.dom||P.domMods[m.id]||P.domGroups[m.group]||'acc'};
-var GICON={'Ma tournée':'route','Pilotage':'today','Écurie':'horse','Club':'members','Argent':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
+var GICON={'Ma tournée':'route','Pilotage':'today','Écurie':'horse','Club':'members','Finances':'euro','Équipe':'team','Plateforme':'plug','Ma journée':'today','Moi':'user','Équitation':'jump','Cheval':'horse','Compte':'wallet','Coaching':'whistle'};
 
 /* ---------- Registre des modules ---------- */
 /* P.mod({id, role, group, title, icon, sub, badge, tab, phoneTitle, render(el,ctx), wide}) */
@@ -3252,7 +3252,7 @@ var TILES=[
 var TK=TILES.map(function(t){return t[0]});
 var TD={};TILES.forEach(function(t){TD[t[0]]=t[2]});
 var MOB=['hero','kRiders','kFill','kHorses','kMoney','todo','today','stable','valid','hay','wx','team','rev'];
-var FOC=[['all','Tout'],['hz','Chevaux'],['rd','Cavaliers'],['mo','Argent'],['tm','Équipe'],['cr','Soins']];
+var FOC=[['all','Tout'],['hz','Chevaux'],['rd','Cavaliers'],['mo','Finances'],['tm','Équipe'],['cr','Soins']];
 var DAYN={Lun:['lundi',1],Mar:['mardi',2],Mer:['mercredi',3],Jeu:['jeudi',4],Ven:['vendredi',5],Sam:['samedi',6],Dim:['dimanche',0]};
 var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 /* état de la session (survit aux allers-retours entre écrans) */
@@ -11944,7 +11944,7 @@ function sheetNewContract(pr){pr=pr||{};var step=pr.tpl&&TPL[pr.tpl]?2:1,tp=pr.t
   on(sh,'[data-go2]',function(){var c=make('à signer'),n=cM(c).sg[0].name;CS.f='all';if(mode==='place'){if(P.state.route!=='contrats')P.go('contrats');sheetContract(c)}else{sh.close();if(P.state.route==='contrats')P.rerender();else P.go('contrats');P.toast('Contrat envoyé à '+n+' par e-mail et SMS',{icon:'send'})}});
   return sh}
 
-P.mod({id:'contrats',role:'gerant',group:'Argent',title:'Contrats',icon:'contract',n:30,phoneTitle:'Contrats',
+P.mod({id:'contrats',role:'gerant',group:'Finances',title:'Contrats',icon:'contract',n:30,phoneTitle:'Contrats',
  badge:function(){var n=D.contracts.filter(function(c){return c.status==='à signer'}).length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){
   var L=D.contracts,pend=L.filter(function(c){return c.status==='à signer'}),nS=L.filter(function(c){return c.status==='signé'}).length,nW=sum(pend,function(c){return cPend(c).length});
@@ -12729,7 +12729,7 @@ function invHTML(s,title){if(!s)return '<div class="gr-inv">'+U.empty('invoice',
     '<div class="gr-il tot"><span>Reste à payer</span><b>'+eur(tot-ad)+'</b></div></div>'}
 
 var AS={tab:'ps'};
-P.mod({id:'aides',role:'gerant',group:'Argent',n:15,title:'Aides',icon:'percent',phoneTitle:'Aides',dom:'mo',
+P.mod({id:'aides',role:'gerant',group:'Finances',n:15,title:'Aides',icon:'percent',phoneTitle:'Aides',dom:'mo',
  badge:function(){var n=aids('passsport').filter(function(a){return a.status==='deduit'}).length;return n?{v:n}:null},
  render:function(el,ctx){var c=cfg('aides',AIDCFG),ps=aids('passsport');
   var by={deduit:[],declare:[],rembourse:[]};ps.forEach(function(a){(by[a.status]||by.deduit).push(a)});
@@ -12882,7 +12882,7 @@ function useSheetVat(o){P.sheet({title:o.n,icon:'accounting',body:'<div class="s
   foot:o.key==='tva'&&Array.isArray(D.pfTarifs)?'<button class="btn block" data-two>'+ICON('plus','sm')+'Créer deux tarifs, 5,5 % et 20 %</button>':''});
   var sh=$('.sheet');on(sh,'[data-u]',function(b){var u=b.getAttribute('data-u');o.src.use=u;o.src[o.key]=u==='sport'?5.5:20;sh.close();P.toast(E(o.n)+' : TVA à '+rate(o.src[o.key]));P.rerender(true)});
   on(sh,'[data-two]',function(){var t=o.src;t.use='sport';t.tva=5.5;var c2=Object.assign({},t,{n:t.n.replace(/^Pension/,'Pension retraite'),use:'retraite',tva:20});if(c2.n===t.n)c2.n=t.n+', cheval à la retraite';D.pfTarifs.splice(D.pfTarifs.indexOf(t)+1,0,c2);sh.close();P.toast('Deux tarifs créés : « '+E(t.n)+' » à 5,5 % et « '+E(c2.n)+' » à 20 %');P.rerender(true)})}
-P.mod({id:'tva',role:'gerant',group:'Argent',n:40,title:'TVA claire',icon:'accounting',phoneTitle:'TVA',dom:'mo',
+P.mod({id:'tva',role:'gerant',group:'Finances',n:40,title:'TVA claire',icon:'accounting',phoneTitle:'TVA',dom:'mo',
  badge:function(){var n=catalogue().filter(function(o){return o.k&&!o.ok}).length;return n?{v:n}:null},
  render:function(el){var cat=catalogue(),bad=cat.filter(function(o){return o.k&&!o.ok}),fixable=bad.filter(function(o){return !o.ask});
   function lst(keys,ic){return '<ul>'+keys.map(function(k){return '<li>'+ICON(ic,'sm')+'<span>'+VR[k].t+'</span></li>'}).join('')+'</ul>'}
@@ -13141,7 +13141,7 @@ P.mod({id:'rapporte',role:'gerant',group:'Pilotage',n:25,title:'Gains du mois',i
     '<div class="card pad stack" style="--g:12px"><div class="gr-h">Le relevé du mois</div><p class="s mut" style="line-height:1.5">Le 1er de chaque mois, ce relevé part par e-mail à la gérante. Vous pouvez le partager à votre associé ou à votre comptable.</p>'+
      '<div class="gr-rule"><div><b>Recevoir le relevé chaque mois</b><small>Le 1er, à 8 h</small></div>'+U.tog(!!c.mail,'gr-mail')+'</div>'+
      '<div class="gr-actions" style="margin-top:auto"><button class="btn" data-csv>'+ICON('download','sm')+'Télécharger</button><button class="btn" data-est>'+ICON('sliders','sm')+'Régler les estimations</button></div></div></div>'+
-   '<div class="gr-two"><div class="card"><div class="ch"><h3>Argent rapporté</h3><span class="mut">'+eur(g.total)+'</span></div><div style="padding:6px 0">'+(g.lines.length?g.lines.map(function(l){return '<div class="gr-line"><span class="ico sm d-'+l.d+'">'+ICON(l.ic,'sm')+'</span><button class="t" data-go="'+l.go+'" style="text-align:left">'+l.t+'</button><span class="v">'+eur(l.v)+'</span><div class="c">'+l.c+'</div></div>'}).join(''):U.empty('trend','Rien à montrer pour ce mois','Les lignes apparaissent dès qu’une relance est payée, qu’une aide est remboursée ou qu’une carte cadeau est vendue.'))+'</div></div>'+
+   '<div class="gr-two"><div class="card"><div class="ch"><h3>Revenus générés</h3><span class="mut">'+eur(g.total)+'</span></div><div style="padding:6px 0">'+(g.lines.length?g.lines.map(function(l){return '<div class="gr-line"><span class="ico sm d-'+l.d+'">'+ICON(l.ic,'sm')+'</span><button class="t" data-go="'+l.go+'" style="text-align:left">'+l.t+'</button><span class="v">'+eur(l.v)+'</span><div class="c">'+l.c+'</div></div>'}).join(''):U.empty('trend','Rien à montrer pour ce mois','Les lignes apparaissent dès qu’une relance est payée, qu’une aide est remboursée ou qu’une carte cadeau est vendue.'))+'</div></div>'+
     '<div class="card"><div class="ch"><h3>Temps gagné</h3><span class="mut">'+dec1(g.hours)+NB+'h</span></div><div style="padding:6px 0">'+(g.hrs.length?g.hrs.map(function(h){return '<div class="gr-line hr0"><span class="ico sm d-tm">'+ICON('clock','sm')+'</span><span class="t">'+cap(h[2])+'</span><span class="v">'+dec1(h[0]*h[1]/60)+NB+'h</span><div class="c"><code>'+h[0]+' × '+h[1]+' min par action</code></div></div>'}).join(''):U.empty('clock','Pas encore de temps gagné ce mois',''))+'</div></div></div>';
   on(el,'[data-mk]',function(b){RS.mk=b.getAttribute('data-mk');P.rerender(true)});
   on(el,'.tog',function(b){var v=b.getAttribute('aria-checked')!=='true';b.setAttribute('aria-checked',v);c.mail=v;P.toast(v?'Relevé envoyé chaque 1er du mois':'Envoi mensuel arrêté')});
@@ -13305,7 +13305,7 @@ P.tourSteps.push({route:'rapporte',title:'Ce que '+brand()+' vous rapporte',text
 ;
 /* ===== demo/modules/60-argent.js ===== */
 PL.modq.push({file:"60-argent.js",run:function(){
-/* Vue gérant · Argent et équipe : facturation, comptabilité, équipe et RH (lot E) */
+/* Vue gérant · Finances et équipe : facturation, comptabilité, équipe et RH (lot E) */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc;
 function iso(o){return D.iso(D.day(o))}
@@ -13915,7 +13915,7 @@ function faTva(){var key=P.prefs.get('fa:cle',30),R=[['Enseignement et pratique 
 function fabScroll(el){var sc=null,n=el;while(n&&n!==document.body){var o=getComputedStyle(n).overflowY;if((o==='auto'||o==='scroll')&&n.scrollHeight>n.clientHeight){sc=n;break}n=n.parentElement}
   if(!sc)return;var last=sc.scrollTop;function f(){if(!el.isConnected){sc.removeEventListener('scroll',f);return}var t=sc.scrollTop,c=el.querySelector('.ar-fab');if(!c)return;if(Math.abs(t-last)<6)return;c.classList.toggle('mini',t>last&&t>120);last=t}
   sc.addEventListener('scroll',f,{passive:true})}
-P.mod({id:'facturation',role:'gerant',group:'Argent',title:'Facturation',icon:'invoice',n:10,phoneTitle:'Facturation',
+P.mod({id:'facturation',role:'gerant',group:'Finances',title:'Facturation',icon:'invoice',n:10,phoneTitle:'Facturation',
  badge:function(){var n=late().length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SF.tab=ctx.params.tab;ctx.params.tab=null}
@@ -14183,7 +14183,7 @@ function openInvite(){var sh=sheet({title:'Inviter un expert-comptable',icon:'us
 function openAcc(c){var all=['VT','AC','BQ','CA'].reduce(function(a,j){return a.concat(journal(j))},[]).filter(function(r){return r.c===c}).slice(0,8);
   sheet({title:c+' · '+ACC[c],icon:'accounting',wide:true,body:all.length?tbl([{l:'Date',f:function(r){return '<span class="mut">'+F.date(r.d)+'</span>'}},{l:'Pièce',f:function(r){return '<span class="mono">'+r.p+'</span>'}},{l:'Libellé',c:'ar-hx',f:function(r){return '<span class="ellip" style="display:block;max-width:240px">'+E(r.l)+'</span>'}},{l:'Débit',n:1,f:function(r){return r.db?F.eur(r.db,true):''}},{l:'Crédit',n:1,f:function(r){return r.cr?F.eur(r.cr,true):''}}],all,{card:false})+'<span class="xs mut">Derniers mouvements du compte. Chaque ligne renvoie à sa pièce.</span>':U.empty('accounting','Aucun mouvement récent','Ce compte n’a pas bougé depuis le 1er novembre.')})}
 
-P.mod({id:'compta',role:'gerant',group:'Argent',title:'Comptabilité',icon:'accounting',n:20,phoneTitle:'Comptabilité',
+P.mod({id:'compta',role:'gerant',group:'Finances',title:'Comptabilité',icon:'accounting',n:20,phoneTitle:'Comptabilité',
  badge:function(){var n=unmatched().length;return n?{v:n}:null},
  render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SC.tab=ctx.params.tab;ctx.params.tab=null}
@@ -21156,7 +21156,7 @@ I('cheval','Écurie','horse',/./,null,function(t){var h=findHorse(t);if(!h)retur
      '<dl class="pf-kv"><dt>Ration</dt><dd>'+String(h.ration.hay).replace('.',',')+' kg de foin, '+String(h.ration.grain).replace('.',',')+' kg de granulés</dd><dt>Prochain soin</dt><dd>'+(care?care.kind+' '+F.rel(care.date)+', '+care.who:'Aucun soin planifié')+'</dd><dt>Dernier maréchal</dt><dd>'+F.date(h.farrier)+'</dd></dl>',
    actions:[{label:'Ouvrir la fiche',icon:'horse',run:function(){go('cheval',{id:h.id},'Fiche cheval');return 'Ouvert'}},{label:'Planifier un jour de repos',icon:'calendar_add',undo:true,preview:{title:'Repos de '+h.name+' demain mercredi',rows:[['Cheval',h.name+' ('+h.box+')'],['Planning','Retiré des reprises de mercredi, remplaçant proposé par le montoir'],['Prévenus','Les moniteurs du jour']]},run:function(){logAI('A planifié un jour de repos pour '+h.name,'cours_annuler_ou_reporter','E','ok',true);P.toast(h.name+' est au repos demain');return 'Repos planifié'}}]}});
 
-I('impayes','Argent','invoice',/pay|impay|relan|retard de paiement|doit de l.argent|dette/i,'Qui n’a pas payé ce mois-ci, et depuis quand ?',function(){
+I('impayes','Finances','invoice',/pay|impay|relan|retard de paiement|doit de l.argent|dette/i,'Qui n’a pas payé ce mois-ci, et depuis quand ?',function(){
   var by=lateBy(),tot=sum(by,function(x){return x.amt}),n=late().length,b=[0,0,0,0];late().forEach(function(i){var d=-F.days(i.due);b[d<=30?0:d<=45?1:d<=60?2:3]+=i.amount});
   return {text:'<b>'+by.length+' familles vous doivent '+F.eur(tot)+'</b>, sur '+n+' factures en retard. La plus ancienne a '+Math.max.apply(null,by.map(function(x){return x.old}))+' jours. Voici le détail, du plus gros montant au plus petit.',src:['Facturation','Adhérents'],tool:'impayes_lister',
    card:tb([['Payeur'],['Factures',1],['Retard',1],['Dû',1]],by.slice(0,6).map(function(x){return [who(x.id),x.n,x.old+' j','<b>'+F.eur(x.amt)+'</b>']}))+(by.length>6?'<div class="xs mut">et '+(by.length-6)+(by.length-6>1?' autres familles':' autre famille')+' pour '+F.eur(sum(by.slice(6),function(x){return x.amt}))+'</div>':'')+
@@ -21199,7 +21199,7 @@ I('message','Club','chat',/annul|gel|pr[ée]vien|message aux|[ée]cris aux|repor
      run:function(){logAI('A annulé la reprise '+l.title+' et prévenu '+l.riders.length+' familles','cours_annuler_ou_reporter','E','ok',true);P.toast('Reprise annulée, '+l.riders.length+' familles prévenues');return l.riders.length+' familles prévenues'}},
     {label:'Modifier le message',icon:'edit',run:function(){go('communication',{},'Communication');return 'Ouvert'}}]}});
 
-I('ca','Argent','trend',/chiffre d.affaires|\bca\b|recette|combien (j.ai|on a) (gagn|fait)|r[ée]sultat|activit[ée]/i,'Quel est mon chiffre d’affaires par activité, comparé au mois dernier ?',function(){
+I('ca','Finances','trend',/chiffre d.affaires|\bca\b|recette|combien (j.ai|on a) (gagn|fait)|r[ée]sultat|activit[ée]/i,'Quel est mon chiffre d’affaires par activité, comparé au mois dernier ?',function(){
   var n=D.revenue[11],o=D.revenue[10],sh=[['Enseignement et forfaits',.46,'var(--acc)'],['Pensions et demi-pensions',.37,'var(--c3)'],['Stages et concours',.10,'var(--c4)'],['Boutique et divers',.07,'var(--c5)']],res=sum(D.revenue)-sum(D.costs);
   return {text:'En novembre, vous êtes à <b>'+F.eur(n)+'</b> de chiffre d’affaires, soit '+Math.abs(Math.round((n-o)/o*100))+' % de '+(n<o?'moins':'plus')+' qu’en octobre ('+F.eur(o)+'), ce qui est habituel hors vacances scolaires. Sur douze mois, le résultat est de <b>'+F.eur(res)+'</b>.',src:['Comptabilité','Facturation'],tool:'ecurie_tableau_de_bord',
    card:C.line([{v:D.revenue,c:'var(--acc)',area:true},{v:D.costs,c:'var(--c2)'}],D.months,{h:170,fmt:function(v){return Math.round(v/1000)+' k'}})+C.legend([['Recettes','var(--acc)'],['Dépenses','var(--c2)']])+
@@ -21233,13 +21233,13 @@ I('paie','Équipe','team',/heures? de l.[ée]quipe|paie|pointage|heures sup|sala
    actions:[{label:'Exporter les variables de paie',icon:'download',preview:{title:'Export des variables de paie de novembre',rows:[['Contenu','Heures normales, supplémentaires, absences, primes'],['Format','Fichier pour PayFit ou Silae, convention IDCC 7026'],['Destinataire','Téléchargement, rien n’est envoyé']]},run:function(){logAI('A généré l’export des variables de paie de novembre','equipe_heures_exporter','L','read');XF('csv','variables-paie-novembre-2026.csv',[['Salarié','Poste','Heures normales','Heures supplémentaires','Absences (jours)']].concat(D.staff.map(function(x,i){return [x.first+' '+x.last,x.role,151.67,[0,4,6,0,2,3,0,1,5,0][i%10],[0,0,1,0,2,0,0,0,0,0][i%10]]})),'Variables de paie de novembre téléchargées');return 'Export téléchargé'}},
     {label:'Valider les 2 pointages',icon:'clockin',run:function(){go('equipe',{},'Équipe');return 'Ouvert'}}]}});
 
-I('contrats','Argent','contract',/contrat|sign/i,'Quels contrats attendent encore une signature ?',function(){
+I('contrats','Finances','contract',/contrat|sign/i,'Quels contrats attendent encore une signature ?',function(){
   var l=D.contracts.filter(function(c){return c.status==='à signer'});
   return {text:'<b>'+l.length+' contrats attendent une signature</b>, le plus ancien depuis '+Math.max.apply(null,l.map(function(c){return -F.days(c.date)}))+' jours. Un brouillon reste aussi à envoyer.',src:['Contrats'],tool:'pension_contrats_lister',
    card:tb([['Contrat'],['Signataire'],['Envoyé',1]],l.map(function(c){return ['<b>'+c.title+'</b>',D.name(c.party),F.rel(c.date)]})),
    actions:[{label:'Relancer les signataires',icon:'sign',undo:true,preview:{title:'Relancer '+l.length+' signataires',rows:[['Message','Un rappel avec le lien de signature électronique'],['Canal','E-mail et SMS']]},run:function(){logAI('A relancé '+l.length+' signataires de contrats','message_envoyer','E','ok');P.toast(l.length+' rappels de signature envoyés');return l.length+' rappels envoyés'}},{label:'Ouvrir les contrats',icon:'contract',run:function(){go('contrats',{},'Contrats');return 'Ouvert'}}]}});
 
-I('pension','Argent','euro',/factures? de pension|pr[ée]pare les factures|brouillon/i,'Prépare les factures de pension de décembre en brouillon',function(){
+I('pension','Finances','euro',/factures? de pension|pr[ée]pare les factures|brouillon/i,'Prépare les factures de pension de décembre en brouillon',function(){
   var l=D.horses.filter(function(h){return h.owner}),tot=l.length*520,ht=Math.round(tot/1.2);
   return {text:'J’ai préparé <b>'+l.length+' factures de pension pour décembre</b>, une par cheval de propriétaire, pour un total de <b>'+F.eur(tot)+' TTC</b>. Elles sont en brouillon : rien n’est émis ni envoyé.',src:['Pensions','Facturation'],tool:'facture_creer_brouillon',
    card:stat([[l.length,'brouillons'],[F.eur(ht),'hors taxes'],[F.eur(tot-ht),'de TVA à 20 %'],[F.eur(tot),'TTC']])+tb([['Cheval'],['Payeur'],['Montant',1]],l.slice(0,4).map(function(h){return [hwho(h,h.box),D.name(h.owner),F.eur(520)]}))+'<div class="xs mut">et '+(l.length-4)+' autres factures identiques</div>',
@@ -21274,7 +21274,7 @@ I('samedi','Club','calendar_add',/planning|samedi|montoir|pr[ée]pare/i,'Prépar
    actions:[{label:'Publier le montoir de samedi',icon:'check',undo:true,preview:{title:'Publier le montoir de samedi',rows:[['Attributions',r+' couples cavalier et cheval'],['Visibles par','Les cavaliers et les moniteurs, dès maintenant'],['Feuilles de monte','Imprimables pour l’accueil']]},run:function(){logAI('A publié le montoir de samedi ('+r+' attributions)','cours_presences_saisir','E','ok',true);P.toast('Montoir de samedi publié');return 'Montoir publié'}},
     {label:'Ouvrir le planning',icon:'planning',run:function(){go('planning',{},'Planning');return 'Ouvert'}}]}});
 
-I('export','Argent','accounting',/export|comptable|fec|pennylane/i,'Envoie les écritures de novembre à mon comptable',function(){
+I('export','Finances','accounting',/export|comptable|fec|pennylane/i,'Envoie les écritures de novembre à mon comptable',function(){
   return {text:'Les écritures de novembre sont prêtes : <b>'+D.invoices.length+' factures</b>, les encaissements et '+D.bank.filter(function(b){return b.matched}).length+' opérations bancaires rapprochées. '+D.bank.filter(function(b){return !b.matched}).length+' opérations restent à rapprocher avant un envoi propre.',src:['Comptabilité','Banque'],tool:'compta_export_generer',
    card:tb([['Opération à rapprocher'],['Montant',1]],D.bank.filter(function(b){return !b.matched}).map(function(b){return [b.label,'<b>'+F.eur(b.amount,true)+'</b>']})),
    actions:[{label:'Générer l’export FEC',icon:'download',preview:{title:'Export des écritures de novembre',rows:[['Format','FEC, lisible par Pennylane, Cegid, Sage et EBP'],['Période','Du 1er au 30 novembre 2026'],['Envoi','Téléchargement, rien n’est transmis au cabinet']]},run:function(){logAI('A généré l’export FEC de novembre','compta_export_generer','L','read');XF('file','FEC-novembre-2026.txt',['JournalCode\tJournalLib\tEcritureNum\tEcritureDate\tCompteNum\tCompteLib\tPieceRef\tDebit\tCredit'].concat(D.invoices.slice(0,60).map(function(v,i){return 'VE\tVentes\t'+(i+1)+'\t'+v.date.replace(/-/g,'')+'\t706000\tPrestations\t'+v.id+'\t0,00\t'+String(v.amount.toFixed(2)).replace('.',',')})).join('\r\n'),'Export FEC de novembre téléchargé');return 'Export téléchargé'}},
@@ -21303,17 +21303,17 @@ var CONVS=[
  {id:'cv7',title:'Engagés à Rambouillet',when:'12 nov.',grp:'Plus ancien',qs:['Qui est engagé au concours de dimanche, et que dois-je refacturer ?']},
  {id:'cv8',title:'Heures de l’équipe pour la paie',when:'9 nov.',grp:'Plus ancien',qs:['Sors-moi les heures de l’équipe pour la paie de novembre']},
  {id:'cv9',title:'Cartes qui expirent avant Noël',when:'5 nov.',grp:'Plus ancien',qs:['Quelles cartes de 10 séances expirent avant Noël ?']}];
-var AS={tab:'chat',cur:'cv1',dom:'Argent',jf:'all'};
+var AS={tab:'chat',cur:'cv1',dom:'Finances',jf:'all'};
 /* club réel : pas d'historique de conversations inventé, une conversation vide pour commencer */
 if(D.me&&D.me.gerant&&D.me.gerant!=='s01'&&!(window.PL&&PL.sandbox)){CONVS.splice(0,CONVS.length,{id:'cv0',title:'Nouvelle conversation',when:'à l’instant',grp:'Aujourd’hui',msgs:[]});AS.cur='cv0'}
 var DEMO=!D.me||D.me.gerant==='s01'||!!(window.PL&&PL.sandbox);
 function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
 
-var DOMS=[['Argent','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
+var DOMS=[['Finances','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
 function conv(){return CONVS.find(function(c){return c.id===AS.cur})||CONVS[0]}
 function msgs(c){if(!c.msgs){c.msgs=[];(c.qs||[]).forEach(function(q){c.msgs.push({u:q});c.msgs.push({a:answer(q)})})}return c.msgs}
 var ORB='<span class="pfa-orb">'+LOGO(20,'var(--on-navy)','var(--navy)')+'</span>';
-var DOMC={'Argent':'d-argent','Écurie':'d-chevaux','Club':'d-cavaliers','Équipe':'d-equipe','Concours':'d-poney','Plateforme':'d-plateforme'};
+var DOMC={'Finances':'d-argent','Écurie':'d-chevaux','Club':'d-cavaliers','Équipe':'d-equipe','Concours':'d-poney','Plateforme':'d-plateforme'};
 
 function actsHTML(r,last){var op=r.actions.filter(function(a){return a._st==='preview'})[0];
   if(op){var p=op.preview,i=r.actions.indexOf(op);return '<div class="pfa-prev pop"><div class="pfa-ph">'+ICON('shield','sm')+'<span>Aperçu avant exécution</span><span class="chip acc">Rien n’est encore fait</span></div><div class="pfa-pb"><h4>'+p.title+'</h4>'+
@@ -21555,14 +21555,14 @@ var TOOLS=D.mcpTools=[
  T('planning','Cavaliers et planning','Planning jour par jour : reprises, moniteurs, pistes, inscrits et places libres.',0,0,'{"du":"2026-11-17","au":"2026-11-23"}'),
  T('reservations','Cavaliers et planning','Où reste-t-il de la place ? Reprises avec places libres, listes d’attente et réservations de pistes.',0,0,'{"niveau":"Galop 3"}'),
  T('competitions','Cavaliers et planning','Concours à venir et récents, couples engagés, frais à refacturer et résultats.',0,0),
- T('facturation_impayes','Argent et contrats','Factures échues et non réglées, par ancienneté, avec le client et l’échéance.',0,1),
- T('chiffre_affaires','Argent et contrats','Chiffre d’affaires d’un mois comparé au mois précédent et à l’an dernier, encaissements par moyen de paiement.',0,1,'{"mois":"2026-11"}'),
- T('contrats','Argent et contrats','Contrats en attente de signature, brouillons et contrats signés récents.',0,1),
+ T('facturation_impayes','Finances et contrats','Factures échues et non réglées, par ancienneté, avec le client et l’échéance.',0,1),
+ T('chiffre_affaires','Finances et contrats','Chiffre d’affaires d’un mois comparé au mois précédent et à l’an dernier, encaissements par moyen de paiement.',0,1,'{"mois":"2026-11"}'),
+ T('contrats','Finances et contrats','Contrats en attente de signature, brouillons et contrats signés récents.',0,1),
  T('ajouter_soin','Ajouts','Ajoute un soin au registre d’un cheval, prévu ou déjà fait.',1,0,'{"cheval":"Tornado","type":"Vermifuge","confirme":true}'),
  T('reserver_place','Ajouts','Inscrit un adhérent dans une reprise qui a de la place (ou sur sa liste d’attente).',1,0,'{"reprise":"l05","adherent":"Zoé Laurent","confirme":true}'),
  T('cocher_tache','Ajouts','Marque une tâche de l’écurie comme faite, ou la remet à faire.',1,0,'{"tache":"t3","faite":true,"confirme":true}')];
-var TDOM=['Le club','Chevaux et soins','Cavaliers et planning','Argent et contrats','Ajouts'];
-var TIC={'Le club':'stable','Chevaux et soins':'horse','Cavaliers et planning':'planning','Argent et contrats':'invoice','Ajouts':'plus'};
+var TDOM=['Le club','Chevaux et soins','Cavaliers et planning','Finances et contrats','Ajouts'];
+var TIC={'Le club':'stable','Chevaux et soins':'horse','Cavaliers et planning':'planning','Finances et contrats':'invoice','Ajouts':'plus'};
 /* droits du connecteur : lecture (toujours) et ecriture (case « Permettre aussi les ajouts ») */
 var MSCOPES=[['lecture','Lire l’écurie avec les droits de la personne connectée'],['ecriture','Permettre aussi les ajouts : soin, réservation, tâche cochée']];
 /* droits des clés d'API (écran Clés d'API de la démo) */
@@ -22365,7 +22365,7 @@ P.css(`
 var CAT={gerant:[['cockpit','Aujourd’hui','today','Pilotage','Le résumé du matin et les actions prêtes',1],['rapports','Rapports','report','Pilotage','Chiffre d’affaires, remplissage, tendances'],
   ['chevaux','Chevaux','horse','Écurie','Fiches, propriétaires, charge de travail'],['ecurie3d','Écurie 3D','cube','Écurie','Le plan des boxes en direct'],['cameras','Caméras','camera','Écurie','Direct des boxes et alertes'],['soins','Soins','care','Écurie','Vaccins, maréchal, registre d’élevage'],['elevage','Élevage','heart','Écurie','Suivi des juments, saillies, poulinage. Ajoute l’onglet Reproduction aux fiches des juments.',0,1],['alimentation','Alimentation','feed','Écurie','Rations et stocks'],['entretien','Entretien','upkeep','Écurie','Tâches, matériel, installations'],
   ['planning','Planning','planning','Club','Reprises, stages, montoir'],['adherents','Adhérents','members','Club','Familles, forfaits, licences'],['pensions','Pensions','owner','Club','Pensions et demi-pensions'],['coachs','Coachs','coach','Club','Coachs extérieurs réservables'],['competitions','Concours','compet','Club','Engagements, transport, résultats'],['boutique','Boutique','shop','Club','Vente en ligne et caisse'],['communication','Communication','chat','Club','Messages, e-mails, SMS'],
-  ['facturation','Facturation','invoice','Argent','Factures, paiements, relances'],['compta','Comptabilité','accounting','Argent','Banque, rapprochement, exports'],['contrats','Contrats','contract','Argent','Signature électronique'],
+  ['facturation','Facturation','invoice','Finances','Factures, paiements, relances'],['compta','Comptabilité','accounting','Finances','Banque, rapprochement, exports'],['contrats','Contrats','contract','Finances','Signature électronique'],
   ['equipe','Équipe','team','Équipe','Plannings, pointages, congés'],
   ['assistant','Stabl AI','assistant','Plateforme','Questions, actions et automatisations'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
  employe:[['emp-jour','Ma journée','today','Ma journée','Ce que je dois faire maintenant',1],['emp-tournee','Tournée','route','Ma journée','La tournée des boxes, dans l’ordre'],['emp-planning','Planning','planning','Ma journée','Mes reprises et mes horaires'],['emp-chevaux','Chevaux','horse','Écurie','Les fiches, en lecture rapide'],['emp-soins','Soins','care','Écurie','Soins à faire et à noter'],['emp-signaler','Signaler','alert','Écurie','Un problème, avec photo'],['emp-pointage','Pointage','clockin','Moi','Arrivée, départ, pauses'],['emp-messages','Messages','chat','Moi','L’équipe et les familles'],['emp-conges','Congés','holiday','Moi','Demandes et soldes']],
@@ -22381,7 +22381,7 @@ var ROLES=[['Gérant','1'],['Moniteur','3'],['Soigneur','2'],['Accueil','1'],['C
 var RIGHTS=D.pfRights=D.pfRights||[
  ['Chevaux','Fiches des chevaux',[2,1,2,1,0,3,3,0]],['Chevaux','Santé et registre d’élevage',[2,1,2,0,0,0,3,0]],['Chevaux','Rations et stocks',[2,0,2,0,0,0,1,0]],['Chevaux','Caméras des boxes',[2,0,1,0,0,0,3,0]],
  ['Club','Planning et reprises',[2,2,1,2,0,3,1,1]],['Club','Adhérents et familles',[2,1,0,2,0,3,0,3]],['Club','Concours et engagements',[2,2,0,1,0,3,3,3]],['Club','Messages aux familles',[2,2,0,2,0,3,0,0]],
- ['Argent','Factures et paiements',[2,0,0,2,1,3,3,3]],['Argent','Comptabilité et banque',[2,0,0,0,2,0,0,0]],['Argent','Contrats et signatures',[2,0,0,1,1,3,3,3]],
+ ['Finances','Factures et paiements',[2,0,0,2,1,3,3,3]],['Finances','Comptabilité et banque',[2,0,0,0,2,0,0,0]],['Finances','Contrats et signatures',[2,0,0,1,1,3,3,3]],
  ['Équipe','Plannings et pointages',[2,3,3,3,0,0,0,0]],['Équipe','Salaires et contrats de travail',[2,0,0,0,1,0,0,0]],
  ['Plateforme','Assistant IA et connecteurs',[2,1,1,1,0,0,0,0]],['Plateforme','Réglages du club',[2,0,0,0,0,0,0,0]]];
 var LV=['Aucun','Voir','Modifier','Les siens'];
@@ -25055,9 +25055,9 @@ function renderCptExp(el){el.innerHTML=ph('Exports','FEC, journal des ventes et 
 
 /* ---------- Enregistrement ---------- */
 P.mod({id:'lv-abonnement',role:'gerant',group:'Plateforme',title:'Abonnement',icon:'card',n:45,phoneTitle:'Abonnement',render:renderAbo});
-P.mod({id:'lv-paiements',role:'gerant',group:'Argent',title:'Paiements en ligne',icon:'card',n:35,phoneTitle:'Paiements',render:renderPay});
+P.mod({id:'lv-paiements',role:'gerant',group:'Finances',title:'Paiements en ligne',icon:'card',n:35,phoneTitle:'Paiements',render:renderPay});
 P.mod({id:'lv-acces',role:'gerant',group:'Équipe',title:'Accès et invitations',icon:'shield',n:20,phoneTitle:'Accès',render:renderAccess});
-P.mod({id:'lv-comptable',role:'gerant',group:'Argent',title:'Comptable',icon:'accounting',n:25,phoneTitle:'Comptable',render:renderAccountant});
+P.mod({id:'lv-comptable',role:'gerant',group:'Finances',title:'Comptable',icon:'accounting',n:25,phoneTitle:'Comptable',render:renderAccountant});
 P.mod({id:'lv-calendriers',role:'gerant',group:'Plateforme',title:'Calendriers',icon:'calendar_add',n:47,phoneTitle:'Calendriers',render:renderCal});
 P.mod({id:'lv-cles',role:'gerant',group:'Plateforme',title:'Clés d’API',icon:'key',n:48,phoneTitle:'Clés d’API',render:renderKeys});
 P.mod({id:'lv-connecteurs-emp',role:'employe',group:'Moi',title:'Connecteurs',icon:'plug',n:65,phoneTitle:'Connecteurs',render:renderConnectors});

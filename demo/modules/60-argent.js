@@ -1,4 +1,4 @@
-/* Vue gérant · Argent et équipe : facturation, comptabilité, équipe et RH (lot E) */
+/* Vue gérant · Finances et équipe : facturation, comptabilité, équipe et RH (lot E) */
 (function(){
 var D=P.D,F=P.fmt,U=P.ui,C=P.chart,E=F.esc;
 function iso(o){return D.iso(D.day(o))}
@@ -608,7 +608,7 @@ function faTva(){var key=P.prefs.get('fa:cle',30),R=[['Enseignement et pratique 
 function fabScroll(el){var sc=null,n=el;while(n&&n!==document.body){var o=getComputedStyle(n).overflowY;if((o==='auto'||o==='scroll')&&n.scrollHeight>n.clientHeight){sc=n;break}n=n.parentElement}
   if(!sc)return;var last=sc.scrollTop;function f(){if(!el.isConnected){sc.removeEventListener('scroll',f);return}var t=sc.scrollTop,c=el.querySelector('.ar-fab');if(!c)return;if(Math.abs(t-last)<6)return;c.classList.toggle('mini',t>last&&t>120);last=t}
   sc.addEventListener('scroll',f,{passive:true})}
-P.mod({id:'facturation',role:'gerant',group:'Argent',title:'Facturation',icon:'invoice',n:10,phoneTitle:'Facturation',
+P.mod({id:'facturation',role:'gerant',group:'Finances',title:'Facturation',icon:'invoice',n:10,phoneTitle:'Facturation',
  badge:function(){var n=late().length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SF.tab=ctx.params.tab;ctx.params.tab=null}
@@ -876,7 +876,7 @@ function openInvite(){var sh=sheet({title:'Inviter un expert-comptable',icon:'us
 function openAcc(c){var all=['VT','AC','BQ','CA'].reduce(function(a,j){return a.concat(journal(j))},[]).filter(function(r){return r.c===c}).slice(0,8);
   sheet({title:c+' · '+ACC[c],icon:'accounting',wide:true,body:all.length?tbl([{l:'Date',f:function(r){return '<span class="mut">'+F.date(r.d)+'</span>'}},{l:'Pièce',f:function(r){return '<span class="mono">'+r.p+'</span>'}},{l:'Libellé',c:'ar-hx',f:function(r){return '<span class="ellip" style="display:block;max-width:240px">'+E(r.l)+'</span>'}},{l:'Débit',n:1,f:function(r){return r.db?F.eur(r.db,true):''}},{l:'Crédit',n:1,f:function(r){return r.cr?F.eur(r.cr,true):''}}],all,{card:false})+'<span class="xs mut">Derniers mouvements du compte. Chaque ligne renvoie à sa pièce.</span>':U.empty('accounting','Aucun mouvement récent','Ce compte n’a pas bougé depuis le 1er novembre.')})}
 
-P.mod({id:'compta',role:'gerant',group:'Argent',title:'Comptabilité',icon:'accounting',n:20,phoneTitle:'Comptabilité',
+P.mod({id:'compta',role:'gerant',group:'Finances',title:'Comptabilité',icon:'accounting',n:20,phoneTitle:'Comptabilité',
  badge:function(){var n=unmatched().length;return n?{v:n}:null},
  render:function(el,ctx){syncB();el.classList.add('ar-pg');
   if(ctx.params.tab){SC.tab=ctx.params.tab;ctx.params.tab=null}

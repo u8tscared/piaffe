@@ -409,7 +409,7 @@ function invHTML(s,title){if(!s)return '<div class="gr-inv">'+U.empty('invoice',
     '<div class="gr-il tot"><span>Reste à payer</span><b>'+eur(tot-ad)+'</b></div></div>'}
 
 var AS={tab:'ps'};
-P.mod({id:'aides',role:'gerant',group:'Argent',n:15,title:'Aides',icon:'percent',phoneTitle:'Aides',dom:'mo',
+P.mod({id:'aides',role:'gerant',group:'Finances',n:15,title:'Aides',icon:'percent',phoneTitle:'Aides',dom:'mo',
  badge:function(){var n=aids('passsport').filter(function(a){return a.status==='deduit'}).length;return n?{v:n}:null},
  render:function(el,ctx){var c=cfg('aides',AIDCFG),ps=aids('passsport');
   var by={deduit:[],declare:[],rembourse:[]};ps.forEach(function(a){(by[a.status]||by.deduit).push(a)});
@@ -562,7 +562,7 @@ function useSheetVat(o){P.sheet({title:o.n,icon:'accounting',body:'<div class="s
   foot:o.key==='tva'&&Array.isArray(D.pfTarifs)?'<button class="btn block" data-two>'+ICON('plus','sm')+'Créer deux tarifs, 5,5 % et 20 %</button>':''});
   var sh=$('.sheet');on(sh,'[data-u]',function(b){var u=b.getAttribute('data-u');o.src.use=u;o.src[o.key]=u==='sport'?5.5:20;sh.close();P.toast(E(o.n)+' : TVA à '+rate(o.src[o.key]));P.rerender(true)});
   on(sh,'[data-two]',function(){var t=o.src;t.use='sport';t.tva=5.5;var c2=Object.assign({},t,{n:t.n.replace(/^Pension/,'Pension retraite'),use:'retraite',tva:20});if(c2.n===t.n)c2.n=t.n+', cheval à la retraite';D.pfTarifs.splice(D.pfTarifs.indexOf(t)+1,0,c2);sh.close();P.toast('Deux tarifs créés : « '+E(t.n)+' » à 5,5 % et « '+E(c2.n)+' » à 20 %');P.rerender(true)})}
-P.mod({id:'tva',role:'gerant',group:'Argent',n:40,title:'TVA claire',icon:'accounting',phoneTitle:'TVA',dom:'mo',
+P.mod({id:'tva',role:'gerant',group:'Finances',n:40,title:'TVA claire',icon:'accounting',phoneTitle:'TVA',dom:'mo',
  badge:function(){var n=catalogue().filter(function(o){return o.k&&!o.ok}).length;return n?{v:n}:null},
  render:function(el){var cat=catalogue(),bad=cat.filter(function(o){return o.k&&!o.ok}),fixable=bad.filter(function(o){return !o.ask});
   function lst(keys,ic){return '<ul>'+keys.map(function(k){return '<li>'+ICON(ic,'sm')+'<span>'+VR[k].t+'</span></li>'}).join('')+'</ul>'}
@@ -821,7 +821,7 @@ P.mod({id:'rapporte',role:'gerant',group:'Pilotage',n:25,title:'Gains du mois',i
     '<div class="card pad stack" style="--g:12px"><div class="gr-h">Le relevé du mois</div><p class="s mut" style="line-height:1.5">Le 1er de chaque mois, ce relevé part par e-mail à la gérante. Vous pouvez le partager à votre associé ou à votre comptable.</p>'+
      '<div class="gr-rule"><div><b>Recevoir le relevé chaque mois</b><small>Le 1er, à 8 h</small></div>'+U.tog(!!c.mail,'gr-mail')+'</div>'+
      '<div class="gr-actions" style="margin-top:auto"><button class="btn" data-csv>'+ICON('download','sm')+'Télécharger</button><button class="btn" data-est>'+ICON('sliders','sm')+'Régler les estimations</button></div></div></div>'+
-   '<div class="gr-two"><div class="card"><div class="ch"><h3>Argent rapporté</h3><span class="mut">'+eur(g.total)+'</span></div><div style="padding:6px 0">'+(g.lines.length?g.lines.map(function(l){return '<div class="gr-line"><span class="ico sm d-'+l.d+'">'+ICON(l.ic,'sm')+'</span><button class="t" data-go="'+l.go+'" style="text-align:left">'+l.t+'</button><span class="v">'+eur(l.v)+'</span><div class="c">'+l.c+'</div></div>'}).join(''):U.empty('trend','Rien à montrer pour ce mois','Les lignes apparaissent dès qu’une relance est payée, qu’une aide est remboursée ou qu’une carte cadeau est vendue.'))+'</div></div>'+
+   '<div class="gr-two"><div class="card"><div class="ch"><h3>Revenus générés</h3><span class="mut">'+eur(g.total)+'</span></div><div style="padding:6px 0">'+(g.lines.length?g.lines.map(function(l){return '<div class="gr-line"><span class="ico sm d-'+l.d+'">'+ICON(l.ic,'sm')+'</span><button class="t" data-go="'+l.go+'" style="text-align:left">'+l.t+'</button><span class="v">'+eur(l.v)+'</span><div class="c">'+l.c+'</div></div>'}).join(''):U.empty('trend','Rien à montrer pour ce mois','Les lignes apparaissent dès qu’une relance est payée, qu’une aide est remboursée ou qu’une carte cadeau est vendue.'))+'</div></div>'+
     '<div class="card"><div class="ch"><h3>Temps gagné</h3><span class="mut">'+dec1(g.hours)+NB+'h</span></div><div style="padding:6px 0">'+(g.hrs.length?g.hrs.map(function(h){return '<div class="gr-line hr0"><span class="ico sm d-tm">'+ICON('clock','sm')+'</span><span class="t">'+cap(h[2])+'</span><span class="v">'+dec1(h[0]*h[1]/60)+NB+'h</span><div class="c"><code>'+h[0]+' × '+h[1]+' min par action</code></div></div>'}).join(''):U.empty('clock','Pas encore de temps gagné ce mois',''))+'</div></div></div>';
   on(el,'[data-mk]',function(b){RS.mk=b.getAttribute('data-mk');P.rerender(true)});
   on(el,'.tog',function(b){var v=b.getAttribute('aria-checked')!=='true';b.setAttribute('aria-checked',v);c.mail=v;P.toast(v?'Relevé envoyé chaque 1er du mois':'Envoi mensuel arrêté')});

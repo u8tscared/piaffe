@@ -224,7 +224,7 @@ I('cheval','Écurie','horse',/./,null,function(t){var h=findHorse(t);if(!h)retur
      '<dl class="pf-kv"><dt>Ration</dt><dd>'+String(h.ration.hay).replace('.',',')+' kg de foin, '+String(h.ration.grain).replace('.',',')+' kg de granulés</dd><dt>Prochain soin</dt><dd>'+(care?care.kind+' '+F.rel(care.date)+', '+care.who:'Aucun soin planifié')+'</dd><dt>Dernier maréchal</dt><dd>'+F.date(h.farrier)+'</dd></dl>',
    actions:[{label:'Ouvrir la fiche',icon:'horse',run:function(){go('cheval',{id:h.id},'Fiche cheval');return 'Ouvert'}},{label:'Planifier un jour de repos',icon:'calendar_add',undo:true,preview:{title:'Repos de '+h.name+' demain mercredi',rows:[['Cheval',h.name+' ('+h.box+')'],['Planning','Retiré des reprises de mercredi, remplaçant proposé par le montoir'],['Prévenus','Les moniteurs du jour']]},run:function(){logAI('A planifié un jour de repos pour '+h.name,'cours_annuler_ou_reporter','E','ok',true);P.toast(h.name+' est au repos demain');return 'Repos planifié'}}]}});
 
-I('impayes','Argent','invoice',/pay|impay|relan|retard de paiement|doit de l.argent|dette/i,'Qui n’a pas payé ce mois-ci, et depuis quand ?',function(){
+I('impayes','Finances','invoice',/pay|impay|relan|retard de paiement|doit de l.argent|dette/i,'Qui n’a pas payé ce mois-ci, et depuis quand ?',function(){
   var by=lateBy(),tot=sum(by,function(x){return x.amt}),n=late().length,b=[0,0,0,0];late().forEach(function(i){var d=-F.days(i.due);b[d<=30?0:d<=45?1:d<=60?2:3]+=i.amount});
   return {text:'<b>'+by.length+' familles vous doivent '+F.eur(tot)+'</b>, sur '+n+' factures en retard. La plus ancienne a '+Math.max.apply(null,by.map(function(x){return x.old}))+' jours. Voici le détail, du plus gros montant au plus petit.',src:['Facturation','Adhérents'],tool:'impayes_lister',
    card:tb([['Payeur'],['Factures',1],['Retard',1],['Dû',1]],by.slice(0,6).map(function(x){return [who(x.id),x.n,x.old+' j','<b>'+F.eur(x.amt)+'</b>']}))+(by.length>6?'<div class="xs mut">et '+(by.length-6)+(by.length-6>1?' autres familles':' autre famille')+' pour '+F.eur(sum(by.slice(6),function(x){return x.amt}))+'</div>':'')+
@@ -267,7 +267,7 @@ I('message','Club','chat',/annul|gel|pr[ée]vien|message aux|[ée]cris aux|repor
      run:function(){logAI('A annulé la reprise '+l.title+' et prévenu '+l.riders.length+' familles','cours_annuler_ou_reporter','E','ok',true);P.toast('Reprise annulée, '+l.riders.length+' familles prévenues');return l.riders.length+' familles prévenues'}},
     {label:'Modifier le message',icon:'edit',run:function(){go('communication',{},'Communication');return 'Ouvert'}}]}});
 
-I('ca','Argent','trend',/chiffre d.affaires|\bca\b|recette|combien (j.ai|on a) (gagn|fait)|r[ée]sultat|activit[ée]/i,'Quel est mon chiffre d’affaires par activité, comparé au mois dernier ?',function(){
+I('ca','Finances','trend',/chiffre d.affaires|\bca\b|recette|combien (j.ai|on a) (gagn|fait)|r[ée]sultat|activit[ée]/i,'Quel est mon chiffre d’affaires par activité, comparé au mois dernier ?',function(){
   var n=D.revenue[11],o=D.revenue[10],sh=[['Enseignement et forfaits',.46,'var(--acc)'],['Pensions et demi-pensions',.37,'var(--c3)'],['Stages et concours',.10,'var(--c4)'],['Boutique et divers',.07,'var(--c5)']],res=sum(D.revenue)-sum(D.costs);
   return {text:'En novembre, vous êtes à <b>'+F.eur(n)+'</b> de chiffre d’affaires, soit '+Math.abs(Math.round((n-o)/o*100))+' % de '+(n<o?'moins':'plus')+' qu’en octobre ('+F.eur(o)+'), ce qui est habituel hors vacances scolaires. Sur douze mois, le résultat est de <b>'+F.eur(res)+'</b>.',src:['Comptabilité','Facturation'],tool:'ecurie_tableau_de_bord',
    card:C.line([{v:D.revenue,c:'var(--acc)',area:true},{v:D.costs,c:'var(--c2)'}],D.months,{h:170,fmt:function(v){return Math.round(v/1000)+' k'}})+C.legend([['Recettes','var(--acc)'],['Dépenses','var(--c2)']])+
@@ -301,13 +301,13 @@ I('paie','Équipe','team',/heures? de l.[ée]quipe|paie|pointage|heures sup|sala
    actions:[{label:'Exporter les variables de paie',icon:'download',preview:{title:'Export des variables de paie de novembre',rows:[['Contenu','Heures normales, supplémentaires, absences, primes'],['Format','Fichier pour PayFit ou Silae, convention IDCC 7026'],['Destinataire','Téléchargement, rien n’est envoyé']]},run:function(){logAI('A généré l’export des variables de paie de novembre','equipe_heures_exporter','L','read');XF('csv','variables-paie-novembre-2026.csv',[['Salarié','Poste','Heures normales','Heures supplémentaires','Absences (jours)']].concat(D.staff.map(function(x,i){return [x.first+' '+x.last,x.role,151.67,[0,4,6,0,2,3,0,1,5,0][i%10],[0,0,1,0,2,0,0,0,0,0][i%10]]})),'Variables de paie de novembre téléchargées');return 'Export téléchargé'}},
     {label:'Valider les 2 pointages',icon:'clockin',run:function(){go('equipe',{},'Équipe');return 'Ouvert'}}]}});
 
-I('contrats','Argent','contract',/contrat|sign/i,'Quels contrats attendent encore une signature ?',function(){
+I('contrats','Finances','contract',/contrat|sign/i,'Quels contrats attendent encore une signature ?',function(){
   var l=D.contracts.filter(function(c){return c.status==='à signer'});
   return {text:'<b>'+l.length+' contrats attendent une signature</b>, le plus ancien depuis '+Math.max.apply(null,l.map(function(c){return -F.days(c.date)}))+' jours. Un brouillon reste aussi à envoyer.',src:['Contrats'],tool:'pension_contrats_lister',
    card:tb([['Contrat'],['Signataire'],['Envoyé',1]],l.map(function(c){return ['<b>'+c.title+'</b>',D.name(c.party),F.rel(c.date)]})),
    actions:[{label:'Relancer les signataires',icon:'sign',undo:true,preview:{title:'Relancer '+l.length+' signataires',rows:[['Message','Un rappel avec le lien de signature électronique'],['Canal','E-mail et SMS']]},run:function(){logAI('A relancé '+l.length+' signataires de contrats','message_envoyer','E','ok');P.toast(l.length+' rappels de signature envoyés');return l.length+' rappels envoyés'}},{label:'Ouvrir les contrats',icon:'contract',run:function(){go('contrats',{},'Contrats');return 'Ouvert'}}]}});
 
-I('pension','Argent','euro',/factures? de pension|pr[ée]pare les factures|brouillon/i,'Prépare les factures de pension de décembre en brouillon',function(){
+I('pension','Finances','euro',/factures? de pension|pr[ée]pare les factures|brouillon/i,'Prépare les factures de pension de décembre en brouillon',function(){
   var l=D.horses.filter(function(h){return h.owner}),tot=l.length*520,ht=Math.round(tot/1.2);
   return {text:'J’ai préparé <b>'+l.length+' factures de pension pour décembre</b>, une par cheval de propriétaire, pour un total de <b>'+F.eur(tot)+' TTC</b>. Elles sont en brouillon : rien n’est émis ni envoyé.',src:['Pensions','Facturation'],tool:'facture_creer_brouillon',
    card:stat([[l.length,'brouillons'],[F.eur(ht),'hors taxes'],[F.eur(tot-ht),'de TVA à 20 %'],[F.eur(tot),'TTC']])+tb([['Cheval'],['Payeur'],['Montant',1]],l.slice(0,4).map(function(h){return [hwho(h,h.box),D.name(h.owner),F.eur(520)]}))+'<div class="xs mut">et '+(l.length-4)+' autres factures identiques</div>',
@@ -342,7 +342,7 @@ I('samedi','Club','calendar_add',/planning|samedi|montoir|pr[ée]pare/i,'Prépar
    actions:[{label:'Publier le montoir de samedi',icon:'check',undo:true,preview:{title:'Publier le montoir de samedi',rows:[['Attributions',r+' couples cavalier et cheval'],['Visibles par','Les cavaliers et les moniteurs, dès maintenant'],['Feuilles de monte','Imprimables pour l’accueil']]},run:function(){logAI('A publié le montoir de samedi ('+r+' attributions)','cours_presences_saisir','E','ok',true);P.toast('Montoir de samedi publié');return 'Montoir publié'}},
     {label:'Ouvrir le planning',icon:'planning',run:function(){go('planning',{},'Planning');return 'Ouvert'}}]}});
 
-I('export','Argent','accounting',/export|comptable|fec|pennylane/i,'Envoie les écritures de novembre à mon comptable',function(){
+I('export','Finances','accounting',/export|comptable|fec|pennylane/i,'Envoie les écritures de novembre à mon comptable',function(){
   return {text:'Les écritures de novembre sont prêtes : <b>'+D.invoices.length+' factures</b>, les encaissements et '+D.bank.filter(function(b){return b.matched}).length+' opérations bancaires rapprochées. '+D.bank.filter(function(b){return !b.matched}).length+' opérations restent à rapprocher avant un envoi propre.',src:['Comptabilité','Banque'],tool:'compta_export_generer',
    card:tb([['Opération à rapprocher'],['Montant',1]],D.bank.filter(function(b){return !b.matched}).map(function(b){return [b.label,'<b>'+F.eur(b.amount,true)+'</b>']})),
    actions:[{label:'Générer l’export FEC',icon:'download',preview:{title:'Export des écritures de novembre',rows:[['Format','FEC, lisible par Pennylane, Cegid, Sage et EBP'],['Période','Du 1er au 30 novembre 2026'],['Envoi','Téléchargement, rien n’est transmis au cabinet']]},run:function(){logAI('A généré l’export FEC de novembre','compta_export_generer','L','read');XF('file','FEC-novembre-2026.txt',['JournalCode\tJournalLib\tEcritureNum\tEcritureDate\tCompteNum\tCompteLib\tPieceRef\tDebit\tCredit'].concat(D.invoices.slice(0,60).map(function(v,i){return 'VE\tVentes\t'+(i+1)+'\t'+v.date.replace(/-/g,'')+'\t706000\tPrestations\t'+v.id+'\t0,00\t'+String(v.amount.toFixed(2)).replace('.',',')})).join('\r\n'),'Export FEC de novembre téléchargé');return 'Export téléchargé'}},
@@ -371,17 +371,17 @@ var CONVS=[
  {id:'cv7',title:'Engagés à Rambouillet',when:'12 nov.',grp:'Plus ancien',qs:['Qui est engagé au concours de dimanche, et que dois-je refacturer ?']},
  {id:'cv8',title:'Heures de l’équipe pour la paie',when:'9 nov.',grp:'Plus ancien',qs:['Sors-moi les heures de l’équipe pour la paie de novembre']},
  {id:'cv9',title:'Cartes qui expirent avant Noël',when:'5 nov.',grp:'Plus ancien',qs:['Quelles cartes de 10 séances expirent avant Noël ?']}];
-var AS={tab:'chat',cur:'cv1',dom:'Argent',jf:'all'};
+var AS={tab:'chat',cur:'cv1',dom:'Finances',jf:'all'};
 /* club réel : pas d'historique de conversations inventé, une conversation vide pour commencer */
 if(D.me&&D.me.gerant&&D.me.gerant!=='s01'&&!(window.PL&&PL.sandbox)){CONVS.splice(0,CONVS.length,{id:'cv0',title:'Nouvelle conversation',when:'à l’instant',grp:'Aujourd’hui',msgs:[]});AS.cur='cv0'}
 var DEMO=!D.me||D.me.gerant==='s01'||!!(window.PL&&PL.sandbox);
 function gFirst(){var id=D.me&&D.me.gerant,p=id&&(D.staffer(id)||D.person(id));return (p&&p.first)||(window.PL&&PL.user&&PL.user.first)||''}
 
-var DOMS=[['Argent','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
+var DOMS=[['Finances','euro'],['Écurie','horse'],['Club','planning'],['Équipe','team'],['Concours','trophy'],['Plateforme','plug']];
 function conv(){return CONVS.find(function(c){return c.id===AS.cur})||CONVS[0]}
 function msgs(c){if(!c.msgs){c.msgs=[];(c.qs||[]).forEach(function(q){c.msgs.push({u:q});c.msgs.push({a:answer(q)})})}return c.msgs}
 var ORB='<span class="pfa-orb">'+LOGO(20,'var(--on-navy)','var(--navy)')+'</span>';
-var DOMC={'Argent':'d-argent','Écurie':'d-chevaux','Club':'d-cavaliers','Équipe':'d-equipe','Concours':'d-poney','Plateforme':'d-plateforme'};
+var DOMC={'Finances':'d-argent','Écurie':'d-chevaux','Club':'d-cavaliers','Équipe':'d-equipe','Concours':'d-poney','Plateforme':'d-plateforme'};
 
 function actsHTML(r,last){var op=r.actions.filter(function(a){return a._st==='preview'})[0];
   if(op){var p=op.preview,i=r.actions.indexOf(op);return '<div class="pfa-prev pop"><div class="pfa-ph">'+ICON('shield','sm')+'<span>Aperçu avant exécution</span><span class="chip acc">Rien n’est encore fait</span></div><div class="pfa-pb"><h4>'+p.title+'</h4>'+
@@ -623,14 +623,14 @@ var TOOLS=D.mcpTools=[
  T('planning','Cavaliers et planning','Planning jour par jour : reprises, moniteurs, pistes, inscrits et places libres.',0,0,'{"du":"2026-11-17","au":"2026-11-23"}'),
  T('reservations','Cavaliers et planning','Où reste-t-il de la place ? Reprises avec places libres, listes d’attente et réservations de pistes.',0,0,'{"niveau":"Galop 3"}'),
  T('competitions','Cavaliers et planning','Concours à venir et récents, couples engagés, frais à refacturer et résultats.',0,0),
- T('facturation_impayes','Argent et contrats','Factures échues et non réglées, par ancienneté, avec le client et l’échéance.',0,1),
- T('chiffre_affaires','Argent et contrats','Chiffre d’affaires d’un mois comparé au mois précédent et à l’an dernier, encaissements par moyen de paiement.',0,1,'{"mois":"2026-11"}'),
- T('contrats','Argent et contrats','Contrats en attente de signature, brouillons et contrats signés récents.',0,1),
+ T('facturation_impayes','Finances et contrats','Factures échues et non réglées, par ancienneté, avec le client et l’échéance.',0,1),
+ T('chiffre_affaires','Finances et contrats','Chiffre d’affaires d’un mois comparé au mois précédent et à l’an dernier, encaissements par moyen de paiement.',0,1,'{"mois":"2026-11"}'),
+ T('contrats','Finances et contrats','Contrats en attente de signature, brouillons et contrats signés récents.',0,1),
  T('ajouter_soin','Ajouts','Ajoute un soin au registre d’un cheval, prévu ou déjà fait.',1,0,'{"cheval":"Tornado","type":"Vermifuge","confirme":true}'),
  T('reserver_place','Ajouts','Inscrit un adhérent dans une reprise qui a de la place (ou sur sa liste d’attente).',1,0,'{"reprise":"l05","adherent":"Zoé Laurent","confirme":true}'),
  T('cocher_tache','Ajouts','Marque une tâche de l’écurie comme faite, ou la remet à faire.',1,0,'{"tache":"t3","faite":true,"confirme":true}')];
-var TDOM=['Le club','Chevaux et soins','Cavaliers et planning','Argent et contrats','Ajouts'];
-var TIC={'Le club':'stable','Chevaux et soins':'horse','Cavaliers et planning':'planning','Argent et contrats':'invoice','Ajouts':'plus'};
+var TDOM=['Le club','Chevaux et soins','Cavaliers et planning','Finances et contrats','Ajouts'];
+var TIC={'Le club':'stable','Chevaux et soins':'horse','Cavaliers et planning':'planning','Finances et contrats':'invoice','Ajouts':'plus'};
 /* droits du connecteur : lecture (toujours) et ecriture (case « Permettre aussi les ajouts ») */
 var MSCOPES=[['lecture','Lire l’écurie avec les droits de la personne connectée'],['ecriture','Permettre aussi les ajouts : soin, réservation, tâche cochée']];
 /* droits des clés d'API (écran Clés d'API de la démo) */
@@ -1433,7 +1433,7 @@ P.css(`
 var CAT={gerant:[['cockpit','Aujourd’hui','today','Pilotage','Le résumé du matin et les actions prêtes',1],['rapports','Rapports','report','Pilotage','Chiffre d’affaires, remplissage, tendances'],
   ['chevaux','Chevaux','horse','Écurie','Fiches, propriétaires, charge de travail'],['ecurie3d','Écurie 3D','cube','Écurie','Le plan des boxes en direct'],['cameras','Caméras','camera','Écurie','Direct des boxes et alertes'],['soins','Soins','care','Écurie','Vaccins, maréchal, registre d’élevage'],['elevage','Élevage','heart','Écurie','Suivi des juments, saillies, poulinage. Ajoute l’onglet Reproduction aux fiches des juments.',0,1],['alimentation','Alimentation','feed','Écurie','Rations et stocks'],['entretien','Entretien','upkeep','Écurie','Tâches, matériel, installations'],
   ['planning','Planning','planning','Club','Reprises, stages, montoir'],['adherents','Adhérents','members','Club','Familles, forfaits, licences'],['pensions','Pensions','owner','Club','Pensions et demi-pensions'],['coachs','Coachs','coach','Club','Coachs extérieurs réservables'],['competitions','Concours','compet','Club','Engagements, transport, résultats'],['boutique','Boutique','shop','Club','Vente en ligne et caisse'],['communication','Communication','chat','Club','Messages, e-mails, SMS'],
-  ['facturation','Facturation','invoice','Argent','Factures, paiements, relances'],['compta','Comptabilité','accounting','Argent','Banque, rapprochement, exports'],['contrats','Contrats','contract','Argent','Signature électronique'],
+  ['facturation','Facturation','invoice','Finances','Factures, paiements, relances'],['compta','Comptabilité','accounting','Finances','Banque, rapprochement, exports'],['contrats','Contrats','contract','Finances','Signature électronique'],
   ['equipe','Équipe','team','Équipe','Plannings, pointages, congés'],
   ['assistant','Stabl AI','assistant','Plateforme','Questions, actions et automatisations'],['connecteurs','Connecteurs','plug','Plateforme','MCP, API et outils reliés'],['import','Import et arrivée','import','Plateforme','Reprise des données'],['reglages','Réglages','settings','Plateforme','Cet écran',1]],
  employe:[['emp-jour','Ma journée','today','Ma journée','Ce que je dois faire maintenant',1],['emp-tournee','Tournée','route','Ma journée','La tournée des boxes, dans l’ordre'],['emp-planning','Planning','planning','Ma journée','Mes reprises et mes horaires'],['emp-chevaux','Chevaux','horse','Écurie','Les fiches, en lecture rapide'],['emp-soins','Soins','care','Écurie','Soins à faire et à noter'],['emp-signaler','Signaler','alert','Écurie','Un problème, avec photo'],['emp-pointage','Pointage','clockin','Moi','Arrivée, départ, pauses'],['emp-messages','Messages','chat','Moi','L’équipe et les familles'],['emp-conges','Congés','holiday','Moi','Demandes et soldes']],
@@ -1449,7 +1449,7 @@ var ROLES=[['Gérant','1'],['Moniteur','3'],['Soigneur','2'],['Accueil','1'],['C
 var RIGHTS=D.pfRights=D.pfRights||[
  ['Chevaux','Fiches des chevaux',[2,1,2,1,0,3,3,0]],['Chevaux','Santé et registre d’élevage',[2,1,2,0,0,0,3,0]],['Chevaux','Rations et stocks',[2,0,2,0,0,0,1,0]],['Chevaux','Caméras des boxes',[2,0,1,0,0,0,3,0]],
  ['Club','Planning et reprises',[2,2,1,2,0,3,1,1]],['Club','Adhérents et familles',[2,1,0,2,0,3,0,3]],['Club','Concours et engagements',[2,2,0,1,0,3,3,3]],['Club','Messages aux familles',[2,2,0,2,0,3,0,0]],
- ['Argent','Factures et paiements',[2,0,0,2,1,3,3,3]],['Argent','Comptabilité et banque',[2,0,0,0,2,0,0,0]],['Argent','Contrats et signatures',[2,0,0,1,1,3,3,3]],
+ ['Finances','Factures et paiements',[2,0,0,2,1,3,3,3]],['Finances','Comptabilité et banque',[2,0,0,0,2,0,0,0]],['Finances','Contrats et signatures',[2,0,0,1,1,3,3,3]],
  ['Équipe','Plannings et pointages',[2,3,3,3,0,0,0,0]],['Équipe','Salaires et contrats de travail',[2,0,0,0,1,0,0,0]],
  ['Plateforme','Assistant IA et connecteurs',[2,1,1,1,0,0,0,0]],['Plateforme','Réglages du club',[2,0,0,0,0,0,0,0]]];
 var LV=['Aucun','Voir','Modifier','Les siens'];

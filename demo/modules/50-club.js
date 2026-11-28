@@ -1294,7 +1294,7 @@ function sheetNewContract(pr){pr=pr||{};var step=pr.tpl&&TPL[pr.tpl]?2:1,tp=pr.t
   on(sh,'[data-go2]',function(){var c=make('à signer'),n=cM(c).sg[0].name;CS.f='all';if(mode==='place'){if(P.state.route!=='contrats')P.go('contrats');sheetContract(c)}else{sh.close();if(P.state.route==='contrats')P.rerender();else P.go('contrats');P.toast('Contrat envoyé à '+n+' par e-mail et SMS',{icon:'send'})}});
   return sh}
 
-P.mod({id:'contrats',role:'gerant',group:'Argent',title:'Contrats',icon:'contract',n:30,phoneTitle:'Contrats',
+P.mod({id:'contrats',role:'gerant',group:'Finances',title:'Contrats',icon:'contract',n:30,phoneTitle:'Contrats',
  badge:function(){var n=D.contracts.filter(function(c){return c.status==='à signer'}).length;return n?{v:n,hot:true}:null},
  render:function(el,ctx){
   var L=D.contracts,pend=L.filter(function(c){return c.status==='à signer'}),nS=L.filter(function(c){return c.status==='signé'}).length,nW=sum(pend,function(c){return cPend(c).length});

@@ -312,9 +312,9 @@ function renderCptExp(el){el.innerHTML=ph('Exports','FEC, journal des ventes et 
 
 /* ---------- Enregistrement ---------- */
 P.mod({id:'lv-abonnement',role:'gerant',group:'Plateforme',title:'Abonnement',icon:'card',n:45,phoneTitle:'Abonnement',render:renderAbo});
-P.mod({id:'lv-paiements',role:'gerant',group:'Argent',title:'Paiements en ligne',icon:'card',n:35,phoneTitle:'Paiements',render:renderPay});
+P.mod({id:'lv-paiements',role:'gerant',group:'Finances',title:'Paiements en ligne',icon:'card',n:35,phoneTitle:'Paiements',render:renderPay});
 P.mod({id:'lv-acces',role:'gerant',group:'Équipe',title:'Accès et invitations',icon:'shield',n:20,phoneTitle:'Accès',render:renderAccess});
-P.mod({id:'lv-comptable',role:'gerant',group:'Argent',title:'Comptable',icon:'accounting',n:25,phoneTitle:'Comptable',render:renderAccountant});
+P.mod({id:'lv-comptable',role:'gerant',group:'Finances',title:'Comptable',icon:'accounting',n:25,phoneTitle:'Comptable',render:renderAccountant});
 P.mod({id:'lv-calendriers',role:'gerant',group:'Plateforme',title:'Calendriers',icon:'calendar_add',n:47,phoneTitle:'Calendriers',render:renderCal});
 P.mod({id:'lv-cles',role:'gerant',group:'Plateforme',title:'Clés d’API',icon:'key',n:48,phoneTitle:'Clés d’API',render:renderKeys});
 P.mod({id:'lv-connecteurs-emp',role:'employe',group:'Moi',title:'Connecteurs',icon:'plug',n:65,phoneTitle:'Connecteurs',render:renderConnectors});

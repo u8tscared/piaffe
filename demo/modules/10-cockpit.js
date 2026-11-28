@@ -308,7 +308,7 @@ var TILES=[
 var TK=TILES.map(function(t){return t[0]});
 var TD={};TILES.forEach(function(t){TD[t[0]]=t[2]});
 var MOB=['hero','kRiders','kFill','kHorses','kMoney','todo','today','stable','valid','hay','wx','team','rev'];
-var FOC=[['all','Tout'],['hz','Chevaux'],['rd','Cavaliers'],['mo','Argent'],['tm','Équipe'],['cr','Soins']];
+var FOC=[['all','Tout'],['hz','Chevaux'],['rd','Cavaliers'],['mo','Finances'],['tm','Équipe'],['cr','Soins']];
 var DAYN={Lun:['lundi',1],Mar:['mardi',2],Mer:['mercredi',3],Jeu:['jeudi',4],Ven:['vendredi',5],Sam:['samedi',6],Dim:['dimanche',0]};
 var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 /* état de la session (survit aux allers-retours entre écrans) */

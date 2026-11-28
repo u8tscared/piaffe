@@ -96,7 +96,7 @@ Si vous avez besoin de données supplémentaires, ajoutez-les **dans votre propr
 - Gérant · Pilotage : `cockpit` (fait), `rapports`
 - Gérant · Écurie : `chevaux`, `cheval` (détail, caché), `ecurie3d`, `cameras`, `soins`, `alimentation`, `entretien`
 - Gérant · Club : `planning`, `adherents`, `adherent` (détail, caché), `pensions`, `coachs`, `competitions`, `boutique`, `communication`
-- Gérant · Argent : `facturation`, `compta`, `contrats`
+- Gérant · Finances : `facturation`, `compta`, `contrats`
 - Gérant · Équipe : `equipe`
 - Gérant · Plateforme : `assistant`, `connecteurs`, `import`, `reglages`
 - Employé (groupes `Ma journée`, `Écurie`, `Moi`) : `emp-jour`, `emp-tournee`, `emp-chevaux`, `emp-cheval` (caché), `emp-planning`, `emp-soins`, `emp-pointage`, `emp-signaler`, `emp-messages`, `emp-conges`
