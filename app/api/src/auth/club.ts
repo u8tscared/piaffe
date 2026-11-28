@@ -13,6 +13,7 @@ import { clientIp, openSession, tokenForClient, tooMany } from "./session";
 import { createInvitation, INVITABLE_ROLES, invitationStatus, publicInvitation, upsertMembership, type InvitationRow } from "./invitations";
 import { clubsOf, getUser, getUserByEmail, normEmail, normRefs, publicUser } from "./users";
 import { ROLE_LABEL } from "./mailer";
+import { legalVersion } from "../lib/legal";
 
 const app = new Hono<AppEnv>();
 app.use("/api/clubs", csrf);
@@ -62,6 +63,8 @@ app.post("/api/clubs", requireUser, async (c) => {
   for (let i = 0; i < 20 && await one(c.env.DB, "SELECT 1 AS x FROM clubs WHERE slug = ?", slug); i++) {
     slug = `${base.slice(0, 40)}-${hex(crypto.getRandomValues(new Uint8Array(3)))}`;
   }
+  // CGV + accord de sous-traitance RGPD acceptés au nom du club (case de l'étape « Identité » de l'onboarding).
+  const accepted = b.accept_cgv === true ? legalVersion(b.legal_version) : null;
   const id = newId("clb");
   const trialEnds = new Date(Date.now() + TRIAL_DAYS * 864e5).toISOString();
   await c.env.DB.batch([
@@ -69,10 +72,11 @@ app.post("/api/clubs", requireUser, async (c) => {
       VALUES (?,?,?,?,?,?,?,?,?,?,?, 'trial', 'trialing', ?, ?)`).bind(id, name, slug, kind, legal, siren, siret, email, phone, address, tz, trialEnds,
       JSON.stringify({ welcome_member_email: true })),
     c.env.DB.prepare("INSERT INTO memberships (user_id, club_id, role, status) VALUES (?,?, 'owner', 'active')").bind(user.id, id),
+    c.env.DB.prepare("UPDATE clubs SET legal_version = ?, legal_accepted_at = ?, legal_accepted_by = ? WHERE id = ?").bind(accepted, accepted ? nowIso() : null, accepted ? user.id : null, id),
     c.env.DB.prepare("UPDATE users SET last_club_id = ? WHERE id = ?").bind(id, user.id),
   ]);
   if (c.get("sessionId")) await run(c.env.DB, "UPDATE sessions SET club_id = ? WHERE id = ?", id, c.get("sessionId"));
-  await audit(c.env.DB, { club_id: id, user_id: user.id, action: "club.create", target: id, ip: ip(c) });
+  await audit(c.env.DB, { club_id: id, user_id: user.id, action: "club.create", target: id, data: accepted ? { legal_version: accepted } : undefined, ip: ip(c) });
   await emit(c.env, c.executionCtx, { type: "club.created", club_id: id, user_id: user.id });
   const club = await one<any>(c.env.DB, "SELECT * FROM clubs WHERE id = ?", id);
   return c.json({ club: publicClub(club), role: "owner" }, 201);
@@ -176,9 +180,10 @@ app.post("/auth/invitations/:token/accept", async (c) => {
     checkPasswordPolicy(b.password, inv.email);
     userId = newId("usr");
     // L'adresse est vérifiée : le lien d'invitation a été reçu dessus.
-    await run(c.env.DB, "INSERT INTO users (id, email, email_verified_at, password_hash, first, last) VALUES (?,?,?,?,?,?)",
+    const terms = b.accept_terms === true ? legalVersion(b.terms_version) : null;
+    await run(c.env.DB, "INSERT INTO users (id, email, email_verified_at, password_hash, first, last, terms_version, terms_accepted_at) VALUES (?,?,?,?,?,?,?,?)",
       userId, normEmail(inv.email), nowIso(), await hashPassword(b.password),
-      str(b.first, "first", { max: 80, optional: true }) || inv.first, str(b.last, "last", { max: 80, optional: true }) || inv.last);
+      str(b.first, "first", { max: 80, optional: true }) || inv.first, str(b.last, "last", { max: 80, optional: true }) || inv.last, terms, terms ? nowIso() : null);
     await emit(c.env, c.executionCtx, { type: "user.signed_up", user_id: userId, email: inv.email, via: "invitation" });
   }
   const r = await run(c.env.DB, "UPDATE invitations SET accepted_at = ?, accepted_by = ? WHERE id = ? AND accepted_at IS NULL AND revoked_at IS NULL", nowIso(), userId, inv.id);

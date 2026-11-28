@@ -780,3 +780,4 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
 @media (max-width:700px){.nav-demo{display:none}}
 .nav-l a{white-space:nowrap}
 .legende a{color:var(--acc);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ml-g a{color:#c9d3ff;text-underline-offset:3px}

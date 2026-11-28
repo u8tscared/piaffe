@@ -14,6 +14,7 @@ import { appUrl, mail, WEB } from "./mailer";
 import { clubsOf, getUser, getUserByEmail, normEmail, publicUser, type UserRow } from "./users";
 import { exchangeCode, safeNext, startGoogle, takeState } from "./google";
 import { features } from "../lib/features";
+import { legalVersion, LEGAL_VERSION } from "../lib/legal";
 
 const app = new Hono<AppEnv>();
 app.use("/auth/*", csrf);
@@ -53,7 +54,10 @@ app.post("/auth/signup", async (c) => {
     throw new ApiError(409, "email_taken", "Un compte existe déjà avec cette adresse. Connectez-vous ou utilisez « Mot de passe oublié ».", { field: "email" });
   }
   const id = newId("usr");
-  await run(c.env.DB, "INSERT INTO users (id, email, password_hash, first, last) VALUES (?,?,?,?,?)", id, email, await hashPassword(password), first, last);
+  // CGU : la case est obligatoire dans l'interface ; la version acceptée et la date sont gardées comme preuve.
+  const terms = b.accept_terms === true ? legalVersion(b.terms_version) : null;
+  await run(c.env.DB, "INSERT INTO users (id, email, password_hash, first, last, terms_version, terms_accepted_at) VALUES (?,?,?,?,?,?,?)",
+    id, email, await hashPassword(password), first, last, terms, terms ? nowIso() : null);
   const u = (await getUser(c.env, id))!;
   await sendVerify(c, u);
   await audit(c.env.DB, { user_id: id, action: "auth.signup", ip: ip(c) });
@@ -134,8 +138,9 @@ app.get("/auth/google/callback", async (c) => {
         g.sub, nowIso(), g.picture || null, nowIso(), u.id);
     } else {
       const id = newId("usr");
-      await run(db, "INSERT INTO users (id, email, email_verified_at, google_sub, first, last, avatar_url) VALUES (?,?,?,?,?,?,?)",
-        id, email, nowIso(), g.sub, (g.given_name || "").slice(0, 80) || null, (g.family_name || "").slice(0, 80) || null, g.picture || null);
+      // Création par Google : la case des CGU (inscription) ou la mention sous le bouton (connexion) vaut acceptation.
+      await run(db, "INSERT INTO users (id, email, email_verified_at, google_sub, first, last, avatar_url, terms_version, terms_accepted_at) VALUES (?,?,?,?,?,?,?,?,?)",
+        id, email, nowIso(), g.sub, (g.given_name || "").slice(0, 80) || null, (g.family_name || "").slice(0, 80) || null, g.picture || null, LEGAL_VERSION, nowIso());
       created = true;
     }
     u = (await one<UserRow>(db, "SELECT * FROM users WHERE google_sub = ?", g.sub))!;
