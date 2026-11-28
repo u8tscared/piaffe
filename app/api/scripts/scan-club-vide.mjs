@@ -16,11 +16,11 @@ g.on("console", (m) => { if (m.type() === "error" && !/fonts\.g|open-meteo|api-a
 await g.goto(URL0 + "/"); await g.waitForSelector("#lv-email");
 await g.click('[data-view="signup"]'); await g.waitForSelector('[data-as="club"]'); await g.click('[data-as="club"]');
 await g.waitForSelector("#lv-first"); await g.fill("#lv-first", "Claire"); await g.fill("#lv-last", "Martin");
-await g.fill("#lv-email", `scan.${RUN}@exemple.fr`); await g.fill("#lv-pass", "Cheval-Bai-2026!"); await g.click("button[type=submit]");
+await g.fill("#lv-email", `scan.${RUN}@exemple.fr`); await g.fill("#lv-pass", "Cheval-Bai-2026!"); if (await g.$("#lv-cgu")) await g.check("#lv-cgu"); await g.click("button[type=submit]");
 for (let i = 0; i < 40; i++) {
   if (await g.evaluate(() => window.PL && PL.ready === true && !document.querySelector("[data-step]"))) break;
   const id = await g.evaluate(() => { const s = document.querySelector("[data-step]"); return s && s.getAttribute("data-step"); });
-  if (id === "name") { for (const [s, v] of [["#ob-name", "Écurie Scan " + RUN], ["#ob-siret", "93473312200014"], ["#ob-line1", "1 rue"], ["#ob-zip", "69004"], ["#ob-city", "Lyon"]]) if (await g.$(s)) await g.fill(s, v); }
+  if (id === "name") { for (const [s, v] of [["#ob-name", "Écurie Scan " + RUN], ["#ob-line1", "1 rue"], ["#ob-zip", "69004"], ["#ob-city", "Lyon"]]) if (await g.$(s)) await g.fill(s, v); if (await g.$("#ob-cgv")) await g.check("#ob-cgv"); }
   if (process.env.DBG) console.log("step", i, id, await g.evaluate(() => [...document.querySelectorAll("button")].filter(b=>b.offsetParent).map(b=>b.outerHTML.slice(0,90)).slice(0,8).join(" | ")));
   await g.evaluate(() => { const o = [...document.querySelectorAll(".lv-opt[data-v]")].filter((b) => b.offsetParent); if (o.length && !o.some((b) => b.getAttribute("aria-pressed") === "true")) o[0].click(); const z = document.querySelector("[data-zero]"); if (z && z.offsetParent && z.getAttribute("aria-pressed") !== "true") z.click(); });
   await sleep(200);
