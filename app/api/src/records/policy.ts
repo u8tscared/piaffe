@@ -109,7 +109,7 @@ const PRO_OWN = new Set(["proActs", "proRequests"]);
 const LESSON_SLOT = ["id", "dow", "day", "start", "dur", "title", "coach", "arena", "cap", "kind", "status", "date"];
 
 /** Champs qu'un adhérent peut modifier sur sa fiche (ou celle d'un enfant de sa famille). */
-export const MEMBER_EDITABLE = ["phone", "email", "address", "zip", "city", "emergency", "emergencyPhone", "birth", "allergies", "medical", "photo", "avatar", "prefs", "notifications"];
+export const MEMBER_EDITABLE = ["phone", "email", "address", "zip", "city", "emergency", "emergencyPhone", "birth", "allergies", "medical", "photo", "avatar", "prefs", "notifications", "consents", "onboarded"];
 
 /** Collections du terrain, lues par l'employé. */
 const STAFF_READ = new Set([

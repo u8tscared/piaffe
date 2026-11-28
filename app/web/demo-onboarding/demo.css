@@ -1,0 +1,57 @@
+/* Démo des parcours d'inscription : écrans propres à la démo (choix du parcours, boîte e-mail, fin) */
+.dm-hub{position:fixed;inset:0;overflow:auto;background:#0a1636;color:#fff}
+.dm-hub::before{content:"";position:fixed;inset:-20%;background:radial-gradient(34% 30% at 15% 15%,rgba(109,139,255,.4),transparent 70%),radial-gradient(30% 30% at 90% 85%,rgba(36,72,216,.55),transparent 70%);animation:lvDrift 18s var(--e-in-out) infinite alternate;pointer-events:none}
+.dm-in{position:relative;max-width:1120px;margin:0 auto;padding:28px 24px 48px}
+.dm-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(36px,8vh,90px)}
+.dm-top .lv-brand{color:#fff;font-size:24px}
+.dm-mails{display:inline-flex;align-items:center;gap:8px;color:#fff;text-decoration:none;font-weight:600;font-size:14.5px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.dm-mails:hover{background:rgba(255,255,255,.16)}
+.dm-hub h1{font:800 clamp(38px,6vw,72px)/1 var(--f-display);letter-spacing:-.05em;margin:10px 0 16px;max-width:14ch}
+.dm-hub>.dm-in>p:not(.dm-foot){font-size:18px;line-height:1.55;color:rgba(255,255,255,.75);max-width:58ch;margin:0 0 40px}
+.dm-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.dm-cards{grid-template-columns:1fr}}
+.dm-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;border-radius:26px;background:#fff;color:#0a1636;text-decoration:none;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);transition:transform .45s var(--e-spring),box-shadow .3s;animation:lvIn .6s var(--e-out) both;animation-delay:calc(.15s + var(--i,0)*100ms);min-height:250px}
+.dm-card:hover{transform:translateY(-6px) rotate(-.4deg);box-shadow:0 40px 70px -30px rgba(0,0,0,.7),0 0 0 3px #6d8bff}
+.dm-card .tag{font:700 11.5px/1 var(--f-text);letter-spacing:.12em;text-transform:uppercase;color:#2448d8;background:#e7ecff;padding:6px 9px;border-radius:99px}
+.dm-card .ico{width:52px;height:52px;border-radius:16px}
+.dm-card b{font:800 23px/1.1 var(--f-display);letter-spacing:-.035em}
+.dm-card small{font-size:15px;line-height:1.5;color:#59627c}
+.dm-card .go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;font-weight:700;color:#2448d8}
+.dm-card:hover .go svg{transform:translateX(4px)}.dm-card .go svg{transition:transform .3s var(--e-spring)}
+.dm-foot{margin-top:36px;font-size:14px;color:rgba(255,255,255,.6)}
+.dm-foot a{color:#fff}
+.dm-ribbon{position:fixed;z-index:90;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:9px 10px 9px 14px;border-radius:99px;background:#0a1636;color:#fff;text-decoration:none;font-size:13px;box-shadow:0 14px 34px -12px rgba(10,22,54,.6),inset 0 0 0 1px rgba(255,255,255,.12);white-space:nowrap}
+.dm-ribbon b{background:#fff;color:#0a1636;padding:6px 11px;border-radius:99px;font-size:12.5px}
+.dm-ribbon span{opacity:.8}
+@media (max-width:600px){.dm-ribbon span{display:none}.dm-ribbon{bottom:calc(80px + env(safe-area-inset-bottom,0px))}}
+.dm-inbox{position:fixed;inset:0;overflow:auto;background:#eef0f6;padding:28px 16px 140px;display:flex;justify-content:center}
+.dm-mail{width:100%;max-width:720px;background:#fff;border-radius:20px;box-shadow:0 24px 60px -30px rgba(10,22,54,.4);overflow:hidden;animation:lvIn .6s var(--e-out) both;align-self:flex-start}
+.dm-mh{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid #eceef5}
+.dm-mh .av{width:40px;height:40px;border-radius:50%;background:#0a1636;display:grid;place-items:center;flex:none}
+.dm-mh b{display:block;font-size:15px;color:#0a1636}.dm-mh small{color:#868da4;font-size:13px}
+.dm-subj{padding:16px 20px 6px;font:800 22px/1.2 var(--f-display);letter-spacing:-.03em;color:#0a1636}
+.dm-frame{width:100%;height:900px;border:0;display:block}
+.dm-cta{position:sticky;bottom:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-top:1px solid #eceef5;font-size:14px;color:#59627c}
+.dm-cta span{display:flex;align-items:center;gap:8px}
+.dm-appbg{position:fixed;inset:0;background:var(--bg)}
+.dm-end>div{max-width:620px}
+.dm-links{display:flex;flex-direction:column;gap:8px;width:100%;max-width:420px;margin:0 auto 24px}
+.dm-links a{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#fff;text-decoration:none;font-size:14.5px;text-align:left}
+.dm-links a:hover{background:rgba(255,255,255,.14)}
+.dm-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.dm-ghost{background:rgba(255,255,255,.1)!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)!important}
+.dm-mig-src{display:flex;gap:8px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
+.dm-mig-src span{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:#fff;color:#0a1636;font-weight:600;font-size:14px}
+.dm-mig-src svg,.dm-mig-src .lv-logo{width:20px;height:20px}
+.dm-mig{position:relative;display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;margin:0 auto}
+.dm-mig .li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);transition:all .4s;text-align:left}
+.dm-mig .li.on{color:#fff;background:rgba(255,255,255,.1)}
+.dm-mig .li.done .ic{background:#4fd394;color:#0a1636}
+.dm-mig .ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);transition:background .4s}
+.dm-mig b{font:800 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.dm-note{font-size:12.5px!important;opacity:.6;margin-top:14px!important}
+.dm-bilan{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.dm-bilan div{padding:14px;border-radius:16px;background:var(--surface-2)}
+.dm-bilan b{display:block;font:800 26px/1 var(--f-display);letter-spacing:-.03em}
+.dm-bilan span{font-size:13.5px;color:var(--mut)}
+@media (min-width:1100px){.dm-ribbon{left:auto;right:24px;bottom:24px;transform:none}}

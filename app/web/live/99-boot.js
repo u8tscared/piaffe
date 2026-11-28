@@ -156,6 +156,7 @@ function after(path){
   if(PL.migReturn){var r=PL.migReturn;PL.migReturn=null;if(r.etat==='termine')setTimeout(function(){PL.mig.showBilan(r.job)},500)}
   if(PL.freshOnboarding){PL.freshOnboarding=false;setTimeout(function(){try{P.toast('Votre espace est prêt. Suivez la liste de démarrage pour bien commencer.',{ms:5200})}catch(e){}
     if(M&&M.etat==='termine'&&PL.campaignSheet)setTimeout(function(){PL.campaignSheet({source:(M.tools||[]).filter(function(t){return t.action==='replace'}).map(function(t){return t.id})[0]})},1200)},900)}
+  if(PL.bienvenue&&PL.view==='adherent')try{PL.bienvenue.maybe()}catch(e){console.error('bienvenue',e)}
   if(PL.welcomeMigrated)setTimeout(function(){try{P.toast('Bienvenue ! Vos reprises, vos factures et votre cheval vous attendent ici.',{ms:5200})}catch(e){}},900);
 }
 

@@ -20,9 +20,10 @@ var GOOGLE='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="
 var EYE='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
 
 function hero(){
-  return '<aside class="lv-hero"><div>'+PL.brandHTML(34,'var(--on-navy)')+'</div>'+
-    '<div><h1>Votre écurie, enfin simple.</h1><p>Planning, chevaux, adhérents, factures et paiements en ligne : tout le club au même endroit, sur ordinateur comme sur téléphone.</p></div>'+
-    '<div class="lv-illu">'+(window.ILLU&&ILLU.cheval?ILLU.cheval({size:null}):'')+'</div>'+
+  var fl=[['planning','Galop 3 · samedi 10 h','6 cavaliers · 1 place libre','f1'],['card','Facture payée','Pension de Tornade · 420 €','f2'],['care','Maréchal jeudi','Rappel envoyé au propriétaire','f3']];
+  return '<aside class="lv-hero"><span class="lv-hmark">'+PL.brandLogo(460,'#ffffff')+'</span><div>'+PL.brandHTML(34,'var(--on-navy)')+'</div>'+
+    '<div><h1>Votre écurie, enfin simple.</h1><p>Planning, chevaux, adhérents, factures et paiements en ligne : tout le club au même endroit, sur ordinateur comme sur téléphone.</p>'+
+    '<div class="lv-floats" aria-hidden="true">'+fl.map(function(f){return '<div class="lv-float '+f[3]+'"><span class="ic">'+ICON(f[0])+'</span><span><b>'+f[1]+'</b><small>'+f[2]+'</small></span></div>'}).join('')+'</div></div>'+
     '<div class="lv-proof"><span>'+ICON('shield','sm')+'Données hébergées en Europe</span><span>'+ICON('card','sm')+'Paiements par Stripe</span><span>'+ICON('invoice','sm')+'Facture électronique prête</span></div></aside>';
 }
 function shell(inner){var r=root();r.innerHTML='<div class="lv-auth">'+hero()+'<main class="lv-side"><div class="lv-card lv-view">'+inner+'</div></main></div>';return r.querySelector('.lv-card')}
@@ -60,7 +61,34 @@ V.login=function(o){var el=shell('<h2>Bon retour</h2><p class="lv-sub">Connectez
   el.querySelector('form').onsubmit=function(e){e.preventDefault();var em=el.querySelector('#lv-email').value.trim(),pa=el.querySelector('#lv-pass').value,b=el.querySelector('[type=submit]');
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))return msg(el,'Saisissez une adresse e-mail valide.');if(!pa)return msg(el,'Saisissez votre mot de passe.');
     busy(b,true);msg(el,'');PL.post('/auth/login',{email:em,password:pa}).then(function(){if(PL.authNext&&/^\/invitation\//.test(PL.authNext)){location.href=PL.authNext;return}PL.afterAuth()},function(x){busy(b,false);msg(el,x.status===401||x.status===400?(x.message||'E-mail ou mot de passe incorrect.'):PL.msg(x))})}};
-V.signup=function(o){var el=shell('<h2>Créez votre compte</h2><p class="lv-sub">Trente jours d’essai complet, sans carte bancaire.</p>'+
+/* inscription : d'abord « qui êtes-vous ? » (une écurie crée son espace, un cavalier passe par son écurie) */
+V.signup=function(o){o=o||{};var as=o.as||(/[?&]pour=(cavalier|adherent)/.test(location.search)?'rider':/[?&]pour=(club|ecurie)/.test(location.search)?'club':null);
+  if(as==='rider')return V.rider(o);if(as==='club')return V.signupClub(o);
+  var el=shell('<h2>Bienvenue sur '+esc(PL.brandName())+'</h2><p class="lv-sub">Pour vous montrer le bon chemin : vous êtes…</p><div class="lv-who">'+
+    '<button type="button" data-as="club" style="--i:0"><span class="ico d-acc">'+ICON('stable')+'</span><span><b>Je gère une écurie ou un club</b><small>Centre équestre, poney-club, pension, association, coach.</small></span><span class="arr">'+ICON('right')+'</span></button>'+
+    '<button type="button" data-as="rider" style="--i:1"><span class="ico d-mo">'+ICON('horse')+'</span><span><b>Je suis cavalier, parent ou propriétaire</b><small>Pour réserver, payer et suivre mon cheval.</small></span><span class="arr">'+ICON('right')+'</span></button></div>'+
+    '<p class="lv-foot">Déjà un compte ? <a href="/connexion" class="lv-a" data-view="login">Se connecter</a></p>');
+  bindCommon(el);el.querySelectorAll('[data-as]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-as');(v==='rider'?V.rider:V.signupClub)({email:o.email})}})};
+var REC_MSG=function(){return 'Bonjour, je suis cavalier chez vous et j’aimerais pouvoir réserver mes reprises et payer en ligne. '+PL.brandName()+' a l’air simple à mettre en place : pourriez-vous y jeter un œil ?'};
+V.rider=function(o){var el=shell('<button class="lv-back" type="button" data-view="signup">'+ICON('back','sm')+'Retour</button><h2>Votre espace cavalier</h2>'+
+  '<p class="lv-sub">Sur '+esc(PL.brandName())+', c’est votre écurie qui vous ouvre votre espace : vos reprises, vos factures et votre cheval y sont déjà, rien à saisir.</p>'+
+  '<div class="lv-fl"><span>Votre écurie utilise-t-elle déjà '+esc(PL.brandName())+' ?</span></div><div class="lv-yn">'+[['yes','Oui'],['no','Non'],['unsure','Je ne sais pas']].map(function(x){return '<button type="button" data-yn="'+x[0]+'" aria-pressed="false">'+x[1]+'</button>'}).join('')+'</div><div class="lv-ans"></div>');
+  bindCommon(el);var ans=el.querySelector('.lv-ans');
+  el.querySelectorAll('[data-yn]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-yn');el.querySelectorAll('[data-yn]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+    if(v==='yes'){ans.innerHTML='<div class="lv-panel"><p><b>Parfait.</b> Demandez à l’accueil de votre écurie de vous inviter : vous recevrez un e-mail « Activer mon espace », et c’est fait en une minute.</p><p>Déjà invité mais rien reçu ? Regardez dans les indésirables, ou vérifiez l’adresse que le club a notée.</p></div>'+
+      '<button class="btn pri lv-btn-main" type="button" data-view="login"><span class="lv-bt">J’ai déjà un compte, me connecter</span></button><button class="btn ghost" type="button" data-view="magic" style="width:100%;margin-top:8px">'+ICON('mail','sm')+'Recevoir un lien de connexion</button>';bindCommon(ans);return}
+    ans.innerHTML='<div class="lv-panel"><p><b>Recommandez '+esc(PL.brandName())+' à votre écurie.</b> Nous lui envoyons un seul e-mail de votre part, avec votre nom. Le jour où elle passe sur '+esc(PL.brandName())+', vous recevez votre invitation.</p></div>'+
+      '<form class="lv-f" novalidate><div class="lv-msgs"></div>'+field('E-mail de l’écurie ou du gérant','<input class="in" type="email" id="rc-to" inputmode="email" required placeholder="contact@ecurie.fr">')+field('Nom de l’écurie','<input class="in" id="rc-club" maxlength="120" placeholder="Écurie du Moulin">','facultatif')+
+      '<div class="lv-row2">'+field('Votre prénom','<input class="in" id="rc-first" autocomplete="given-name" required maxlength="60">')+field('Votre nom','<input class="in" id="rc-last" autocomplete="family-name" maxlength="60">')+'</div>'+
+      field('Votre e-mail','<input class="in" type="email" id="rc-from" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">','l’écurie pourra vous répondre')+
+      field('Votre message','<textarea class="in" id="rc-msg" rows="3" maxlength="500">'+esc(REC_MSG())+'</textarea>','modifiable')+mainBtn('Envoyer la recommandation')+'</form>';
+    var f=ans.querySelector('form');f.onsubmit=function(e){e.preventDefault();var g=function(id){return f.querySelector('#'+id).value.trim()},to=g('rc-to'),fr=g('rc-from'),fi=g('rc-first'),bt=f.querySelector('[type=submit]');var re=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      if(!re.test(to))return msg(f,'Saisissez l’e-mail de votre écurie.');if(!fi)return msg(f,'Indiquez votre prénom.');if(!re.test(fr))return msg(f,'Saisissez votre adresse e-mail.');
+      busy(bt,true);msg(f,'');PL.post('/api/public/recommander',{to:to,club_name:g('rc-club')||undefined,from_first:fi,from_last:g('rc-last')||undefined,from_email:fr,message:g('rc-msg')||undefined}).then(function(){var c=g('rc-club');
+        el.innerHTML='<div class="ad-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>Merci '+esc(fi)+' !</h2><p class="lv-sub">'+(c?esc(c):'Votre écurie')+' reçoit votre recommandation. Dès qu’elle passe sur '+esc(PL.brandName())+', vous recevrez un e-mail pour activer votre espace.</p><p class="lv-foot"><a href="/" class="lv-a" data-view="login">Revenir à l’accueil</a></p>';bindCommon(el);
+        var d=el.querySelector('.ad-done');if(d&&PL.obSparkle){d.style.position='relative';PL.obSparkle(d)}},
+        function(x){busy(bt,false);msg(f,x.unavailable?'La recommandation arrive très bientôt. En attendant, parlez-en à l’accueil de votre écurie !':x.status===429?'Une recommandation a déjà été envoyée récemment. Merci !':PL.msg(x))})}}})};
+V.signupClub=function(o){var el=shell('<button class="lv-back" type="button" data-view="signup">'+ICON('back','sm')+'Retour</button><h2>Créez l’espace de votre écurie</h2><p class="lv-sub">Trente jours d’essai complet, sans carte bancaire.</p>'+
   '<button class="lv-google" data-google type="button">'+GOOGLE+'Continuer avec Google</button><div class="lv-or">ou avec votre e-mail</div>'+
   '<form class="lv-f" novalidate><div class="lv-msgs"></div><div class="lv-row2">'+field('Prénom','<input class="in" id="lv-first" autocomplete="given-name" required>')+field('Nom','<input class="in" id="lv-last" autocomplete="family-name" required>')+'</div>'+
   field('Adresse e-mail','<input class="in" type="email" id="lv-email" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">')+

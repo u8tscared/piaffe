@@ -77,13 +77,10 @@ async function onboarding(page, o) {
       await shot(page, "02-onboarding-nom"); await page.click("[data-next]");
     }
     else if (id === "sizes") { await page.fill("#ob-horses", "24"); await page.fill("#ob-boxes", "30"); await page.fill("#ob-members", "180"); await page.fill("#ob-staff", "3"); await page.click("[data-next]"); }
-    else if (id === "uses") { await page.click('[data-b="true"]'); await sleep(300); if (await page.$('[data-step="uses"]')) await page.click("[data-next]"); }
     else if (id === "tools") { await page.fill("#ob-other", "Kavalog"); await sleep(300); await page.click("[data-next]"); }
     else if (id === "toolsplan") { await shot(page, "03-onboarding-outils"); await page.click("[data-next]"); }
     else if (id === "recuperer") await page.click('[data-w="later"]');
-    else if (id === "accountant") { await page.click('[data-b="false"]'); await page.click("[data-next]"); }
-    else if (id === "payments") { await page.click('[data-b="false"]'); await page.click("[data-next]"); }
-    else if (id === "vat") await page.click('[data-v="normal"]');
+    else if (id === "finances") { await page.click('[data-acc="false"]'); await page.click('[data-vat="normal"]'); await page.click("[data-next]"); }
     else if (id === "recap") { await page.click("[data-next]"); break; }
     else await page.click("[data-next]");
     await sleep(700);
@@ -123,6 +120,21 @@ async function acceptInvite(browser, email, first, label) {
   await page.fill("#lv-pass", PASS);
   await page.click("button[type=submit]");
   await appReady(page);
+  /* accueil de l'adhérent (première ouverture) : parcouru en entier une fois, sinon « Plus tard » */
+  await sleep(900);
+  if (await page.$(".ad-ob")) {
+    if (label === "adhérente") {
+      await shot(page, "06a-accueil-adherent");
+      if (await page.$("#ad-phone")) await page.fill("#ad-phone", "06 11 22 33 44");
+      for (let i = 0; i < 8 && !(await page.$('[data-ad="end"]')); i++) {
+        if (await page.$('[data-ad="contact"]')) { await page.fill("#ad-phone", "06 11 22 33 44"); await page.fill("#ad-em", "Paul (père)"); await page.fill("#ad-emp", "06 99 88 77 66"); }
+        if (await page.$('[data-ad="consents"]')) await page.click('[data-sw="urgence"]');
+        await page.click(".ad-ob [data-next]"); await sleep(500);
+      }
+      await shot(page, "06b-accueil-adherent-fin");
+      await page.click('.ad-ob [data-go="adh-reserver"]'); await sleep(600);
+    } else { await page.click(".ad-ob [data-later]"); await sleep(500); }
+  }
   return { ctx, page };
 }
 
@@ -137,6 +149,7 @@ async function main() {
   await g.waitForSelector("#lv-email");
   await shot(g, "00-connexion");
   await g.click('[data-view="signup"]');
+  await g.waitForSelector('[data-as="club"]'); await g.click('[data-as="club"]');
   await g.waitForSelector("#lv-first");
   await g.fill("#lv-first", "Claire"); await g.fill("#lv-last", "Martin"); await g.fill("#lv-email", E.gerant); await g.fill("#lv-pass", PASS);
   await shot(g, "01-inscription");
@@ -189,6 +202,9 @@ async function main() {
   say("Réservation par la cavalière invitée");
   const A = await acceptInvite(browser, E.adh, null, "adhérente");
   ok(q1("SELECT 1 AS x FROM memberships m JOIN users u ON u.id = m.user_id WHERE u.email = ? AND m.club_id = ? AND m.role = 'member'", E.adh, club.id), "compte adhérent relié au club");
+  await synced(A.page);
+  { const fiche = rec(club.id, "members").find((m) => m.first === "Léa");
+    ok(fiche && fiche.onboarded && fiche.emergency === "Paul (père)" && fiche.consents && fiche.consents.urgence === true, "accueil adhérent enregistré sur sa fiche (urgence, autorisation)"); }
   await A.page.evaluate(() => P.go("adh-reserver")); await sleep(800);
   await shot(A.page, "06-adherent-reserver");
   await A.page.click("[data-book]");
@@ -339,6 +355,7 @@ async function vetScenario(browser, g, club) {
   ok(pdf.status === 200, "PDF de la facture téléchargeable par le vétérinaire");
 
   await g.evaluate(() => P.go("praticiens")); await sleep(1500); await g.evaluate(() => P.rerender()); await sleep(500);
+  { const t = await g.evaluate(() => (P.state && P.state.route) + " :: " + document.querySelector(".view").textContent.slice(0, 600)); if (!t.includes(cl.number)) console.log("DEBUG", cl.number, t); }
   ok(await g.evaluate((n) => document.querySelector(".view").textContent.includes(n), cl.number), "le gérant voit la facture reçue dans « Véto et maréchal »");
   await shot(g, "11-gerant-factures-praticiens");
 }

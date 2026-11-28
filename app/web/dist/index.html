@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Stabl">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex">
-<meta name="piaffe-version" content="202611281102">
+<meta name="piaffe-version" content="202611281119">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -1323,13 +1323,252 @@ body:has(.app.mobile) .lv-a2hs{bottom:calc(84px + env(safe-area-inset-bottom,0px
 .lv-pub-url{font-weight:600;font-size:14px;overflow-wrap:anywhere}
 .lv-gr .hrow{flex-wrap:wrap}
 @media (max-width:640px){.lv-gr{flex-wrap:wrap;padding-left:0;padding-right:0}.lv-gr>.hrow{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px;flex:1 1 100%;margin-left:44px}}
+
+/* =====================================================================
+   STABL LIVE · Onboarding v2 (28/11) : écurie, adhérent, choix à l'inscription
+   Chargé après lv.css. Aperçu en direct à droite, motion douce, clair et sombre.
+   ===================================================================== */
+
+/* ---------- Coque de l'onboarding : question à gauche, aperçu à droite ---------- */
+.lv-ob.v2{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
+@media (min-width:1100px){
+  .lv-ob.v2{grid-template-columns:minmax(0,1fr) minmax(420px,44%);grid-template-rows:auto minmax(0,1fr) auto}
+  .lv-ob.v2>.lv-ob-top,.lv-ob.v2>.lv-ob-body,.lv-ob.v2>.lv-ob-foot{grid-column:1}
+  .lv-ob.v2>.ob-live{grid-column:2;grid-row:1 / span 3}
+}
+.lv-ob.v2 .lv-ob-top{gap:18px}
+.lv-ob.v2 .lv-ob-body{padding:28px clamp(20px,5vw,72px) 40px}
+.lv-ob.v2 .lv-q{max-width:680px}
+.lv-ob.v2 .lv-ob-foot{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(10px)}
+.ob-saved{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);white-space:nowrap;opacity:0;transition:opacity .4s}
+.ob-saved.on{opacity:1}
+.ob-saved svg.i{color:var(--ok)}
+
+/* fil d'étapes : pastilles qui s'allongent */
+.ob-rail{flex:1;display:flex;gap:6px;max-width:520px;margin:0 auto}
+.ob-rail i{flex:1;height:6px;border-radius:99px;background:var(--bg-2);position:relative;overflow:hidden}
+.ob-rail i::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--acc),var(--strass));transform:scaleX(0);transform-origin:left;transition:transform .7s var(--e-out)}
+.ob-rail i.done::after{transform:scaleX(1)}
+.ob-rail i.cur::after{transform:scaleX(.45)}
+
+/* ---------- Aperçu en direct (colonne marine) ---------- */
+.ob-live{position:relative;overflow:hidden;background:#0a1636;color:#fff;display:none;flex-direction:column;justify-content:center;padding:48px clamp(28px,4vw,64px)}
+@media (min-width:1100px){.ob-live{display:flex}}
+.ob-live::before{content:"";position:absolute;inset:-25%;background:radial-gradient(36% 30% at 18% 18%,rgba(109,139,255,.42),transparent 70%),radial-gradient(30% 28% at 88% 86%,rgba(36,72,216,.55),transparent 70%),radial-gradient(22% 20% at 70% 30%,rgba(169,188,255,.18),transparent 70%);animation:lvDrift 18s var(--e-in-out) infinite alternate;pointer-events:none}
+.ob-live>*{position:relative}
+.ob-live-lab{display:flex;align-items:center;gap:10px;font:700 12.5px/1 var(--f-text);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:18px}
+.ob-live-lab .dot{width:8px;height:8px;border-radius:50%;background:#4fd394;box-shadow:0 0 0 0 rgba(79,211,148,.6);animation:obPulse 2s infinite}
+@keyframes obPulse{0%{box-shadow:0 0 0 0 rgba(79,211,148,.55)}70%{box-shadow:0 0 0 10px rgba(79,211,148,0)}100%{box-shadow:0 0 0 0 rgba(79,211,148,0)}}
+.ob-live-cap{margin-top:22px;font-size:15px;line-height:1.5;color:rgba(255,255,255,.72);max-width:44ch;min-height:3em;transition:opacity .3s}
+
+/* fenêtre d'appli miniature */
+.ob-win{border-radius:18px;background:#f7f8fc;color:#0a1636;box-shadow:0 40px 90px -30px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.08);overflow:hidden;transform:perspective(1600px) rotateY(-7deg) rotateX(3deg);transition:transform 1.2s var(--e-out);animation:obWin 1s var(--e-out) both}
+.ob-live:hover .ob-win{transform:perspective(1600px) rotateY(-2deg) rotateX(1deg)}
+@keyframes obWin{from{opacity:0;transform:perspective(1600px) rotateY(-14deg) rotateX(6deg) translateY(30px)}}
+.ob-win-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:#eceef5;border-bottom:1px solid #e1e4ee}
+.ob-win-bar i{width:10px;height:10px;border-radius:50%;background:#d6dbe6}
+.ob-win-bar i:nth-child(1){background:#ff8a7a}.ob-win-bar i:nth-child(2){background:#ffc65c}.ob-win-bar i:nth-child(3){background:#5fd49a}
+.ob-win-bar span{margin-left:10px;flex:1;text-align:center;font:500 11.5px/1 var(--f-text);color:#6b7390;background:#fff;border-radius:7px;padding:5px 10px;max-width:260px;margin-inline:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ob-win-in{display:grid;grid-template-columns:168px 1fr;min-height:330px}
+.ob-win-side{background:#fff;border-right:1px solid #eceef5;padding:14px 10px;display:flex;flex-direction:column;gap:3px}
+.ob-club{display:flex;align-items:center;gap:9px;padding:4px 6px 12px;border-bottom:1px solid #eceef5;margin-bottom:8px}
+.ob-club .av{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#2448d8,#6d8bff);color:#fff;display:grid;place-items:center;font:800 14px/1 var(--f-display);flex:none;transition:transform .5s var(--e-spring)}
+.ob-club .av.pop{animation:lvPop .5s var(--e-spring)}
+.ob-club b{display:block;font:700 12.5px/1.2 var(--f-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:104px}
+.ob-club small{display:block;font-size:10.5px;color:#868da4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:104px}
+.ob-mi{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font:500 12px/1.2 var(--f-text);color:#27314f;white-space:nowrap}
+.ob-mi svg.i{width:15px;height:15px;color:#2448d8;flex:none}
+.ob-mi.on{background:#e7ecff;color:#1834b0;font-weight:700}
+.ob-mi.new{animation:obMi .6s var(--e-out) both}
+@keyframes obMi{from{opacity:0;transform:translateX(-12px);background:#c2cdfb}50%{background:#c2cdfb}}
+.ob-win-main{padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ob-hi{font:800 18px/1.15 var(--f-display);letter-spacing:-.03em}
+.ob-hi small{display:block;font:500 11.5px/1.4 var(--f-text);letter-spacing:0;color:#868da4;margin-top:3px}
+.ob-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ob-kpi{background:#fff;border-radius:11px;padding:9px 10px;box-shadow:0 0 0 1px #eceef5}
+.ob-kpi b{display:block;font:800 19px/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ob-kpi small{font-size:10.5px;color:#868da4}
+.ob-card{background:#fff;border-radius:11px;padding:10px 12px;box-shadow:0 0 0 1px #eceef5;font-size:11.5px;color:#27314f}
+.ob-card h5{margin:0 0 7px;font:700 11.5px/1 var(--f-text);display:flex;align-items:center;gap:6px;color:#0a1636}
+.ob-card h5 svg.i{width:14px;height:14px;color:#2448d8}
+.ob-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ob-chip{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:99px;background:#f2f4f8;font:600 10.5px/1 var(--f-text);color:#27314f;animation:lvIn .45s var(--e-out) both}
+.ob-chip.ok{background:#dcf3e4;color:#11864f}
+.ob-chip.acc{background:#e7ecff;color:#1834b0}
+.ob-arrow{width:34px;height:2px;background:repeating-linear-gradient(90deg,#2448d8 0 4px,transparent 4px 8px);background-size:16px 2px;animation:obDash .8s linear infinite;border-radius:2px}
+@keyframes obDash{to{background-position:16px 0}}
+.ob-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 0}
+.ob-tg{width:26px;height:15px;border-radius:99px;background:#d6dbe6;position:relative;transition:background .3s;flex:none}
+.ob-tg::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:transform .35s var(--e-spring)}
+.ob-tg.on{background:#2448d8}.ob-tg.on::after{transform:translateX(11px)}
+.ob-empty{color:#a3abc2;font-style:italic}
+
+/* ---------- Écran d'accueil de l'onboarding ---------- */
+.ob-hello{display:flex;flex-direction:column;align-items:flex-start}
+.ob-mark{width:78px;height:78px;border-radius:24px;background:linear-gradient(140deg,#2448d8,#6d8bff);display:grid;place-items:center;color:#fff;margin-bottom:26px;box-shadow:0 18px 40px -14px rgba(36,72,216,.7);animation:obMark 1s var(--e-spring) both}
+.ob-mark svg{width:50px;height:50px}
+@keyframes obMark{from{opacity:0;transform:scale(.4) rotate(-18deg)}}
+.ob-promise{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 28px;width:100%}
+.ob-promise div{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:16px;background:var(--surface-2);font-size:14px;line-height:1.4;color:var(--ink-2);animation:lvIn .55s var(--e-out) both;animation-delay:calc(.25s + var(--i,0)*90ms)}
+.ob-promise svg.i{color:var(--acc);flex:none;margin-top:1px}
+.ob-promise b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:2px}
+@media (max-width:720px){.ob-promise{grid-template-columns:1fr}}
+
+/* ---------- Blocs regroupés sur un même écran ---------- */
+.ob-sec{margin-top:26px}
+.ob-sec:first-of-type{margin-top:0}
+.ob-sec>h3{font:700 16px/1.3 var(--f-text);margin:0 0 12px;display:flex;align-items:center;gap:8px;letter-spacing:0}
+.ob-sec>h3 svg.i{color:var(--acc)}
+.ob-sec>h3 .lv-hint{font-weight:500}
+.ob-blocks{display:flex;flex-direction:column;gap:14px}
+.ob-block{padding:18px 20px;border-radius:var(--r-lg);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);animation:lvIn .5s var(--e-out) both;animation-delay:calc(var(--i,0)*70ms)}
+.ob-block>h3{font:700 16.5px/1.3 var(--f-text);margin:0 0 4px;display:flex;align-items:center;gap:9px;letter-spacing:0}
+.ob-block>h3 svg.i{color:var(--acc)}
+.ob-block>p{margin:0 0 14px;color:var(--mut);font-size:14.5px;line-height:1.45}
+.ob-pills{display:flex;flex-wrap:wrap;gap:8px}
+.ob-pill{height:44px;padding:0 16px;border-radius:14px;font:600 14.5px/1 var(--f-text);background:var(--surface-2);color:var(--ink-2);box-shadow:inset 0 0 0 1.5px var(--line);display:inline-flex;align-items:center;gap:8px;transition:transform .3s var(--e-spring),background .2s,box-shadow .2s}
+.ob-pill:hover{transform:translateY(-1px)}
+.ob-pill[aria-pressed="true"]{background:var(--acc-pale);color:var(--acc-2);box-shadow:inset 0 0 0 2px var(--acc)}
+.ob-pill .rec{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ok);background:var(--ok-pale);padding:3px 7px;border-radius:99px}
+.ob-pill.sm{height:38px;font-size:14px;padding:0 13px}
+.ob-reveal{overflow:hidden;max-height:0;opacity:0;transition:max-height .5s var(--e-out),opacity .4s,margin .4s;margin-top:0}
+.ob-reveal.on{max-height:240px;opacity:1;margin-top:14px}
+
+/* ---------- Outils : tuile « je pars de zéro » ---------- */
+.ob-zero{grid-column:1 / -1}
+.lv-opt.ob-zero{min-height:64px;background:linear-gradient(120deg,var(--surface),var(--acc-pale))}
+
+/* ---------- Récupération : flux animé ancien logiciel → Stabl ---------- */
+.ob-move{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:22px;border-radius:var(--r-lg);background:var(--surface-2);margin-bottom:18px;animation:lvIn .5s var(--e-out) both}
+.ob-move .src{display:flex;flex-direction:column;gap:8px}
+.ob-move .src span{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;background:var(--surface);padding:8px 12px;border-radius:12px;box-shadow:var(--shadow-1)}
+.ob-move .src .lv-logo,.ob-move .src svg{width:22px;height:22px}
+.ob-pipe{position:relative;height:56px}
+.ob-pipe::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:repeating-linear-gradient(90deg,var(--acc-line) 0 6px,transparent 6px 12px)}
+.ob-pipe i{position:absolute;top:50%;width:30px;height:22px;margin-top:-11px;border-radius:7px;background:var(--surface);box-shadow:var(--shadow-1),inset 0 0 0 1.5px var(--acc-line);display:grid;place-items:center;animation:obPipe 3.2s var(--e-in-out) infinite;opacity:0}
+.ob-pipe i svg.i{width:13px;height:13px;color:var(--acc)}
+.ob-pipe i:nth-child(2){animation-delay:.8s}.ob-pipe i:nth-child(3){animation-delay:1.6s}.ob-pipe i:nth-child(4){animation-delay:2.4s}
+@keyframes obPipe{0%{left:0;opacity:0;transform:scale(.7)}12%{opacity:1;transform:none}85%{opacity:1}100%{left:calc(100% - 30px);opacity:0;transform:scale(.7)}}
+.ob-move .dst{width:64px;height:64px;border-radius:20px;background:#0a1636;color:#fff;display:grid;place-items:center;box-shadow:0 12px 30px -10px rgba(10,22,54,.6)}
+.ob-move .dst svg{width:38px;height:38px}
+.ob-what{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:22px}
+.ob-what span{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);animation:lvIn .45s var(--e-out) both;animation-delay:calc(.2s + var(--i,0)*60ms)}
+.ob-what svg.i{color:var(--ok)}
+@media (max-width:640px){.ob-move{grid-template-columns:1fr;justify-items:center;text-align:center}.ob-pipe{width:2px;height:60px}.ob-pipe::before{left:0;right:auto;top:0;bottom:0;width:2px;height:auto;background:repeating-linear-gradient(180deg,var(--acc-line) 0 6px,transparent 6px 12px)}.ob-pipe i{display:none}}
+
+/* ---------- Construction finale ---------- */
+.ob-build{position:fixed;inset:0;z-index:20;background:#0a1636;color:#fff;display:grid;place-items:center;padding:24px;overflow:hidden}
+.ob-build::before{content:"";position:absolute;inset:-20%;background:radial-gradient(34% 30% at 30% 25%,rgba(109,139,255,.35),transparent 70%),radial-gradient(30% 30% at 75% 80%,rgba(36,72,216,.5),transparent 70%);animation:lvDrift 14s var(--e-in-out) infinite alternate}
+.ob-build>div{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;max-width:520px;width:100%}
+.ob-ring{position:relative;width:148px;height:148px;margin-bottom:28px}
+.ob-ring svg.r{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ob-ring circle{fill:none;stroke-width:5}
+.ob-ring .bg{stroke:rgba(255,255,255,.1)}
+.ob-ring .fg{stroke:url(#obg);stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset .6s var(--e-out)}
+.ob-ring .h{position:absolute;inset:30px;display:grid;place-items:center}
+.ob-ring .h svg{width:100%;height:100%}
+.ob-ring .h path{fill:transparent;stroke:#fff;stroke-width:1.2;stroke-dasharray:420;stroke-dashoffset:420;animation:obDraw 2.2s var(--e-in-out) forwards,obFill .8s 1.9s var(--e-out) forwards}
+@keyframes obDraw{to{stroke-dashoffset:0}}
+@keyframes obFill{to{fill:#fff;stroke-width:0}}
+.ob-build h1{font:800 clamp(28px,4vw,40px)/1.08 var(--f-display);letter-spacing:-.045em;margin:0 0 10px}
+.ob-build p{color:rgba(255,255,255,.72);margin:0 0 26px;font-size:16px}
+.ob-steps{display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;text-align:left}
+.ob-steps .li{display:flex;align-items:center;gap:12px;font-size:15px;color:rgba(255,255,255,.4);transition:color .4s}
+.ob-steps .li .c{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2);transition:background .4s,box-shadow .4s}
+.ob-steps .li .c svg{width:14px;height:14px;fill:none;stroke:#0a1636;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;transform:scale(0);transition:transform .4s var(--e-spring)}
+.ob-steps .li.on{color:#fff}
+.ob-steps .li.on .c{box-shadow:inset 0 0 0 2px #6d8bff;animation:obSpin 1s linear infinite;border-top:2px solid transparent}
+.ob-steps .li.done .c{background:#4fd394;box-shadow:none;animation:none}
+.ob-steps .li.done .c svg{transform:scale(1)}
+@keyframes obSpin{50%{box-shadow:inset 0 0 0 2px #a9bcff}}
+.ob-spark{position:absolute;width:8px;height:8px;pointer-events:none;background:#a9bcff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:obSpark 1.4s var(--e-out) forwards}
+@keyframes obSpark{from{opacity:1;transform:translate(0,0) scale(.4) rotate(0)}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.6) rotate(180deg)}}
+
+/* ---------- Accueil adhérent ---------- */
+.ad-ob{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+.ad-ob .lv-ob-body{display:flex;justify-content:center;padding:24px 20px 40px;overflow:auto}
+.ad-ob .lv-q{max-width:560px}
+.ad-hero{position:relative;border-radius:28px;overflow:hidden;background:#0a1636;color:#fff;padding:28px 26px 24px;margin-bottom:22px;animation:lvIn .6s var(--e-out) both}
+.ad-hero::before{content:"";position:absolute;inset:-30%;background:radial-gradient(40% 40% at 85% 10%,rgba(109,139,255,.5),transparent 70%),radial-gradient(40% 40% at 0% 100%,rgba(36,72,216,.55),transparent 70%);animation:lvDrift 16s var(--e-in-out) infinite alternate}
+.ad-hero>*{position:relative}
+.ad-hero .club{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.ad-hero .club .av{width:48px;height:48px;border-radius:15px;background:#fff;color:#0a1636;display:grid;place-items:center;font:800 21px/1 var(--f-display)}
+.ad-hero .club b{display:block;font-size:17px}.ad-hero .club small{color:rgba(255,255,255,.7);font-size:13.5px}
+.ad-hero h1{font:800 clamp(28px,6vw,38px)/1.05 var(--f-display);letter-spacing:-.045em;margin:0 0 8px}
+.ad-hero p{margin:0;color:rgba(255,255,255,.78);font-size:15.5px;line-height:1.5}
+.ad-hero .ad-horse{position:absolute;right:-18px;bottom:-26px;width:150px;height:150px;opacity:.13}
+.ad-hero .ad-horse svg{width:100%;height:100%}
+.ad-list{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.ad-list div{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--surface-2);font-size:15px;animation:lvIn .5s var(--e-out) both;animation-delay:calc(.2s + var(--i,0)*80ms)}
+.ad-list .ico{flex:none}
+.ad-tog{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:18px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);margin-bottom:10px;cursor:pointer;animation:lvIn .5s var(--e-out) both;animation-delay:calc(var(--i,0)*70ms)}
+.ad-tog .grow b{display:block;font-size:15.5px;margin-bottom:3px}
+.ad-tog .grow small{color:var(--mut);font-size:14px;line-height:1.4}
+.ad-tog[aria-checked="true"]{box-shadow:inset 0 0 0 2px var(--acc);background:var(--acc-pale)}
+.ad-sw{width:46px;height:28px;border-radius:99px;background:var(--line-2);position:relative;flex:none;transition:background .3s;margin-top:2px}
+.ad-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .4s var(--e-spring)}
+[aria-checked="true"]>.ad-sw{background:var(--acc)}
+[aria-checked="true"]>.ad-sw::after{transform:translateX(18px)}
+.ad-horses{display:grid;gap:12px}
+.ad-hc{display:flex;gap:14px;align-items:center;padding:14px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);animation:lvIn .5s var(--e-out) both}
+.ad-hc .ph{width:72px;height:72px;border-radius:18px;background:linear-gradient(140deg,#e7ecff,#c2cdfb);display:grid;place-items:center;color:#2448d8;flex:none;overflow:hidden;position:relative}
+.ad-hc .ph img{width:100%;height:100%;object-fit:cover}
+.ad-hc .ph svg{width:40px;height:40px}
+.ad-hc b{display:block;font:800 19px/1.1 var(--f-display);letter-spacing:-.03em}
+.ad-hc small{color:var(--mut);font-size:13.5px}
+.ad-go{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.ad-go button{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);text-align:left;font:700 15px/1.25 var(--f-text);color:var(--ink);transition:transform .35s var(--e-spring),box-shadow .2s;animation:lvIn .5s var(--e-out) both;animation-delay:calc(.3s + var(--i,0)*90ms)}
+.ad-go button:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 2px var(--acc),var(--shadow-2)}
+.ad-go button small{font-weight:500;color:var(--mut);font-size:13px}
+@media (max-width:560px){.ad-go{grid-template-columns:1fr}.ad-go button{flex-direction:row;align-items:center}}
+.ad-done{width:88px;height:88px;border-radius:50%;background:var(--ok-pale);color:var(--ok);display:grid;place-items:center;margin:0 0 20px;animation:lvPop .6s var(--e-spring) both}
+.ad-done svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30;animation:obDraw .6s .35s var(--e-out) forwards}
+
+/* ---------- Inscription : qui êtes-vous ? ---------- */
+.lv-who{display:grid;gap:12px;margin-bottom:6px}
+.lv-who button{display:flex;gap:16px;align-items:center;text-align:left;padding:18px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);transition:transform .35s var(--e-spring),box-shadow .2s,background .2s;animation:lvIn .5s var(--e-out) both;animation-delay:calc(var(--i,0)*80ms)}
+.lv-who button:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 2px var(--acc),var(--shadow-2)}
+.lv-who .ico{width:52px;height:52px;border-radius:16px;flex:none}
+.lv-who b{display:block;font-size:16.5px;margin-bottom:3px}
+.lv-who small{color:var(--mut);font-size:14px;line-height:1.4}
+.lv-who .arr{margin-left:auto;color:var(--mut);transition:transform .3s var(--e-spring)}
+.lv-who button:hover .arr{transform:translateX(4px);color:var(--acc)}
+.lv-back{display:inline-flex;align-items:center;gap:6px;font:600 14px/1 var(--f-text);color:var(--mut);margin-bottom:18px;background:none;padding:6px 0}
+.lv-back:hover{color:var(--ink)}
+.lv-yn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 20px}
+.lv-yn button{height:48px;border-radius:14px;font:600 15px/1 var(--f-text);background:var(--surface-2);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink-2)}
+.lv-yn button[aria-pressed="true"]{background:var(--acc-pale);color:var(--acc-2);box-shadow:inset 0 0 0 2px var(--acc)}
+.lv-panel{padding:18px;border-radius:18px;background:var(--surface-2);animation:lvIn .45s var(--e-out) both;margin-bottom:16px}
+.lv-panel p{margin:0 0 10px;font-size:15px;line-height:1.5;color:var(--ink-2)}
+.lv-panel p:last-child{margin-bottom:0}
+.lv-panel ol{margin:0;padding-left:20px;font-size:15px;line-height:1.6;color:var(--ink-2)}
+
+/* ---------- Héros de la connexion : silhouette et cartes flottantes ---------- */
+.lv-hero .lv-illu.v2{right:auto;left:50%;bottom:120px;width:min(70%,420px);transform:translateX(-30%);opacity:1}
+.lv-float{position:absolute;display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;background:rgba(255,255,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 20px 40px -18px rgba(0,0,0,.5);color:#fff;font-size:13.5px;line-height:1.3;animation:obFloat 7s var(--e-in-out) infinite alternate;white-space:nowrap}
+.lv-float b{display:block;font-size:14px}
+.lv-float small{color:rgba(255,255,255,.7)}
+.lv-float .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#fff;color:#2448d8;flex:none}
+.lv-float .ic svg.i{width:18px;height:18px}
+.lv-float.f2{animation-delay:-2.4s;animation-duration:8s}.lv-float.f3{animation-delay:-4.8s;animation-duration:9s}
+@keyframes obFloat{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+.lv-hmark{position:absolute;right:-60px;bottom:-40px;width:min(62%,460px);opacity:.09;pointer-events:none}
+.lv-hmark svg{width:100%;height:auto}
+.lv-floats{position:relative;height:250px;margin:10px 0}
+.lv-floats .f1{left:0;top:10px}.lv-floats .f2{left:34%;top:96px}.lv-floats .f3{left:8%;top:180px}
+@media (max-width:900px){.lv-floats,.lv-hmark{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .ob-win,.ob-mark,.ob-promise div,.ob-block,.ob-mi.new,.ob-pipe i,.ob-arrow,.ob-live::before,.ob-build::before,.ob-ring .h path,.ad-hero,.ad-hero::before,.ad-list div,.ad-tog,.ad-hc,.ad-go button,.lv-who button,.lv-float,.ob-what span,.ob-move{animation:none!important}
+  .ob-ring .h path{fill:#fff;stroke-width:0}
+}
 </style>
 <script src="/vendor/three-r128.min.js" defer></script>
 </head>
 <body class="lv-booting">
 <div id="lv-root" aria-live="polite"></div>
 <noscript><p style="padding:24px;font:16px system-ui">Stabl a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur puis rechargez la page.</p></noscript>
-<script>window.PIAFFE_LIVE={version:"202611281102",probe:false};
+<script>window.PIAFFE_LIVE={version:"202611281119",probe:false};
 /* ===== demo/core/brand.js ===== */
 /* =====================================================================
    STABL · Marque (logo officiel du 26/11/2026 : silhouette marine, sans œil)
@@ -24170,9 +24409,10 @@ var GOOGLE='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="
 var EYE='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
 
 function hero(){
-  return '<aside class="lv-hero"><div>'+PL.brandHTML(34,'var(--on-navy)')+'</div>'+
-    '<div><h1>Votre écurie, enfin simple.</h1><p>Planning, chevaux, adhérents, factures et paiements en ligne : tout le club au même endroit, sur ordinateur comme sur téléphone.</p></div>'+
-    '<div class="lv-illu">'+(window.ILLU&&ILLU.cheval?ILLU.cheval({size:null}):'')+'</div>'+
+  var fl=[['planning','Galop 3 · samedi 10 h','6 cavaliers · 1 place libre','f1'],['card','Facture payée','Pension de Tornade · 420 €','f2'],['care','Maréchal jeudi','Rappel envoyé au propriétaire','f3']];
+  return '<aside class="lv-hero"><span class="lv-hmark">'+PL.brandLogo(460,'#ffffff')+'</span><div>'+PL.brandHTML(34,'var(--on-navy)')+'</div>'+
+    '<div><h1>Votre écurie, enfin simple.</h1><p>Planning, chevaux, adhérents, factures et paiements en ligne : tout le club au même endroit, sur ordinateur comme sur téléphone.</p>'+
+    '<div class="lv-floats" aria-hidden="true">'+fl.map(function(f){return '<div class="lv-float '+f[3]+'"><span class="ic">'+ICON(f[0])+'</span><span><b>'+f[1]+'</b><small>'+f[2]+'</small></span></div>'}).join('')+'</div></div>'+
     '<div class="lv-proof"><span>'+ICON('shield','sm')+'Données hébergées en Europe</span><span>'+ICON('card','sm')+'Paiements par Stripe</span><span>'+ICON('invoice','sm')+'Facture électronique prête</span></div></aside>';
 }
 function shell(inner){var r=root();r.innerHTML='<div class="lv-auth">'+hero()+'<main class="lv-side"><div class="lv-card lv-view">'+inner+'</div></main></div>';return r.querySelector('.lv-card')}
@@ -24210,7 +24450,34 @@ V.login=function(o){var el=shell('<h2>Bon retour</h2><p class="lv-sub">Connectez
   el.querySelector('form').onsubmit=function(e){e.preventDefault();var em=el.querySelector('#lv-email').value.trim(),pa=el.querySelector('#lv-pass').value,b=el.querySelector('[type=submit]');
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))return msg(el,'Saisissez une adresse e-mail valide.');if(!pa)return msg(el,'Saisissez votre mot de passe.');
     busy(b,true);msg(el,'');PL.post('/auth/login',{email:em,password:pa}).then(function(){if(PL.authNext&&/^\/invitation\//.test(PL.authNext)){location.href=PL.authNext;return}PL.afterAuth()},function(x){busy(b,false);msg(el,x.status===401||x.status===400?(x.message||'E-mail ou mot de passe incorrect.'):PL.msg(x))})}};
-V.signup=function(o){var el=shell('<h2>Créez votre compte</h2><p class="lv-sub">Trente jours d’essai complet, sans carte bancaire.</p>'+
+/* inscription : d'abord « qui êtes-vous ? » (une écurie crée son espace, un cavalier passe par son écurie) */
+V.signup=function(o){o=o||{};var as=o.as||(/[?&]pour=(cavalier|adherent)/.test(location.search)?'rider':/[?&]pour=(club|ecurie)/.test(location.search)?'club':null);
+  if(as==='rider')return V.rider(o);if(as==='club')return V.signupClub(o);
+  var el=shell('<h2>Bienvenue sur '+esc(PL.brandName())+'</h2><p class="lv-sub">Pour vous montrer le bon chemin : vous êtes…</p><div class="lv-who">'+
+    '<button type="button" data-as="club" style="--i:0"><span class="ico d-acc">'+ICON('stable')+'</span><span><b>Je gère une écurie ou un club</b><small>Centre équestre, poney-club, pension, association, coach.</small></span><span class="arr">'+ICON('right')+'</span></button>'+
+    '<button type="button" data-as="rider" style="--i:1"><span class="ico d-mo">'+ICON('horse')+'</span><span><b>Je suis cavalier, parent ou propriétaire</b><small>Pour réserver, payer et suivre mon cheval.</small></span><span class="arr">'+ICON('right')+'</span></button></div>'+
+    '<p class="lv-foot">Déjà un compte ? <a href="/connexion" class="lv-a" data-view="login">Se connecter</a></p>');
+  bindCommon(el);el.querySelectorAll('[data-as]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-as');(v==='rider'?V.rider:V.signupClub)({email:o.email})}})};
+var REC_MSG=function(){return 'Bonjour, je suis cavalier chez vous et j’aimerais pouvoir réserver mes reprises et payer en ligne. '+PL.brandName()+' a l’air simple à mettre en place : pourriez-vous y jeter un œil ?'};
+V.rider=function(o){var el=shell('<button class="lv-back" type="button" data-view="signup">'+ICON('back','sm')+'Retour</button><h2>Votre espace cavalier</h2>'+
+  '<p class="lv-sub">Sur '+esc(PL.brandName())+', c’est votre écurie qui vous ouvre votre espace : vos reprises, vos factures et votre cheval y sont déjà, rien à saisir.</p>'+
+  '<div class="lv-fl"><span>Votre écurie utilise-t-elle déjà '+esc(PL.brandName())+' ?</span></div><div class="lv-yn">'+[['yes','Oui'],['no','Non'],['unsure','Je ne sais pas']].map(function(x){return '<button type="button" data-yn="'+x[0]+'" aria-pressed="false">'+x[1]+'</button>'}).join('')+'</div><div class="lv-ans"></div>');
+  bindCommon(el);var ans=el.querySelector('.lv-ans');
+  el.querySelectorAll('[data-yn]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-yn');el.querySelectorAll('[data-yn]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+    if(v==='yes'){ans.innerHTML='<div class="lv-panel"><p><b>Parfait.</b> Demandez à l’accueil de votre écurie de vous inviter : vous recevrez un e-mail « Activer mon espace », et c’est fait en une minute.</p><p>Déjà invité mais rien reçu ? Regardez dans les indésirables, ou vérifiez l’adresse que le club a notée.</p></div>'+
+      '<button class="btn pri lv-btn-main" type="button" data-view="login"><span class="lv-bt">J’ai déjà un compte, me connecter</span></button><button class="btn ghost" type="button" data-view="magic" style="width:100%;margin-top:8px">'+ICON('mail','sm')+'Recevoir un lien de connexion</button>';bindCommon(ans);return}
+    ans.innerHTML='<div class="lv-panel"><p><b>Recommandez '+esc(PL.brandName())+' à votre écurie.</b> Nous lui envoyons un seul e-mail de votre part, avec votre nom. Le jour où elle passe sur '+esc(PL.brandName())+', vous recevez votre invitation.</p></div>'+
+      '<form class="lv-f" novalidate><div class="lv-msgs"></div>'+field('E-mail de l’écurie ou du gérant','<input class="in" type="email" id="rc-to" inputmode="email" required placeholder="contact@ecurie.fr">')+field('Nom de l’écurie','<input class="in" id="rc-club" maxlength="120" placeholder="Écurie du Moulin">','facultatif')+
+      '<div class="lv-row2">'+field('Votre prénom','<input class="in" id="rc-first" autocomplete="given-name" required maxlength="60">')+field('Votre nom','<input class="in" id="rc-last" autocomplete="family-name" maxlength="60">')+'</div>'+
+      field('Votre e-mail','<input class="in" type="email" id="rc-from" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">','l’écurie pourra vous répondre')+
+      field('Votre message','<textarea class="in" id="rc-msg" rows="3" maxlength="500">'+esc(REC_MSG())+'</textarea>','modifiable')+mainBtn('Envoyer la recommandation')+'</form>';
+    var f=ans.querySelector('form');f.onsubmit=function(e){e.preventDefault();var g=function(id){return f.querySelector('#'+id).value.trim()},to=g('rc-to'),fr=g('rc-from'),fi=g('rc-first'),bt=f.querySelector('[type=submit]');var re=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      if(!re.test(to))return msg(f,'Saisissez l’e-mail de votre écurie.');if(!fi)return msg(f,'Indiquez votre prénom.');if(!re.test(fr))return msg(f,'Saisissez votre adresse e-mail.');
+      busy(bt,true);msg(f,'');PL.post('/api/public/recommander',{to:to,club_name:g('rc-club')||undefined,from_first:fi,from_last:g('rc-last')||undefined,from_email:fr,message:g('rc-msg')||undefined}).then(function(){var c=g('rc-club');
+        el.innerHTML='<div class="ad-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>Merci '+esc(fi)+' !</h2><p class="lv-sub">'+(c?esc(c):'Votre écurie')+' reçoit votre recommandation. Dès qu’elle passe sur '+esc(PL.brandName())+', vous recevrez un e-mail pour activer votre espace.</p><p class="lv-foot"><a href="/" class="lv-a" data-view="login">Revenir à l’accueil</a></p>';bindCommon(el);
+        var d=el.querySelector('.ad-done');if(d&&PL.obSparkle){d.style.position='relative';PL.obSparkle(d)}},
+        function(x){busy(bt,false);msg(f,x.unavailable?'La recommandation arrive très bientôt. En attendant, parlez-en à l’accueil de votre écurie !':x.status===429?'Une recommandation a déjà été envoyée récemment. Merci !':PL.msg(x))})}}})};
+V.signupClub=function(o){var el=shell('<button class="lv-back" type="button" data-view="signup">'+ICON('back','sm')+'Retour</button><h2>Créez l’espace de votre écurie</h2><p class="lv-sub">Trente jours d’essai complet, sans carte bancaire.</p>'+
   '<button class="lv-google" data-google type="button">'+GOOGLE+'Continuer avec Google</button><div class="lv-or">ou avec votre e-mail</div>'+
   '<form class="lv-f" novalidate><div class="lv-msgs"></div><div class="lv-row2">'+field('Prénom','<input class="in" id="lv-first" autocomplete="given-name" required>')+field('Nom','<input class="in" id="lv-last" autocomplete="family-name" required>')+'</div>'+
   field('Adresse e-mail','<input class="in" type="email" id="lv-email" autocomplete="email" inputmode="email" required value="'+esc(o.email||'')+'">')+
@@ -24414,16 +24681,20 @@ PL.campaignSheet=function(o){o=o||{};var d=new Date(Date.now()+864e5);var def=PL
 /* ===== live/60-onboarding.js ===== */
 try{
 /* =====================================================================
-   PIAFFE LIVE · Onboarding ultra-personnalisé
-   Une question par écran, animée, barre de progression, clavier (Entrée) et pouce.
+   STABL LIVE · Onboarding de l'écurie (v2, 28/11/2026)
+   Une question par écran, regroupées pour aller vite (7 à 9 écrans au lieu de 14), avec à droite
+   un aperçu en direct de l'espace Stabl qui se construit à chaque réponse (ordinateur large).
    Les réponses sont gardées localement, puis enregistrées sur le serveur dès que le club existe
    (PUT /api/onboarding). À la fin, POST /api/onboarding/complete configure le club.
+   Clés des réponses inchangées (kind, name, siret, address, horses, boxes, members, staff, disciplines,
+   arenas_indoor, arenas_outdoor, paddocks, round_pen, activities, migration, accountant, accountant_email,
+   accountant_einvoice, online_payments, pay_methods, vat_regime) : le serveur n'a pas changé.
    ===================================================================== */
 (function(){
 var P=window.P,PL=window.PL,esc=P.fmt.esc;
 var LS='piaffe:live:onb';
-var A={},stepIdx=0,dir='fwd',el=null;
-function saveLocal(){try{localStorage.setItem(LS,JSON.stringify({a:A,s:stepIdx}))}catch(e){}}
+var A={},stepIdx=0,dir='fwd',el=null,prevMenu={};
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify({a:A,s:stepIdx}))}catch(e){}flashSaved()}
 function loadLocal(){try{var j=JSON.parse(localStorage.getItem(LS)||'null');if(j){A=j.a||{};stepIdx=j.s||0}}catch(e){}}
 function tick(){return '<span class="lv-tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>'}
 var KINDS=[['centre','Centre équestre','Cours, pensions, concours : un peu de tout.','stable','d-hz'],['poney_club','Poney-club','Les enfants d’abord, baby poney et galops.','child','d-rd'],
@@ -24437,118 +24708,124 @@ var coach=function(){return A.kind==='coach_independant'};
 function MG(){if(!A.migration||typeof A.migration!=='object')A.migration={tools:[]};if(!A.migration.tools)A.migration.tools=[];return A.migration}
 function replacing(){return MG().tools.filter(function(t){return t.action==='replace'})}
 function names(l){l=l.map(function(t){return t.name});return l.length<2?l.join(''):l.slice(0,-1).join(', ')+' et '+l[l.length-1]}
+function structWord(){return coach()?'activité':A.kind==='association'?'association':A.kind==='poney_club'?'poney-club':A.kind&&A.kind.indexOf('ecurie')===0?'écurie':'centre équestre'}
+function opt(o,i,attr,on){return '<button class="lv-opt row" '+attr+' aria-pressed="'+on+'" style="--i:'+i+'"><span class="ico">'+ICON(o.ic)+'</span><span><b>'+o.t+'</b>'+(o.s?'<br><small>'+o.s+'</small>':'')+'</span>'+tick()+'</button>'}
+function pills(list,cur,attr,cls){return '<div class="ob-pills">'+list.map(function(p){return '<button type="button" class="ob-pill'+(cls?' '+cls:'')+'" data-manual '+attr+'="'+esc(String(p[0]))+'" aria-pressed="'+(cur===p[0])+'">'+(p[2]?ICON(p[2],'sm'):'')+p[1]+(p[3]?' <span class="rec">'+p[3]+'</span>':'')+'</button>'}).join('')+'</div>'}
+function num(f,i,defs){var v=A[f[0]]!=null?A[f[0]]:(defs&&defs[f[0]]!=null?defs[f[0]]:'');return '<div class="lv-num" style="--i:'+i+'"><label for="ob-'+f[0]+'">'+ICON(f[2],'sm')+f[1]+'</label><div class="lv-step"><button type="button" data-m="'+f[0]+'" aria-label="Moins">'+ICON('minus','sm')+'</button><input class="in num" id="ob-'+f[0]+'" inputmode="numeric" value="'+v+'" placeholder="0"><button type="button" data-p="'+f[0]+'" aria-label="Plus">'+ICON('plus','sm')+'</button></div></div>'}
 
 /* ---------- Les étapes ---------- */
 var STEPS=[
- {id:'hello',render:function(){var f=(PL.user&&PL.user.first)||'';return '<div class="eyebrow">Bienvenue</div><h1>Bonjour'+(f?' '+esc(f):'')+', configurons votre espace.</h1><p class="lv-sub">Quelques questions, une par écran, pour que '+esc(PL.brandName())+' corresponde exactement à votre structure : modules utiles, tarifs types, installations et import de vos données. Comptez deux minutes.</p>'+
-   '<div class="lv-opts two"><button class="lv-opt row" data-start style="--i:0"><span class="ico d-acc">'+ICON('spark')+'</span><span><b>Configurer mon club</b><br><small>Recommandé, deux minutes</small></span></button>'+
-   '<button class="lv-opt row" data-sandbox style="--i:1"><span class="ico d-mo">'+ICON('eye')+'</span><span><b>Explorer avec des données d’exemple</b><br><small>Un club fictif, effaçable d’un clic</small></span></button></div>'},
+ {id:'hello',cap:'Votre espace apparaît ici au fil de vos réponses.',render:function(){var f=(PL.user&&PL.user.first)||'';
+   return '<div class="ob-hello"><div class="ob-mark">'+PL.brandLogo(50,'#fff')+'</div><div class="eyebrow">Bienvenue sur '+esc(PL.brandName())+'</div><h1>Bonjour'+(f?' '+esc(f):'')+', on prépare votre écurie ensemble.</h1><p class="lv-sub">Quelques questions, une par écran : vous voyez votre espace se construire à chaque réponse. Comptez deux minutes, et tout reste modifiable ensuite.</p>'+
+   '<div class="ob-promise">'+[['import','Vos données reprises','Kavalog, Excel, papier : on récupère tout pour vous.'],['mail','Vos cavaliers invités','Chacun reçoit un e-mail pour activer son espace.'],['card','Payé en ligne','Carte et prélèvement, relances automatiques.']].map(function(p,i){return '<div style="--i:'+i+'">'+ICON(p[0])+'<span><b>'+p[1]+'</b>'+p[2]+'</span></div>'}).join('')+'</div>'+
+   '<div class="lv-opts two" style="width:100%"><button class="lv-opt row" data-start style="--i:0"><span class="ico d-acc">'+ICON('spark')+'</span><span><b>Configurer mon club</b><br><small>Recommandé, deux minutes</small></span></button>'+
+   '<button class="lv-opt row" data-sandbox style="--i:1"><span class="ico d-mo">'+ICON('eye')+'</span><span><b>Explorer avec des données d’exemple</b><br><small>Un club fictif, effaçable d’un clic</small></span></button></div></div>'},
    bind:function(q){q.querySelector('[data-start]').onclick=next;q.querySelector('[data-sandbox]').onclick=sandbox},noFoot:true},
- {id:'kind',render:function(){return '<div class="eyebrow">Votre structure</div><h1>Quel type de structure dirigez-vous ?</h1><p class="lv-sub">Nous adaptons les écrans, le vocabulaire et les forfaits proposés.</p>'+
+ {id:'kind',cap:'Le vocabulaire, les écrans et les forfaits proposés s’adaptent à votre type de structure.',render:function(){return '<div class="eyebrow">Votre structure</div><h1>Quel type de structure dirigez-vous ?</h1><p class="lv-sub">Nous adaptons les écrans, le vocabulaire et les forfaits proposés.</p>'+
    '<div class="lv-opts">'+KINDS.map(function(k,i){return '<button class="lv-opt" data-v="'+k[0]+'" aria-pressed="'+(A.kind===k[0])+'" style="--i:'+i+'"><span class="ico '+k[4]+'">'+ICON(k[3])+'</span><b>'+k[1]+'</b><small>'+k[2]+'</small>'+tick()+'</button>'}).join('')+'</div>'},
    bind:function(q){single(q,'kind',true)},ok:function(){return !!A.kind}},
- {id:'name',render:function(){var lab=coach()?'Comment s’appelle votre activité ?':'Comment s’appelle votre '+(A.kind==='association'?'association':A.kind==='poney_club'?'poney-club':A.kind&&A.kind.indexOf('ecurie')===0?'écurie':'centre équestre')+' ?';
-   return '<div class="eyebrow">Identité</div><h1>'+lab+'</h1><p class="lv-sub">Recherchez votre structure par son nom ou son SIRET : nous préremplissons l’adresse et la forme juridique depuis le répertoire officiel des entreprises.</p>'+
+ {id:'name',cap:'Votre nom et votre adresse figurent sur vos factures, vos e-mails et la météo du planning.',render:function(){var lab=coach()?'Comment s’appelle votre activité ?':'Comment s’appelle votre '+structWord()+' ?';
+   return '<div class="eyebrow">Identité</div><h1>'+lab+'</h1><p class="lv-sub">Tapez le nom ou le SIRET : nous retrouvons l’adresse et la forme juridique dans le répertoire officiel des entreprises.</p>'+
    '<div class="lv-f" style="max-width:560px"><label class="lv-fl"><span>Nom affiché</span><input class="in" id="ob-name" value="'+esc(A.name||'')+'" placeholder="Écurie du Moulin" autocomplete="organization" maxlength="120"></label>'+
    '<label class="lv-fl"><span>SIRET <span class="lv-hint">facultatif, pour vos factures</span></span><div class="hrow"><input class="in" id="ob-siret" value="'+esc(A.siret||'')+'" inputmode="numeric" placeholder="14 chiffres, ou cherchez par nom" maxlength="20"><button class="btn" data-find type="button">'+ICON('search','sm')+'<span>Rechercher</span></button></div></label>'+
    '<div class="lv-sirets"></div><div class="lv-picked">'+(A.address&&A.address.city&&A.siren?picked():'')+'</div>'+
    '<label class="lv-fl"><span>Adresse <span class="lv-hint">pour vos factures et la météo</span></span><input class="in" id="ob-line1" value="'+esc((A.address||{}).line1||'')+'" placeholder="12 chemin des Prés" autocomplete="address-line1" maxlength="160"></label>'+
    '<div class="lv-row2"><label class="lv-fl"><span>Code postal</span><input class="in" id="ob-zip" value="'+esc((A.address||{}).zip||'')+'" inputmode="numeric" autocomplete="postal-code" maxlength="10"></label>'+
    '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div></div>'},
-   bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets');
-     n.oninput=function(){A.name=n.value.trim();saveLocal();foot()};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
+   bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets'),t=0;
+     n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live()};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
      /* adresse saisie à la main (la recherche officielle peut être indisponible ou ne pas trouver la structure) */
      var ad=function(k){return q.querySelector('#ob-'+k)};
-     ['line1','zip','city'].forEach(function(k){ad(k).oninput=function(){A.address=A.address&&typeof A.address==='object'?A.address:{country:'FR'};A.address[k]=ad(k).value.trim();saveLocal()}});
+     ['line1','zip','city'].forEach(function(k){ad(k).oninput=function(){A.address=A.address&&typeof A.address==='object'?A.address:{country:'FR'};A.address[k]=ad(k).value.trim();saveLocal();if(k==='city')live()}});
      var fillAd=function(){var a=A.address||{};['line1','zip','city'].forEach(function(k){ad(k).value=a[k]||''})};
-     function find(){var qq=(s.value.replace(/\s/g,'').length>=9?s.value:n.value).trim();if(qq.length<3){P.toast?void 0:0;box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Saisissez au moins trois lettres du nom, ou le SIRET.</span></div>';return}
+     function find(){var qq=(s.value.replace(/\s/g,'').length>=9?s.value:n.value).trim();if(qq.length<3){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Saisissez au moins trois lettres du nom, ou le SIRET.</span></div>';return}
        box.innerHTML='<div class="lv-dots" style="padding:12px"><i></i><i></i><i></i></div>';
        PL.get('/api/onboarding/siret?q='+encodeURIComponent(qq)).then(function(j){var r=j.results||[];
          if(!r.length){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>Aucune entreprise trouvée. Vous pouvez continuer et compléter plus tard.</span></div>';return}
-         box.innerHTML=r.map(function(c,i){return '<button class="lv-siret" data-i="'+i+'" aria-pressed="'+(A.siren===c.siren)+'"><span class="ico">'+ICON(c.is_association?'members':'stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc([c.address.zip,c.address.city].filter(Boolean).join(' '))+' · SIRET '+esc(String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4'))+(c.active?'':' · fermée')+'</small></span></button>'}).join('');
+         box.innerHTML=r.map(function(c,i){return '<button class="lv-siret" data-i="'+i+'" aria-pressed="'+(A.siren===c.siren)+'" style="animation:lvIn .4s var(--e-out) both;animation-delay:'+(i*50)+'ms"><span class="ico">'+ICON(c.is_association?'members':'stable')+'</span><span class="grow"><b>'+esc(c.name)+'</b><small>'+esc([c.address.zip,c.address.city].filter(Boolean).join(' '))+' · SIRET '+esc(String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4'))+(c.active?'':' · fermée')+'</small></span></button>'}).join('');
          box.querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){var c=r[+b.getAttribute('data-i')];A.name=A.name||c.name;if(!n.value)n.value=c.name;A.siret=c.siret;A.siren=c.siren;A.legal_form=c.legal_form;A.naf=c.naf;A.address=c.address;if(c.lat){A.lat=c.lat;A.lon=c.lon}
-           if(c.is_association&&!A.vat_regime)A.vat_regime='association_exoneree';s.value=String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4');saveLocal();fillAd();
+           if(c.is_association&&!A.vat_regime)A.vat_regime='association_exoneree';s.value=String(c.siret).replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/,'$1 $2 $3 $4');saveLocal();fillAd();live();
            box.querySelectorAll('[data-i]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});q.querySelector('.lv-picked').innerHTML=picked();foot()}})},
        function(e){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>'+(e.unavailable?'La recherche n’est pas encore disponible : saisissez simplement le nom.':esc(PL.msg(e)))+'</span></div>'})}
      q.querySelector('[data-find]').onclick=find;s.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();find()}}},
    ok:function(){return (A.name||'').trim().length>=2},leave:ensureClub},
- {id:'sizes',render:function(){var F=coach()?[['members','Élèves suivis','members'],['horses','Chevaux de vos élèves','horse']]:[['horses','Chevaux','horse'],['boxes','Boxes','stable'],['members','Adhérents et clients','members'],['staff','Salariés','team']];
-   return '<div class="eyebrow">Votre taille</div><h1>Combien êtes-vous ?</h1><p class="lv-sub">Une estimation suffit. Elle sert à choisir la bonne offre et à préparer vos écrans.</p>'+
-   '<div class="lv-nums">'+F.map(function(f,i){return '<div class="lv-num" style="--i:'+i+'"><label for="ob-'+f[0]+'">'+ICON(f[2],'sm')+f[1]+'</label><div class="lv-step"><button type="button" data-m="'+f[0]+'" aria-label="Moins">'+ICON('minus','sm')+'</button><input class="in num" id="ob-'+f[0]+'" inputmode="numeric" value="'+(A[f[0]]!=null?A[f[0]]:'')+'" placeholder="0"><button type="button" data-p="'+f[0]+'" aria-label="Plus">'+ICON('plus','sm')+'</button></div></div>'}).join('')+'</div>'},
-   bind:function(q){bindNums(q)},ok:function(){return true}},
- {id:'disciplines',skip:function(){return false},render:function(){var sel=A.disciplines||[];return '<div class="eyebrow">Équitation</div><h1>Quelles disciplines pratiquez-vous ?</h1><p class="lv-sub">Plusieurs choix possibles. Elles servent au planning, aux concours et à la progression des cavaliers.</p>'+
-   '<div class="hrow wrap" style="--g:10px">'+DISC.map(function(d,i){return '<button class="tag lv-tg" data-manual data-v="'+esc(d)+'" aria-pressed="'+(sel.indexOf(d)>=0)+'" style="height:44px;padding:0 18px;font-size:15px;animation:lvIn .45s var(--e-out) both;animation-delay:'+(i*30)+'ms">'+esc(d)+'</button>'}).join('')+'</div>'},
-   bind:function(q){multi(q,'disciplines','.lv-tg')},ok:function(){return true}},
- {id:'installations',skip:coach,render:function(){var F=[['arenas_indoor','Manèges couverts','arena'],['arenas_outdoor','Carrières','sun'],['paddocks','Prés et paddocks','paddock']];
-   return '<div class="eyebrow">Installations</div><h1>De quelles installations disposez-vous ?</h1><p class="lv-sub">Chaque piste apparaît dans le planning et peut être réservée par vos propriétaires.</p>'+
-   '<div class="lv-nums">'+F.map(function(f,i){return '<div class="lv-num" style="--i:'+i+'"><label for="ob-'+f[0]+'">'+ICON(f[2],'sm')+f[1]+'</label><div class="lv-step"><button type="button" data-m="'+f[0]+'" aria-label="Moins">'+ICON('minus','sm')+'</button><input class="in num" id="ob-'+f[0]+'" inputmode="numeric" value="'+(A[f[0]]!=null?A[f[0]]:(f[0]==='paddocks'?2:1))+'"><button type="button" data-p="'+f[0]+'" aria-label="Plus">'+ICON('plus','sm')+'</button></div></div>'}).join('')+
-   '<div class="lv-num" style="--i:3"><label>'+ICON('rotate','sm')+'Rond de longe</label><div class="hrow" style="justify-content:space-between"><span class="mut">Couvert ou non</span>'+P.ui.tog(!!A.round_pen,'ob-round')+'</div></div></div>'},
-   bind:function(q){bindNums(q,{arenas_indoor:1,arenas_outdoor:1,paddocks:2});var t=q.querySelector('#ob-round');t.setAttribute('data-manual','');t.onclick=function(){A.round_pen=t.getAttribute('aria-checked')!=='true';t.setAttribute('aria-checked',A.round_pen);saveLocal()}},ok:function(){return true}},
- {id:'activities',render:function(){var sel=A.activities||null;if(!sel){sel=defAct();A.activities=sel}
-   return '<div class="eyebrow">Activités</div><h1>Que proposez-vous ?</h1><p class="lv-sub">Nous activons les écrans utiles et masquons le reste. Vous pourrez tout changer dans les réglages.</p>'+
-   '<div class="lv-opts">'+ACTS.map(function(a,i){return '<button class="lv-opt row" data-v="'+a[0]+'" aria-pressed="'+(sel.indexOf(a[0])>=0)+'" style="--i:'+i+'"><span class="ico">'+ICON(a[2])+'</span><b>'+a[1]+'</b>'+tick()+'</button>'}).join('')+'</div>'},
-   bind:function(q){multi(q,'activities','.lv-opt')},ok:function(){return true}},
- {id:'uses',render:function(){var u=MG().uses;return '<div class="eyebrow">Vos outils</div><h1>Venez-vous d’un autre logiciel, ou en utilisez-vous déjà ?</h1><p class="lv-sub">Gestion du club, comptabilité, banque, encaissement, fédération, agenda : dites-nous ce que vous utilisez, nous reprenons vos données ou nous nous y connectons.</p>'+
-   '<div class="lv-opts two">'+[[true,'Oui','J’utilise un ou plusieurs outils.','swap'],[false,'Non','Je pars de zéro, c’est parfait.','spark']].map(function(o,i){return '<button class="lv-opt row" data-b="'+o[0]+'" aria-pressed="'+(u===o[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(o[3])+'</span><span><b>'+o[1]+'</b><br><small>'+o[2]+'</small></span>'+tick()+'</button>'}).join('')+'</div>'},
-   bind:function(q){q.querySelectorAll('[data-b]').forEach(function(b){b.onclick=function(){var M=MG();M.uses=b.getAttribute('data-b')==='true';if(!M.uses){M.tools=[];M.other=''}q.querySelectorAll('[data-b]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();setTimeout(next,280)}})},
-   ok:function(){return typeof MG().uses==='boolean'}},
- {id:'tools',skip:function(){return MG().uses!==true},render:function(){var M=MG(),sel=M.tools.map(function(t){return t.id});
-   return '<div class="eyebrow">Vos outils</div><h1>Lesquels utilisez-vous ?</h1><p class="lv-sub">Plusieurs choix possibles. Pour chacun, vous choisirez ensuite de le remplacer ou de le garder.</p>'+
-   '<div class="lv-opts lv-tools">'+PL.mig.PICK.map(function(p,i){return '<button class="lv-opt row" data-t="'+p[0]+'" aria-pressed="'+(sel.indexOf(p[0])>=0)+'" style="--i:'+i+'"><span class="ico">'+PL.mig.icon(p[0])+'</span><b>'+esc(p[1])+'</b>'+tick()+'</button>'}).join('')+'</div>'+
+ {id:'sizes',cap:'Vos chiffres préparent le bon nombre de boxes, de pistes au planning et l’offre adaptée.',render:function(){
+   if(coach())return '<div class="eyebrow">Votre activité</div><h1>Combien d’élèves suivez-vous ?</h1><p class="lv-sub">Une estimation suffit.</p><div class="lv-nums">'+[['members','Élèves suivis','members'],['horses','Chevaux de vos élèves','horse']].map(function(f,i){return num(f,i)}).join('')+'</div>';
+   return '<div class="eyebrow">Votre écurie en chiffres</div><h1>Combien êtes-vous, et sur quelles installations ?</h1><p class="lv-sub">Une estimation suffit : elle sert à préparer vos boxes, vos pistes au planning et la bonne offre.</p>'+
+   '<div class="ob-sec"><div class="lv-nums">'+[['horses','Chevaux','horse'],['boxes','Boxes','stable'],['members','Cavaliers','members'],['staff','Salariés','team']].map(function(f,i){return num(f,i)}).join('')+'</div></div>'+
+   '<div class="ob-sec"><h3>'+ICON('arena','sm')+'Installations <span class="lv-hint">réservables au planning</span></h3><div class="lv-nums">'+[['arenas_indoor','Manèges couverts','arena'],['arenas_outdoor','Carrières','sun'],['paddocks','Prés et paddocks','paddock']].map(function(f,i){return num(f,i+4,{arenas_indoor:1,arenas_outdoor:1,paddocks:2})}).join('')+
+   '<div class="lv-num" style="--i:7"><label>'+ICON('rotate','sm')+'Rond de longe</label><div class="hrow" style="justify-content:space-between;height:52px"><span class="mut">J’en ai un</span>'+P.ui.tog(!!A.round_pen,'ob-round')+'</div></div></div></div>'},
+   bind:function(q){bindNums(q,coach()?{}:{arenas_indoor:1,arenas_outdoor:1,paddocks:2});var t=q.querySelector('#ob-round');if(t){t.setAttribute('data-manual','');t.onclick=function(){A.round_pen=t.getAttribute('aria-checked')!=='true';t.setAttribute('aria-checked',A.round_pen);saveLocal()}}},ok:function(){return true}},
+ {id:'activities',cap:'Seuls les écrans utiles apparaissent dans votre menu. Le reste attend dans les réglages.',render:function(){var sel=A.activities||null;if(!sel){sel=defAct();A.activities=sel}var ds=A.disciplines||[];
+   return '<div class="eyebrow">Activités</div><h1>Que proposez-vous ?</h1><p class="lv-sub">Nous avons présélectionné le plus courant pour '+(A.kind?'un '+esc((KINDS.filter(function(k){return k[0]===A.kind})[0]||[0,'club'])[1].toLowerCase()):'votre structure')+'. Touchez pour ajouter ou retirer.</p>'+
+   '<div class="lv-opts">'+ACTS.map(function(a,i){return '<button class="lv-opt row" data-v="'+a[0]+'" aria-pressed="'+(sel.indexOf(a[0])>=0)+'" style="--i:'+i+'"><span class="ico">'+ICON(a[2])+'</span><b>'+a[1]+'</b>'+tick()+'</button>'}).join('')+'</div>'+
+   '<div class="ob-sec" style="margin-top:28px"><h3>'+ICON('jump','sm')+'Disciplines <span class="lv-hint">facultatif, pour le planning et la progression</span></h3><div class="hrow wrap" style="--g:8px">'+DISC.map(function(d,i){return '<button class="ob-pill sm lv-tg" data-manual data-d="'+esc(d)+'" aria-pressed="'+(ds.indexOf(d)>=0)+'" style="animation:lvIn .45s var(--e-out) both;animation-delay:'+(200+i*25)+'ms">'+esc(d)+'</button>'}).join('')+'</div></div>'},
+   bind:function(q){multi(q,'activities','.lv-opt');q.querySelectorAll('[data-d]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-d'),l=(A.disciplines||[]).slice(),i=l.indexOf(v);if(i<0)l.push(v);else l.splice(i,1);A.disciplines=l;b.setAttribute('aria-pressed',i<0);saveLocal()}})},ok:function(){return true}},
+ {id:'tools',cap:'On récupère vos données, ou on se branche sur ce que vous gardez (compta, banque, FFE).',render:function(){var M=MG(),sel=M.tools.map(function(t){return t.id});
+   return '<div class="eyebrow">Vos outils</div><h1>Qu’utilisez-vous aujourd’hui ?</h1><p class="lv-sub">Gestion du club, tableur, compta, banque, encaissement, fédération : on reprend vos données ou on s’y connecte. Plusieurs choix possibles.</p>'+
+   '<div class="lv-opts lv-tools"><button class="lv-opt row ob-zero" data-zero aria-pressed="'+(M.uses===false)+'" style="--i:0"><span class="ico d-acc">'+ICON('spark')+'</span><span><b>Rien, je pars de zéro</b><br><small>Parfait : la saisie guidée vous attend.</small></span>'+tick()+'</button>'+
+   PL.mig.PICK.map(function(p,i){return '<button class="lv-opt row" data-t="'+p[0]+'" aria-pressed="'+(sel.indexOf(p[0])>=0)+'" style="--i:'+(i+1)+'"><span class="ico">'+PL.mig.icon(p[0])+'</span><b>'+esc(p[1])+'</b>'+tick()+'</button>'}).join('')+'</div>'+
    '<div class="lv-f" style="max-width:560px;margin-top:18px"><label class="lv-fl"><span>Autre <span class="lv-hint">facultatif, un ou plusieurs noms</span></span><input class="in" id="ob-other" value="'+esc(M.other||'')+'" placeholder="Nom du logiciel" maxlength="120" autocomplete="off"></label><div class="lv-sugg hrow wrap" style="--g:8px"></div></div>'},
-   bind:function(q){var M=MG();q.querySelectorAll('[data-t]').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-t'),i=M.tools.map(function(t){return t.id}).indexOf(id);
-       if(i<0)M.tools.push({id:id,name:PL.mig.nameOf(id),action:PL.mig.recommend(id)});else M.tools.splice(i,1);b.setAttribute('aria-pressed',i<0);saveLocal();foot()}});
+   bind:function(q){var M=MG(),z=q.querySelector('[data-zero]');
+     z.onclick=function(){M.uses=false;M.tools=[];M.other='';q.querySelectorAll('[data-t]').forEach(function(x){x.setAttribute('aria-pressed','false')});q.querySelector('#ob-other').value='';z.setAttribute('aria-pressed','true');saveLocal();foot();live();setTimeout(next,320)};
+     q.querySelectorAll('[data-t]').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-t'),i=M.tools.map(function(t){return t.id}).indexOf(id);
+       if(i<0)M.tools.push({id:id,name:PL.mig.nameOf(id),action:PL.mig.recommend(id)});else M.tools.splice(i,1);M.uses=M.tools.length?true:(M.uses===false?false:undefined);z.setAttribute('aria-pressed',M.uses===false);b.setAttribute('aria-pressed',i<0);saveLocal();foot();live()}});
      var o=q.querySelector('#ob-other'),sg=q.querySelector('.lv-sugg');
      function sync(){M.other=o.value.trim();M.tools=M.tools.filter(function(t){return !t.custom});
        if(M.other){var hits=PL.mig.search(M.other);var exact=hits.filter(function(h){return h.nom.toLowerCase()===M.other.toLowerCase()})[0];
          if(exact&&!M.tools.some(function(t){return t.id===exact.id}))M.tools.push({id:exact.id,name:exact.nom,action:PL.mig.recommend(exact.id),custom:true});
          else if(!exact)M.tools.push({id:'autre',name:M.other,action:'replace',custom:true});
          sg.innerHTML=hits.filter(function(h){return !exact||h.id!==exact.id}).map(function(h){return '<button class="tag" type="button" data-manual data-s="'+esc(h.nom)+'">'+esc(h.nom)+'</button>'}).join('');
-         sg.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){o.value=b.getAttribute('data-s');sync()}})}else sg.innerHTML='';saveLocal();foot()}
+         sg.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){o.value=b.getAttribute('data-s');sync()}})}else sg.innerHTML='';
+       M.uses=M.tools.length?true:undefined;z.setAttribute('aria-pressed','false');saveLocal();foot();live()}
      o.oninput=sync},
-   ok:function(){return MG().tools.length>0}},
- {id:'toolsplan',skip:function(){return MG().uses!==true||!MG().tools.length},render:function(){var M=MG();
+   ok:function(){var M=MG();return M.uses===false||M.tools.length>0}},
+ {id:'toolsplan',cap:'Remplacer : vos données arrivent dans Stabl. Garder : Stabl s’y connecte.',skip:function(){return MG().uses!==true||!MG().tools.length},render:function(){var M=MG();
    return '<div class="eyebrow">Vos outils</div><h1>Que faisons-nous de chacun ?</h1><p class="lv-sub">Nous avons présélectionné le choix le plus courant. Remplacer : nous récupérons vos données dans '+esc(PL.brandName())+'. Garder : '+esc(PL.brandName())+' s’y connecte et vous continuez à l’utiliser.</p>'+
    '<div class="lv-toolplan">'+M.tools.map(function(t,i){return '<div class="lv-tp" style="--i:'+i+'"><span class="ico">'+PL.mig.icon(t.id)+'</span><b class="grow">'+esc(t.name)+'</b>'+
      (function(){var ok=PL.mig.possible(t.id);if(ok.indexOf(t.action)<0)t.action=ok[0];var fx=PL.mig.effect(t.id,t.action);
        return (ok.length>1?'<div class="lv-seg" role="group" aria-label="'+esc(t.name)+'">'+[['replace','Le remplacer par '+esc(PL.brandName())],['integrate','Le garder et le connecter']].map(function(c){return '<button type="button" data-manual data-k="'+i+'" data-a="'+c[0]+'" aria-pressed="'+(t.action===c[0])+'">'+c[1]+'</button>'}).join('')+'</div>'
          :'<span class="lv-tp-only">'+(t.action==='replace'?'Remplacé par '+esc(PL.brandName()):'Gardé et connecté')+'</span>')+(fx?'<small class="lv-tp-fx" data-fx="'+i+'">'+esc(fx)+'</small>':'<small class="lv-tp-fx" data-fx="'+i+'"></small>')})()+'</div>'}).join('')+'</div>'},
    bind:function(q){var M=MG();q.querySelectorAll('[data-a]').forEach(function(b){b.onclick=function(){var t=M.tools[+b.getAttribute('data-k')];t.action=b.getAttribute('data-a');
-     q.querySelectorAll('[data-k="'+b.getAttribute('data-k')+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});var fx=q.querySelector('[data-fx="'+b.getAttribute('data-k')+'"]');if(fx)fx.textContent=PL.mig.effect(t.id,t.action);saveLocal();foot()}})},
+     q.querySelectorAll('[data-k="'+b.getAttribute('data-k')+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});var fx=q.querySelector('[data-fx="'+b.getAttribute('data-k')+'"]');if(fx)fx.textContent=PL.mig.effect(t.id,t.action);saveLocal();foot();live()}})},
    ok:function(){return true},leave:function(){var M=MG();M.plan=PL.mig.plan(M);saveLocal();return Promise.resolve()}},
- {id:'recuperer',skip:function(){return MG().uses!==true||!replacing().length},render:function(){var M=MG(),R=replacing(),web=R.some(function(t){return ['excel','papier','autre'].indexOf(t.id)<0});
+ {id:'recuperer',cap:'Un essai à blanc d’abord : rien n’est enregistré sans votre accord, rien n’est modifié chez l’ancien logiciel.',skip:function(){return MG().uses!==true||!replacing().length},render:function(){var M=MG(),R=replacing(),web=R.some(function(t){return ['excel','papier','autre'].indexOf(t.id)<0});
    if(M.job_id&&M.etat==='termine')return '<div class="eyebrow">Vos données</div><h1>Récupération terminée.</h1><div class="lv-bilan-box" style="max-width:560px"><div class="lv-dots" style="padding:12px"><i></i><i></i><i></i></div></div>';
-   return '<div class="eyebrow">Vos données</div><h1>Récupérons vos données de '+esc(names(R))+'.</h1><p class="lv-sub">Adhérents, familles, chevaux, forfaits, factures et planning : notre outil de migration récupère tout pour vous, avec un essai à blanc avant d’enregistrer. Rien n’est modifié dans votre ancien logiciel.</p>'+
+   return '<div class="eyebrow">Vos données</div><h1>Récupérons vos données de '+esc(names(R))+'.</h1><p class="lv-sub">Notre outil de migration fait le travail pour vous, avec un essai à blanc avant d’enregistrer. Rien n’est modifié dans votre ancien logiciel.</p>'+
+   '<div class="ob-move"><div class="src">'+R.slice(0,3).map(function(t){return '<span>'+PL.mig.icon(t.id)+esc(t.name)+'</span>'}).join('')+'</div><div class="ob-pipe" aria-hidden="true"><i>'+ICON('members')+'</i><i>'+ICON('horse')+'</i><i>'+ICON('invoice')+'</i><i>'+ICON('planning')+'</i></div><div class="dst">'+PL.brandLogo(38,'#fff')+'</div></div>'+
+   '<div class="ob-what">'+['Adhérents et familles','Chevaux et propriétaires','Forfaits et cartes','Factures et soldes','Planning des reprises','Documents'].map(function(w,i){return '<span style="--i:'+i+'">'+ICON('checkc','sm')+w+'</span>'}).join('')+'</div>'+
    (web?'<div class="lv-f" style="max-width:560px;margin-bottom:18px"><label class="lv-fl"><span>Adresse de votre ancien logiciel <span class="lv-hint">facultatif</span></span><input class="in" id="ob-addr" value="'+esc(M.adresse||'')+'" placeholder="https://…" inputmode="url" maxlength="300"></label></div>':'')+
    '<div class="lv-opts two">'+[['now','Lancer la récupération maintenant','Comptez dix minutes, vous pouvez la reprendre plus tard.','import'],['later','Plus tard','Une étape de votre liste de démarrage.','clock']].map(function(o,i){return '<button class="lv-opt row" data-w="'+o[0]+'" aria-pressed="'+(M.when===o[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(o[3])+'</span><span><b>'+o[1]+'</b><br><small>'+o[2]+'</small></span>'+tick()+'</button>'}).join('')+'</div>'},
    bind:function(q){var M=MG(),a=q.querySelector('#ob-addr');if(a)a.oninput=function(){M.adresse=a.value.trim();saveLocal()};
      var box=q.querySelector('.lv-bilan-box');if(box)PL.mig.job(M.job_id).then(function(j){box.innerHTML=PL.mig.bilanHTML(j)},function(){box.innerHTML='<div class="lv-msg ok">'+ICON('checkc','sm')+'<span>Vos données ont été envoyées. Le bilan détaillé sera dans votre liste de démarrage.</span></div>'});
-     q.querySelectorAll('[data-w]').forEach(function(b){b.onclick=function(){M.when=b.getAttribute('data-w');q.querySelectorAll('[data-w]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();
+     q.querySelectorAll('[data-w]').forEach(function(b){b.onclick=function(){M.when=b.getAttribute('data-w');q.querySelectorAll('[data-w]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();live();
        if(M.when==='later'){setTimeout(next,280);return}
        var R=replacing();persist();PL.mig.open({source:R[0].id,adresse:M.adresse,outils:R.map(function(t){return t.id}),retour:location.origin+'/configuration',title:'Depuis '+names(R)}).then(function(v){
          M.etat=v.etat;if(v.job_id)M.job_id=v.job_id;saveLocal();persist();draw()},function(e){
          if(e&&e.unavailable){M.when='later';saveLocal();toastLocal('La récupération guidée arrive très bientôt : elle vous attend dans votre liste de démarrage.');draw();return}toastLocal(PL.msg(e))})}})},
    ok:function(){var M=MG();return !!M.when||M.etat==='termine'}},
- {id:'accountant',render:function(){return '<div class="eyebrow">Comptabilité</div><h1>Travaillez-vous avec un expert-comptable ?</h1><p class="lv-sub">Il peut accéder à vos factures, aux exports FEC et aux PDF, sans voir le reste. La facture électronique devient obligatoire : autant que tout soit prêt.</p>'+
-   '<div class="lv-opts two">'+[[true,'Oui, j’ai un comptable','Je l’invite tout de suite.','accounting'],[false,'Non, je m’en occupe','Exports simples quand vous en avez besoin.','user']].map(function(o,i){return '<button class="lv-opt row" data-b="'+o[0]+'" aria-pressed="'+(A.accountant===o[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(o[3])+'</span><span><b>'+o[1]+'</b><br><small>'+o[2]+'</small></span>'+tick()+'</button>'}).join('')+'</div>'+
-   '<div class="lv-acc" style="margin-top:18px;max-width:560px;'+(A.accountant?'':'display:none')+'"><div class="lv-f"><label class="lv-fl"><span>E-mail de votre comptable <span class="lv-hint">il recevra une invitation</span></span><input class="in" type="email" id="ob-acc" value="'+esc(A.accountant_email||'')+'" placeholder="cabinet@exemple.fr" inputmode="email"></label>'+
-   '<div class="lv-fl"><span>Gère-t-il déjà la facture électronique pour vous ?</span>'+P.ui.seg([['yes','Oui'],['no','Non'],['unknown','Je ne sais pas']],A.accountant_einvoice||'unknown','data-ei')+'</div></div></div>'},
-   bind:function(q){q.querySelectorAll('[data-b]').forEach(function(b){b.onclick=function(){A.accountant=b.getAttribute('data-b')==='true';q.querySelectorAll('[data-b]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});q.querySelector('.lv-acc').style.display=A.accountant?'':'none';saveLocal();foot();if(A.accountant){var i=q.querySelector('#ob-acc');setTimeout(function(){i.focus()},50)}else setTimeout(next,260)}});
-     var i=q.querySelector('#ob-acc');i.oninput=function(){A.accountant_email=i.value.trim();saveLocal()};q.querySelectorAll('[data-ei]').forEach(function(b){b.addEventListener('click',function(){A.accountant_einvoice=b.getAttribute('data-ei');saveLocal()})})},
-   ok:function(){return A.accountant!==undefined&&(!A.accountant||!A.accountant_email||/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(A.accountant_email))}},
- {id:'payments',render:function(){var pm=A.pay_methods||[];var M=[['cheque','Chèques'],['especes','Espèces'],['virement','Virements'],['ancv','Chèques-vacances ANCV'],['cb','Carte sur place'],['prelevement','Prélèvements']];
-   return '<div class="eyebrow">Encaissement</div><h1>Voulez-vous que vos cavaliers paient en ligne ?</h1><p class="lv-sub">Carte bancaire et prélèvement SEPA par Stripe : l’argent arrive directement sur le compte de votre structure, les relances partent toutes seules. Aucun abonnement, seulement les frais de Stripe par paiement.</p>'+
-   '<div class="lv-opts two">'+[[true,'Oui, activer le paiement en ligne','Carte, SEPA, liens de paiement.','card'],[false,'Pas pour le moment','Vous gardez vos moyens actuels.','wallet']].map(function(o,i){return '<button class="lv-opt row" data-b="'+o[0]+'" aria-pressed="'+(A.online_payments===o[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(o[3])+'</span><span><b>'+o[1]+'</b><br><small>'+o[2]+'</small></span>'+tick()+'</button>'}).join('')+'</div>'+
-   '<div class="lv-fl" style="margin-top:22px"><span>Ce que vous acceptez aujourd’hui</span><div class="hrow wrap" style="--g:8px">'+M.map(function(m){return '<button class="tag lv-pm" data-manual data-v="'+m[0]+'" aria-pressed="'+(pm.indexOf(m[0])>=0)+'" style="height:42px;padding:0 16px;font-size:15px">'+m[1]+'</button>'}).join('')+'</div></div>'},
-   bind:function(q){q.querySelectorAll('[data-b]').forEach(function(b){b.onclick=function(){A.online_payments=b.getAttribute('data-b')==='true';q.querySelectorAll('[data-b]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot()}});multi(q,'pay_methods','.lv-pm')},
-   ok:function(){return A.online_payments!==undefined}},
- {id:'vat',render:function(){var def=A.vat_regime||(A.kind==='association'||A.legal_form==='association'?'association_exoneree':'');
-   var V=[['normal','Assujetti à la TVA','5,5 % sur l’enseignement et les activités sportives, 20 % sur les pensions et la vente.','percent'],['franchise','Franchise en base','Pas de TVA facturée (article 293 B du CGI), mention ajoutée sur vos factures.','doc'],['association_exoneree','Association exonérée','Activités sportives exonérées (article 261-7-1° du CGI).','members']];
-   return '<div class="eyebrow">Factures</div><h1>Quel est votre régime de TVA ?</h1><p class="lv-sub">Vos factures porteront les bons taux et les mentions obligatoires. En cas de doute, choisissez « Je ne sais pas » : vous ou votre comptable pourrez le corriger.</p>'+
-   '<div class="lv-opts two">'+V.map(function(v,i){return '<button class="lv-opt" data-v="'+v[0]+'" aria-pressed="'+(def===v[0])+'" style="--i:'+i+'"><span class="ico">'+ICON(v[3])+'</span><b>'+v[1]+'</b><small>'+v[2]+'</small>'+tick()+'</button>'}).join('')+
-   '<button class="lv-opt" data-v="" aria-pressed="'+(A.vat_regime==='')+'" style="--i:3"><span class="ico">'+ICON('info')+'</span><b>Je ne sais pas</b><small>Nous choisissons le régime le plus courant pour votre structure.</small>'+tick()+'</button></div>'},
-   bind:function(q){single(q,'vat_regime',true)},ok:function(){return A.vat_regime!==undefined}},
- {id:'recap',render:function(){var acts=(A.activities||[]).map(function(a){return (ACTS.filter(function(x){return x[0]===a})[0]||[0,a])[1]});
+ {id:'finances',cap:'Les bons taux de TVA et les mentions légales sont posés sur chaque facture, sans y penser.',render:function(){
+   if(A.online_payments===undefined)A.online_payments=true;if(A.accountant===undefined)A.accountant=false;
+   if(A.vat_regime===undefined)A.vat_regime=(A.kind==='association'||A.legal_form==='association')?'association_exoneree':'';
+   var pm=A.pay_methods||[],MP=[['cheque','Chèques'],['especes','Espèces'],['virement','Virements'],['ancv','Chèques-vacances'],['cb','Carte sur place'],['prelevement','Prélèvements']];
+   return '<div class="eyebrow">Finances</div><h1>Paiements et factures</h1><p class="lv-sub">Nous avons mis le choix le plus courant. Un clic pour changer, sinon continuez.</p><div class="ob-blocks">'+
+   '<div class="ob-block" style="--i:0"><h3>'+ICON('card')+'Paiement en ligne</h3><p>Carte et prélèvement SEPA par Stripe : l’argent arrive sur le compte du club, les relances partent toutes seules. Seulement les frais de Stripe par paiement.</p>'+
+     pills([[true,'Oui, je l’active','card','Conseillé'],[false,'Pas pour le moment','clock']],A.online_payments,'data-op')+
+     '<div class="ob-reveal on"><div class="lv-hint" style="margin-bottom:8px;font-size:13.5px">Ce que vous acceptez aujourd’hui</div><div class="hrow wrap" style="--g:8px">'+MP.map(function(m){return '<button class="ob-pill sm lv-pm" data-manual data-v="'+m[0]+'" aria-pressed="'+(pm.indexOf(m[0])>=0)+'">'+m[1]+'</button>'}).join('')+'</div></div></div>'+
+   '<div class="ob-block" style="--i:1"><h3>'+ICON('percent')+'TVA</h3><p>Pour les bons taux sur chaque facture. Dans le doute, votre comptable pourra corriger.</p>'+
+     pills([['normal','Assujetti'],['franchise','Franchise en base (293 B)'],['association_exoneree','Association exonérée'],['','Je ne sais pas']],A.vat_regime,'data-vat','sm')+'</div>'+
+   '<div class="ob-block" style="--i:2"><h3>'+ICON('accounting')+'Expert-comptable</h3><p>Il accède aux factures, au FEC et aux PDF, sans voir le reste.</p>'+
+     pills([[true,'J’en ai un','user'],[false,'Je m’en occupe','check']],A.accountant,'data-acc')+
+     '<div class="ob-reveal lv-acc'+(A.accountant?' on':'')+'"><div class="lv-f"><label class="lv-fl"><span>Son e-mail <span class="lv-hint">il recevra une invitation</span></span><input class="in" type="email" id="ob-acc" value="'+esc(A.accountant_email||'')+'" placeholder="cabinet@exemple.fr" inputmode="email"></label></div></div></div>'+
+   '</div>'},
+   bind:function(q){
+     var grp=function(attr,key,parse,after){q.querySelectorAll('['+attr+']').forEach(function(b){b.onclick=function(){A[key]=parse(b.getAttribute(attr));q.querySelectorAll('['+attr+']').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();live();if(after)after()}})};
+     var bool=function(v){return v==='true'};
+     grp('data-op','online_payments',bool);grp('data-vat','vat_regime',function(v){return v});
+     grp('data-acc','accountant',bool,function(){var r=q.querySelector('.lv-acc');r.classList.toggle('on',!!A.accountant);if(A.accountant)setTimeout(function(){q.querySelector('#ob-acc').focus()},120)});
+     multi(q,'pay_methods','.lv-pm');var i=q.querySelector('#ob-acc');i.oninput=function(){A.accountant_email=i.value.trim();saveLocal();foot()}},
+   ok:function(){return A.online_payments!==undefined&&A.vat_regime!==undefined&&A.accountant!==undefined&&(!A.accountant||!A.accountant_email||/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(A.accountant_email))}},
+ {id:'recap',cap:'Tout est prêt. Un clic et votre espace est créé.',render:function(){var acts=(A.activities||[]).map(function(a){return (ACTS.filter(function(x){return x[0]===a})[0]||[0,a])[1]});
    var k=(KINDS.filter(function(x){return x[0]===A.kind})[0]||[0,'Structure'])[1];
    var items=[['stable','Votre espace',[esc(A.name||''),k,A.address&&A.address.city?esc(A.address.city):null].filter(Boolean)],
      ['grid','Écrans activés',acts.length?acts.slice(0,6):['Les essentiels']],
@@ -24556,7 +24833,7 @@ var STEPS=[
      ['import','Vos outils',(function(){var M=MG(),R=replacing(),I=M.tools.filter(function(t){return t.action==='integrate'}),out=[];
        if(!M.uses||!M.tools.length)return ['Saisie guidée, chevaux et adhérents'];
        if(R.length)out.push((M.etat==='termine'?'Données reprises de ':'Reprise des données de ')+esc(names(R)));if(I.length)out.push('Connexion à '+esc(names(I)));return out})()],
-     ['accounting','Comptabilité',[A.accountant?(A.accountant_email?'Invitation à '+esc(A.accountant_email):'Comptable à inviter'):'Exports FEC et CSV disponibles',A.online_payments?'Paiement en ligne à activer':'Encaissements manuels']]];
+     ['accounting','Finances',[A.accountant?(A.accountant_email?'Invitation à '+esc(A.accountant_email):'Comptable à inviter'):'Exports FEC et CSV disponibles',A.online_payments?'Paiement en ligne à activer':'Encaissements manuels']]];
    return '<div class="eyebrow">C’est prêt</div><h1>Voici votre '+esc(PL.brandName())+' sur mesure.</h1><p class="lv-sub">Vérifiez d’un coup d’œil. Tout reste modifiable ensuite dans les réglages.</p>'+
    '<div class="lv-recap">'+items.map(function(it,i){return '<div class="card" style="--i:'+i+'"><span class="ico">'+ICON(it[0])+'</span><h3>'+it[1]+'</h3><ul>'+it[2].map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>'}).join('')+'</div>'},
    bind:function(){},ok:function(){return true},cta:'Créer mon espace'}
@@ -24566,26 +24843,55 @@ function forfaitsPreview(){var a=A.activities||[],out=[];if(a.indexOf('cours')>=
 function picked(){var a=A.address||{};return '<div class="lv-msg ok" style="margin-top:4px">'+ICON('checkc','sm')+'<span><b>'+esc(A.name||'')+'</b>, '+esc([a.line1,[a.zip,a.city].filter(Boolean).join(' ')].filter(Boolean).join(', '))+(A.legal_form?' · '+esc(LF[A.legal_form]||A.legal_form):'')+'</span></div>'}
 var LF={association:'Association',ei:'Entreprise individuelle',eurl:'EURL',sarl:'SARL',sas:'SAS',sasu:'SASU',earl:'EARL',gaec:'GAEC',scea:'SCEA',autre:'Autre forme'};
 
+/* ---------- Aperçu en direct ---------- */
+var MENU_ACT={cours:['Planning des reprises','planning'],particuliers:['Cours particuliers','coach'],pensions:['Pensions','stable'],demi_pensions:['Demi-pensions','swap'],concours:['Concours','trophy'],stages:['Stages','ticket'],
+  location_box:['Boxes','key'],balades:['Balades','route'],baby:['Baby poney','child'],anniversaires:['Anniversaires','gift'],vente:['Vente de chevaux','tag'],elevage:['Élevage','heart']};
+var shown={};
+function live(){if(!el)return;var box=el.querySelector('.ob-live');if(!box)return;var s=cur();
+  var nm=(A.name||'').trim(),city=A.address&&A.address.city,ini=(nm.replace(/^(écurie|ecurie|centre équestre|poney[- ]club|club|haras|domaine)\s+(du|de la|des|de|d’|d')?\s*/i,'')||nm||'?').charAt(0).toUpperCase();
+  var menu=[['Tableau de bord','today']].concat((A.activities||[]).map(function(a){return MENU_ACT[a]}).filter(Boolean)).concat(coach()?[['Mes élèves','members']]:[['Chevaux','horse'],['Adhérents','members']]).concat([['Facturation','invoice']]);
+  var M=MG(),R=replacing(),I=M.tools.filter(function(t){return t.action==='integrate'});
+  var kp=coach()?[['members','Élèves'],['horses','Chevaux']]:[['horses','Chevaux'],['boxes','Boxes'],['members','Cavaliers']];
+  var data=M.uses===false?'<span class="ob-chip acc">Saisie guidée</span><span class="ob-chip">Import Excel possible</span>':
+    (M.tools.length?(R.length?R.slice(0,2).map(function(t){return '<span class="ob-chip">'+esc(t.name)+'</span>'}).join('')+'<span class="ob-arrow"></span><span class="ob-chip ok">'+(M.etat==='termine'?'Repris':'Stabl')+'</span>':'')+
+      (I.length?'<div style="width:100%;margin-top:6px">'+I.slice(0,3).map(function(t){return '<span class="ob-chip acc">'+ICON('plug','sm')+esc(t.name)+'</span>'}).join(' ')+'</div>':''):'<span class="ob-empty">À la prochaine question</span>');
+  var win='<div class="ob-win"><div class="ob-win-bar"><i></i><i></i><i></i><span>'+esc(nm?('app.stablapp.fr · '+nm):'app.stablapp.fr')+'</span></div><div class="ob-win-in">'+
+    '<div class="ob-win-side"><div class="ob-club"><span class="av'+(shown.ini!==ini?' pop':'')+'">'+esc(ini)+'</span><span><b>'+esc(nm||'Votre club')+'</b><small>'+esc(city||((KINDS.filter(function(k){return k[0]===A.kind})[0]||[0,''])[1])||'')+'</small></span></div>'+
+      menu.map(function(m,i){var isNew=!shown.menu||!shown.menu[m[0]];return '<div class="ob-mi'+(i===0?' on':'')+(isNew&&shown.menu?' new':'')+'">'+ICON(m[1])+esc(m[0])+'</div>'}).join('')+'</div>'+
+    '<div class="ob-win-main"><div class="ob-hi">Bonjour '+esc((PL.user&&PL.user.first)||'')+'<small>'+(nm?esc(nm)+(city?' · '+esc(city):''):'Votre tableau de bord')+'</small></div>'+
+      '<div class="ob-kpis">'+kp.map(function(k){return '<div class="ob-kpi"><b data-k="'+k[0]+'">'+(A[k[0]]!=null&&A[k[0]]!==''?A[k[0]]:'·')+'</b><small>'+k[1]+'</small></div>'}).join('')+'</div>'+
+      '<div class="ob-card"><h5>'+ICON('import')+'Vos données</h5><div class="ob-flow">'+data+'</div></div>'+
+      '<div class="ob-card"><h5>'+ICON('card')+'Encaissements</h5><div class="ob-row"><span>Paiement en ligne</span><span class="ob-tg'+(A.online_payments?' on':'')+'"></span></div><div class="ob-row"><span>Factures conformes'+(A.vat_regime==='franchise'?' (293 B)':A.vat_regime==='association_exoneree'?' (exonérées)':'')+'</span><span class="ob-tg'+(A.vat_regime!==undefined?' on':'')+'"></span></div>'+(A.accountant?'<div class="ob-row"><span>Accès comptable</span><span class="ob-tg on"></span></div>':'')+'</div>'+
+    '</div></div></div>';
+  var lab='<div class="ob-live-lab"><span class="dot"></span>Votre '+esc(PL.brandName())+', en direct</div>';
+  var keep=box.querySelector('.ob-win');
+  if(!keep)box.innerHTML=lab+win+'<p class="ob-live-cap"></p>';
+  else{var tmp=document.createElement('div');tmp.innerHTML=win;box.replaceChild(tmp.firstChild,keep);box.querySelector('.ob-win').style.animation='none'}
+  box.querySelector('.ob-live-cap').textContent=s.cap||'';
+  shown.ini=ini;shown.menu={};menu.forEach(function(m){shown.menu[m[0]]=1})}
+var savedT=0;function flashSaved(){if(!el)return;var s=el.querySelector('.ob-saved');if(!s)return;s.classList.add('on');clearTimeout(savedT);savedT=setTimeout(function(){s.classList.remove('on')},1600)}
+
 /* ---------- Comportements ---------- */
-function single(q,key,auto){q.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){A[key]=b.getAttribute('data-v');q.querySelectorAll('[data-v]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();if(auto)setTimeout(next,280)}})}
-function multi(q,key,sel){q.querySelectorAll(sel).forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-v'),l=(A[key]||[]).slice(),i=l.indexOf(v);if(i<0)l.push(v);else l.splice(i,1);A[key]=l;b.setAttribute('aria-pressed',i<0);saveLocal();foot()}})}
+function single(q,key,auto){q.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){A[key]=b.getAttribute('data-v');q.querySelectorAll('[data-v]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});saveLocal();foot();live();if(auto)setTimeout(next,280)}})}
+function multi(q,key,sel){q.querySelectorAll(sel).forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-v'),l=(A[key]||[]).slice(),i=l.indexOf(v);if(i<0)l.push(v);else l.splice(i,1);A[key]=l;b.setAttribute('aria-pressed',i<0);saveLocal();foot();live()}})}
 function bindNums(q,defs){defs=defs||{};q.querySelectorAll('.lv-num input').forEach(function(i){var k=i.id.slice(3);if(A[k]==null&&defs[k]!=null)A[k]=defs[k];
-  i.oninput=function(){var v=parseInt(i.value.replace(/\D/g,''),10);A[k]=isNaN(v)?null:Math.min(v,99999);saveLocal()};i.onfocus=function(){i.select()}});
-  q.querySelectorAll('[data-m],[data-p]').forEach(function(b){b.onclick=function(){var k=b.getAttribute('data-m')||b.getAttribute('data-p'),i=q.querySelector('#ob-'+k),v=(parseInt(i.value,10)||0)+(b.hasAttribute('data-p')?1:-1);v=Math.max(0,v);i.value=v;A[k]=v;saveLocal()}})}
+  i.oninput=function(){var v=parseInt(i.value.replace(/\D/g,''),10);A[k]=isNaN(v)?null:Math.min(v,99999);saveLocal();live()};i.onfocus=function(){i.select()}});
+  q.querySelectorAll('[data-m],[data-p]').forEach(function(b){b.onclick=function(){var k=b.getAttribute('data-m')||b.getAttribute('data-p'),i=q.querySelector('#ob-'+k),v=(parseInt(i.value,10)||0)+(b.hasAttribute('data-p')?1:-1);v=Math.max(0,v);i.value=v;A[k]=v;saveLocal();live()}})}
 function visible(){return STEPS.filter(function(s){return !(s.skip&&s.skip())})}
 function cur(){var v=visible();if(stepIdx>=v.length)stepIdx=v.length-1;return v[stepIdx]}
 function foot(){if(!el)return;var s=cur(),f=el.querySelector('.lv-ob-foot');if(!f)return;f.style.display=s.noFoot?'none':'';var b=f.querySelector('[data-next]');if(b){b.disabled=s.ok?!s.ok():false;b.querySelector('.lv-bt').textContent=s.cta||'Continuer'}
   var bk=f.querySelector('[data-back]');if(bk)bk.style.visibility=stepIdx>0?'visible':'hidden'}
-function draw(){var v=visible(),s=cur(),pct=Math.round(stepIdx/(v.length-1)*100);
-  el.querySelector('.lv-prog i').style.setProperty('--v',Math.max(4,pct)+'%');el.querySelector('.lv-ob-step').textContent=stepIdx?('Étape '+stepIdx+' sur '+(v.length-1)):'';
+function rail(){var v=visible(),n=v.length-1,r=el.querySelector('.ob-rail');if(!r)return;var h='';for(var i=1;i<=n;i++)h+='<i class="'+(i<stepIdx?'done':i===stepIdx?'cur':'')+'"></i>';r.innerHTML=h;
+  r.setAttribute('aria-valuenow',String(stepIdx));r.setAttribute('aria-valuemax',String(n));el.querySelector('.lv-ob-step').textContent=stepIdx?(stepIdx+' / '+n):''}
+function draw(){var s=cur();rail();
   var body=el.querySelector('.lv-ob-body');body.innerHTML='<div class="lv-q '+dir+'" data-step="'+s.id+'">'+s.render()+'</div>';body.scrollTop=0;
-  var q=body.querySelector('.lv-q');if(s.bind)s.bind(q);foot();
+  var q=body.querySelector('.lv-q');if(s.bind)s.bind(q);foot();live();
   var first=q.querySelector('input.in');if(first&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!q.contains(a))first.focus()},80)}
 function persist(){if(!PL.clubId)return Promise.resolve();return PL.put('/api/onboarding',{answers:A,step:cur().id}).catch(function(){})}
 function next(){var s=cur();if(s.ok&&!s.ok())return;var go=function(){var v=visible();if(stepIdx>=v.length-1){finish();return}stepIdx++;dir='fwd';saveLocal();persist();draw()};
-  if(s.leave){var b=el.querySelector('[data-next]');if(b){b.classList.add('busy');b.disabled=true}s.leave().then(function(){if(b)b.classList.remove('busy');go()},function(e){if(b){b.classList.remove('busy');b.disabled=false}P.toast?toastLocal(PL.msg(e)):alert(PL.msg(e))})}else go()}
+  if(s.leave){var b=el.querySelector('[data-next]');if(b){b.classList.add('busy');b.disabled=true}s.leave().then(function(){if(b)b.classList.remove('busy');go()},function(e){if(b){b.classList.remove('busy');b.disabled=false}toastLocal(PL.msg(e))})}else go()}
 function back(){if(stepIdx>0){stepIdx--;dir='back';saveLocal();draw()}}
-function toastLocal(m){var t=el.querySelector('.lv-ob-msg');if(!t){t=document.createElement('div');t.className='lv-ob-msg';t.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:5;max-width:min(92vw,520px)';el.appendChild(t)}t.innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>'+esc(m)+'</span></div>';setTimeout(function(){t.innerHTML=''},6000)}
+function toastLocal(m){var t=el.querySelector('.lv-ob-msg');if(!t){t=document.createElement('div');t.className='lv-ob-msg';t.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:25;max-width:min(92vw,520px)';el.appendChild(t)}t.innerHTML='<div class="lv-msg">'+ICON('alert','sm')+'<span>'+esc(m)+'</span></div>';setTimeout(function(){t.innerHTML=''},6000)}
 
 /* le club est créé dès que le nom est connu, pour enregistrer l'avancement côté serveur */
 function ensureClub(){if(PL.clubId)return PL.patch('/api/onboarding/club',{name:A.name,siret:A.siret&&A.siret.length===14?A.siret:undefined,address:A.address}).catch(function(){}).then(function(){return persist()});
@@ -24593,17 +24899,27 @@ function ensureClub(){if(PL.clubId)return PL.patch('/api/onboarding/club',{name:
     return PL.post('/api/me/club',{club_id:PL.clubId}).catch(function(){}).then(function(){return persist()})},
     function(e){if(e.unavailable)throw PL.err(0,'unavailable','La création de club n’est pas encore disponible sur ce serveur. Réessayez dans quelques minutes.');throw e})}
 
-/* ---------- Fin : le serveur configure le club, on montre ce qui se prépare ---------- */
-function finish(){var body=el.querySelector('.lv-ob-body');el.querySelector('.lv-ob-foot').style.display='none';el.querySelector('.lv-prog i').style.setProperty('--v','100%');
-  var L=[['stable','Création de votre espace'],['grid','Activation des écrans utiles'],['tag','Préparation des forfaits types'],['arena','Ajout de vos installations'],['contract','Modèles de contrats'],['care','Rappels de soins'],['checkc','Liste de démarrage personnalisée']];
-  body.innerHTML='<div class="lv-q fwd"><div class="eyebrow">Un instant</div><h1>Nous préparons '+esc(A.name||'votre club')+'.</h1><div class="lv-build" style="margin-top:24px">'+L.map(function(l,i){return '<div class="li" data-i="'+i+'"><span class="ico">'+ICON(l[0])+'</span><span>'+l[1]+'</span></div>'}).join('')+'</div></div>';
-  var rows=body.querySelectorAll('.lv-build .li'),k=0,doneReq=false,failed=null;
-  var iv=setInterval(function(){if(k<rows.length){rows[k].classList.add('on');if(k)rows[k-1].classList.add('done');k++}else if(doneReq){clearInterval(iv);rows[rows.length-1].classList.add('done');setTimeout(end,350)}},P.RM?40:380);
+/* ---------- Fin : le serveur configure le club, la silhouette se dessine pendant ce temps ---------- */
+function finish(){var L=[['Création de votre espace'],['Activation des écrans utiles'],['Préparation des forfaits types'],[coach()?'Préparation de votre agenda':'Ajout de vos installations'],['Modèles de contrats et rappels de soins'],['Votre liste de démarrage']];
+  var B=window.BRAND||{},path=B.path||'';
+  var ov=document.createElement('div');ov.className='ob-build';ov.setAttribute('role','status');
+  ov.innerHTML='<div><div class="ob-ring"><svg class="r" viewBox="0 0 148 148"><defs><linearGradient id="obg" x1="0" x2="1"><stop offset="0" stop-color="#6d8bff"/><stop offset="1" stop-color="#4fd394"/></linearGradient></defs><circle class="bg" cx="74" cy="74" r="70"/><circle class="fg" cx="74" cy="74" r="70"/></svg>'+
+    '<div class="h">'+(path?'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="'+path+'"/></svg>':PL.brandLogo(80,'#fff'))+'</div></div>'+
+    '<h1>Nous préparons '+esc(A.name||'votre club')+'.</h1><p>Quelques secondes.</p><div class="ob-steps">'+L.map(function(l,i){return '<div class="li" data-i="'+i+'"><span class="c"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>'+l[0]+'</span></div>'}).join('')+'</div></div>';
+  el.appendChild(ov);
+  var rows=ov.querySelectorAll('.ob-steps .li'),ring=ov.querySelector('.fg'),k=0,doneReq=false,failed=null;
+  var setRing=function(p){ring.style.strokeDashoffset=String(440-440*p)};
+  var iv=setInterval(function(){if(k<rows.length){rows[k].classList.add('on');if(k){rows[k-1].classList.remove('on');rows[k-1].classList.add('done')}k++;setRing(Math.min(.92,k/rows.length*.92))}
+    else if(doneReq){clearInterval(iv);rows[rows.length-1].classList.remove('on');rows[rows.length-1].classList.add('done');setRing(1);setTimeout(end,500)}},P.RM?40:430);
   var p=(PL.clubId?Promise.resolve():ensureClub()).then(function(){return PL.post('/api/onboarding/complete',{answers:A})}).then(function(r){PL.onbResult=r;
     var inv=A.accountant&&A.accountant_email?PL.post('/api/invitations',{email:A.accountant_email,role:'accountant'}).then(function(){PL.accountantInvited=true},function(){}):Promise.resolve();
     return inv}).then(function(){doneReq=true},function(e){failed=e;doneReq=true});
-  function end(){if(failed){body.innerHTML='<div class="lv-q fwd"><div class="lv-big-ico" style="background:var(--bad-pale);color:var(--bad)">'+ICON('alert')+'</div><h1>La configuration n’a pas abouti.</h1><p class="lv-sub">'+esc(PL.msg(failed))+'</p><button class="btn pri lg" data-retry>'+ICON('refresh','sm')+'Réessayer</button></div>';body.querySelector('[data-retry]').onclick=finish;return}
-    try{localStorage.removeItem(LS)}catch(e){}PL.freshOnboarding=true;PL.start()}}
+  function end(){if(failed){ov.remove();var body=el.querySelector('.lv-ob-body');el.querySelector('.lv-ob-foot').style.display='none';body.innerHTML='<div class="lv-q fwd"><div class="lv-big-ico" style="background:var(--bad-pale);color:var(--bad)">'+ICON('alert')+'</div><h1>La configuration n’a pas abouti.</h1><p class="lv-sub">'+esc(PL.msg(failed))+'</p><button class="btn pri lg" data-retry>'+ICON('refresh','sm')+'Réessayer</button></div>';body.querySelector('[data-retry]').onclick=function(){el.querySelector('.lv-ob-foot').style.display='';finish()};return}
+    ov.querySelector('h1').textContent=(A.name||'Votre club')+' est prêt.';ov.querySelector('p').textContent='On vous ouvre votre espace.';sparkle(ov.querySelector('.ob-ring'));
+    try{localStorage.removeItem(LS)}catch(e){}PL.freshOnboarding=true;setTimeout(function(){PL.start()},P.RM?200:1300)}}
+function sparkle(at){if(P.RM||!at)return;for(var i=0;i<22;i++){var s=document.createElement('i');s.className='ob-spark';var a=Math.random()*Math.PI*2,d=80+Math.random()*120;
+  s.style.cssText='left:'+(at.offsetWidth/2)+'px;top:'+(at.offsetHeight/2)+'px;--dx:'+Math.cos(a)*d+'px;--dy:'+Math.sin(a)*d+'px;animation-delay:'+(Math.random()*.25)+'s;background:'+(i%3?'#a9bcff':'#4fd394');at.appendChild(s)}}
+PL.obSparkle=sparkle;
 
 function sandbox(){var b=el.querySelector('[data-sandbox]');b.disabled=true;b.querySelector('b').textContent='Préparation du club d’exemple…';
   PL.createSandbox().then(function(){try{localStorage.removeItem(LS)}catch(e){}PL.start()},function(e){b.disabled=false;b.querySelector('b').textContent='Explorer avec des données d’exemple';toastLocal(PL.msg(e))})}
@@ -24612,11 +24928,13 @@ function sandbox(){var b=el.querySelector('[data-sandbox]');b.disabled=true;b.qu
 PL.onboarding=function(o){o=o||{};loadLocal();if(o.answers&&Object.keys(o.answers).length)A=Object.assign({},A,o.answers);
   if(PL.migReturn){var M=MG();M.etat=PL.migReturn.etat;if(PL.migReturn.job)M.job_id=PL.migReturn.job;if(M.etat!=='termine'&&!M.when)M.when='later';o.step='recuperer';PL.migReturn=null;saveLocal()}
   if(o.answers&&o.answers.migration&&typeof o.answers.migration!=='object')delete A.migration;
+  /* anciennes étapes (avant le 28/11) : on retombe sur l'écran qui les regroupe */
+  var OLD={installations:'sizes',disciplines:'activities',uses:'tools',accountant:'finances',payments:'finances',vat:'finances'};if(o.step&&OLD[o.step])o.step=OLD[o.step];
   if(o.step){var v=visible(),i=v.map(function(s){return s.id}).indexOf(o.step);if(i>0)stepIdx=i}
   if(o.skipHello&&stepIdx===0)stepIdx=1;
   document.body.classList.add('lv-booting');document.title='Configuration · '+PL.brandName();
-  var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';document.body.appendChild(r)}r.innerHTML='<div class="lv-ob"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="lv-prog" role="progressbar" aria-label="Avancement"><i></i></div><span class="lv-ob-step"></span></header><main class="lv-ob-body"></main>'+
-    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer></div>';
+  var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';document.body.appendChild(r)}r.innerHTML='<div class="lv-ob v2"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="ob-rail" role="progressbar" aria-label="Avancement" aria-valuemin="0"></div><span class="lv-ob-step"></span><span class="ob-saved">'+ICON('checkc','sm')+'Enregistré</span></header><main class="lv-ob-body"></main>'+
+    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer><aside class="ob-live" aria-hidden="true"></aside></div>';
   el=r.firstChild;el.querySelector('[data-next]').onclick=next;el.querySelector('[data-back]').onclick=back;
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.target.closest('button,[data-find]')&&e.target.id!=='ob-siret'){e.preventDefault();next()}});
   draw()};
@@ -24624,6 +24942,108 @@ PL.onbAnswers=function(){return A};
 })();
 
 }catch(e){console.error("live/60-onboarding.js",e)}
+
+;
+/* ===== live/62-bienvenue.js ===== */
+try{
+/* =====================================================================
+   STABL LIVE · Accueil de l'adhérent (28/11/2026)
+   À la première ouverture d'un compte adhérent (invité par son écurie), un accueil en 4 à 5 écrans :
+   bienvenue chez le club, coordonnées et contact d'urgence, santé et autorisations, son cheval s'il en a un,
+   notifications et appli sur le téléphone, puis trois raccourcis. Une minute, tout est facultatif.
+   Enregistrement : la fiche de l'adhérent (champs que la politique serveur lui laisse modifier :
+   phone, emergency, emergencyPhone, allergies, consents, onboarded, prefs) via la synchro habituelle,
+   et ses préférences d'e-mails par /api/mail/preferences. Ne revient plus une fois terminé ou passé.
+   ===================================================================== */
+(function(){
+var P=window.P,PL=window.PL,esc=P.fmt.esc,D=window.DATA;
+var KEY=function(){return 'stabl:bienvenue:'+((PL.user||{}).id||'')+':'+(PL.clubId||'')};
+var A={},idx=0,dir='fwd',el=null,ctx=null;
+function me(){var id=PL.personRef;return id?(D.members||[]).filter(function(m){return m.id===id})[0]:null}
+function family(){var m=me();if(!m)return [];return (D.members||[]).filter(function(x){return x.id===m.id||(m.fam&&x.fam===m.fam)})}
+function kids(){var m=me();return family().filter(function(x){return x.id!==(m&&m.id)&&x.minor})}
+function horses(){var ids={};family().forEach(function(x){ids[x.id]=1});return (D.horses||[]).filter(function(h){return h.owner&&ids[h.owner]})}
+function clubName(){return ((D.club&&D.club.name)||(PL.clubs||[]).filter(function(c){return c.id===PL.clubId}).map(function(c){return c.name})[0]||'votre club')}
+function initial(s){s=String(s||'').replace(/^(écurie|ecurie|centre équestre|poney[- ]club|club|haras|domaine)\s+(du|de la|des|de|d’|d')?\s*/i,'')||s;return (s||'?').charAt(0).toUpperCase()}
+function done(){try{return localStorage.getItem(KEY())==='1'}catch(e){return false}}
+function setDone(){try{localStorage.setItem(KEY(),'1')}catch(e){}}
+function sw(id,on,title,sub,i){return '<div class="ad-tog" role="switch" tabindex="0" data-sw="'+id+'" aria-checked="'+(!!on)+'" style="--i:'+(i||0)+'"><div class="grow"><b>'+title+'</b><small>'+sub+'</small></div><span class="ad-sw"></span></div>'}
+function bindSw(q,cb){q.querySelectorAll('[data-sw]').forEach(function(t){var go=function(){var on=t.getAttribute('aria-checked')!=='true';t.setAttribute('aria-checked',on);cb(t.getAttribute('data-sw'),on)};t.onclick=go;t.onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();go()}}})}
+function field(lab,inp,hint){return '<label class="lv-fl"><span>'+lab+(hint?' <span class="lv-hint">'+hint+'</span>':'')+'</span>'+inp+'</label>'}
+
+var STEPS=[
+ {id:'hello',render:function(){var c=clubName(),f=(PL.user&&PL.user.first)||'',k=kids();
+   return '<div class="ad-hero"><span class="ad-horse">'+PL.brandLogo(150,'#fff')+'</span><div class="club"><span class="av">'+esc(initial(c))+'</span><span><b>'+esc(c)+'</b><small>vous ouvre votre espace '+esc(PL.brandName())+'</small></span></div>'+
+     '<h1>Bienvenue'+(f?' '+esc(f):'')+' !</h1><p>'+(k.length?'Tout ce qui concerne '+esc(k.map(function(x){return x.first}).join(' et '))+' au même endroit : reprises, factures, autorisations.':'Vos reprises, vos factures'+(horses().length?' et votre cheval':'')+', au même endroit, sur votre téléphone.')+'</p></div>'+
+     '<div class="ad-list">'+[['planning','Réservez et prévenez d’une absence en deux touches'],['card','Réglez vos factures en ligne, en quelques secondes'],horses().length?['horse','Suivez les soins et le journal de '+esc(horses()[0].name)]:['trophy','Suivez votre progression, du galop aux concours']].map(function(x,i){return '<div style="--i:'+i+'"><span class="ico">'+ICON(x[0])+'</span><span>'+x[1]+'</span></div>'}).join('')+'</div>'+
+     '<p class="lv-note" style="margin-top:14px">Une minute pour compléter votre fiche, et c’est prêt. Tout est facultatif.</p>'},ok:function(){return true},cta:'C’est parti'},
+ {id:'contact',render:function(){var m=me()||{};A.phone=A.phone!=null?A.phone:(m.phone||(PL.user&&PL.user.phone)||'');A.emergency=A.emergency!=null?A.emergency:(m.emergency||'');A.emergencyPhone=A.emergencyPhone!=null?A.emergencyPhone:(m.emergencyPhone||'');
+   return '<div class="eyebrow">Vos coordonnées</div><h1>Comment le club vous joint-il ?</h1><p class="lv-sub">Pour prévenir d’une reprise annulée ou en cas d’imprévu à l’écurie. Seule l’équipe du club voit ces numéros.</p>'+
+   '<div class="lv-f">'+field('Votre téléphone','<input class="in" id="ad-phone" type="tel" inputmode="tel" autocomplete="tel" value="'+esc(A.phone)+'" placeholder="06 12 34 56 78" maxlength="30">')+
+   '<div class="lv-row2">'+field('Contact d’urgence','<input class="in" id="ad-em" autocomplete="off" value="'+esc(A.emergency)+'" placeholder="Prénom et lien, ex. Paul (père)" maxlength="80">')+field('Son téléphone','<input class="in" id="ad-emp" type="tel" inputmode="tel" value="'+esc(A.emergencyPhone)+'" placeholder="06…" maxlength="30">')+'</div></div>'},
+   bind:function(q){[['ad-phone','phone'],['ad-em','emergency'],['ad-emp','emergencyPhone']].forEach(function(x){var i=q.querySelector('#'+x[0]);i.oninput=function(){A[x[1]]=i.value.trim()}})},ok:function(){return true}},
+ {id:'consents',render:function(){var m=me()||{},c=A.consents||m.consents||{},k=kids(),who=k.length?k.map(function(x){return x.first}).join(' et '):'';A.consents=c;
+   if(A.allergies==null)A.allergies=m.allergies||'';
+   return '<div class="eyebrow">Santé et autorisations</div><h1>Deux accords, et une info utile.</h1><p class="lv-sub">Le club vous les demanderait sur papier en début de saison. Ici, c’est fait une fois pour toutes, et vous pouvez changer d’avis à tout moment.</p>'+
+   sw('urgence',!!c.urgence,'Soins en cas d’urgence','J’autorise le club à appeler les secours et à faire soigner '+(who?esc(who):'moi')+' si on ne peut pas me joindre.',0)+
+   sw('image',!!c.image,'Photos et vidéos','Le club peut publier des photos où '+(who?esc(who)+' apparaî'+(k.length>1?'ssent':'t'):'j’apparais')+' (site, réseaux, affichage).',1)+
+   '<div class="lv-f" style="margin-top:16px">'+field('Allergies, asthme, traitement','<textarea class="in" id="ad-all" rows="2" maxlength="500" placeholder="Rien à signaler">'+esc(A.allergies)+'</textarea>','facultatif, visible par l’équipe seulement')+'</div>'},
+   bind:function(q){bindSw(q,function(k,on){A.consents=Object.assign({},A.consents,{});A.consents[k]=on;A.consents.at=new Date().toISOString()});var t=q.querySelector('#ad-all');t.oninput=function(){A.allergies=t.value}},ok:function(){return true}},
+ {id:'horse',skip:function(){return !horses().length},render:function(){var H=horses(),pr=A.horsePrefs||{};
+   return '<div class="eyebrow">'+(H.length>1?'Vos chevaux':'Votre cheval')+'</div><h1>'+(H.length>1?'Vos chevaux sont':esc(H[0].name)+' est')+' déjà là.</h1><p class="lv-sub">Le club tient son carnet : soins, maréchal, vaccins, journal. Vous voyez tout, et vous êtes prévenu avant chaque rendez-vous.</p>'+
+   '<div class="ad-horses">'+H.map(function(h,i){return '<div class="ad-hc" style="animation-delay:'+(i*80)+'ms"><span class="ph">'+(h.photo?'<img alt="" src="'+esc(h.photo)+'">':PL.brandLogo(40,'#2448d8'))+'</span><div class="grow"><b>'+esc(h.name)+'</b><small>'+esc([h.breed,h.box?'Box '+h.box:null,h.born?('né en '+h.born):null].filter(Boolean).join(' · '))+'</small></div></div>'}).join('')+'</div>'+
+   '<div style="margin-top:16px">'+sw('rappels',pr.rappels!==false,'Rappels de soins','Un e-mail avant le vermifuge, le vaccin ou le passage du maréchal.',2)+'</div>'},
+   bind:function(q){bindSw(q,function(k,on){A.horsePrefs=Object.assign({},A.horsePrefs||{});A.horsePrefs[k]=on})},ok:function(){return true}},
+ {id:'notifs',render:function(){var ios=PL.pwa&&PL.pwa.ios&&PL.pwa.ios(),inst=PL.pwa&&(PL.pwa.deferred||ios)&&!(PL.pwa.standalone&&PL.pwa.standalone());
+   return '<div class="eyebrow">Restez prévenu</div><h1>Que voulez-vous recevoir ?</h1><p class="lv-sub">Juste l’utile. Les factures, reçus et changements de reprise arrivent toujours.</p><div class="ad-prefs"><div class="lv-dots" style="padding:12px"><i></i><i></i><i></i></div></div>'+
+   (inst?'<div class="lv-panel" style="margin-top:14px"><p><b>'+ICON('download','sm')+' Mettez '+esc(PL.brandName())+' sur votre écran d’accueil</b></p><p style="margin:0">Elle s’ouvre comme une appli, en plein écran, même au fond de l’écurie sans réseau.</p>'+(PL.pwa.deferred?'<button class="btn pri" data-inst style="margin-top:12px">'+ICON('download','sm')+'Installer l’appli</button>':'<ol style="margin-top:8px"><li>Touchez <b>Partager</b>.</li><li>Choisissez <b>Sur l’écran d’accueil</b>.</li></ol>')+'</div>':'')},
+   bind:function(q){var box=q.querySelector('.ad-prefs');var LAB={lessons:['Rappel de reprise la veille','planning'],club:['Nouvelles du club','chat'],care:['Rappels de soins','care'],marketing:['Offres, stages et événements','spark']};
+     PL.get('/api/mail/preferences').then(function(j){var cats=(j.categories||[]);if(!cats.length){box.innerHTML='';return}A.mail=A.mail||{};
+       box.innerHTML=cats.map(function(c,i){var on=A.mail[c.key]!=null?A.mail[c.key]:!!c.enabled;return sw(c.key,on,esc((LAB[c.key]||[c.label||c.key])[0]),esc(c.description||c.hint||'Par e-mail, désactivable à tout moment.'),i)}).join('');
+       bindSw(box,function(k,on){A.mail[k]=on})},function(){box.innerHTML='<p class="lv-note">Vous pourrez choisir vos e-mails dans votre compte.</p>'});
+     var ins=q.querySelector('[data-inst]');if(ins)ins.onclick=function(){var d=PL.pwa.deferred;if(d){d.prompt();PL.pwa.deferred=null;ins.disabled=true}}},ok:function(){return true},cta:'Terminer'},
+ {id:'end',render:function(){var H=horses();
+   return '<div class="ad-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h1>Tout est prêt.</h1><p class="lv-sub">Merci ! '+esc(clubName())+' a bien vos informations. Par quoi commencez-vous ?</p>'+
+   '<div class="ad-go">'+[['adh-reserver','planning','Réserver une reprise','Vos créneaux et rattrapages'],['adh-paiements','card','Mes factures','Payer en ligne'],H.length?['adh-cheval','horse',esc(H[0].name),'Soins et journal']:['adh-progression','trophy','Ma progression','Galops et concours']].map(function(g,i){return '<button data-go="'+g[0]+'" style="--i:'+i+'"><span class="ico">'+ICON(g[1])+'</span><span>'+g[2]+'<br><small>'+g[3]+'</small></span></button>'}).join('')+'</div>'},
+   bind:function(q){q.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){close(b.getAttribute('data-go'))}})},noFoot:true}
+];
+function visible(){return STEPS.filter(function(s){return !(s.skip&&s.skip())})}
+function cur(){var v=visible();if(idx>=v.length)idx=v.length-1;return v[idx]}
+function draw(){var s=cur(),v=visible(),n=v.length-1,r=el.querySelector('.ob-rail'),h='';for(var i=1;i<=n;i++)h+='<i class="'+(i<=idx?'done':'')+'"></i>';r.innerHTML=h;
+  var b=el.querySelector('.lv-ob-body');b.innerHTML='<div class="lv-q '+dir+'" data-ad="'+s.id+'">'+s.render()+'</div>';b.scrollTop=0;var q=b.firstChild;if(s.bind)s.bind(q);
+  var f=el.querySelector('.lv-ob-foot');f.style.display=s.noFoot?'none':'';f.querySelector('.lv-bt').textContent=s.cta||'Continuer';f.querySelector('[data-back]').style.visibility=idx>0?'visible':'hidden';
+  el.querySelector('[data-later]').style.visibility=s.id==='end'?'hidden':'visible';
+  if(s.id==='end'){save();sparkleDone(q)}}
+function sparkleDone(q){var d=q.querySelector('.ad-done');if(d&&PL.obSparkle){d.style.position='relative';setTimeout(function(){PL.obSparkle(d)},300)}}
+function next(){var v=visible();if(idx<v.length-1){idx++;dir='fwd';draw()}}
+function back(){if(idx>0){idx--;dir='back';draw()}}
+/* enregistrement : fiche de l'adhérent (synchro), préférences d'e-mail, téléphone du compte */
+var saved=false;
+function save(){if(saved)return Promise.resolve();saved=true;setDone();var m=me(),jobs=[];
+  if(m){if(A.phone!=null)m.phone=A.phone;if(A.emergency!=null)m.emergency=A.emergency;if(A.emergencyPhone!=null)m.emergencyPhone=A.emergencyPhone;if(A.allergies!=null)m.allergies=A.allergies;
+    if(A.consents)m.consents=A.consents;m.prefs=Object.assign({},m.prefs||{},A.horsePrefs?{careReminders:A.horsePrefs.rappels!==false}:{});m.onboarded=new Date().toISOString();
+    if(PL.sync&&PL.sync.flush)jobs.push(PL.sync.flush().catch(function(){}))}
+  if(A.mail&&Object.keys(A.mail).length)jobs.push(PL.put('/api/mail/preferences',{categories:A.mail}).catch(function(){}));
+  if(A.phone&&PL.user&&A.phone!==PL.user.phone)jobs.push(PL.patch('/api/me',{phone:A.phone}).then(function(r){if(r&&r.user)PL.user=r.user}).catch(function(){}));
+  return Promise.all(jobs)}
+function close(go){var o=el;if(!o)return;save();o.style.transition='opacity .35s,transform .35s';o.style.opacity='0';o.style.transform='scale(.98)';setTimeout(function(){o.remove();el=null;if(go&&P.mods[go])P.go(go)},360)}
+
+PL.bienvenue={
+  /* à appeler une fois l'appli lancée (vue adhérent) */
+  maybe:function(){if(PL.view!=='adherent'||PL.sandbox||done())return;var m=me();if(m&&m.onboarded){setDone();return}setTimeout(function(){PL.bienvenue.open()},500)},
+  open:function(o){o=o||{};A={};idx=0;dir='fwd';saved=!!o.dry;
+    var w=document.createElement('div');w.className='ad-ob';w.setAttribute('role','dialog');w.setAttribute('aria-label','Bienvenue');
+    w.innerHTML='<header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="ob-rail" aria-hidden="true"></div><button class="btn ghost sm" data-later>Plus tard</button></header><main class="lv-ob-body"></main>'+
+      '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><button class="btn pri" data-next><span class="lv-bt">Continuer</span></button></footer>';
+    document.body.appendChild(w);el=w;
+    w.querySelector('[data-next]').onclick=next;w.querySelector('[data-back]').onclick=back;
+    w.querySelector('[data-later]').onclick=function(){setDone();close()};
+    w.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&!e.target.closest('button,[data-sw]')){e.preventDefault();next()}});
+    draw()}
+};
+})();
+
+}catch(e){console.error("live/62-bienvenue.js",e)}
 
 ;
 /* ===== live/65-medias.js ===== */
@@ -25409,6 +25829,7 @@ function after(path){
   if(PL.migReturn){var r=PL.migReturn;PL.migReturn=null;if(r.etat==='termine')setTimeout(function(){PL.mig.showBilan(r.job)},500)}
   if(PL.freshOnboarding){PL.freshOnboarding=false;setTimeout(function(){try{P.toast('Votre espace est prêt. Suivez la liste de démarrage pour bien commencer.',{ms:5200})}catch(e){}
     if(M&&M.etat==='termine'&&PL.campaignSheet)setTimeout(function(){PL.campaignSheet({source:(M.tools||[]).filter(function(t){return t.action==='replace'}).map(function(t){return t.id})[0]})},1200)},900)}
+  if(PL.bienvenue&&PL.view==='adherent')try{PL.bienvenue.maybe()}catch(e){console.error('bienvenue',e)}
   if(PL.welcomeMigrated)setTimeout(function(){try{P.toast('Bienvenue ! Vos reprises, vos factures et votre cheval vous attendent ici.',{ms:5200})}catch(e){}},900);
 }
 
