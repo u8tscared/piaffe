@@ -232,16 +232,30 @@
 
 </main>
 
-<footer class="pied">
-  <div class="w pied-in">
-    <div class="pd-m">
-      <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{marque}}</a>
-      <p>Le logiciel de gestion des centres équestres, poney-clubs et écuries.</p>
-      <a class="btn pri sm" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+<footer class="pied" id="pied">
+  <div class="pd-fond" aria-hidden="true"><i class="pd-halo"></i><i class="pd-grille"></i></div>
+  <div class="w pd-haut">
+    <div class="pd-acc" data-r>
+      <p class="pd-sur"><span class="pd-pouls" aria-hidden="true"></span>Démo ouverte, sans inscription</p>
+      <h2 class="pd-titre">Toute l’écurie,<br><span>dans une seule app.</span></h2>
     </div>
-    <nav aria-label="Produit"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
-    <nav aria-label="Essayer"><b>Essayer</b><a {{demo:cockpit}}>La démo</a><a href="{{passerelle}}">La passerelle</a><a href="#contact">Être rappelé</a><a href="mailto:contact@stablapp.fr">contact@stablapp.fr</a></nav>
+    <div class="pd-act" data-r style="--i:1">
+      <a class="btn blanc lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+      <a class="btn pd-ghost lg" href="#contact">Être rappelé</a>
+    </div>
   </div>
+
+  <div class="w pied-in">
+    <div class="pd-m" data-r>
+      <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{marque}}</a>
+      <p>Le logiciel de gestion des centres équestres, poney-clubs et écuries. Planning, chevaux, adhérents, finances et équipe, enfin au même endroit.</p>
+      <a class="pd-mail" href="mailto:contact@stablapp.fr">{{i:mail}}<span>contact@stablapp.fr</span></a>
+    </div>
+    <nav aria-label="Produit" data-r style="--i:1"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Essayer" data-r style="--i:2"><b>Essayer</b><a {{demo:cockpit}}>La démo</a><a href="{{passerelle}}">La passerelle</a><a href="#contact">Être rappelé</a></nav>
+    <nav aria-label="Stabl" data-r style="--i:3"><b>Stabl</b><a href="mailto:contact@stablapp.fr">Nous écrire</a><a href="#tarifs">Offre fondateurs</a><span class="pd-lieu">{{i:pin}}Conçu à Lyon</span></nav>
+  </div>
+
   <div class="w">
     <details class="ml" id="mentions">
       <summary>Mentions légales</summary>
@@ -253,7 +267,19 @@
       </div>
     </details>
   </div>
-  <div class="w pied-b"><span>© 2026 Stabl · Marceau Ruis EI</span><a href="#mentions" id="mlLien">Mentions légales</a></div>
+
+  <div class="w pied-b">
+    <span>© 2026 Stabl · Marceau Ruis EI</span>
+    <a href="#mentions" id="mlLien">Mentions légales</a>
+    <a class="pd-haut-l" href="#top">Revenir en haut<span aria-hidden="true">{{i:up}}</span></a>
+  </div>
+
+  <div class="pd-geant" id="pdGeant" aria-hidden="true">
+    <div class="pd-g-in">
+      <div class="pd-g-base">{{marque}}</div>
+      <div class="pd-g-lum">{{marque}}</div>
+    </div>
+  </div>
 </footer>
 
 </div>

@@ -186,6 +186,14 @@ $$('.qr button').forEach(function(b){b.addEventListener('click',function(){var q
 (function(){var d=$('#mentions');function ouvre(){if(location.hash==='#mentions')d.open=true}
   $('#mlLien').addEventListener('click',function(){d.open=true});addEventListener('hashchange',ouvre);ouvre()})();
 
+/* ---------- Pied : le logo géant monte, et s’éclaire sous le curseur ---------- */
+(function(){var g=$('#pdGeant');if(!g)return;var l=$('.pd-g-lum',g),f=$('#pied');
+  if(RM||!('IntersectionObserver' in window))g.classList.add('in');
+  else new IntersectionObserver(function(es,o){if(es[0].isIntersecting){g.classList.add('in');o.disconnect()}},{threshold:.2}).observe(g);
+  if(RM||!matchMedia('(hover:hover)').matches)return;var raf=0,x=0,y=0;
+  f.addEventListener('pointermove',function(e){x=e.clientX;y=e.clientY;if(raf)return;raf=requestAnimationFrame(function(){raf=0;var r=l.getBoundingClientRect();
+    l.style.setProperty('--mx',((x-r.left)/r.width*100).toFixed(1)+'%');l.style.setProperty('--my',((y-r.top)/r.height*100).toFixed(1)+'%')})})})();
+
 /* ---------- Chiffres qui comptent ---------- */
 function compte(el){var v=+el.dataset.c,u=(el.dataset.u||'').replace(' ','\u00a0');if(RM||!v){el.textContent=fr(v)+u;return}var t0=0,d=1100;
   function pas(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/d),e=1-Math.pow(1-k,4);el.textContent=fr(Math.round(v*e))+u;if(k<1)requestAnimationFrame(pas)}
