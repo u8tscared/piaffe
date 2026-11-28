@@ -47,12 +47,18 @@ Rien n'a été créé à ton nom. Voici, dans l'ordre, les comptes à ouvrir et 
 
 À valider : prix (Essentiel 59 €, Club 149 €, Domaine 289 € par mois, annuel au prix de 10 mois, offre fondateurs 99 € à vie pour 30 clubs), parrainage 50 €, délai de grâce 7 jours, commission Stabl sur les paiements des clubs à 0 %, pré-notification SEPA de 3 jours (à prévoir dans le mandat, sinon 14 jours).
 
-## 4. E-mails (Resend conseillé, Brevo en alternative gratuite)
-1. Créer un compte sur resend.com. L'offre gratuite (3 000 par mois, mais 100 par jour) suffit pour les essais ; passer au Pro (20 $ par mois) dès le premier club migré, car une campagne d'accueil dépasse vite 100 e-mails par jour. Brevo : 300 par jour gratuits.
-2. Déclarer le sous-domaine d'envoi `mail.stablapp.fr` et ajouter chez Cloudflare DNS les enregistrements fournis : SPF (TXT `v=spf1 include:amazonses.com ~all` et MX `send`), DKIM (TXT `resend._domainkey`), DMARC (`_dmarc` : `v=DMARC1; p=none; rua=mailto:dmarc@stablapp.fr`, à passer en `p=quarantine` après 2 à 4 semaines sans problème).
-3. Webhook vers `https://app.stablapp.fr/webhooks/mail` avec les événements bounced, complained, delivered.
-4. Réglages : `MAIL_PROVIDER=resend`, `MAIL_FROM="Stabl <bonjour@mail.stablapp.fr>"` dans wrangler.jsonc ; secrets `MAIL_API_KEY` et `MAIL_WEBHOOK_SECRET` (le `whsec_…` de Resend).
-5. Logo des e-mails : `BRAND.logoUrl` dans `app/api/src/mail/brand.ts` (PNG de 56 px de haut), à remplir quand le nouveau logo sera choisi.
+## 4. E-mails (Resend)
+État au 28/11/2026 : compte Resend de Marceau (connexion Google, marceau.ruis@gmail.com), domaine `mail.stablapp.fr` ajouté en région Irlande (eu-west-1), webhook créé.
+1. Offre gratuite (3 000 par mois, 100 par jour) pour les essais ; passer au Pro (20 $ par mois) dès le premier club migré, car une campagne d'accueil dépasse vite 100 e-mails par jour.
+2. DNS : le DNS de stablapp.fr est **chez Ionos** (pas Cloudflare). Enregistrements à ajouter (Ionos › Domaines › stablapp.fr › DNS) :
+   - TXT `resend._domainkey.mail` : la clé DKIM `p=MIGf…` affichée dans Resend › Domains › mail.stablapp.fr ;
+   - MX `send.mail` → `feedback-smtp.eu-west-1.amazonses.com`, priorité 10 ;
+   - TXT `send.mail` → `v=spf1 include:amazonses.com ~all`.
+   Ne pas toucher aux MX, SPF, DKIM et DMARC d'Ionos posés sur `stablapp.fr` lui-même (boîtes @stablapp.fr). Le DMARC de stablapp.fr couvre aussi le sous-domaine.
+3. Webhook (fait) : `https://app.stablapp.fr/webhooks/mail`, événements email.bounced, email.complained, email.delivered, email.delivery_delayed. Son secret `whsec_…` se lit à tout moment dans Resend › Webhooks (« Signing secret »).
+4. Réglages : `MAIL_FROM="Stabl <bonjour@mail.stablapp.fr>"` dans wrangler.jsonc (les réponses vont à bonjour@stablapp.fr par le reply-to). `MAIL_PROVIDER` reste `log` en local ; `deployer.sh` publie avec `resend`.
+5. Secrets, au moment du déploiement : créer la clé dans Resend › API keys (droit « Sending access », domaine mail.stablapp.fr ; elle ne s'affiche qu'une fois), puis `export MAIL_API_KEY=re_… MAIL_WEBHOOK_SECRET=whsec_…` avant `bash app/api/scripts/deployer.sh`, qui les enregistre sans les afficher.
+6. Logo des e-mails : `BRAND.logoUrl` dans `app/api/src/mail/brand.ts` (PNG de 56 px de haut).
 
 ## 5. Facture électronique (plateforme agréée SUPER PDP conseillée)
 Coût : compte gratuit jusqu'à 1 000 factures par mois ; par l'API 0,01 € HT par facture (une journée d'e-reporting compte pour une facture), vérification d'identité 2 €, minimum 10 € HT par an. Un centre équestre reste dans le gratuit.

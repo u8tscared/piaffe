@@ -4,6 +4,7 @@
 #   export CLOUDFLARE_API_TOKEN=…      # jeton « Modifier Cloudflare Workers » + D1 + R2 (dash.cloudflare.com › Mon profil › Jetons d'API)
 #   export CLOUDFLARE_ACCOUNT_ID=…     # identifiant du compte (colonne de droite du tableau de bord)
 #   export APP_URL=https://app.stablapp.fr   # adresse publique de l'appli (facultatif : sinon celle de wrangler.jsonc)
+#   export MAIL_API_KEY=re_… MAIL_WEBHOOK_SECRET=whsec_…   # facultatif : e-mails par Resend (voir COMPTES-A-CREER.md §4)
 #   bash app/api/scripts/deployer.sh            # ou --essai pour tout vérifier sans rien publier
 #
 # Ce que fait le script, dans l'ordre :
@@ -69,6 +70,15 @@ else
   unset SECRET; echo "créé"
 fi
 
+etape "E-mails (Resend)"
+# Facultatif : export MAIL_API_KEY=re_…  et  export MAIL_WEBHOOK_SECRET=whsec_…  avant de lancer le script.
+# Les valeurs sont lues dans l'environnement et passées à wrangler sans être affichées.
+for S in MAIL_API_KEY MAIL_WEBHOOK_SECRET; do
+  if [ -z "${!S:-}" ]; then echo "$S : non fourni (inchangé)"
+  elif [ $ESSAI = 1 ]; then echo "(essai) $S serait enregistré"
+  else printf '%s' "${!S}" | $W secret put "$S" >/dev/null; echo "$S : enregistré"; fi
+done
+
 etape "Migrations de la base"
 if [ $ESSAI = 1 ]; then $W d1 migrations list "$DB_NAME" --remote || true; else $W d1 migrations apply "$DB_NAME" --remote; fi
 
@@ -76,8 +86,9 @@ etape "Application web"
 node "$WEB/build.js"
 
 etape "Publication"
-VARS=()
-[ -n "${APP_URL:-}" ] && VARS=(--var "APP_URL:$APP_URL")
+# En ligne, les e-mails partent par Resend (en local, wrangler.jsonc garde « log » : rien ne part).
+VARS=(--var "MAIL_PROVIDER:${MAIL_PROVIDER:-resend}")
+[ -n "${APP_URL:-}" ] && VARS+=(--var "APP_URL:$APP_URL")
 if [ $ESSAI = 1 ]; then $W deploy --dry-run "${VARS[@]}"; echo; echo "Essai terminé : rien n'a été publié."; exit 0; fi
 $W deploy "${VARS[@]}"
 
