@@ -477,7 +477,7 @@ P.mod({id:'cockpit',role:'gerant',group:'Pilotage',n:1,title:'Aujourd’hui',ico
       P.$$('[data-focus]',el).forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-focus')===v)});applyOrder();flipPlay(bento,m);
       var nb=P.$('[data-focus="'+v+'"]',el);if(nb&&!P.RM){nb.classList.remove('pop');void nb.offsetWidth;nb.classList.add('pop')}return}
     var hb=e.target.closest('[data-hero]');if(hb){e.stopPropagation();heroAct(hb.getAttribute('data-hero'));return}
-    var tk=e.target.closest('[data-task]');if(tk){var t=D.tasks.find(function(x){return x.id===tk.getAttribute('data-task')});t.done=!t.done;tk.classList.toggle('on',t.done);tk.setAttribute('aria-pressed',t.done);
+    var tk=e.target.closest('[data-task]');if(tk){var t=D.tasks.find(function(x){return x.id===tk.getAttribute('data-task')});if(!t)return;t.done=!t.done;tk.classList.toggle('on',t.done);tk.setAttribute('aria-pressed',t.done);
       var c=P.$('[data-todocnt]',el);if(c)c.textContent=tasks.filter(function(x){return !x.done}).length+Math.min(alerts.length,3);
       setTimeout(function(){var m=flipFirst(bento),list=P.$$('.ck-td[data-task]',bento),ord2=tasks.slice().sort(function(a,b){return (a.done?1:0)-(b.done?1:0)||(b.urgent?1:0)-(a.urgent?1:0)}).map(function(x){return x.id});
         list.forEach(function(n){n.style.order=ord2.indexOf(n.getAttribute('data-task'))});P.$$('.ck-sep,.ck-td:not([data-task])',bento).forEach(function(n){n.style.order=99});flipPlay(bento,m)},P.RM?0:420);
