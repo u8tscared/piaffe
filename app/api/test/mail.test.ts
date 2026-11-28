@@ -11,7 +11,7 @@ import { dateLong, euros, parisOffsetMin } from "../src/mail/fmt";
 import { runDailyReminders, parisDay } from "../src/mail/reminders";
 import type { Env } from "../src/env";
 
-const mk = (o: Partial<Env> & Record<string, unknown>): Env => ({ ...env, DB: env.DB, FILES: env.FILES, SESSION_SECRET: env.SESSION_SECRET, APP_URL: env.APP_URL, MAIL_FROM: env.MAIL_FROM || "Stabl <bonjour@stablapp.fr>", ...o } as Env);
+const mk = (o: Partial<Env> & Record<string, unknown>): Env => ({ ...env, DB: env.DB, FILES: env.FILES, SESSION_SECRET: env.SESSION_SECRET, APP_URL: env.APP_URL, MAIL_FROM: env.MAIL_FROM || "Stabl <bonjour@mail.stablapp.fr>", ...o } as Env);
 let calls: { url: string; init: RequestInit }[] = [];
 const respond = (status: number, body: unknown) => { setFetch((async (url: any, init: any) => { calls.push({ url: String(url), init }); return new Response(JSON.stringify(body), { status }); }) as any); };
 beforeEach(() => { calls = []; });
@@ -106,7 +106,7 @@ describe("file d'envoi", () => {
     expect(h.get("idempotency-key")).toBe(id);
     const sent = JSON.parse(String(calls[0].init.body));
     expect(sent).toMatchObject({ to: ["b@exemple.fr"], subject: expect.stringContaining("Paiement reçu") });
-    expect(sent.from).toContain("<bonjour@stablapp.fr>");
+    expect(sent.from).toContain("<bonjour@mail.stablapp.fr>");
     await env.DB.prepare("UPDATE email_outbox SET next_attempt_at = ? WHERE id = ?").bind("2000-01-01T00:00:00Z", id).run();
     respond(200, { id: "re_123" });
     await processQueue(e);
@@ -141,7 +141,7 @@ describe("file d'envoi", () => {
     expect(calls[0].url).toBe("https://api.brevo.com/v3/smtp/email");
     expect(new Headers(calls[0].init.headers).get("api-key")).toBe("xkeysib");
     const b = JSON.parse(String(calls[0].init.body));
-    expect(b.sender).toEqual({ name: "Stabl", email: "bonjour@stablapp.fr" });
+    expect(b.sender).toEqual({ name: "Stabl", email: "bonjour@mail.stablapp.fr" });
     expect(b.to).toEqual([{ email: "e@exemple.fr" }]);
     expect(b.htmlContent).toContain("F-2026-1173");
     expect(b.attachment).toEqual([{ name: "F-2026-1173.pdf", content: pdf }]);
