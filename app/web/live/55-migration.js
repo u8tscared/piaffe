@@ -37,7 +37,12 @@ function effect(id,action){var f=MIG().effetPour;if(typeof f!=='function')return
 function logo(id){var L=MIG().LOGOS;var v=L&&L[id];if(!v)return '';if(typeof v==='object')v=v.svg||v.src||v.data||'';if(!v)return '';
   if(/^\s*<svg/i.test(v))return '<span class="lv-logo" aria-hidden="true">'+v+'</span>';
   if(/^(data:|https?:|\/)/.test(v))return '<img class="lv-logo" alt="" src="'+esc(v)+'">';return ''}
-function icon(id){return logo(id)||ICON(ICO[fam(id)]||'swap')}
+/* pastilles maison quand l'éditeur n'a pas de logo dans le catalogue (couleur de la marque, initiales) */
+var TILE={excel:['#1d6f42','grid'],'google-sheets':['#188038','grid'],papier:['#b08550','doc'],qonto:['#1d1d2b','Q'],pegase:['#8b1d2c','P'],ffe:['#0b3c8c','FFE'],
+  'google-agenda':['#1a73e8','calendar_add'],autre:['#59627c','swap']};
+function tile(id){var t=TILE[id];if(!t)return '';var inner=/^[A-Z]+$/.test(t[1])?'<b style="font:800 '+(t[1].length>2?'8.5':'12.5')+'px/1 var(--f-display);letter-spacing:-.02em;color:#fff">'+t[1]+'</b>':ICON(t[1],'sm').replace('class="i','style="width:15px;height:15px;color:#fff" class="i');
+  return '<span class="lv-logo lv-tile" aria-hidden="true" style="background:'+t[0]+'">'+inner+'</span>'}
+function icon(id){return logo(id)||tile(id)||ICON(ICO[fam(id)]||'swap')}
 
 /* recherche dans le catalogue complet, pour « autre » */
 function search(q){q=(q||'').trim().toLowerCase();if(q.length<2)return [];var out=[];

@@ -7,7 +7,12 @@ const rd = (p) => fs.readFileSync(p, 'utf8');
 const core = ['brand.js', 'horse.inc.js', 'icons.js', 'data.js', 'engine.js'].filter((f) => fs.existsSync(path.join(DEMO, 'core', f))).map((f) => rd(path.join(DEMO, 'core', f)));
 const live = ['00-pre.js', '10-api.js', '15-store.js', '20-data.js', '50-auth.js', '55-migration.js', '60-onboarding.js', '62-bienvenue.js'].map((f) => 'try{\n' + rd(path.join(WEB, 'live', f)) + '\n}catch(e){console.error("' + f + '",e)}');
 const css = [path.join(DEMO, 'core', 'tokens.css'), path.join(DEMO, 'core', 'shell.css')].concat(fs.readdirSync(path.join(WEB, 'live')).filter((f) => f.endsWith('.css')).sort().map((f) => path.join(WEB, 'live', f))).concat([path.join(HERE, 'demo.css')]).map(rd).join('\n');
-const js = core.join('\n;\n') + '\n;\n' + live.join('\n;\n') + '\n;\n' + rd(path.join(HERE, 'mock.js'));
+/* catalogue et logos des logiciels (repris de la page construite par app/web/build.js) */
+const built = rd(path.join(WEB, 'dist', 'index.html'));
+const m0 = built.indexOf('/* ===== migration/core'), m1 = built.indexOf('console.error("migration/core",e)}', m0);
+const mig = m0 >= 0 && m1 > m0 ? built.slice(m0, m1 + 'console.error("migration/core",e)}'.length) : '';
+if (!mig) console.warn('catalogue migration absent : lancer d’abord node app/web/build.js');
+const js = core.join('\n;\n') + '\n;\n' + mig + '\n;\n' + live.join('\n;\n') + '\n;\n' + rd(path.join(HERE, 'mock.js'));
 if (/<\/script/i.test(js)) throw new Error('</script> interdit');
 new (require('vm').Script)(js);
 const html = `<!doctype html>

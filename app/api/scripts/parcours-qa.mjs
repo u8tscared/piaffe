@@ -356,7 +356,8 @@ async function vetScenario(browser, g, club) {
 
   await g.evaluate(() => P.go("praticiens")); await sleep(1500); await g.evaluate(() => P.rerender()); await sleep(500);
   { const t = await g.evaluate(() => (P.state && P.state.route) + " :: " + document.querySelector(".view").textContent.slice(0, 600)); if (!t.includes(cl.number)) console.log("DEBUG", cl.number, t); }
-  ok(await g.evaluate((n) => document.querySelector(".view").textContent.includes(n), cl.number), "le gérant voit la facture reçue dans « Véto et maréchal »");
+  { let seen = false; for (let k = 0; k < 15 && !seen; k++) { seen = await g.evaluate((n) => document.querySelector(".view").textContent.includes(n), cl.number); if (!seen) { await sleep(1000); await g.evaluate(() => P.rerender()); } }
+    ok(seen, "le gérant voit la facture reçue dans « Véto et maréchal »"); }
   await shot(g, "11-gerant-factures-praticiens");
 }
 

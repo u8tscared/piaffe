@@ -54,5 +54,5 @@
 .dm-bilan div{padding:14px;border-radius:16px;background:var(--surface-2)}
 .dm-bilan b{display:block;font:800 26px/1 var(--f-display);letter-spacing:-.03em}
 .dm-bilan span{font-size:13.5px;color:var(--mut)}
-@media (min-width:1100px){.dm-ribbon{left:auto;right:24px;bottom:24px;transform:none}}
+@media (min-width:1360px){.dm-ribbon{left:auto;right:24px;bottom:22px;transform:none}.dm-ribbon span{display:none}}
 @media (max-width:600px){.dm-mh .chip{display:none}.dm-inbox{padding:12px 8px 140px}}

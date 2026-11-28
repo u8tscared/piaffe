@@ -5,14 +5,32 @@
 
 /* ---------- Coque de l'onboarding : question à gauche, aperçu à droite ---------- */
 .lv-ob.v2{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
-@media (min-width:1100px){
-  .lv-ob.v2{grid-template-columns:minmax(0,1fr) minmax(420px,44%);grid-template-rows:auto minmax(0,1fr) auto}
-  .lv-ob.v2>.lv-ob-top,.lv-ob.v2>.lv-ob-body,.lv-ob.v2>.lv-ob-foot{grid-column:1}
-  .lv-ob.v2>.ob-live{grid-column:2;grid-row:1 / span 3}
-}
+
 .lv-ob.v2 .lv-ob-top{gap:18px}
 .lv-ob.v2 .lv-ob-body{padding:28px clamp(20px,5vw,72px) 40px}
-.lv-ob.v2 .lv-q{max-width:680px}
+.lv-ob.v2 .lv-q{max-width:760px}
+.lv-ob.v2{background:radial-gradient(60% 50% at 50% -10%,var(--acc-pale),transparent 70%),var(--bg)}
+.lv-ob.v2 .lv-ob-top{max-width:1100px;width:100%;margin:0 auto;box-sizing:border-box}
+/* entrée élément par élément, sortie au « Continuer » */
+.lv-ob.v2 .lv-q.fwd,.lv-ob.v2 .lv-q.back{animation:none}
+.lv-ob.v2 .lv-q>*{animation:obUp .6s var(--e-out) both}
+.lv-ob.v2 .lv-q>*:nth-child(1){animation-delay:.02s}.lv-ob.v2 .lv-q>*:nth-child(2){animation-delay:.07s}.lv-ob.v2 .lv-q>*:nth-child(3){animation-delay:.13s}
+.lv-ob.v2 .lv-q>*:nth-child(4){animation-delay:.19s}.lv-ob.v2 .lv-q>*:nth-child(5){animation-delay:.25s}.lv-ob.v2 .lv-q>*:nth-child(n+6){animation-delay:.3s}
+.lv-ob.v2 .lv-q.back>*{animation-name:obDown}
+@keyframes obUp{from{opacity:0;transform:translateY(22px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes obDown{from{opacity:0;transform:translateY(-18px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.lv-ob.v2 .lv-q.out{animation:obOut .23s var(--e-in-out) forwards}
+.lv-ob.v2 .lv-q.out-back{animation:obOutB .23s var(--e-in-out) forwards}
+@keyframes obOut{to{opacity:0;transform:translateY(-16px) scale(.985);filter:blur(3px)}}
+@keyframes obOutB{to{opacity:0;transform:translateY(16px) scale(.985);filter:blur(3px)}}
+.lv-ob.v2 .lv-q h1{font-size:clamp(30px,4.4vw,52px)}
+.lv-ob.v2 [data-next]{transition:transform .25s var(--e-spring),box-shadow .3s,background .2s}
+.lv-ob.v2 [data-next]:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 12px 24px -10px color-mix(in srgb,var(--acc) 70%,transparent)}
+.lv-ob.v2 [data-next]:not(:disabled):active{transform:scale(.97)}
+.lv-ob.v2 .lv-ob-foot{max-width:none;padding-left:max(20px,calc((100% - 760px)/2));padding-right:max(20px,calc((100% - 760px)/2))}
+.lv-ob.v2 .lv-opt[aria-pressed="true"]{animation:obPick .45s var(--e-spring)}
+@keyframes obPick{40%{transform:scale(1.025)}}
+@media (prefers-reduced-motion:reduce){.lv-ob.v2 .lv-q>*,.lv-ob.v2 .lv-q.out,.lv-ob.v2 .lv-q.out-back,.lv-ob.v2 .lv-opt[aria-pressed="true"]{animation:none!important}}
 .lv-ob.v2 .lv-ob-foot{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(10px)}
 .ob-saved{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);white-space:nowrap;opacity:0;transition:opacity .4s}
 .ob-saved.on{opacity:1}
@@ -237,3 +255,8 @@
   .ob-ring .h path{fill:#fff;stroke-width:0}
 }
 .ob-steps .li{border:0!important;padding:0!important;min-height:0!important;background:none!important}
+/* logos des logiciels : plus grands, posés sur une tuile blanche */
+.lv-logo.lv-tile{padding:0;display:inline-grid;place-items:center}
+.lv-tools .lv-opt .ico,.lv-tp .ico{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.lv-tools .lv-opt .ico .lv-logo,.lv-tp .ico .lv-logo{width:28px;height:28px}
+.ob-move .src span .lv-logo{width:26px;height:26px}

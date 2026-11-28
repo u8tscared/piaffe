@@ -51,7 +51,7 @@ var STEPS=[
    '<div class="lv-row2"><label class="lv-fl"><span>Code postal</span><input class="in" id="ob-zip" value="'+esc((A.address||{}).zip||'')+'" inputmode="numeric" autocomplete="postal-code" maxlength="10"></label>'+
    '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div></div>'},
    bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets'),t=0;
-     n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live()};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
+     n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live();clearTimeout(t);if(!A.siren&&A.name.length>=4)t=setTimeout(find,700)};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
      /* adresse saisie à la main (la recherche officielle peut être indisponible ou ne pas trouver la structure) */
      var ad=function(k){return q.querySelector('#ob-'+k)};
      ['line1','zip','city'].forEach(function(k){ad(k).oninput=function(){A.address=A.address&&typeof A.address==='object'?A.address:{country:'FR'};A.address[k]=ad(k).value.trim();saveLocal();if(k==='city')live()}});
@@ -201,7 +201,11 @@ function foot(){if(!el)return;var s=cur(),f=el.querySelector('.lv-ob-foot');if(!
   var bk=f.querySelector('[data-back]');if(bk)bk.style.visibility=stepIdx>0?'visible':'hidden'}
 function rail(){var v=visible(),n=v.length-1,r=el.querySelector('.ob-rail');if(!r)return;var h='';for(var i=1;i<=n;i++)h+='<i class="'+(i<stepIdx?'done':i===stepIdx?'cur':'')+'"></i>';r.innerHTML=h;
   r.setAttribute('aria-valuenow',String(stepIdx));r.setAttribute('aria-valuemax',String(n));el.querySelector('.lv-ob-step').textContent=stepIdx?(stepIdx+' / '+n):''}
-function draw(){var s=cur();rail();
+var swapping=false;
+/* au « Continuer » : la question sort (glisse et s'efface), la suivante entre élément par élément */
+function draw(){var body=el.querySelector('.lv-ob-body'),old=body.querySelector('.lv-q');
+  if(old&&!P.RM&&!swapping){swapping=true;old.classList.add(dir==='back'?'out-back':'out');setTimeout(function(){swapping=false;paint()},230);return}paint()}
+function paint(){var s=cur();rail();
   var body=el.querySelector('.lv-ob-body');body.innerHTML='<div class="lv-q '+dir+'" data-step="'+s.id+'">'+s.render()+'</div>';body.scrollTop=0;
   var q=body.querySelector('.lv-q');if(s.bind)s.bind(q);foot();live();
   var first=q.querySelector('input.in');if(first&&!PL.isTouch())setTimeout(function(){var a=document.activeElement;if(!a||a===document.body||!q.contains(a))first.focus()},80)}
@@ -252,7 +256,7 @@ PL.onboarding=function(o){o=o||{};loadLocal();if(o.answers&&Object.keys(o.answer
   if(o.skipHello&&stepIdx===0)stepIdx=1;
   document.body.classList.add('lv-booting');document.title='Configuration · '+PL.brandName();
   var r=document.getElementById('lv-root');if(!r){r=document.createElement('div');r.id='lv-root';document.body.appendChild(r)}r.innerHTML='<div class="lv-ob v2"><header class="lv-ob-top">'+PL.brandHTML(26)+'<div class="ob-rail" role="progressbar" aria-label="Avancement" aria-valuemin="0"></div><span class="lv-ob-step"></span><span class="ob-saved">'+ICON('checkc','sm')+'Enregistré</span></header><main class="lv-ob-body"></main>'+
-    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer><aside class="ob-live" aria-hidden="true"></aside></div>';
+    '<footer class="lv-ob-foot"><button class="btn ghost" data-back>'+ICON('back','sm')+'Retour</button><span class="grow"></span><span class="lv-kbd">Appuyez sur Entrée</span><button class="btn pri" data-next><span class="lv-spin"></span><span class="lv-bt">Continuer</span></button></footer></div>';
   el=r.firstChild;el.querySelector('[data-next]').onclick=next;el.querySelector('[data-back]').onclick=back;
   el.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.target.closest('button,[data-find]')&&e.target.id!=='ob-siret'){e.preventDefault();next()}});
   draw()};
