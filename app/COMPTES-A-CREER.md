@@ -45,7 +45,7 @@ Rien n'a été créé à ton nom. Voici, dans l'ordre, les comptes à ouvrir et 
 9. **Ne pas activer Stripe Tax** tant que la franchise de TVA s'applique. Le jour où elle cesse : `PLATFORM_VAT_REGIME=normal` dans wrangler.jsonc et relancer le script.
 10. Facultatif : secret `BILLING_ADMIN_SECRET` (24 caractères ou plus) pour accorder l'offre fondateurs à un club.
 
-À valider : prix (Essentiel 59 €, Club 149 €, Domaine 289 € par mois, annuel au prix de 10 mois, offre fondateurs 99 € à vie pour 30 clubs), parrainage 50 €, délai de grâce 7 jours, commission Stabl sur les paiements des clubs à 0 %, pré-notification SEPA de 3 jours (à prévoir dans le mandat, sinon 14 jours).
+Grille validée le 28/11/2026 (Essentiel 59 € : 25 chevaux et 2 comptes ; Club 149 € : illimité ; Domaine 289 € : 3 sites ; détail dans site/src/landing.js). À valider : prix (Essentiel 59 €, Club 149 €, Domaine 289 € par mois, annuel au prix de 10 mois, offre fondateurs 99 € à vie pour 30 clubs), parrainage 50 €, délai de grâce 7 jours, commission Stabl sur les paiements des clubs à 0 %, pré-notification SEPA de 3 jours (à prévoir dans le mandat, sinon 14 jours).
 
 ## 4. E-mails (Resend)
 État au 28/11/2026 : compte Resend de Marceau (connexion Google, marceau.ruis@gmail.com), domaine `mail.stablapp.fr` ajouté en région Irlande (eu-west-1), webhook créé.

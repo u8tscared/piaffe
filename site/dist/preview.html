@@ -108,6 +108,8 @@ ul,ol{list-style:none;margin:0;padding:0}
 figure{margin:0}
 svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 svg.i .f{fill:currentColor;stroke:none}
+svg.i.phi{fill:currentColor;stroke:none}
+svg.i.phi .d{opacity:.22}
 svg.i .af{fill:var(--strass);stroke:none}
 .only-l{display:var(--l)}.only-d{display:var(--d)}
 .w{width:100%;max-width:1232px;margin-inline:auto;padding-inline:var(--g)}
@@ -219,7 +221,7 @@ svg.i .af{fill:var(--strass);stroke:none}
 .of{position:relative;display:flex;flex-direction:column;padding:30px;border-radius:30px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);transition:transform .45s var(--e-out),box-shadow .45s}
 .of:hover{transform:translateY(-6px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
 .of.vedette{background:var(--hero);color:#fff;box-shadow:var(--shadow-3)}
-.of-tag{position:absolute;top:22px;right:22px;padding:5px 11px;border-radius:999px;background:#6d8bff;color:#0a1636;font-size:13px;font-weight:700}
+.of-tag{position:absolute;top:-14px;left:50%;translate:-50% 0;white-space:nowrap;box-shadow:0 6px 18px -6px rgba(10,22,54,.5);padding:5px 11px;border-radius:999px;background:#6d8bff;color:#0a1636;font-size:13px;font-weight:700}
 .of h3{font-size:26px}
 .of-p{margin-top:4px;font-size:14.5px;color:var(--mut);min-height:2.9em}
 .vedette .of-p,.vedette .of-u,.vedette .of-an{color:#b9c3e6}
@@ -357,52 +359,7 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
 .gn span{font-size:14.5px;line-height:1.45;color:var(--ink-2)}
 .gn-note{margin-top:12px;text-align:center;font-size:13px;color:var(--mut)}
 
-/* ---------- Onglets des fonctionnalités ---------- */
-.ong-tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
-.ong-tabs button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:999px;font-size:14.5px;font-weight:600;color:var(--ink-2);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);transition:background .25s,color .25s,box-shadow .25s,transform .3s var(--e-out)}
-.ong-tabs button svg{width:17px;height:17px;color:var(--d)}
-.ong-tabs button:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--line-2)}
-.ong-tabs button[aria-selected=true]{background:var(--d-bg);color:var(--d-ink);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--d) 45%,transparent)}
-.ong-tabs button[aria-selected=true] svg{color:var(--d-ink)}
-.ong-p{display:grid;grid-template-columns:minmax(0,4.2fr) minmax(0,7.8fr);gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(20px,3vw,36px);border-radius:32px;background:var(--d-bg);transition:background .5s}
-.ong-p .txt{display:grid;gap:14px;align-content:center}
-.ong-k{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--d-ink)}
-.ong-k svg{width:18px;height:18px}
-.ong-p h3{font-size:clamp(24px,2.6vw,34px);line-height:1.08;color:var(--ink)}
-.ong-p h3 em{font-style:normal;color:var(--d-ink)}
-.ong-p .txt>p{font-size:16px;color:var(--ink-2)}
-.ong-p ul{display:grid;gap:9px}
-.ong-p li{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--ink-2);line-height:1.45}
-.ong-p li svg{width:22px;height:22px;padding:4px;border-radius:7px;background:var(--surface);color:var(--d-ink);stroke-width:2.6;flex:none}
-.ong-p li b{color:var(--ink);font-weight:650}
-.ong-p .lien{color:var(--d-ink);justify-self:start}
-.ong-v{position:relative}
-.ong-v .nav-frame{box-shadow:0 0 0 1px color-mix(in srgb,var(--d) 25%,var(--line)),0 30px 60px -28px color-mix(in srgb,var(--d) 60%,rgba(10,22,54,.5))}
-.ong-v .crop{--dx:276;--dy:0;--dw:1164;--dh:700;--mw:640;--mh:560}
-.ong-v .crop img{transition:opacity .45s var(--e-out),transform .7s var(--e-out)}
-.ong-v .crop img:not(.on){opacity:0;transform:scale(1.02)}
-.ong-p .txt>*{transition:opacity .35s var(--e-out),transform .5s var(--e-out)}
-.ong-p.chg .txt>*{opacity:0;transform:translateY(8px)}
-.aussi{margin-top:22px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.aussi li{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;background:var(--surface-2);font-size:14px;font-weight:550;color:var(--ink-2)}
-.aussi li:first-child{background:none;color:var(--mut);font-weight:600;padding-inline:4px}
-.aussi svg{width:16px;height:16px;color:var(--mut)}
 
-/* ---------- Quatre espaces ---------- */
-.esp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.ec{display:flex;flex-direction:column;border-radius:26px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);overflow:hidden;transition:transform .45s var(--e-out),box-shadow .45s var(--e-out)}
-.ec:hover{transform:translateY(-5px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-2)}
-.ec-v{position:relative;height:210px;background:var(--d-bg);overflow:hidden}
-.ec-v .ip{position:absolute;left:50%;top:22px;width:150px;translate:-50% 0;transition:translate .6s var(--e-out)}
-.ec:hover .ec-v .ip{translate:-50% -8px}
-.ec-v .nav-frame{position:absolute;left:18px;top:22px;width:420px;border-radius:12px;transition:translate .6s var(--e-out)}
-.ec:hover .ec-v .nav-frame{translate:0 -8px}
-.ec-t{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:18px 20px 20px;flex:1}
-.ec-q{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--d-ink)}
-.ec-q svg{width:16px;height:16px}
-.ec h3{font-size:21px;line-height:1.15}
-.ec p{font-size:14.5px;color:var(--mut);line-height:1.5}
-.ec .lien{margin-top:auto;color:var(--d-ink);font-size:14.5px}
 
 /* ---------- Stabl AI ---------- */
 .ai-c{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(24px,4vw,52px);border-radius:clamp(28px,3vw,40px);color:var(--ai-ink);isolation:isolate;position:relative;overflow:hidden;
@@ -582,9 +539,6 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
   .prix-l{justify-items:center}
   .scene{max-width:760px;margin:8px auto 0;width:100%}
   .gn{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ong-p{grid-template-columns:minmax(0,1fr)}
-  .ong-v{order:-1}
-  .esp{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ai-c,.mig{grid-template-columns:minmax(0,1fr)}
   .offres{grid-template-columns:minmax(0,1fr);max-width:560px;margin-inline:auto}
   .of-p{min-height:0}
@@ -631,20 +585,6 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
   .gn b{font-size:24px}
   .gn span{font-size:13.5px}
   .tete{text-align:left}
-  .ong-tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;margin-inline:calc(-1 * var(--g));padding:2px var(--g);scrollbar-width:none}
-  .ong-tabs::-webkit-scrollbar{display:none}
-  .ong-tabs button{flex:none}
-  .ong-p{padding:14px;border-radius:24px;gap:18px}
-  .ong-p .txt{padding:0 4px 6px}
-  .aussi{justify-content:flex-start}
-  .esp{grid-template-columns:minmax(0,1fr)}
-  .ec{flex-direction:row}
-  .ec-v{width:118px;height:auto;min-height:170px;flex:none}
-  .ec-v .ip{width:104px;top:16px}
-  .ec-v .nav-frame{left:12px;top:16px;width:300px}
-  .ec-t{padding:16px}
-  .ec h3{font-size:18px}
-  .ec p{font-size:14px}
   .ai-c{margin-inline:calc(-1 * var(--g) + 6px);padding:24px 16px;border-radius:26px}
   .ai-qs button{font-size:14px}
   .chat{height:600px;border-radius:20px}
@@ -682,9 +622,175 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
 .ct-g li{display:flex;gap:9px;align-items:center}
 .ct-g svg{width:18px;height:18px;color:var(--ok);stroke-width:2.4}
 
+/* =====================================================================
+   v6 · Ce que fait Stabl (défilement bloc par bloc), espaces, détail des formules
+   ===================================================================== */
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* ---------- Six blocs ---------- */
+#fonctions{position:relative;transition:background .6s var(--e-out)}
+#fonctions.rec-in{background:color-mix(in srgb,var(--d-bg) 38%,var(--bg))}
+.rec{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:start}
+.rec-rail{position:sticky;top:calc(var(--nav-h) + 28px);display:grid;gap:12px}
+.rr-t{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.rec-rail ol{display:grid;gap:4px;list-style:none;margin:0;padding:0}
+.rec-rail ol a{position:relative;display:grid;grid-template-columns:22px 40px minmax(0,1fr);align-items:center;gap:10px;min-height:64px;padding:10px 12px 10px 10px;border-radius:18px;color:var(--ink-2);overflow:hidden;transition:background .35s var(--e-out),color .35s,box-shadow .35s}
+.rec-rail ol a:hover{background:var(--surface)}
+.rr-n{font:700 13px/1 var(--f-mono);color:var(--mut-2);text-align:center;transition:color .3s}
+.rr-i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);color:var(--mut);transition:background .35s,color .35s,transform .45s var(--e-spring)}
+.rr-i svg{width:20px;height:20px}
+.rr-x{display:grid;gap:2px;min-width:0}
+.rr-x b{font:700 16px/1.2 var(--f-display);letter-spacing:-.01em;color:var(--ink)}
+.rr-x small{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr-p{position:absolute;left:0;bottom:0;height:3px;width:calc(var(--pr,0) * 100%);background:var(--d);opacity:0;transition:opacity .3s}
+.rec-rail ol a.vu .rr-i{background:var(--d-bg);color:var(--d-ink)}
+.rec-rail ol a.vu .rr-n{color:var(--d-ink)}
+.rec-rail ol a.on{background:var(--surface);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--d) 50%,transparent),var(--shadow-1)}
+.rec-rail ol a.on .rr-i{background:var(--d);color:#fff;transform:scale(1.06)}
+.rec-rail ol a.on .rr-n{color:var(--d-ink)}
+.rec-rail ol a.on .rr-p{opacity:1}
+.rr-cta{margin-top:4px;padding-left:10px}
+.rec-ch{display:grid;gap:clamp(40px,7vw,96px)}
+.rc{display:grid;gap:clamp(20px,3vw,32px);scroll-margin-top:calc(var(--nav-h) + 24px)}
+.rc-t{display:grid;gap:14px;max-width:640px}
+.rc-k{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--d-ink)}
+.rc-k svg{width:18px;height:18px}
+.rc-n{padding:3px 8px;border-radius:999px;background:var(--d-bg);font:700 12.5px/1.2 var(--f-mono)}
+.rc h3{font-size:clamp(26px,3vw,38px);line-height:1.06}
+.rc h3 em{font-style:normal;color:var(--d-ink)}
+.rc-p{font-size:16.5px;color:var(--ink-2)}
+.rc ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}
+.rc li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.rc li svg{width:22px;height:22px;padding:4px;border-radius:7px;background:var(--d-bg);color:var(--d-ink);stroke-width:2.6;flex:none}
+.rc li b{color:var(--ink);font-weight:650}
+.rc-f{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.rc-f div{display:inline-flex;align-items:baseline;gap:6px;padding:7px 12px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);font-size:13.5px}
+.rc-f dt{font-weight:700;color:var(--ink)}
+.rc-f dd{margin:0;color:var(--mut)}
+.rc .lien{color:var(--d-ink);justify-self:start}
+.rc-v{position:relative;padding:0 8% 6% 0}
+.rc-v .nav-frame{box-shadow:0 0 0 1px color-mix(in srgb,var(--d) 25%,var(--line)),0 30px 60px -28px color-mix(in srgb,var(--d) 60%,rgba(10,22,54,.5))}
+.rc-v .crop{--mw:640;--mh:560;--mx:250;--my:120}
+.rc-ip{position:absolute;right:0;bottom:-4%;width:min(22%,170px)}
+/* ---------- Un espace pour chacun ---------- */
+.es-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.es-tabs button{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border-radius:18px;text-align:left;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);transition:background .3s,box-shadow .3s,transform .3s var(--e-out)}
+.es-tabs button:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px var(--line-2),var(--shadow-1)}
+.es-ti{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--d-bg);color:var(--d-ink);transition:background .3s,color .3s}
+.es-ti svg{width:19px;height:19px}
+.es-tabs b{display:block;font:700 15px/1.2 var(--f-display);color:var(--ink)}
+.es-tabs small{display:block;margin-top:2px;font-size:12.5px;color:var(--mut);line-height:1.25}
+.es-tabs button[aria-selected=true]{background:var(--d-bg);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--d) 50%,transparent)}
+.es-tabs button[aria-selected=true] .es-ti{background:var(--d);color:#fff}
+.es-p{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(20px,4vw,56px);align-items:center;padding:clamp(20px,3vw,40px);border-radius:32px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1);overflow:hidden}
+.es-p[hidden]{display:none}
+.es-p.entre .es-t>*{animation:es-in .55s var(--e-out) both}
+.es-p.entre .es-t>*:nth-child(2){animation-delay:.04s}.es-p.entre .es-t>*:nth-child(3){animation-delay:.08s}.es-p.entre .es-t>*:nth-child(4){animation-delay:.12s}
+.es-p.entre .es-scene{animation:es-in .7s var(--e-out) both}
+@keyframes es-in{from{opacity:0;transform:translateY(12px)}}
+.es-t{display:grid;gap:14px}
+.es-k{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--d-ink)}
+.es-k svg{width:18px;height:18px}
+.es-t h3{font-size:clamp(24px,2.6vw,34px);line-height:1.08}
+.es-t>p{font-size:16px;color:var(--ink-2)}
+.es-t ul{display:grid;gap:8px}
+.es-t li{display:flex;gap:10px;align-items:center;font-size:15px;font-weight:550;color:var(--ink)}
+.es-t li svg{width:22px;height:22px;padding:4px;border-radius:7px;background:var(--d-bg);color:var(--d-ink);stroke-width:2.6;flex:none}
+.es-t .lien{color:var(--d-ink);justify-self:start}
+.es-scene{position:relative;min-height:360px;padding:4% 0 8%;border-radius:24px;background:radial-gradient(80% 90% at 70% 40%,var(--d-bg),transparent 75%)}
+.es-d{width:86%}
+.es-d.nav-frame .crop{--mw:640;--mh:560}
+.es-ip{position:absolute;right:2%;bottom:0;width:min(30%,190px)}
+.es-scene.solo{display:flex;justify-content:center;gap:6%;padding:4% 0}
+.es-scene.solo .es-ip{position:relative;right:auto;bottom:auto;width:min(36%,210px)}
+.es-scene.solo .es-ip2{translate:0 8%}
+.es-same{display:flex;gap:10px;align-items:flex-start;max-width:820px;margin:20px auto 0;font-size:15px;color:var(--ink-2);text-align:left}
+.es-same svg{width:20px;height:20px;flex:none;margin-top:2px;color:var(--acc)}
+.es-same b{color:var(--ink)}
+/* ---------- Cartes de formules et détail ---------- */
+.of-pour{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
+.vedette .of-pour{color:#a9bcff}
+.of ul{flex:1;align-content:start}
+.of li.t{font-size:14px;color:var(--mut);font-weight:600}
+.vedette li.t{color:#b9c3e6}
+.of-det{display:inline-flex;align-items:center;gap:6px;margin-top:20px;min-height:44px;font-size:14.5px;font-weight:600;color:var(--acc)}
+.of-det svg{width:16px;height:16px}
+.vedette .of-det{color:#a9bcff}
+.cmp{margin-top:clamp(32px,5vw,56px);scroll-margin-top:calc(var(--nav-h) + 16px)}
+.cmp-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cmp-h h3{font-size:clamp(22px,2.4vw,30px)}
+.cmp-h p{color:var(--mut);font-size:15px}
+.cmp-t{border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow-1)}
+.cmp-t table{width:100%;border-collapse:separate;border-spacing:0;font-size:15px}
+.cmp-t thead th{position:sticky;top:var(--nav-h);z-index:2;background:var(--surface);padding:16px 12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:bottom}
+.cmp-t thead th:first-child{text-align:left;border-top-left-radius:24px}
+.cmp-t thead th:last-child{border-top-right-radius:24px}
+.cmp-t thead b{display:block;font:800 20px/1.1 var(--f-display);letter-spacing:-.02em}
+.cmp-t thead small{display:block;margin-top:3px;font-size:13px;color:var(--mut);font-weight:500}
+.cmp-t thead th.v b{color:var(--acc)}
+.cmp-t th,.cmp-t td{padding:11px 12px}
+.cmp-t tbody th{text-align:left;font-weight:500;color:var(--ink-2);width:46%}
+.cmp-t td{text-align:center;width:18%;border-top:1px solid var(--line)}
+.cmp-t tbody th[scope=row]{border-top:1px solid var(--line)}
+.cmp-t td:nth-child(3){background:color-mix(in srgb,var(--acc-pale) 45%,transparent)}
+.cmp-t tr.g th{padding:22px 12px 8px;border-top:0;font:700 15px/1.2 var(--f-display);color:var(--ink);background:none}
+.cmp-t tr.g th span{display:inline-flex;align-items:center;gap:8px}
+.cmp-t tr.g svg{width:18px;height:18px;color:var(--acc)}
+.cmp-t td.oui svg{width:20px;height:20px;color:var(--ok);stroke-width:2.6;vertical-align:middle}
+.cmp-t td.non{color:var(--mut-2);font-size:18px}
+.cmp-t td.val{font-weight:600;font-size:14px;color:var(--ink)}
+.cmp-t tbody:last-child tr:last-child th,.cmp-t tbody:last-child tr:last-child td{padding-bottom:18px}
+@media (max-width:1100px){
+  .rec{grid-template-columns:minmax(0,1fr);gap:20px}
+  .rec-rail{top:var(--nav-h);z-index:20;margin-inline:calc(-1 * var(--g));padding:8px var(--g);background:color-mix(in srgb,var(--d-bg,var(--bg)) 40%,var(--nav-bg));backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-bottom:1px solid var(--line)}
+  .rr-t,.rr-cta,.rr-x small,.rr-n{display:none}
+  .rec-rail ol{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+  .rec-rail ol::-webkit-scrollbar{display:none}
+  .rec-rail ol li{flex:none;scroll-snap-align:start}
+  .rec-rail ol a{grid-template-columns:28px auto;min-height:44px;padding:6px 14px 6px 8px;border-radius:999px;gap:8px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+  .rr-i{width:28px;height:28px;border-radius:50%}
+  .rr-i svg{width:16px;height:16px}
+  .rr-x b{font:600 14.5px/1 var(--f-text);white-space:nowrap}
+  .rc{scroll-margin-top:calc(var(--nav-h) + 76px)}
+  .es-tabs{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * var(--g));padding:2px var(--g)}
+  .es-tabs::-webkit-scrollbar{display:none}
+  .es-p{grid-template-columns:minmax(0,1fr)}
+  .es-scene{order:-1}
+}
+@media (max-width:700px){
+  .rc ul{grid-template-columns:minmax(0,1fr)}
+  .rc-v{padding:0 14% 8% 0}
+  .rc-ip{width:30%}
+  .es-tabs{grid-template-columns:repeat(5,max-content)}
+  .es-tabs button{min-height:54px;padding:8px 14px 8px 8px}
+  .es-tabs small{display:none}
+  .es-p{padding:14px;border-radius:24px}
+  .es-t{padding:0 4px 6px}
+  .es-scene{min-height:0}
+  .es-d{width:90%}
+  .es-ip{width:32%}
+  .cmp-t{margin-inline:calc(-1 * var(--g) + 6px);border-radius:18px}
+  .cmp-t table{font-size:13.5px}
+  .cmp-t th,.cmp-t td{padding:10px 6px}
+  .cmp-t thead th{padding:12px 4px}
+  .cmp-t thead th:first-child{width:40%}
+  .cmp-t thead b{font-size:16px}
+  .cmp-t thead small{font-size:11.5px}
+  .cmp-t tbody th{width:40%;padding-left:12px}
+  .cmp-t td.val{font-size:12.5px}
+  .cmp-t tr.g th{padding-left:12px}
+}
+@media (prefers-reduced-motion:reduce){.es-p.entre .es-t>*,.es-p.entre .es-scene{animation:none}#fonctions{transition:none}}
+/* en-tête : démo et création de compte */
+.nav-demo{margin-left:0}
+#theme{margin-left:auto}
+.nav-demo+.nav-cta{margin-left:8px}
+@media (max-width:700px){.nav-demo{display:none}}
+.nav-l a{white-space:nowrap}
+.legende a{color:var(--acc);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
 </style>
 
-<div class="pg" id="top" data-demo="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN">
+<div class="pg" id="top" data-demo="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN" data-app="https://app.stablapp.fr/">
 
 <a class="annonce" href="#tarifs"><span class="an-tag">Fondateurs</span><span class="an-t">99 € HT par mois, à vie, pour les 30 premiers clubs</span><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,128l-72,72V56Z" class="d"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></svg></a>
 
@@ -692,10 +798,11 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
   <div class="w nav-in">
     <a class="marque" href="#top" aria-label="Stabl, retour en haut"><svg class="lockup" aria-hidden="true" focusable="false" viewBox="15.8 6 207.08 88"><path d="M52.03 16.44C51.30 16.43 49.11 16.24 47.64 16.38C46.17 16.52 44.70 16.90 43.23 17.29C41.76 17.69 40.29 18.15 38.81 18.76C37.34 19.36 35.87 20.05 34.40 20.91C32.93 21.76 31.41 22.77 30.00 23.89C28.59 25.02 27.17 26.30 25.93 27.64C24.70 28.98 23.59 30.49 22.59 31.94C21.60 33.39 20.72 34.88 19.96 36.35C19.20 37.82 18.56 39.29 18.02 40.76C17.47 42.24 17.03 43.70 16.69 45.18C16.35 46.65 16.07 48.12 15.96 49.59C15.84 51.06 15.82 52.53 15.99 54.00C16.17 55.47 16.52 56.92 17.01 58.39C17.51 59.86 18.17 61.33 18.99 62.80C19.80 64.27 20.81 65.79 21.90 67.22C23.00 68.64 24.25 70.07 25.56 71.35C26.88 72.63 28.34 73.82 29.78 74.88C31.22 75.94 32.73 76.87 34.20 77.73C35.66 78.59 37.12 79.29 38.58 80.04C40.05 80.78 41.53 81.49 43.00 82.20C44.47 82.92 45.94 83.60 47.41 84.35C48.88 85.10 50.35 85.85 51.82 86.72C53.29 87.59 54.79 88.53 56.23 89.56C57.67 90.59 59.76 92.34 60.47 92.90C60.70 92.20 61.46 90.09 61.86 88.69C62.25 87.29 62.60 85.89 62.82 84.48C63.04 83.08 63.22 81.66 63.19 80.25C63.16 78.84 62.96 77.45 62.61 76.04C62.27 74.63 61.77 73.21 61.14 71.81C60.50 70.40 59.69 69.01 58.82 67.60C57.95 66.19 56.90 64.77 55.90 63.37C54.91 61.96 53.70 60.57 52.85 59.16C52.00 57.75 51.22 56.33 50.79 54.93C50.36 53.52 50.25 52.12 50.28 50.72C50.31 49.31 50.86 47.19 50.97 46.49C51.70 46.97 53.88 48.61 55.34 49.40C56.80 50.18 58.28 50.68 59.75 51.21C61.22 51.74 63.43 52.36 64.16 52.59L70.55 57.93C70.72 58.27 71.19 59.31 71.58 60.01C71.98 60.70 72.69 61.76 72.91 62.11L77.73 62.60L81.58 60.14L84.15 53.46C83.69 52.70 82.39 50.41 81.42 48.87C80.45 47.34 79.35 45.79 78.32 44.25C77.28 42.72 76.25 41.19 75.21 39.66C74.17 38.13 72.82 36.58 72.07 35.04C71.33 33.50 70.95 31.19 70.73 30.42C70.16 29.71 68.39 27.57 67.31 26.14C66.23 24.71 64.75 22.55 64.24 21.83C64.60 21.16 65.90 19.16 66.42 17.83C66.95 16.49 67.09 15.16 67.37 13.82C67.64 12.49 67.95 10.49 68.06 9.82C67.45 10.33 65.55 11.76 64.41 12.84C63.28 13.91 61.79 15.71 61.26 16.29L61.93 7.18C61.35 7.64 59.60 8.98 58.46 9.96C57.32 10.94 56.15 11.99 55.08 13.07C54.00 14.15 52.53 15.88 52.03 16.44Z" /><g transform="translate(98.752 73.137) scale(0.06162)"><path d="M267 14Q214 14 168.5 3.5Q123 -7 89.5 -30.0Q56 -53 38.5 -91.5Q21 -130 24 -185L165 -197Q167 -164 180.0 -142.5Q193 -121 216.0 -111.0Q239 -101 272 -101Q303 -101 325.5 -111.5Q348 -122 348 -147Q348 -160 340.0 -168.5Q332 -177 310.5 -184.5Q289 -192 248 -202Q197 -215 156.0 -228.0Q115 -241 86.0 -259.0Q57 -277 42.0 -303.5Q27 -330 27 -369Q27 -424 56.5 -462.5Q86 -501 138.0 -521.5Q190 -542 258 -542Q319 -542 372.0 -523.0Q425 -504 455.5 -461.0Q486 -418 478 -347L340 -334Q343 -363 332.0 -383.5Q321 -404 300.0 -414.5Q279 -425 249 -425Q215 -425 196.5 -412.5Q178 -400 178 -381Q178 -366 189.5 -355.5Q201 -345 225.5 -337.5Q250 -330 289 -321Q323 -314 360.0 -303.0Q397 -292 429.0 -273.5Q461 -255 481.0 -225.0Q501 -195 501 -149Q501 -100 474.0 -63.0Q447 -26 395.0 -6.0Q343 14 267 14ZM709.0 12Q616.0 12 570.5 -35.5Q525.0 -83 525.0 -183V-402H467.0V-504H470.0Q532.0 -512 558.0 -545.5Q584.0 -579 590.0 -647V-649H685.0V-528H806.0V-398H685.0V-198Q685.0 -160 703.5 -144.0Q722.0 -128 749.0 -128Q763.0 -128 778.0 -132.0Q793.0 -136 806.0 -143V-2Q775.0 7 751.0 9.5Q727.0 12 709.0 12ZM950.0 14Q910.0 14 874.0 0.0Q838.0 -14 815.0 -45.5Q792.0 -77 792.0 -130Q792.0 -179 811.0 -209.5Q830.0 -240 862.0 -258.5Q894.0 -277 932.0 -286.5Q970.0 -296 1007.0 -303Q1059.0 -313 1085.0 -319.0Q1111.0 -325 1120.5 -333.0Q1130.0 -341 1130.0 -355Q1130.0 -384 1108.5 -399.0Q1087.0 -414 1052.0 -414Q1030.0 -414 1008.0 -406.0Q986.0 -398 972.0 -377.5Q958.0 -357 959.0 -319L815.0 -329Q813.0 -392 834.0 -433.5Q855.0 -475 891.5 -498.5Q928.0 -522 971.5 -532.0Q1015.0 -542 1058.0 -542Q1137.0 -542 1188.0 -512.5Q1239.0 -483 1263.5 -427.5Q1288.0 -372 1288.0 -293V-199Q1288.0 -166 1288.0 -132.5Q1288.0 -99 1288.0 -66.0Q1288.0 -33 1288.0 0H1148.0Q1148.0 -36 1148.0 -73.0Q1148.0 -110 1148.0 -151H1142.0Q1138.0 -106 1112.5 -68.5Q1087.0 -31 1045.5 -8.5Q1004.0 14 950.0 14ZM1017.0 -104Q1034.0 -104 1053.5 -110.5Q1073.0 -117 1090.5 -132.0Q1108.0 -147 1119.0 -173.5Q1130.0 -200 1130.0 -239V-263L1157.0 -266Q1149.0 -253 1130.5 -245.0Q1112.0 -237 1089.0 -232.5Q1066.0 -228 1042.5 -223.5Q1019.0 -219 999.0 -211.5Q979.0 -204 966.5 -191.5Q954.0 -179 954.0 -157Q954.0 -131 972.5 -117.5Q991.0 -104 1017.0 -104ZM1616.0 14Q1571.0 14 1537.0 -6.0Q1503.0 -26 1480.5 -65.5Q1458.0 -105 1447.0 -163H1440.0V0H1299.0V-186V-700H1461.0V-545Q1461.0 -518 1458.5 -487.0Q1456.0 -456 1451.5 -423.0Q1447.0 -390 1441.0 -356H1450.0Q1459.0 -422 1482.0 -463.0Q1505.0 -504 1541.0 -523.0Q1577.0 -542 1623.0 -542Q1682.0 -542 1725.5 -512.0Q1769.0 -482 1793.0 -422.0Q1817.0 -362 1817.0 -271Q1817.0 -174 1790.5 -111.0Q1764.0 -48 1718.5 -17.0Q1673.0 14 1616.0 14ZM1559.0 -115Q1589.0 -115 1610.0 -134.5Q1631.0 -154 1642.0 -186.5Q1653.0 -219 1653.0 -258Q1653.0 -297 1643.0 -331.0Q1633.0 -365 1612.0 -386.0Q1591.0 -407 1559.0 -407Q1545.0 -407 1530.5 -402.0Q1516.0 -397 1503.5 -386.5Q1491.0 -376 1481.0 -359.5Q1471.0 -343 1465.0 -319.5Q1459.0 -296 1459.0 -266V-259Q1459.0 -222 1467.5 -195.0Q1476.0 -168 1490.0 -150.0Q1504.0 -132 1522.0 -123.5Q1540.0 -115 1559.0 -115ZM1820.0 0V-700H1982.0V0Z" /></g></svg></a>
     <nav class="nav-l" id="navL" aria-label="Sections">
-      <a href="#fonctions">Fonctionnalités</a><a href="#changer">Changer de logiciel</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a><a href="#contact">Contact</a>
+      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Espaces</a><a href="#changer">Changer de logiciel</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
     </nav>
     <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M227.89,147.89A96,96,0,1,1,108.11,28.11,96.09,96.09,0,0,0,227.89,147.89Z" class="d"/><path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/></svg><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M184,128a56,56,0,1,1-56-56A56,56,0,0,1,184,128Z" class="d"/><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg></button>
-    <a class="btn pri sm nav-cta" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener">Essayer la démo<svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,128l-72,72V56Z" class="d"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></svg></a>
+    <a class="btn sec sm nav-demo" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener">Essayer la démo</a>
+    <a class="btn pri sm nav-cta" href="https://app.stablapp.fr/">Créer un compte<svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,128l-72,72V56Z" class="d"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></svg></a>
     <button class="ibtn nav-b" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navL"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,64V192H40V64Z" class="d"/><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"/></svg><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,56V200a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40H200A16,16,0,0,1,216,56Z" class="d"/><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button>
   </div>
 </header>
@@ -715,10 +822,10 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
         <p class="pl-s"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M232,56V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Z" class="d"/><path d="M205.66,85.66l-96,96a8,8,0,0,1-11.32,0l-40-40a8,8,0,0,1,11.32-11.32L104,164.69l90.34-90.35a8,8,0,0,1,11.32,11.32Z"/></svg>30 jours d’essai gratuit, sans carte bancaire, sans engagement</p>
       </div>
       <div class="hero-cta">
-        <a class="btn pri lg" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener">Essayer la démo<svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,128l-72,72V56Z" class="d"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></svg></a>
-        <a class="btn sec lg" href="#contact"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M223.94,174.08A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59l25-21.3a8,8,0,0,1,7.59-.69l47.16,21.13A8,8,0,0,1,223.94,174.08Z" class="d"/><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg>Être rappelé</a>
+        <a class="btn pri lg" href="https://app.stablapp.fr/">Créer un compte<svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M216,128l-72,72V56Z" class="d"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></svg></a>
+        <a class="btn sec lg" href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M228.23,134.69,84.15,222.81A8,8,0,0,1,72,216.12V39.88a8,8,0,0,1,12.15-6.69l144.08,88.12A7.82,7.82,0,0,1,228.23,134.69Z" class="d"/><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></svg>Essayer la démo</a>
       </div>
-      <p class="legende">La démo s’ouvre sur une écurie déjà remplie. Rien n’est enregistré.</p>
+      <p class="legende">La démo s’ouvre sur une écurie déjà remplie, sans inscription. Une question ? <a href="#contact">Être rappelé</a>.</p>
     </div>
 
     <div class="scene" id="scene" aria-hidden="true">
@@ -749,28 +856,30 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
   </div>
 </section>
 
-<!-- ================= FONCTIONNALITÉS ================= -->
+<!-- ================= CE QUE FAIT STABL : défilement bloc par bloc ================= -->
 <section class="sec" id="fonctions" aria-labelledby="h-fonc">
   <div class="w">
     <div class="tete" data-r>
-      <p class="sur2">Fonctionnalités</p>
-      <h2 id="h-fonc">Du box à la facture, <span class="hl">tout est au même endroit.</span></h2>
-      <p>Chaque module partage les mêmes données : vous ne saisissez rien deux fois. Les écrans ci-dessous sont ceux de la démo.</p>
+      <p class="sur2">Ce que fait Stabl</p>
+      <h2 id="h-fonc">Six blocs. <span class="hl">Toute votre écurie.</span></h2>
+      <p>Stabl remplace le cahier, le tableur, le logiciel de factures et les groupes WhatsApp. Tous les blocs partagent les mêmes données : rien ne se saisit deux fois.</p>
     </div>
-    <div class="ong" id="ong" data-r></div>
-    <ul class="aussi" data-r id="aussi"></ul>
+    <div class="rec" id="rec">
+      <nav class="rec-rail" id="recRail" aria-label="Les six blocs de Stabl"></nav>
+      <div class="rec-ch" id="recCh"></div>
+    </div>
   </div>
 </section>
 
-<!-- ================= QUATRE ESPACES ================= -->
+<!-- ================= UN ESPACE PAR RÔLE ================= -->
 <section class="sec sec-alt" id="espaces" aria-labelledby="h-esp">
   <div class="w">
     <div class="tete" data-r>
-      <p class="sur2">Quatre espaces</p>
-      <h2 id="h-esp">Chacun son espace, <span class="hl">les mêmes données.</span></h2>
-      <p>Chacun ouvre Stabl sur son ordinateur ou son téléphone, et n’y voit que ce qui le concerne.</p>
+      <p class="sur2">Un espace pour chacun</p>
+      <h2 id="h-esp">Cinq espaces, <span class="hl">les mêmes données.</span></h2>
+      <p>Gérant, salariés, cavaliers, coachs, vétérinaire et maréchal : chacun ouvre Stabl sur son ordinateur ou son téléphone, et n’y voit que ce qui le concerne. Ce que l’un saisit, l’autre le voit aussitôt.</p>
     </div>
-    <div class="esp" id="esp"></div>
+    <div class="esp2" id="esp" data-r></div>
   </div>
 </section>
 
@@ -841,8 +950,8 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
   <div class="w">
     <div class="tete" data-r>
       <p class="sur2">Tarifs</p>
-      <h2 id="h-tarifs">Trois formules. <span class="hl">C’est tout.</span></h2>
-      <p>Prix hors taxes, sans frais d’entrée. 30 jours d’essai gratuit, sans carte bancaire, résiliable en un clic.</p>
+      <h2 id="h-tarifs">Trois formules. <span class="hl">Choisissez selon votre écurie.</span></h2>
+      <p>Prix hors taxes, sans frais d’entrée ni engagement. 30 jours d’essai gratuit avec toutes les fonctions de la formule Club.</p>
       <div class="bascule" id="bascule" role="group" aria-label="Rythme de facturation">
         <span class="bs-g"></span>
         <button type="button" data-p="m" aria-pressed="true">Mensuel</button>
@@ -850,6 +959,10 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
       </div>
     </div>
     <div class="offres" id="offres"></div>
+    <div class="cmp" id="cmp" data-r>
+      <div class="cmp-h"><h3>Tout ce qui est inclus</h3><p>Le détail, bloc par bloc.</p></div>
+      <div class="cmp-t" id="cmpT"></div>
+    </div>
     <div class="fond-o" data-r>
       <span class="fo-i"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M229.06,108.79l-48.7,42,14.88,62.79a8.4,8.4,0,0,1-12.52,9.17L128,189.09,73.28,222.74a8.4,8.4,0,0,1-12.52-9.17l14.88-62.79-48.7-42A8.46,8.46,0,0,1,31.73,94L95.64,88.8l24.62-59.6a8.36,8.36,0,0,1,15.48,0l24.62,59.6L224.27,94A8.46,8.46,0,0,1,229.06,108.79Z" class="d"/><path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"/></svg></span>
       <div><b>Offre fondateurs : la formule Club à 99 € HT par mois, à vie.</b><small>Réservée aux 30 premiers clubs. Le prix ne bougera jamais tant que vous restez abonné.</small></div>
@@ -927,7 +1040,7 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
       <p>Le logiciel de gestion des centres équestres, poney-clubs et écuries. Planning, chevaux, adhérents, finances et équipe, enfin au même endroit.</p>
       <a class="pd-mail" href="mailto:contact@stablapp.fr"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M224,56l-96,88L32,56Z" class="d"/><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></svg><span>contact@stablapp.fr</span></a>
     </div>
-    <nav aria-label="Produit" data-r style="--i:1"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Produit" data-r style="--i:1"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Les espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
     <nav aria-label="Essayer" data-r style="--i:2"><b>Essayer</b><a href="https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN#cockpit" target="_blank" rel="noopener">La démo</a><a href="https://stablapp.fr/passerelle/">La passerelle</a><a href="#contact">Être rappelé</a></nav>
     <nav aria-label="Stabl" data-r style="--i:3"><b>Stabl</b><a href="mailto:contact@stablapp.fr">Nous écrire</a><a href="#tarifs">Offre fondateurs</a><span class="pd-lieu"><svg class="i phi" viewBox="0 0 256 256" aria-hidden="true"><path d="M128,24a80,80,0,0,0-80,80c0,72,80,128,80,128s80-56,80-128A80,80,0,0,0,128,24Zm0,112a32,32,0,1,1,32-32A32,32,0,0,1,128,136Z" class="d"/><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></svg>Conçu à Lyon</span></nav>
   </div>
@@ -1288,7 +1401,7 @@ var D=document,R=D.documentElement,$=function(s,c){return (c||D).querySelector(s
 var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
 var I=function(n){return window.ICON(n)};
 var SH='../shots/';
-var BASE=$('.pg').getAttribute('data-demo');
+var BASE=$('.pg').getAttribute('data-demo'),APP=$('.pg').getAttribute('data-app');
 var MAIL='contact@stablapp.fr';
 function demo(r){return 'href="'+BASE+'#'+r+'" target="_blank" rel="noopener"'}
 /* espaces insécables, comme le build */
@@ -1321,59 +1434,84 @@ function tel(n,alt,o){o=o||{};var lz=o.vite?'':' loading="lazy"',ims;
 $$('[data-ip]').forEach(function(e){e.outerHTML=tel(e.dataset.ip,e.dataset.alt,{duo:e.dataset.duo,vite:e.dataset.vite,k:e.dataset.k})});
 function barre(){return '<div class="nf-bar"><i></i><i></i><i></i><span>'+I('lock')+'app.stablapp.fr</span></div>'}
 
-/* ---------- Fonctionnalités : onglets ---------- */
-/* m : origine [x, y] du recadrage au téléphone (640 × 560 px de l’écran d’origine) */
+/* ---------- Ce que fait Stabl : six blocs, on voit où l’on est en défilant ---------- */
+/* f : ce que chaque formule apporte dans ce bloc ; v : capture ordinateur ; t : téléphone par-dessus (facultatif) */
 var MODS=[
- {id:'planning',d:'rd',ic:'planning',n:'Planning',h:['Le planning se remplit,','et il ménage vos chevaux.'],
-  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes.',
-  u:[['Le montoir se compose seul','chaque cavalier a un cheval à son niveau, sans dépasser sa charge.'],['Rattrapages et liste d’attente','une place se libère, le suivant est prévenu.'],['L’appel sur le téléphone','les séances se décomptent toutes seules.']],
-  r:'planning',shot:'g-planning',alt:'Planning de la semaine : 23 reprises, 200 cavaliers, 85 % de remplissage',m:[296,148]},
- {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',h:['Chaque cheval suivi,','rien n’est oublié.'],
-  p:'Une fiche par cheval : identité SIRE, soins, ferrure, travail de la semaine, ration et coûts.',
-  u:[['Rappels de soins automatiques','vaccins, vermifuges, maréchal, dentiste.'],['Charge de travail surveillée','Stabl signale les chevaux au-dessus de leur seuil.'],['Le propriétaire voit tout','journal, soins et factures de son cheval.']],
-  r:'chevaux',shot:'g-chevaux',alt:'Chevaux : 44 chevaux et poneys, 8 à surveiller, coût moyen de 415 € par cheval',m:[780,170]},
- {id:'adherents',d:'acc',ic:'members',n:'Adhérents',h:['Une famille, un payeur,','tous les cavaliers.'],
-  p:'Fiches complètes, inscriptions en ligne, licences FFE en lot, pensions et demi-pensions.',
-  u:[['Inscriptions validées en un geste','certificat et autorisations déjà joints.'],['Licences FFE en lot','toutes les licences de la saison en un envoi.'],['Contrats signés sur le téléphone','modèle rempli, signature, archive.']],
-  r:'adherents',shot:'g-adherents',alt:'Adhérents : 148 cavaliers, inscriptions à valider, licences FFE',m:[296,300]},
- {id:'facturation',d:'mo',ic:'invoice',n:'Facturation',h:['Les factures du mois,','en un seul geste.'],
-  p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, SEPA, chèques-vacances : chaque paiement retrouve sa facture.',
-  u:[['69 factures prêtes','vous vérifiez, vous envoyez.'],['Relances automatiques','le lien de paiement est dans le message.'],['Comptabilité sans ressaisie','banque rapprochée, TVA, export FEC.']],
-  r:'facturation',shot:'g-facturation',alt:'Facturation : 69 factures prêtes pour 18 292 €, 31 846 € encaissés en novembre',m:[296,190]},
- {id:'equipe',d:'tm',ic:'team',n:'Équipe',h:['Plannings, pointage et paie,','enfin réunis.'],
-  p:'Chacun pointe sur son téléphone. Heures, congés, diplômes et échéances sont suivis, la paie part vers votre logiciel.',
-  u:[['Pointage au téléphone','fini les feuilles à recopier.'],['Échéances suivies','carte professionnelle, PSC1, fin de CDD.'],['Export vers la paie','PayFit ou Silae, sans ressaisie.']],
-  r:'equipe',shot:'g-equipe',alt:'Équipe : 6 salariés sur 9 en poste ce matin, échéances à traiter',m:[296,190]},
- {id:'ecurie',d:'cr',ic:'camera',n:'Écurie connectée',h:['L’écurie en direct,','même la nuit.'],
-  p:'Caméras de box, abreuvoirs et capteurs sont reliés. Stabl vous prévient quand quelque chose sort de l’habitude.',
-  u:[['Alerte avant la colique','Xanthos boit 40 % de moins : l’équipe est prévenue.'],['Rations et stocks reliés','la commande de foin part au bon moment.'],['Plan de l’écurie en 3D','boxes, paddocks et places libres.']],
-  r:'cameras',shot:'g-cameras',alt:'Caméras et capteurs : alerte sur Xanthos, box B23',m:[296,240]}
+ {id:'planning',d:'rd',ic:'planning',n:'Planning',s:'Reprises, stages, réservations',h:['Le planning se remplit,','et il ménage vos chevaux.'],
+  p:'Reprises, stages, balades et cours particuliers sur toutes vos pistes. Les cavaliers réservent et rattrapent leurs cours depuis leur téléphone.',
+  u:[['Réservation en ligne','les cavaliers s’inscrivent, annulent et rattrapent seuls.'],['Montoir composé seul','chaque cavalier a un cheval à son niveau, sans surcharger personne.'],['Liste d’attente','une place se libère, le suivant est prévenu.'],['Agendas synchronisés','Google, Apple ou Outlook, pour chacun.']],
+  f:[['Essentiel','planning, réservations, agendas'],['Club','montoir automatique, liste d’attente']],
+  r:'planning',v:'g-planning',t:'p-adh-reserver',alt:'Planning de la semaine : reprises, cavaliers, taux de remplissage'},
+ {id:'chevaux',d:'hz',ic:'horse',n:'Chevaux et soins',s:'Fiches, soins, véto, maréchal',h:['Chaque cheval suivi,','rien n’est oublié.'],
+  p:'Une fiche par cheval : identité SIRE, soins, ferrure, travail de la semaine, ration et coûts. Le vétérinaire et le maréchal ont leur propre espace.',
+  u:[['Fiche complète en un numéro','le SIRE remplit la race, la robe et les origines.'],['Rappels de soins','vaccins, vermifuges, maréchal, dentiste.'],['Charge de travail surveillée','Stabl signale les chevaux au-dessus de leur plafond.'],['Le propriétaire voit tout','journal, soins et factures de son cheval.']],
+  f:[['Essentiel','fiches chevaux'],['Club','soins, rappels, véto et maréchal'],['Domaine','élevage, vente, caméras']],
+  r:'chevaux',v:'g-chevaux',t:'p-emp-soins',alt:'Chevaux : liste des chevaux, chevaux à surveiller, coût moyen par cheval'},
+ {id:'adherents',d:'acc',ic:'members',n:'Adhérents',s:'Familles, pensions, contrats',h:['Une famille, un payeur,','tous les cavaliers.'],
+  p:'Fiches complètes, inscriptions en ligne, licences FFE en lot, pensions et demi-pensions. Chaque cavalier a son espace sur téléphone.',
+  u:[['Inscriptions en ligne','certificat et autorisations déjà joints.'],['Licences FFE en lot','toutes les licences de la saison en un envoi.'],['Pensions et demi-pensions','le contrat, le cheval et la facture reliés.'],['Contrats signés sur téléphone','modèle rempli, signature, archive.']],
+  f:[['Essentiel','fiches, familles, espace cavalier'],['Club','pensions, contrats, coachs et concours']],
+  r:'adherents',v:'g-adherents',t:'p-adh-accueil',alt:'Adhérents : cavaliers, inscriptions à valider, licences FFE'},
+ {id:'facturation',d:'mo',ic:'invoice',n:'Facturation',s:'Factures, paiements, relances',h:['Les factures du mois,','en un seul geste.'],
+  p:'Forfaits, pensions et prestations se facturent seuls, au bon taux de TVA. Carte, prélèvement, chèques-vacances : chaque paiement retrouve sa facture.',
+  u:[['Facture électronique prête','obligatoire pour les clubs en septembre 2027.'],['Prélèvement automatique','les pensions passent chaque mois, sans relance.'],['Relances en un clic','le lien de paiement est dans le message.'],['Comptabilité sans ressaisie','banque rapprochée, TVA, export FEC.']],
+  f:[['Essentiel','factures, facture électronique, carte'],['Club','prélèvement, relances, compta'],['Domaine','comptes séparés par activité']],
+  r:'facturation',v:'g-facturation',t:'p-adh-paiements',alt:'Facturation : factures prêtes, encaissements du mois'},
+ {id:'equipe',d:'tm',ic:'team',n:'Équipe',s:'Pointage, tournée, congés',h:['Plannings, pointage et paie,','enfin réunis.'],
+  p:'Chaque salarié a sa journée sur son téléphone : la tournée des boxes, les soins, les consignes. Même sans réseau au fond de l’écurie.',
+  u:[['Pointage au téléphone','fini les feuilles à recopier.'],['Tournée et soins','box après box, coché sur place.'],['Échéances suivies','diplômes, PSC1, fin de CDD.'],['Export vers la paie','PayFit ou Silae, sans ressaisie.']],
+  f:[['Club','appli équipe complète'],['Domaine','rôles et droits sur mesure']],
+  r:'equipe',v:'g-equipe',t:'p-emp-pointage',alt:'Équipe : salariés en poste, échéances à traiter'},
+ {id:'outils',d:'cr',ic:'plug',n:'Vos outils reliés',s:'Reprise, banque, compta, paie',h:['Vos anciens outils,','reliés ou repris.'],
+  p:'Vous quittez votre ancien logiciel sans rien ressaisir, et Stabl se branche sur ce que vous gardez : banque, comptable, paie, agendas, FFE.',
+  u:[['Reprise de l’ancien logiciel','Kavalog, Equimondo, Excel : le robot copie tout.'],['Banque et comptable reliés','Qonto, Pennylane, Tiime, export FEC.'],['Paie et signature','PayFit, Silae, Yousign.'],['Stabl dans Claude et ChatGPT','avec vos droits, pas plus.']],
+  f:[['Essentiel','import Excel, agendas'],['Club','reprise faite avec vous, banque, compta, paie'],['Domaine','API, Claude et ChatGPT']],
+  r:'connecteurs',v:'g-connecteurs',alt:'Connecteurs : banque, comptabilité, paie, agendas, FFE'}
 ];
-(function(){var el=$('#ong');
-  put(el,'<div class="ong-tabs" role="tablist" aria-label="Fonctionnalités">'+MODS.map(function(m,i){return '<button type="button" role="tab" class="d-'+m.d+'" id="ot-'+m.id+'" aria-controls="op" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'">'+I(m.ic)+m.n+'</button>'}).join('')+'</div>'+
-   '<div class="ong-p d-'+MODS[0].d+'" id="op" role="tabpanel" aria-labelledby="ot-'+MODS[0].id+'"><div class="txt"></div><div class="ong-v"><figure class="nav-frame">'+barre()+'<div class="crop">'+MODS.map(function(m,i){return '<img'+(i?'':' class="on"')+' src="'+SH+m.shot+'.webp" width="2160" height="1350" loading="lazy" alt="'+(i?'':m.alt)+'" data-alt="'+m.alt+'" style="--m:'+i+'">'}).join('')+'</div></figure></div></div>');
-  var tabs=$$('.ong-tabs button',el),p=$('#op'),txt=$('.txt',p),ims=$$('.crop img',p),crop=$('.crop',p),cur=-1,t=0;
-  function texte(m){return '<p class="ong-k">'+I(m.ic)+m.n+'</p><h3>'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p>'+m.p+'</p><ul>'+m.u.map(function(u){return '<li>'+I('check')+'<span><b>'+u[0]+'</b> : '+u[1]+'</span></li>'}).join('')+'</ul><a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a>'}
-  function set(i,focus){if(i===cur)return;var m=MODS[i],first=cur<0;cur=i;
-    tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===i);b.tabIndex=k===i?0:-1});p.setAttribute('aria-labelledby','ot-'+m.id);
-    crop.style.setProperty('--mx',m.m[0]);crop.style.setProperty('--my',m.m[1]);
-    ims.forEach(function(im,k){im.classList.toggle('on',k===i);im.alt=k===i?im.dataset.alt:'';if(k===i)im.loading='eager'});
-    p.className='ong-p d-'+m.d;
-    if(first||RM){put(txt,texte(m))}else{p.classList.add('chg');clearTimeout(t);t=setTimeout(function(){put(txt,texte(m));p.classList.remove('chg')},220)}
-    if(focus)tabs[i].focus()}
-  tabs.forEach(function(b,i){b.addEventListener('click',function(){set(i)});
-    b.addEventListener('keydown',function(e){var n=MODS.length;if(e.key==='ArrowRight'){e.preventDefault();set((i+1)%n,1)}else if(e.key==='ArrowLeft'){e.preventDefault();set((i+n-1)%n,1)}})});
-  set(0)})();
-put($('#aussi'),[['','Aussi inclus'],['trophy','Concours'],['chat','Messagerie des familles'],['sign','Contrats signés'],['shop','Boutique et stages'],['accounting','Comptabilité et TVA'],['report','Rapports'],['wifi','Mode hors ligne'],['plug','72 connecteurs']].map(function(x){return '<li>'+(x[0]?I(x[0]):'')+x[1]+'</li>'}).join(''));
+(function(){var rail=$('#recRail'),ch=$('#recCh');if(!rail)return;
+  put(rail,'<p class="rr-t">Les six blocs</p><ol>'+MODS.map(function(m,i){return '<li><a class="d-'+m.d+'" href="#b-'+m.id+'" data-i="'+i+'"><span class="rr-n">'+(i+1)+'</span><span class="rr-i">'+I(m.ic)+'</span><span class="rr-x"><b>'+m.n+'</b><small>'+m.s+'</small></span><i class="rr-p"></i></a></li>'}).join('')+'</ol><a class="rr-cta lien" '+demo('cockpit')+'>Tout voir dans la démo'+I('arrow')+'</a>');
+  put(ch,MODS.map(function(m,i){return '<article class="rc d-'+m.d+'" id="b-'+m.id+'" data-i="'+i+'" aria-labelledby="bt-'+m.id+'">'+
+    '<div class="rc-t"><p class="rc-k"><span class="rc-n">'+(i+1)+' / 6</span>'+I(m.ic)+m.n+'</p><h3 id="bt-'+m.id+'">'+m.h[0]+' <em>'+m.h[1]+'</em></h3><p class="rc-p">'+m.p+'</p>'+
+    '<ul>'+m.u.map(function(u){return '<li>'+I('check')+'<span><b>'+u[0]+'</b> : '+u[1]+'</span></li>'}).join('')+'</ul>'+
+    '<dl class="rc-f">'+m.f.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+f[1]+'</dd></div>'}).join('')+'</dl>'+
+    '<a class="lien" '+demo(m.r)+'>Voir dans la démo'+I('arrow')+'</a></div>'+
+    '<div class="rc-v"><figure class="nav-frame">'+barre()+'<div class="crop" style="--dx:240;--dy:0;--dw:1200;--dh:780"><img src="'+SH+m.v+'.webp" width="2160" height="1350" loading="lazy" alt="'+m.alt+'"></div></figure>'+(m.t?tel(m.t,'',{k:'rc-ip'}):'')+'</div></article>'}).join(''));
+  var as=$$('a[data-i]',rail),arts=$$('.rc',ch),cur=-1,sec=$('#fonctions');
+  function set(i){if(i===cur)return;cur=i;as.forEach(function(a,k){a.classList.toggle('on',k===i);a.classList.toggle('vu',k<i);if(k===i)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current')});
+    sec.className='sec d-'+MODS[i].d+' rec-on';
+    /* au téléphone, la barre suit le bloc en cours */
+    var a=as[i],ol=a.closest('ol');if(ol&&ol.scrollWidth>ol.clientWidth+4){ol.scrollTo({left:a.parentNode.offsetLeft-16,behavior:RM?'auto':'smooth'})}}
+  /* progression dans le bloc en cours */
+  var raf=0;function suivi(){raf=0;var mid=innerHeight*.45,best=0;arts.forEach(function(a,k){var r=a.getBoundingClientRect();if(r.top<=mid)best=k});
+    set(best);var r=arts[best].getBoundingClientRect(),pr=Math.max(0,Math.min(1,(mid-r.top)/Math.max(1,r.height)));as[best].style.setProperty('--pr',pr.toFixed(3));
+    var rs=sec.getBoundingClientRect();sec.classList.toggle('rec-in',rs.top<innerHeight*.5&&rs.bottom>innerHeight*.5)}
+  addEventListener('scroll',function(){if(!raf)raf=requestAnimationFrame(suivi)},{passive:true});addEventListener('resize',suivi);suivi();
+  as.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=arts[+a.dataset.i],y=t.getBoundingClientRect().top+scrollY-(innerWidth<=1100?140:110);
+    scrollTo({top:y,behavior:RM?'auto':'smooth'});history.replaceState(null,'','#b-'+MODS[+a.dataset.i].id)})})})();
 
-/* ---------- Quatre espaces ---------- */
+/* ---------- Un espace pour chacun ---------- */
+/* v : écran sur ordinateur (ou tablette), t : écran sur téléphone ; les deux montrent les mêmes données */
 var ESP=[
- {d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur',t:'Toute l’écurie sous les yeux.',p:'Ce qui demande une décision aujourd’hui, et des rapports clairs pour le reste.',r:'cockpit',
-  v:'<figure class="nav-frame">'+barre()+'<div class="crop" style="--dx:276;--dy:0;--dw:1164;--dh:720"><img src="'+SH+'g-cockpit.webp" width="2160" height="1350" loading="lazy" alt="Tableau de bord du gérant"></div></figure>'},
- {d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',t:'Sa journée, box après box.',p:'La tournée, les soins et les consignes. Même sans réseau au fond de l’écurie.',r:'emp-jour',v:tel('p-emp-tournee','Tournée des boxes sur téléphone')},
- {d:'rd',ic:'user',n:'Adhérent',ap:'Téléphone',t:'Le club dans la poche.',p:'Réserver, rattraper un cours, payer, signer et suivre son cheval.',r:'adh-accueil',v:tel('p-adh-reserver','Réservation d’un cours sur téléphone')},
- {d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',t:'Un agenda qui se remplit seul.',p:'Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part.',r:'coach-agenda',v:tel('p-coach-agenda','Agenda de la coach sur téléphone')}];
-put($('#esp'),ESP.map(function(e,i){return '<article class="ec d-'+e.d+'" data-r style="--i:'+i+'"><div class="ec-v">'+e.v+'</div><div class="ec-t"><p class="ec-q">'+I(e.ic)+e.n+' · '+e.ap+'</p><h3>'+e.t+'</h3><p>'+e.p+'</p><a class="lien" '+demo(e.r)+'>Ouvrir l’espace '+e.n.toLowerCase()+I('arrow')+'</a></div></article>'}).join(''));
+ {id:'gerant',d:'acc',ic:'today',n:'Gérant',ap:'Ordinateur et téléphone',t:'Toute l’écurie sous les yeux.',p:'Le matin, un écran dit ce qui demande une décision : chevaux à surveiller, impayés, cours à compléter. Le reste se règle en un geste.',
+  u:['Tableau de bord du jour','Factures, relances, rapports','Réglages, rôles et droits'],r:'cockpit',v:'g-cockpit',tl:'p-g-cockpit'},
+ {id:'employe',d:'hz',ic:'hay',n:'Employé',ap:'Téléphone et tablette',t:'Sa journée, box après box.',p:'La tournée, les soins à faire et les consignes du jour. Il coche sur place, même sans réseau au fond de l’écurie, et pointe ses heures.',
+  u:['Tournée des boxes et soins','Pointage et congés','Signalement d’un souci en photo'],r:'emp-jour',v:'e-tournee-tab',tab:1,tl:'p-emp-tournee'},
+ {id:'adherent',d:'rd',ic:'user',n:'Cavalier et famille',ap:'Téléphone',t:'Le club dans la poche.',p:'Réserver, rattraper un cours, payer, signer un contrat, suivre sa progression et son cheval. Un parent gère toute la famille. Rien à installer : un lien suffit.',
+  u:['Réservation et rattrapages','Paiement et factures','Progression et concours'],r:'adh-accueil',tl:'p-adh-reserver',tl2:'p-adh-progression'},
+ {id:'coach',d:'mo',ic:'coach',n:'Coach',ap:'Ordinateur et téléphone',t:'Un agenda qui se remplit seul.',p:'Les cavaliers réservent et paient en ligne, l’écurie perçoit sa part. Le coach suit ses élèves et ses concours, et voit ses revenus du mois.',
+  u:['Agenda et disponibilités','Élèves et engagements en concours','Revenus et part de l’écurie'],r:'coach-agenda',v:'c-agenda',tl:'p-coach-agenda'},
+ {id:'pro',d:'cr',ic:'care',n:'Véto et maréchal',ap:'Téléphone et ordinateur',t:'Sa tournée sur tous ses clubs.',p:'Les demandes de visite arrivent avec le cheval et le box. L’acte saisi part au carnet du cheval et au propriétaire, avec la facture à son nom.',
+  u:['Demandes de visite','Actes reliés au carnet de santé','Factures et certificats'],r:'pro-jour',v:'g-pro-jour',tl:'p-pro-jour'}];
+(function(){var el=$('#esp');if(!el)return;
+  function vue(e){var dsk=e.v?(e.tab?'<figure class="tab es-d"><div class="tab-c"><div class="crop" style="--dx:0;--dy:0;--dw:1180;--dh:820"><img src="'+SH+e.v+'.webp" width="1770" height="1230" loading="lazy" alt="Espace '+e.n.toLowerCase()+' sur tablette" style="--iw:1180"></div></div></figure>':
+      '<figure class="nav-frame es-d">'+barre()+'<div class="crop" style="--dx:0;--dy:0;--dw:1440;--dh:860"><img src="'+SH+e.v+'.webp" width="2160" height="1350" loading="lazy" alt="Espace '+e.n.toLowerCase()+' sur ordinateur"></div></figure>'):'';
+    return '<div class="es-scene'+(e.v?'':' solo')+'">'+dsk+tel(e.tl,'Espace '+e.n.toLowerCase()+' sur téléphone',{k:'es-ip'})+(e.tl2?tel(e.tl2,'',{k:'es-ip es-ip2'}):'')+'</div>'}
+  put(el,'<div class="es-tabs" role="tablist" aria-label="Espaces">'+ESP.map(function(e,i){return '<button type="button" role="tab" class="d-'+e.d+'" id="et-'+e.id+'" aria-controls="ep-'+e.id+'" aria-selected="'+(i===0)+'" tabindex="'+(i?-1:0)+'"><span class="es-ti">'+I(e.ic)+'</span><span><b>'+e.n+'</b><small>'+e.ap+'</small></span></button>'}).join('')+'</div>'+
+    ESP.map(function(e,i){return '<div class="es-p d-'+e.d+'" role="tabpanel" id="ep-'+e.id+'" aria-labelledby="et-'+e.id+'"'+(i?' hidden':'')+'><div class="es-t"><p class="es-k">'+I(e.ic)+e.n+' · '+e.ap+'</p><h3>'+e.t+'</h3><p>'+e.p+'</p><ul>'+e.u.map(function(u){return '<li>'+I('check')+u+'</li>'}).join('')+'</ul><a class="lien" '+demo(e.r)+'>Ouvrir l’espace dans la démo'+I('arrow')+'</a></div>'+vue(e)+'</div>'}).join('')+
+    '<p class="es-same">'+I('refresh')+'<span><b>Les mêmes données partout.</b> Le soin coché par l’employé apparaît chez le gérant et chez le propriétaire. Le cours réservé par un cavalier remplit l’agenda du coach.</span></p>');
+  var tabs=$$('.es-tabs button',el),ps=$$('.es-p',el);
+  function set(i,f){tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===i);b.tabIndex=k===i?0:-1});ps.forEach(function(p,k){p.hidden=k!==i;if(k===i){p.classList.remove('entre');void p.offsetWidth;p.classList.add('entre')}});if(f)tabs[i].focus()}
+  tabs.forEach(function(b,i){b.addEventListener('click',function(){set(i)});b.addEventListener('keydown',function(e){var n=tabs.length;if(e.key==='ArrowRight'){e.preventDefault();set((i+1)%n,1)}else if(e.key==='ArrowLeft'){e.preventDefault();set((i+n-1)%n,1)}})})})();
 
 /* ---------- Stabl AI : questions et réponses, chiffres de la démo ---------- */
 function tb(h,rows,plus){return '<div class="b-carte"><table><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(x){return '<td>'+x+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+(plus?'<div class="plus">'+plus+'</div>':'')+'</div>'}
@@ -1424,16 +1562,35 @@ put($('#aiQs'),QA.map(function(x,i){return '<button type="button" data-q="'+i+'"
     for(var i=0;i<QA.length;i++){if(QA[i].re.test(v)){poser(i,v);return}}inconnu(v)});
   if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();if(!joue)poser(0)}},{threshold:.35}).observe($('#chat'))}else poser(0)})();
 
-/* ---------- Tarifs ---------- */
+/* ---------- Tarifs : trois cartes, puis le détail complet de chaque formule ---------- */
+/* Même grille que app/api/src/billing/plans.ts (prix HT par mois, annuel = 10 mois). */
 var OFFRES=[
- ['Essentiel','Poney-club et petite écurie',59,['Jusqu’à 30 chevaux','Adhérents, chevaux et planning','Facturation et facture électronique','Paiement en ligne des adhérents','Calendriers synchronisés'],0],
- ['Club','Le centre équestre complet',149,['Tout Essentiel, sans limite de chevaux','Pensions, soins et maréchalerie','Prélèvements SEPA automatiques','Accès comptable et exports FEC','Reprise des données offerte'],1],
- ['Domaine','Plusieurs sites, grandes structures',289,['Tout Club','Jusqu’à 10 sites','Accompagnement prioritaire','API et intégrations'],0]];
+ {n:'Essentiel',p:59,pour:'Pour démarrer',qui:'Petite écurie ou poney-club, jusqu’à 25 chevaux, géré à deux.',
+  base:'L’essentiel pour tenir le club',l:['25 chevaux, 2 comptes','Planning et réservation en ligne','Fiches chevaux et adhérents','Factures, facture électronique et paiement par carte','Espace cavalier sur téléphone']},
+ {n:'Club',p:149,v:1,pour:'Le centre équestre complet',qui:'Centre équestre avec enseignement, pensions et une équipe.',
+  base:'Tout Essentiel, sans limite, et en plus',l:['Chevaux et équipe illimités','Pensions et demi-pensions facturées seules','Prélèvement automatique et relances','Soins, véto et maréchal','Appli équipe : pointage, tournée, congés','Stabl AI, site du club, compta','Reprise de vos données faite avec vous']},
+ {n:'Domaine',p:289,pour:'Grandes structures',qui:'Plus de 60 chevaux, plusieurs activités (club, pension, élevage, commerce) ou une annexe.',
+  base:'Tout Club, et en plus',l:['Jusqu’à 3 sites ou activités, comptes séparés','Élevage et vente de chevaux','8 caméras d’écurie incluses','Rapports par activité et budget','Rôles et droits sur mesure','API, Claude et ChatGPT','Interlocuteur dédié, formation sur place']}];
+/* détail : [libellé, Essentiel, Club, Domaine] ; 1 = inclus, 0 = non, texte = valeur */
+var DETAIL=[
+ ['Votre écurie',null,[['Chevaux','25','Illimités','Illimités'],['Comptes pour l’équipe','2','Illimités','Illimités'],['Cavaliers et familles','Illimités','Illimités','Illimités'],['Sites ou activités séparées','1','1','Jusqu’à 3']]],
+ ['Planning','planning',[['Reprises, stages, balades, cours particuliers',1,1,1],['Réservation et annulation en ligne par les cavaliers',1,1,1],['Agendas synchronisés (Google, Apple, Outlook)',1,1,1],['Montoir composé automatiquement',0,1,1],['Rattrapages et liste d’attente',0,1,1]]],
+ ['Chevaux et soins','horse',[['Fiches chevaux avec numéro SIRE',1,1,1],['Soins, ferrure, vermifuges, vaccins, avec rappels',0,1,1],['Espace vétérinaire et maréchal',0,1,1],['Charge de travail et alimentation',0,1,1],['Certificat d’engagement et de connaissance',0,1,1],['Élevage et vente de chevaux',0,0,1],['Caméras d’écurie','En option','En option','8 incluses']]],
+ ['Adhérents','members',[['Fiches cavaliers et familles, un payeur par famille',1,1,1],['Espace cavalier sur téléphone',1,1,1],['Inscriptions en ligne et licences FFE en lot',1,1,1],['Pensions et demi-pensions',0,1,1],['Contrats signés en ligne',0,1,1],['Espace coach et concours',0,1,1],['Messagerie, SMS, e-mails et sondages',0,1,1],['Organisation de concours avec bénévoles',0,0,1]]],
+ ['Facturation','invoice',[['Factures et facture électronique (obligatoire en 2027)',1,1,1],['Paiement en ligne par carte',1,1,1],['Facturation automatique des pensions et forfaits',0,1,1],['Prélèvement SEPA automatique',0,1,1],['Relance des impayés',0,1,1],['Accès comptable, TVA et export FEC',0,1,1],['Boutique et site internet du club',0,1,1],['Comptes et factures séparés par activité',0,0,1],['Rapports par activité et budget',0,0,1]]],
+ ['Équipe','team',[['Appli équipe : tournée, soins, consignes',0,1,1],['Pointage, plannings et congés',0,1,1],['Échéances des diplômes et export vers la paie',0,1,1],['Rôles et droits sur mesure',0,0,1]]],
+ ['Outils et accompagnement','plug',[['Import de vos fichiers Excel ou CSV',1,1,1],['Reprise de l’ancien logiciel, faite avec vous',0,1,1],['Stabl AI, l’assistant de l’écurie',0,1,1],['Banque, comptable et paie reliés',0,1,1],['API, Claude et ChatGPT',0,0,1],['Aide','Par e-mail','Par téléphone','Interlocuteur dédié'],['Formation de l’équipe sur place',0,0,1]]]];
 function virg(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o[4]?' vedette':'')+'" data-r style="--i:'+i+'">'+(o[4]?'<span class="of-tag">La plus choisie</span>':'')+'<h3>'+o[0]+'</h3><p class="of-p">'+o[1]+'</p><div class="of-prix"><b>'+fr(an?o[2]*10:o[2])+'</b><span class="of-u">€ HT<br>'+(an?'par an':'par mois')+'</span></div><p class="of-an">'+(an?'Soit '+virg(o[2]*10/12)+' € HT par mois, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p><a class="btn '+(o[4]?'blanc':'sec')+'" href="#contact" data-offre="'+o[0]+'">Démarrer l’essai gratuit'+I('arrow')+'</a><ul>'+o[3].map(function(l){return '<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul></article>'}).join(''));
+function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o.v?' vedette':'')+'" data-r style="--i:'+i+'">'+(o.v?'<span class="of-tag">La plus choisie</span>':'')+
+    '<p class="of-pour">'+o.pour+'</p><h3>'+o.n+'</h3><p class="of-p">'+o.qui+'</p><div class="of-prix"><b>'+fr(an?o.p*10:o.p)+'</b><span class="of-u">€ HT<br>'+(an?'par an':'par mois')+'</span></div><p class="of-an">'+(an?'Soit '+virg(o.p*10/12)+' € HT par mois, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p>'+
+    '<a class="btn '+(o.v?'blanc':'sec')+'" href="'+APP+'?formule='+o.n.toLowerCase()+'">Essayer 30 jours gratuits'+I('arrow')+'</a><ul><li class="t">'+o.base+'</li>'+o.l.map(function(l){return '<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul><a class="of-det" href="#cmp">Voir tout le détail'+I('down')+'</a></article>'}).join(''));
   $$('#offres [data-r]').forEach(function(e){e.classList.add('in')})}
 offres(false);
 (function(){var b=$('#bascule');$$('button',b).forEach(function(x){x.addEventListener('click',function(){var an=x.dataset.p==='a';b.classList.toggle('annuel',an);$$('button',b).forEach(function(y){y.setAttribute('aria-pressed',y===x)});offres(an)})})})();
+(function(){var el=$('#cmpT');if(!el)return;
+  function cell(v){if(v===1)return '<td class="oui">'+I('check')+'<span class="sr">Inclus</span></td>';if(v===0)return '<td class="non"><span aria-hidden="true">–</span><span class="sr">Non inclus</span></td>';return '<td class="val">'+v+'</td>'}
+  put(el,'<table><caption class="sr">Détail des formules Essentiel, Club et Domaine</caption><thead><tr><th scope="col"><span class="sr">Fonction</span></th>'+OFFRES.map(function(o){return '<th scope="col"'+(o.v?' class="v"':'')+'><b>'+o.n+'</b><small>'+o.p+' € HT/mois</small></th>'}).join('')+'</tr></thead>'+
+    DETAIL.map(function(g){return '<tbody><tr class="g"><th colspan="4" scope="colgroup"><span>'+(g[1]?I(g[1]):'')+g[0]+'</span></th></tr>'+g[2].map(function(r){return '<tr><th scope="row">'+r[0]+'</th>'+cell(r[1])+cell(r[2])+cell(r[3])+'</tr>'}).join('')+'</tbody>'}).join('')+'</table>')})();
 
 /* ---------- FAQ ---------- */
 var FAQ=[['Combien de temps faut-il pour démarrer ?','Une après‑midi. La création de l’écurie prend une dizaine de minutes, puis la passerelle reprend vos données. Nous pouvons le faire avec vous, gratuitement.'],

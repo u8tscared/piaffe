@@ -1,4 +1,5 @@
 import { Hono, type Context } from "hono";
+import { clubLimits, teamCount, TEAM_ROLES, userLimitMessage } from "../billing/limits";
 import type { AppEnv, Role } from "../env";
 import { requireRole, requireUser } from "../lib/auth";
 import { all, audit, one, rateLimit, run } from "../lib/db";
@@ -93,6 +94,15 @@ app.post("/api/invitations", requireRole("manager"), async (c) => {
     "SELECT m.role, m.status FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.club_id = ? AND u.email = ? COLLATE NOCASE", club.id, email);
   if (existing && existing.status === "active" && existing.role === role && !ref) {
     throw new ApiError(409, "already_member", "Cette personne a déjà accès au club avec ce rôle.");
+  }
+  if (TEAM_ROLES.includes(role)) {
+    const lim = await clubLimits(c.env.DB, club.id);
+    const already = (existing && existing.status === "active" && TEAM_ROLES.includes(existing.role)) || !!(await one<{ id: string }>(c.env.DB,
+      `SELECT id FROM invitations WHERE club_id = ? AND email = ? COLLATE NOCASE AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at > ? AND role IN (${TEAM_ROLES.map(() => "?").join(",")})`,
+      club.id, email, nowIso(), ...TEAM_ROLES));
+    if (lim && lim.users !== null && !already && (await teamCount(c.env.DB, club.id, nowIso())) >= lim.users) {
+      throw new ApiError(403, "plan_limit", userLimitMessage(lim), { limit: "users", max: lim.users, plan: lim.plan });
+    }
   }
   const { invitation, url } = await createInvitation(c.env, {
     club_id: club.id, email, role, person_ref: ref, first: str(b.first, "first", { max: 80, optional: true }) || null,

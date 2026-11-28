@@ -8,7 +8,7 @@
 /*__CSS__*/
 </style>
 
-<div class="pg" id="top" data-demo="{{demobase}}">
+<div class="pg" id="top" data-demo="{{demobase}}" data-app="{{app}}">
 
 <a class="annonce" href="#tarifs"><span class="an-tag">Fondateurs</span><span class="an-t">99 € HT par mois, à vie, pour les 30 premiers clubs</span>{{i:arrow}}</a>
 
@@ -16,10 +16,11 @@
   <div class="w nav-in">
     <a class="marque" href="#top" aria-label="Stabl, retour en haut">{{marque}}</a>
     <nav class="nav-l" id="navL" aria-label="Sections">
-      <a href="#fonctions">Fonctionnalités</a><a href="#changer">Changer de logiciel</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a><a href="#contact">Contact</a>
+      <a href="#fonctions">Fonctionnalités</a><a href="#espaces">Espaces</a><a href="#changer">Changer de logiciel</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a>
     </nav>
     <button class="ibtn" id="theme" type="button" aria-label="Passer en thème sombre">{{i:moon}}{{i:sun}}</button>
-    <a class="btn pri sm nav-cta" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
+    <a class="btn sec sm nav-demo" {{demo:cockpit}}>Essayer la démo</a>
+    <a class="btn pri sm nav-cta" href="{{app}}">Créer un compte{{i:arrow}}</a>
     <button class="ibtn nav-b" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navL">{{i:menu}}{{i:x}}</button>
   </div>
 </header>
@@ -39,10 +40,10 @@
         <p class="pl-s">{{i:check}}30 jours d’essai gratuit, sans carte bancaire, sans engagement</p>
       </div>
       <div class="hero-cta">
-        <a class="btn pri lg" {{demo:cockpit}}>Essayer la démo{{i:arrow}}</a>
-        <a class="btn sec lg" href="#contact">{{i:phone}}Être rappelé</a>
+        <a class="btn pri lg" href="{{app}}">Créer un compte{{i:arrow}}</a>
+        <a class="btn sec lg" {{demo:cockpit}}>{{i:play}}Essayer la démo</a>
       </div>
-      <p class="legende">La démo s’ouvre sur une écurie déjà remplie. Rien n’est enregistré.</p>
+      <p class="legende">La démo s’ouvre sur une écurie déjà remplie, sans inscription. Une question ? <a href="#contact">Être rappelé</a>.</p>
     </div>
 
     <div class="scene" id="scene" aria-hidden="true">
@@ -73,28 +74,30 @@
   </div>
 </section>
 
-<!-- ================= FONCTIONNALITÉS ================= -->
+<!-- ================= CE QUE FAIT STABL : défilement bloc par bloc ================= -->
 <section class="sec" id="fonctions" aria-labelledby="h-fonc">
   <div class="w">
     <div class="tete" data-r>
-      <p class="sur2">Fonctionnalités</p>
-      <h2 id="h-fonc">Du box à la facture, <span class="hl">tout est au même endroit.</span></h2>
-      <p>Chaque module partage les mêmes données : vous ne saisissez rien deux fois. Les écrans ci-dessous sont ceux de la démo.</p>
+      <p class="sur2">Ce que fait Stabl</p>
+      <h2 id="h-fonc">Six blocs. <span class="hl">Toute votre écurie.</span></h2>
+      <p>Stabl remplace le cahier, le tableur, le logiciel de factures et les groupes WhatsApp. Tous les blocs partagent les mêmes données : rien ne se saisit deux fois.</p>
     </div>
-    <div class="ong" id="ong" data-r></div>
-    <ul class="aussi" data-r id="aussi"></ul>
+    <div class="rec" id="rec">
+      <nav class="rec-rail" id="recRail" aria-label="Les six blocs de Stabl"></nav>
+      <div class="rec-ch" id="recCh"></div>
+    </div>
   </div>
 </section>
 
-<!-- ================= QUATRE ESPACES ================= -->
+<!-- ================= UN ESPACE PAR RÔLE ================= -->
 <section class="sec sec-alt" id="espaces" aria-labelledby="h-esp">
   <div class="w">
     <div class="tete" data-r>
-      <p class="sur2">Quatre espaces</p>
-      <h2 id="h-esp">Chacun son espace, <span class="hl">les mêmes données.</span></h2>
-      <p>Chacun ouvre Stabl sur son ordinateur ou son téléphone, et n’y voit que ce qui le concerne.</p>
+      <p class="sur2">Un espace pour chacun</p>
+      <h2 id="h-esp">Cinq espaces, <span class="hl">les mêmes données.</span></h2>
+      <p>Gérant, salariés, cavaliers, coachs, vétérinaire et maréchal : chacun ouvre Stabl sur son ordinateur ou son téléphone, et n’y voit que ce qui le concerne. Ce que l’un saisit, l’autre le voit aussitôt.</p>
     </div>
-    <div class="esp" id="esp"></div>
+    <div class="esp2" id="esp" data-r></div>
   </div>
 </section>
 
@@ -165,8 +168,8 @@
   <div class="w">
     <div class="tete" data-r>
       <p class="sur2">Tarifs</p>
-      <h2 id="h-tarifs">Trois formules. <span class="hl">C’est tout.</span></h2>
-      <p>Prix hors taxes, sans frais d’entrée. 30 jours d’essai gratuit, sans carte bancaire, résiliable en un clic.</p>
+      <h2 id="h-tarifs">Trois formules. <span class="hl">Choisissez selon votre écurie.</span></h2>
+      <p>Prix hors taxes, sans frais d’entrée ni engagement. 30 jours d’essai gratuit avec toutes les fonctions de la formule Club.</p>
       <div class="bascule" id="bascule" role="group" aria-label="Rythme de facturation">
         <span class="bs-g"></span>
         <button type="button" data-p="m" aria-pressed="true">Mensuel</button>
@@ -174,6 +177,10 @@
       </div>
     </div>
     <div class="offres" id="offres"></div>
+    <div class="cmp" id="cmp" data-r>
+      <div class="cmp-h"><h3>Tout ce qui est inclus</h3><p>Le détail, bloc par bloc.</p></div>
+      <div class="cmp-t" id="cmpT"></div>
+    </div>
     <div class="fond-o" data-r>
       <span class="fo-i">{{i:star}}</span>
       <div><b>Offre fondateurs : la formule Club à 99 € HT par mois, à vie.</b><small>Réservée aux 30 premiers clubs. Le prix ne bougera jamais tant que vous restez abonné.</small></div>
@@ -251,7 +258,7 @@
       <p>Le logiciel de gestion des centres équestres, poney-clubs et écuries. Planning, chevaux, adhérents, finances et équipe, enfin au même endroit.</p>
       <a class="pd-mail" href="mailto:contact@stablapp.fr">{{i:mail}}<span>contact@stablapp.fr</span></a>
     </div>
-    <nav aria-label="Produit" data-r style="--i:1"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Quatre espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Produit" data-r style="--i:1"><b>Produit</b><a href="#fonctions">Fonctionnalités</a><a href="#espaces">Les espaces</a><a href="#ai">Stabl AI</a><a href="#tarifs">Tarifs</a><a href="#faq">Questions</a></nav>
     <nav aria-label="Essayer" data-r style="--i:2"><b>Essayer</b><a {{demo:cockpit}}>La démo</a><a href="{{passerelle}}">La passerelle</a><a href="#contact">Être rappelé</a></nav>
     <nav aria-label="Stabl" data-r style="--i:3"><b>Stabl</b><a href="mailto:contact@stablapp.fr">Nous écrire</a><a href="#tarifs">Offre fondateurs</a><span class="pd-lieu">{{i:pin}}Conçu à Lyon</span></nav>
   </div>

@@ -16,8 +16,10 @@ const parts={'/*__CSS__*/':rd(path.join(S,'landing.css')),'/*__ICONS__*/':rd(pat
 /* liens : {{demo:ecran}}, {{demobase}}, {{passerelle}} */
 const DEMO=PAGES?'demo/':'https://claude.ai/artifact/Vdt6ti3FA1Nii45Y42nRKN';
 const PASS=PAGES?'passerelle/':SITE+'passerelle/';
+/* le vrai logiciel : « Créer un compte » (en-tête, héros, formules) */
+const APP_URL=process.env.STABL_APP_URL||'https://app.stablapp.fr/';
 html=html.replace(/\{\{demo:([a-z0-9-]+)\}\}/g,(m,r)=>'href="'+DEMO+'#'+r+'" target="_blank" rel="noopener"');
-html=html.replace(/\{\{demobase\}\}/g,DEMO).replace(/\{\{passerelle\}\}/g,PASS).replace(/\{\{description\}\}/g,DESC);
+html=html.replace(/\{\{app\}\}/g,APP_URL).replace(/\{\{demobase\}\}/g,DEMO).replace(/\{\{passerelle\}\}/g,PASS).replace(/\{\{description\}\}/g,DESC);
 /* logo officiel : symbole + « stabl » vectorisés, couleur du texte */
 const lockup=rd(path.join(BRAND,'logo/stabl-logo-marine.svg')).replace(/<\?xml[^>]*>/,'').replace(/fill="#0a1636"/gi,'').replace('<svg ','<svg class="lockup" aria-hidden="true" focusable="false" ').replace(/\s*xmlns="[^"]*"/,'').trim();
 if(!/viewBox/.test(lockup))throw new Error('Logo officiel illisible');
