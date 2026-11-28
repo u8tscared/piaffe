@@ -17,6 +17,7 @@ cp -r site/shots _pages/shots && rm -rf _pages/shots/_png
 node migration/tools/construire.mjs >/dev/null && mkdir -p _pages/passerelle && cp migration/dist/passerelle.html _pages/passerelle/index.html
 mkdir -p _pages/brand/mail && cp brand/stabl/mail/*.png _pages/brand/mail/
 mkdir -p _pages/onboarding && rm -rf _pages/onboarding/mails && cp -r site/mails _pages/onboarding/mails
+node app/web/demo-onboarding/build.js >/dev/null && cp app/web/demo-onboarding/dist/index.html _pages/onboarding/index.html
 touch _pages/.nojekyll
 echo "stablapp.fr" > _pages/CNAME
 node site/build.js >/dev/null
