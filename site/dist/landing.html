@@ -1348,7 +1348,7 @@ put($('#aiQs'),QA.map(function(x,i){return '<button type="button" data-q="'+i+'"
 /* ---------- Tarifs ---------- */
 var OFFRES=[
  ['Essentiel','Poney-club et petite écurie',59,['Jusqu’à 30 chevaux','Adhérents, chevaux et planning','Facturation et facture électronique','Paiement en ligne des adhérents','Calendriers synchronisés'],0],
- ['Club','Le centre équestre complet',149,['Tout Essentiel, sans limite de chevaux','Pensions, soins et maréchalerie','Prélèvements SEPA et paiement en plusieurs fois','Accès comptable et exports FEC','Reprise des données offerte'],1],
+ ['Club','Le centre équestre complet',149,['Tout Essentiel, sans limite de chevaux','Pensions, soins et maréchalerie','Prélèvements SEPA automatiques','Accès comptable et exports FEC','Reprise des données offerte'],1],
  ['Domaine','Plusieurs sites, grandes structures',289,['Tout Club','Jusqu’à 10 sites','Accompagnement prioritaire','API et intégrations'],0]];
 function virg(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function offres(an){put($('#offres'),OFFRES.map(function(o,i){return '<article class="of'+(o[4]?' vedette':'')+'" data-r style="--i:'+i+'">'+(o[4]?'<span class="of-tag">La plus choisie</span>':'')+'<h3>'+o[0]+'</h3><p class="of-p">'+o[1]+'</p><div class="of-prix"><b>'+fr(an?o[2]*10:o[2])+'</b><span class="of-u">€ HT<br>'+(an?'par an':'par mois')+'</span></div><p class="of-an">'+(an?'Soit '+virg(o[2]*10/12)+' € HT par mois, 2 mois offerts':'Sans engagement, résiliable en un clic')+'</p><a class="btn '+(o[4]?'blanc':'sec')+'" href="#contact" data-offre="'+o[0]+'">Démarrer l’essai gratuit'+I('arrow')+'</a><ul>'+o[3].map(function(l){return '<li>'+I('check')+'<span>'+l+'</span></li>'}).join('')+'</ul></article>'}).join(''));

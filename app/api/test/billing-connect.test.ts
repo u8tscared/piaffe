@@ -205,50 +205,35 @@ describe("billing · paiement d'une facture du club", () => {
 });
 
 describe("billing · échéanciers, mandats et liens", () => {
-  it("paiement en 3 fois : mandat via Checkout setup, puis le cron prélève la première échéance hors session", async () => {
-    fake = fakeStripe();
+  it("prélèvement automatique : le cron prélève hors session, une seule fois ; un refus est retenté puis l'échéance échoue après 3 tentatives", async () => {
+    let declined = false;
+    fake = fakeStripe({ "POST /v1/payment_intents": () => { if (declined) throw Object.assign(new Error("declined"), { status: 402, type: "card_error", code: "card_declined", decline: "insufficient_funds" }); return { id: "pi_auto", status: "processing" }; } });
     const club = await seedConnectedClub();
-    await addMember(club.clubId, "m001", { first: "Léa", email: "lea.ech@exemple.fr" });
+    await addMember(club.clubId, "m001", { first: "Léa", email: "lea.refus@exemple.fr" });
     const m = await memberOf(club.clubId);
-    const inv = addInvoice(club.clubId, "m001", 100000);
-    expect((await call(`/api/pay/invoice/${inv.id}/installments`, { method: "POST", token: m.token, json: { count: 4 } })).status).toBe(400);
-    const r = await j(await call(`/api/pay/invoice/${inv.id}/installments`, { method: "POST", token: m.token, json: { count: 3 } }));
-    expect(r.installments).toEqual([33334, 33333, 33333]);
-    const setup = fake.find("POST", "/v1/checkout/sessions")[0].params;
-    expect(setup.mode).toBe("setup");
-    expect(setup["setup_intent_data[metadata][piaffe_mandate_id]"]).toBe(r.mandate_id);
-    // Paiement direct bloqué tant que l'échéancier existe.
-    expect((await j(await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token }))).error.code).toBe("schedule_active");
+    const r = await j(await call("/api/pay/mandate", { method: "POST", token: m.token, json: {} }));
     await sendEvent({ id: evtId(), type: "setup_intent.succeeded", account: club.acct, data: { object: { id: "seti_1", payment_method: "pm_1", mandate: "mandate_1", metadata: { piaffe_mandate_id: r.mandate_id, piaffe_club_id: club.clubId } } } }, { connect: true });
-    const sch = await j(await call(`/api/pay/schedules?invoice_id=${inv.id}`, { token: m.token }));
-    expect(sch.schedules[0].status).toBe("active");
-    expect(sch.schedules[0].installments.length).toBe(3);
+    const today = new Date().toISOString().slice(0, 10);
+    // Première facture : prélevée une seule fois, même si le cron repasse.
+    const inv = addInvoice(club.clubId, "m001", 30000);
+    await emit(env, null, { type: "invoice.issued", club_id: club.clubId, invoice_id: inv.id });
+    await env.DB.prepare("UPDATE payment_installments SET due_date = ? WHERE club_id = ?").bind(today, club.clubId).run();
     await cron(env, "*/10 * * * *");
     const pis = fake.find("POST", "/v1/payment_intents");
     expect(pis.length).toBe(1);
     expect(pis[0].headers["stripe-account"]).toBe(club.acct);
-    expect(pis[0].params).toMatchObject({ amount: "33334", off_session: "true", confirm: "true", payment_method: "pm_1", "payment_method_types[0]": "sepa_debit" });
+    expect(pis[0].params).toMatchObject({ amount: "30000", off_session: "true", confirm: "true", payment_method: "pm_1" });
     await cron(env, "*/10 * * * *");
     expect(fake.find("POST", "/v1/payment_intents").length).toBe(1); // pas de double prélèvement
-    const pay = await env.DB.prepare("SELECT id FROM online_payments WHERE invoice_id = ? AND kind = 'installment'").bind(inv.id).first<any>();
-    await sendEvent({ id: evtId(), type: "payment_intent.succeeded", account: club.acct, data: { object: { id: "pi_i1", amount: 33334, payment_method_types: ["sepa_debit"], metadata: { piaffe_payment_id: pay.id } } } }, { connect: true });
-    const after = await j(await call(`/api/pay/schedules?invoice_id=${inv.id}`, { token: m.token }));
-    expect(after.schedules[0].installments.map((i: any) => i.status)).toEqual(["paid", "scheduled", "scheduled"]);
-    expect(eventsOf("invoice.paid", club.clubId).at(-1)).toMatchObject({ amount_cents: 33334, method: "sepa_debit" });
-  });
-
-  it("un prélèvement refusé est retenté, puis l'échéancier échoue après 3 tentatives", async () => {
-    fake = fakeStripe({ "POST /v1/payment_intents": () => { throw Object.assign(new Error("declined"), { status: 402, type: "card_error", code: "card_declined", decline: "insufficient_funds" }); } });
-    const club = await seedConnectedClub();
-    await addMember(club.clubId, "m001", { first: "Léa", email: "lea.refus@exemple.fr" });
-    const inv = addInvoice(club.clubId, "m001", 30000);
-    const r = await j(await call(`/api/pay/invoice/${inv.id}/installments`, { method: "POST", token: club.token, json: { count: 3 } }));
-    await sendEvent({ id: evtId(), type: "setup_intent.succeeded", account: club.acct, data: { object: { id: "seti_2", payment_method: "pm_2", metadata: { piaffe_mandate_id: r.mandate_id } } } }, { connect: true });
+    // Deuxième facture : la banque refuse, trois tentatives puis échec.
+    declined = true;
+    const inv2 = addInvoice(club.clubId, "m001", 20000);
+    await emit(env, null, { type: "invoice.issued", club_id: club.clubId, invoice_id: inv2.id });
     for (let i = 0; i < 3; i++) {
-      await env.DB.prepare("UPDATE payment_installments SET next_attempt_at = NULL WHERE club_id = ?").bind(club.clubId).run();
+      await env.DB.prepare("UPDATE payment_installments SET due_date = ?, next_attempt_at = NULL WHERE club_id = ? AND status = 'scheduled'").bind(today, club.clubId).run();
       await cron(env, "*/10 * * * *");
     }
-    const s = await env.DB.prepare("SELECT status FROM payment_schedules WHERE invoice_id = ?").bind(inv.id).first<any>();
+    const s = await env.DB.prepare("SELECT status FROM payment_schedules WHERE invoice_id = ?").bind(inv2.id).first<any>();
     expect(s.status).toBe("failed");
     const fails = eventsOf("payment.failed", club.clubId);
     expect(fails.length).toBe(3);
@@ -318,44 +303,6 @@ describe("billing · échéanciers, mandats et liens", () => {
   it("options de paiement visibles par l'adhérent", async () => {
     const club = await seedConnectedClub();
     const m = await memberOf(club.clubId);
-    expect(await j(await call("/api/pay/options", { token: m.token }))).toMatchObject({ enabled: true, sepa: true, installments: [3, 10] });
-  });
-});
-
-describe("billing · paiement en 3 fois avec Klarna", () => {
-  it("non activé : refus clair ; activé : Checkout Klarna seul, le club reçoit le total", async () => {
-    fake = fakeStripe();
-    const club = await seedConnectedClub();
-    await addMember(club.clubId, "m001", { first: "Léa", last: "Martin", email: "lea.martin@exemple.fr", fam: "F1" });
-    const m = await memberOf(club.clubId);
-    const inv = addInvoice(club.clubId, "m001", 62000);
-    let opts = await j(await call("/api/pay/options", { token: m.token }));
-    expect(opts.klarna).toBe(false);
-    let r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
-    expect(r.status).toBe(409);
-    expect((await j(r)).error.code).toBe("klarna_not_ready");
-    // le club active Klarna dans son tableau de bord Stripe : account.updated le signale
-    await sendEvent({ id: evtId(), type: "account.updated", account: club.acct, data: { object: { id: club.acct, charges_enabled: true, payouts_enabled: true, details_submitted: true, capabilities: { card_payments: "active", sepa_debit_payments: "active", klarna_payments: "active" }, requirements: { currently_due: [] } } } }, { connect: true });
-    opts = await j(await call("/api/pay/options", { token: m.token }));
-    expect(opts).toMatchObject({ klarna: true, klarna_min_cents: 100, klarna_max_cents: 450000 });
-    r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
-    expect(r.status).toBe(200);
-    const cs = fake.find("POST", "/v1/checkout/sessions")[0];
-    expect(cs.params["payment_method_types[0]"]).toBe("klarna");
-    expect(cs.params["payment_method_types[1]"]).toBeUndefined();
-    expect(cs.params["line_items[0][price_data][unit_amount]"]).toBe("62000");
-    expect(cs.headers["stripe-account"]).toBe(club.acct);
-  });
-
-  it("au-delà de 4 500 € : Klarna refusé", async () => {
-    fake = fakeStripe();
-    const club = await seedConnectedClub();
-    await env.DB.prepare("UPDATE connect_accounts SET klarna_enabled = 1 WHERE club_id = ?").bind(club.clubId).run();
-    await addMember(club.clubId, "m001", { first: "Léa", fam: "F1" });
-    const m = await memberOf(club.clubId);
-    const inv = addInvoice(club.clubId, "m001", 480000);
-    const r = await call(`/api/pay/invoice/${inv.id}`, { method: "POST", token: m.token, json: { method: "klarna" } });
-    expect(r.status).toBe(400);
-    expect((await j(r)).error.code).toBe("klarna_amount");
+    expect(await j(await call("/api/pay/options", { token: m.token }))).toMatchObject({ enabled: true, sepa: true, mandate: true });
   });
 });

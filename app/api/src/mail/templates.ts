@@ -257,7 +257,7 @@ export const TEMPLATES: Record<string, TemplateDef> = {
           { t: "p", text: intro },
           { t: "rows", rows: opt([["Facture", d.number], ["Reste à payer", money(d)], ["Échéance", d.due_date ? dateLong(d.due_date) : ""]]) },
           { t: "button", label: `Régler ${money(d)}`, url: d.pay_url },
-          { t: "p", muted: true, text: lvl === 1 ? "Si vous avez déjà payé, merci de ne pas tenir compte de ce message." : "Si vous rencontrez une difficulté, répondez à cet e-mail : nous trouverons ensemble une solution, par exemple un paiement en plusieurs fois." },
+          { t: "p", muted: true, text: lvl === 1 ? "Si vous avez déjà payé, merci de ne pas tenir compte de ce message." : "Si vous rencontrez une difficulté, répondez à cet e-mail : nous trouverons ensemble une solution." },
           sign(ctx),
         ],
       };
