@@ -674,3 +674,4 @@ section.sec{padding:clamp(56px,7vw,96px) 0}
 .ct-g{margin-top:22px;display:grid;gap:8px;font-size:15px;color:var(--ink-2)}
 .ct-g li{display:flex;gap:9px;align-items:center}
 .ct-g svg{width:18px;height:18px;color:var(--ok);stroke-width:2.4}
+.ml-g a{color:#c9d3ff;text-underline-offset:3px}

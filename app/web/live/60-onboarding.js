@@ -49,8 +49,10 @@ var STEPS=[
    '<div class="lv-sirets"></div><div class="lv-picked">'+(A.address&&A.address.city&&A.siren?picked():'')+'</div>'+
    '<label class="lv-fl"><span>Adresse <span class="lv-hint">pour vos factures et la météo</span></span><input class="in" id="ob-line1" value="'+esc((A.address||{}).line1||'')+'" placeholder="12 chemin des Prés" autocomplete="address-line1" maxlength="160"></label>'+
    '<div class="lv-row2"><label class="lv-fl"><span>Code postal</span><input class="in" id="ob-zip" value="'+esc((A.address||{}).zip||'')+'" inputmode="numeric" autocomplete="postal-code" maxlength="10"></label>'+
-   '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div></div>'},
+   '<label class="lv-fl"><span>Ville</span><input class="in" id="ob-city" value="'+esc((A.address||{}).city||'')+'" autocomplete="address-level2" maxlength="80"></label></div>'+
+   (PL.clubId?'':'<label class="lv-cgu"><input type="checkbox" id="ob-cgv"'+(A.cgv?' checked':'')+'><span>J’accepte, pour ma structure, les <a href="https://stablapp.fr/cgv/" target="_blank" rel="noopener" class="lv-a">conditions générales de vente</a> et l’<a href="https://stablapp.fr/sous-traitance/" target="_blank" rel="noopener" class="lv-a">accord de sous-traitance des données (RGPD)</a>.</span></label>')+'</div>'},
    bind:function(q){var n=q.querySelector('#ob-name'),s=q.querySelector('#ob-siret'),box=q.querySelector('.lv-sirets'),t=0;
+     var cg=q.querySelector('#ob-cgv');if(cg)cg.onchange=function(){A.cgv=cg.checked?(PL.LEGAL?PL.LEGAL.version:'2026-11-28'):null;saveLocal();foot()};
      n.oninput=function(){A.name=n.value.trim();saveLocal();foot();live();clearTimeout(t);if(!A.siren&&A.name.length>=4)t=setTimeout(find,700)};s.oninput=function(){A.siret=s.value.replace(/\D/g,'');saveLocal()};
      /* adresse saisie à la main (la recherche officielle peut être indisponible ou ne pas trouver la structure) */
      var ad=function(k){return q.querySelector('#ob-'+k)};
@@ -66,7 +68,7 @@ var STEPS=[
            box.querySelectorAll('[data-i]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});q.querySelector('.lv-picked').innerHTML=picked();foot()}})},
        function(e){box.innerHTML='<div class="lv-msg info">'+ICON('info','sm')+'<span>'+(e.unavailable?'La recherche n’est pas encore disponible : saisissez simplement le nom.':esc(PL.msg(e)))+'</span></div>'})}
      q.querySelector('[data-find]').onclick=find;s.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();find()}}},
-   ok:function(){return (A.name||'').trim().length>=2},leave:ensureClub},
+   ok:function(){return (A.name||'').trim().length>=2&&(!!PL.clubId||!!A.cgv)},leave:ensureClub},
  {id:'sizes',cap:'Vos chiffres préparent le bon nombre de boxes, de pistes au planning et l’offre adaptée.',render:function(){
    if(coach())return '<div class="eyebrow">Votre activité</div><h1>Combien d’élèves suivez-vous ?</h1><p class="lv-sub">Une estimation suffit.</p><div class="lv-nums">'+[['members','Élèves suivis','members'],['horses','Chevaux de vos élèves','horse']].map(function(f,i){return num(f,i)}).join('')+'</div>';
    return '<div class="eyebrow">Votre écurie en chiffres</div><h1>Combien êtes-vous, et sur quelles installations ?</h1><p class="lv-sub">Une estimation suffit : elle sert à préparer vos boxes, vos pistes au planning et la bonne offre.</p>'+
@@ -217,7 +219,7 @@ function toastLocal(m){var t=el.querySelector('.lv-ob-msg');if(!t){t=document.cr
 
 /* le club est créé dès que le nom est connu, pour enregistrer l'avancement côté serveur */
 function ensureClub(){if(PL.clubId)return PL.patch('/api/onboarding/club',{name:A.name,siret:A.siret&&A.siret.length===14?A.siret:undefined,address:A.address}).catch(function(){}).then(function(){return persist()});
-  return PL.post('/api/clubs',{name:A.name,kind:A.kind||'centre',siret:A.siret||undefined}).then(function(r){var c=r.club||r;PL.clubId=c.id||c.club_id;
+  return PL.post('/api/clubs',{name:A.name,kind:A.kind||'centre',siret:A.siret||undefined,accept_cgv:!!A.cgv,legal_version:A.cgv||undefined}).then(function(r){var c=r.club||r;PL.clubId=c.id||c.club_id;
     return PL.post('/api/me/club',{club_id:PL.clubId}).catch(function(){}).then(function(){return persist()})},
     function(e){if(e.unavailable)throw PL.err(0,'unavailable','La création de club n’est pas encore disponible sur ce serveur. Réessayez dans quelques minutes.');throw e})}
 

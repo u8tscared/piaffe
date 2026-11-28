@@ -18,6 +18,7 @@ node migration/tools/construire.mjs >/dev/null && mkdir -p _pages/passerelle && 
 mkdir -p _pages/brand/mail && cp brand/stabl/mail/*.png _pages/brand/mail/
 mkdir -p _pages/onboarding && rm -rf _pages/onboarding/mails && cp -r site/mails _pages/onboarding/mails
 node app/web/demo-onboarding/build.js >/dev/null && cp app/web/demo-onboarding/dist/index.html _pages/onboarding/index.html
+node legal/build.js >/dev/null && for d in legal/dist/*/; do n=$(basename "$d"); rm -rf "_pages/$n"; cp -r "$d" "_pages/$n"; done && cp legal/dist/version.json _pages/legal-version.json
 touch _pages/.nojekyll
 echo "stablapp.fr" > _pages/CNAME
 node site/build.js >/dev/null

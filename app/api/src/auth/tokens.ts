@@ -45,5 +45,7 @@ export async function purgeTokens(env: Env) {
     env.DB.prepare("DELETE FROM oauth_states WHERE expires_at < ?").bind(now),
     env.DB.prepare("DELETE FROM invitations WHERE accepted_at IS NULL AND expires_at < ?").bind(old),
     env.DB.prepare("DELETE FROM rate_limits WHERE reset_at < ?").bind(Math.floor(Date.now() / 1000) - 3600),
+    // Journal des actions : 12 mois (politique de confidentialité et accord de sous-traitance, annexe 2).
+    env.DB.prepare("DELETE FROM audit_log WHERE at < ?").bind(new Date(Date.now() - 365 * 864e5).toISOString()),
   ]);
 }
